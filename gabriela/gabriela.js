@@ -1,8 +1,8 @@
-const BasicJob = require('./basicJob');
+const BasicModule = require('./basicModule');
 
 function factory() {
-    this.createBasicJob = function() {
-        return new BasicJob();
+    this.createModule = function() {
+        return new BasicModule();
     }
 
     this.asServer = function() {

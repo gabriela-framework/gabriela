@@ -1,0 +1,54 @@
+const Module = require('./module');
+
+function factory() {
+    this.create = function() {
+        return new instance();
+    }
+
+    function instance() {
+        const modules = {};
+
+        function addModule(mdl) {
+            if (mdl.hasOwnProperty(mdl.name)) {
+                throw new Error(`Module with name '${mdl.name}' already exists`);
+            }
+
+            if (!modules.hasOwnProperty(mdl.name)) {
+                modules[mdl.name] = Object.assign({}, new Module(mdl));
+            }
+        }
+    
+        function hasModule(nameOrModuleObject) {
+            return modules.hasOwnProperty(nameOrModuleObject);
+        }
+    
+        function getModule(name) {
+            if (!this.hasModule(name)) {
+                return undefined;
+            }
+    
+            return Object.assign({}, modules[name]);
+        }
+
+        function getModules() {
+            return modules;
+        }
+        
+        function removeModule(name) {
+            if (!this.hasModule(name)) return false;
+    
+            // add code for non configurable properties or a try/catch if in strict mode
+            delete modules[name];
+    
+            return true;
+        }
+
+        this.addModule = addModule;
+        this.hasModule = hasModule;
+        this.getModule = getModule;
+        this.getModules = getModules;
+        this.removeModule = removeModule;
+    }
+}
+
+module.exports = new factory();

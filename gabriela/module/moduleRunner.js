@@ -53,18 +53,18 @@ async function runMiddleware(state, middleware) {
 }
 
 function factory() {
-    function create(job) {
-        return (function(job) {
+    function create(mdl) {
+        return (function(mdl) {
             const state = {};
 
             async function run(childState) {
                 if (childState) state.child = childState;
 
                 const middleware = [
-                    job.preLogicTransformers,
-                    job.validators,
-                    job.jobLogic,
-                    job.postLogicTransformers,
+                    mdl.preLogicTransformers,
+                    mdl.validators,
+                    mdl.moduleLogic,
+                    mdl.postLogicTransformers,
                 ];
 
                 for (const m of middleware) {
@@ -77,14 +77,14 @@ function factory() {
                             }
 
                             if (err.message === 'task') {
-                                throw new Error(`Invalid ${job.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
+                                throw new Error(`Invalid ${mdl.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
                             }
                         }
 
                         throw err;
                     }
-
                 }
+
             }
 
             function getResult() {
@@ -97,13 +97,13 @@ function factory() {
             }
 
             return new instance();
-        }(job));
+        }(mdl));
     }
 
     this.create = create;
 }
 
 const inst = new factory();
-inst.constructor.name = 'jobRunner';
+inst.constructor.name = 'moduleRunner';
 
 module.exports = inst;

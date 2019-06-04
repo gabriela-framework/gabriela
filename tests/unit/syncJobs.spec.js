@@ -9,55 +9,55 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Job tests | ', () => {
-    it('should create a job and treat it as a collection', () => {
-        const name = 'jobName';
-        const job = {
+describe('Module tests | ', () => {
+    it('should create a module and treat it as a collection', () => {
+        const name = 'moduleName';
+        const mdl = {
             name: name,
             preLogicTransformers: [function() {}, function() {}],
             validators: [function() {}],
-            jobLogic: [function() {}, function() {}, function() {}],
+            moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        expect(g.hasJob(name)).to.be.true;
-        expect(g.getJob(name)).to.be.a('object');
+        expect(g.hasModule(name)).to.be.true;
+        expect(g.getModule(name)).to.be.a('object');
 
-        job.name = 'someOtherName';
+        mdl.name = 'someOtherName';
 
-        const immutableJob = g.getJob(name);
+        const immutableModule = g.getModule(name);
 
-        expect(immutableJob.name).to.be.equals(name);
+        expect(immutableModule.name).to.be.equals(name);
 
-        expect(immutableJob.preLogicTransformers).to.be.a('array');
-        expect(immutableJob.validators).to.be.a('array');
-        expect(immutableJob.jobLogic).to.be.a('array');
+        expect(immutableModule.preLogicTransformers).to.be.a('array');
+        expect(immutableModule.validators).to.be.a('array');
+        expect(immutableModule.moduleLogic).to.be.a('array');
 
-        expect(immutableJob.preLogicTransformers.length).to.be.equal(2);
+        expect(immutableModule.preLogicTransformers.length).to.be.equal(2);
         
-        for (const t of immutableJob.preLogicTransformers) {
+        for (const t of immutableModule.preLogicTransformers) {
             expect(t).to.be.a('function');
         }
 
-        expect(immutableJob.validators.length).to.be.equal(1);
+        expect(immutableModule.validators.length).to.be.equal(1);
         
-        for (const t of immutableJob.validators) {
+        for (const t of immutableModule.validators) {
             expect(t).to.be.a('function');
         }
 
-        expect(immutableJob.jobLogic.length).to.be.equal(3);
+        expect(immutableModule.moduleLogic.length).to.be.equal(3);
         
-        for (const t of immutableJob.jobLogic) {
+        for (const t of immutableModule.moduleLogic) {
             expect(t).to.be.a('function');
         }
 
-        expect(g.removeJob(name)).to.be.true;
+        expect(g.removeModule(name)).to.be.true;
 
-        expect(g.hasJob(name)).to.be.false;
-        expect(g.getJob(name)).to.be.a('undefined');
+        expect(g.hasModule(name)).to.be.false;
+        expect(g.getModule(name)).to.be.a('undefined');
     });
 
     it('should assert that next proceedes to next middleware with an async function inside middleware', (done) => {
@@ -73,22 +73,22 @@ describe('Job tests | ', () => {
 
         const module = {
             name: name,
-            jobLogic: [googleRequest]
+            moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(module);
+        g.addModule(module);
 
-        g.runJob(g.getJob(name)).then((jobResult) => {
-            expect(jobResult).to.have.property('googleBody');
+        g.runModule(g.getModule(name)).then((moduleResult) => {
+            expect(moduleResult).to.have.property('googleBody');
 
             done();
         });
     });
 
     it('should assert that skip skips the single middleware and not all', (done) => {
-        const name = 'jobName';
+        const name = 'moduleName';
         const model = {
             name: 'name',
             lastName: 'lastName',
@@ -117,35 +117,35 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const jobLogic = function(state, next) {
+        const moduleLogic = function(state, next) {
             state.model.executed = true;
 
             next();
         }
 
-        const job = {
+        const mdl = {
             name: name,
             preLogicTransformers: [modelCreationTransformer, ageTransformer, addOption1Property, addOption2Property],
             validators: [],
-            jobLogic: [jobLogic],
+            moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        g.runJob(g.getJob(name)).then((jobResult) => {
-            expect(jobResult.model.name).to.be.equal(model.name);
-            expect(jobResult.model.lastName).to.be.equal(model.lastName);
-            expect(jobResult.model.age).to.be.equal(32);
-            expect(jobResult.model.executed).to.be.true;
+        g.runModule(g.getModule(name)).then((moduleResult) => {
+            expect(moduleResult.model.name).to.be.equal(model.name);
+            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
+            expect(moduleResult.model.age).to.be.equal(32);
+            expect(moduleResult.model.executed).to.be.true;
 
             done();
         });
     });
 
     it('should assert that done skips all middleware and not just the currently executing', (done) => {
-        const name = 'jobName';
+        const name = 'moduleName';
         const model = {
             name: 'name',
             lastName: 'lastName',
@@ -174,37 +174,37 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const jobLogic = function(state, next) {
+        const moduleLogic = function(state, next) {
             state.model.executed = true;
 
             next();
         }
 
-        const job = {
+        const mdl = {
             name: name,
             preLogicTransformers: [modelCreationTransformer, ageTransformer, addOption1Property, addOption2Property],
             validators: [],
-            jobLogic: [jobLogic],
+            moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        g.runJob(g.getJob(name)).then((jobResult) => {
-            expect(jobResult.model.name).to.be.equal(model.name);
-            expect(jobResult.model.lastName).to.be.equal(model.lastName);
-            expect(jobResult.model.age).to.be.equal(32);
-            expect(jobResult.model).to.not.have.property('executed');
-            expect(jobResult.model).to.not.have.property('option1');
-            expect(jobResult.model).to.not.have.property('option2');
+        g.runModule(g.getModule(name)).then((moduleResult) => {
+            expect(moduleResult.model.name).to.be.equal(model.name);
+            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
+            expect(moduleResult.model.age).to.be.equal(32);
+            expect(moduleResult.model).to.not.have.property('executed');
+            expect(moduleResult.model).to.not.have.property('option1');
+            expect(moduleResult.model).to.not.have.property('option2');
 
             done();
         });
     });
 
     it('should assert that preLogicTransformers create and modify the model', () => {
-        const name = 'jobName';
+        const name = 'moduleName';
         const model = {
             name: 'name',
             lastName: 'lastName',
@@ -223,26 +223,26 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const job = {
+        const mdl = {
             name: name,
             preLogicTransformers: [modelCreationTransformer, ageTransformer],
             validators: [],
-            jobLogic: [],
+            moduleLogic: [],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        g.runJob(g.getJob(name)).then((jobResult) => {
-            expect(jobResult.model.name).to.be.equal(model.name);
-            expect(jobResult.model.lastName).to.be.equal(model.lastName);
-            expect(jobResult.model.age).to.be.equal(25);
+        g.runModule(g.getModule(name)).then((moduleResult) => {
+            expect(moduleResult.model.name).to.be.equal(model.name);
+            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
+            expect(moduleResult.model.age).to.be.equal(25);
         });
     })
 
     it('should assert that validators validate the model', () => {
-        const name = 'jobName';
+        const name = 'moduleName';
         const model = {
             name: 'name',
             lastName: 'lastName',
@@ -263,24 +263,24 @@ describe('Job tests | ', () => {
             return next();
         }
 
-        const job = {
+        const mdl = {
             name: name,
             preLogicTransformers: [modelCreationTransformer],
             validators: [ageValidator],
-            jobLogic: [],
+            moduleLogic: [],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        g.runJob(g.getJob(name)).then(() => assert.fail('This test should be an error')).catch((err) => {
+        g.runModule(g.getModule(name)).then(() => assert.fail('This test should be an error')).catch((err) => {
             expect(err.message).to.be.equal('Invalid models age');
         });
     });
 
     it('should assert that the main logic execution is executed', function() {
-        const name = 'jobName';
+        const name = 'moduleName';
         const model = {
             name: 'name',
             lastName: 'lastName',
@@ -299,30 +299,30 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const job = {
+        const mdl = {
             name: name,
             preLogicTransformers: [modelCreationTransformer],
             validators: [],
-            jobLogic: [logicExec],
+            moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(job);
+        g.addModule(mdl);
 
-        g.runJob(g.getJob(name)).then((jobResult) => {
-            expect(jobResult.model.name).to.be.equal(model.name);
-            expect(jobResult.model.lastName).to.be.equal(model.lastName);
-            expect(jobResult.model.age).to.be.equal(32);
-            expect(jobResult.model).to.have.property('executed');
-            expect(jobResult.model.executed).to.be.true;
+        g.runModule(g.getModule(name)).then((moduleResult) => {
+            expect(moduleResult.model.name).to.be.equal(model.name);
+            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
+            expect(moduleResult.model.age).to.be.equal(32);
+            expect(moduleResult.model).to.have.property('executed');
+            expect(moduleResult.model.executed).to.be.true;
         });
     });
 
-    it('should contain all jobs in a tree', () => {
+    it('should contain all modules in a tree', () => {
         const name = 'user';
-        const profileJobName = 'profile';
-        const userSettingsJobName = 'userSettings';
+        const profileModuleName = 'profile';
+        const userSettingsModuleName = 'userSettings';
 
         const user = {
             email: 'email@gmail.com',
@@ -384,45 +384,45 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const profileJob = {
-            name: profileJobName,
+        const profileModule = {
+            name: profileModuleName,
             preLogicTransformers: [profileChanged],
             validators: [timezoneValidator],
-            appLogic: [],
+            moduleLogic: [],
         };
 
-        const userSettingsJob = {
-            name: userSettingsJobName,
+        const userSettingsModule = {
+            name: userSettingsModuleName,
             preLogicTransformers: [colorSettingChange],
             validators: [colorSettingValidator],
-            appLogic: []
+            moduleLogic: []
         }
 
-        const parentJob = {
+        const parentModule = {
             name: name,
-            jobs: [profileJob, userSettingsJob],
+            modules: [profileModule, userSettingsModule],
             preLogicTransformers: [userCreationTransformer],
             validators: [],
-            jobLogic: [logicExec],
+            moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(parentJob);
+        g.addModule(parentModule);
 
         expect(g.parent).to.be.null;
         expect(g.child).to.be.a('object');
         expect(g.child.parent).to.be.a('object');
 
-        expect(g.hasJob(name)).to.be.true;
-        expect(g.child.hasJob(profileJobName)).to.be.true;
-        expect(g.child.hasJob(userSettingsJobName)).to.be.true;
+        expect(g.hasModule(name)).to.be.true;
+        expect(g.child.hasModule(profileModuleName)).to.be.true;
+        expect(g.child.hasModule(userSettingsModuleName)).to.be.true;
     });
 
-    it('should run all parent/child jobs', () => {
+    it('should run all parent/child modules', () => {
         const name = 'user';
-        const profileJobName = 'profile';
-        const userSettingsJobName = 'userSettings';
+        const profileModuleName = 'profile';
+        const userSettingsModuleName = 'userSettings';
 
         const user = {
             email: 'email@gmail.com',
@@ -509,40 +509,40 @@ describe('Job tests | ', () => {
             next();
         }
 
-        const profileJob = {
-            name: profileJobName,
+        const profileModule = {
+            name: profileModuleName,
             preLogicTransformers: [profileCreationTransformer, profileChanged],
             validators: [timezoneValidator],
-            jobLogic: [logicExec],
+            moduleLogic: [logicExec],
         };
 
-        const userSettingsJob = {
-            name: userSettingsJobName,
+        const userSettingsModule = {
+            name: userSettingsModuleName,
             preLogicTransformers: [userSettingsCreationTransformer, colorSettingChange],
             validators: [colorSettingValidator],
-            jobLogic: [logicExec]
+            moduleLogic: [logicExec]
         }
 
-        const parentJob = {
+        const parentModule = {
             name: name,
-            jobs: [profileJob, userSettingsJob],
+            modules: [profileModule, userSettingsModule],
             preLogicTransformers: [userCreationTransformer],
             postLogicTransformers: [postLogicTransformer],
             validators: [],
-            jobLogic: [logicExec],
+            moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createBasicJob();
+        const g = gabriela.createModule();
 
-        g.addJob(parentJob);
+        g.addModule(parentModule);
 
-        g.runJob(parentJob).then((result) => {
-            expect(result).to.have.property('user')
-            expect(result.user.executed).to.be.true;
-            expect(result.user).to.have.property('profile');
-            expect(result.user.profile.executed).to.be.true;
-            expect(result.user).to.have.property('userSettings');
-            expect(result.user.userSettings.executed).to.be.true;
+        g.runModule(parentModule).then((moduleResult) => {
+            expect(moduleResult).to.have.property('user')
+            expect(moduleResult.user.executed).to.be.true;
+            expect(moduleResult.user).to.have.property('profile');
+            expect(moduleResult.user.profile.executed).to.be.true;
+            expect(moduleResult.user).to.have.property('userSettings');
+            expect(moduleResult.user.userSettings.executed).to.be.true;
         });
     });
 });

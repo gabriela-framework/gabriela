@@ -1,10 +1,10 @@
-function factory(job) {
-    const t = job.preLogicTransformers;
-    const v = job.validators;
-    const p = job.postLogicTransformers;
-    const e = job.jobLogic;
-    const n = job.name;
-    const j = job.jobs;
+function factory(mdl) {
+    const t = mdl.preLogicTransformers;
+    const v = mdl.validators;
+    const p = mdl.postLogicTransformers;
+    const e = mdl.moduleLogic;
+    const n = mdl.name;
+    const j = mdl.modules;
 
     return {
         get preLogicTransformers() {
@@ -19,7 +19,7 @@ function factory(job) {
             return v;
         },
 
-        get jobLogic() {
+        get moduleLogic() {
             return e;
         },
 
@@ -27,7 +27,7 @@ function factory(job) {
             return n;
         },
 
-        get jobs() {
+        get modules() {
             return j;
         }
     }
