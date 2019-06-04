@@ -1,41 +1,37 @@
 function factory() {
-    let options = {
-        next: false,
-        skip: false,
-        done: false,
-    }
+    let executingTask = null;
 
     function next() {
-        options.next = true;
+        executingTask = new Promise((resolve, reject) => {
+            resolve('next');
+        });
     }
 
     function skip() {
-        options.skip = true;
+        executingTask =  new Promise((resolve, reject) => {
+            resolve('skip');
+        });
     }
 
     function done() {
-        options.done = true;
+        executingTask = new Promise((resolve, reject) => {
+            resolve('done');
+        });
     }
 
     function reset() {
-        for (const option in options) {
-            options[option] = false;
-        }
+        executingTask = null;
     }
 
-    function getOption() {
-        for (const option in options) {
-            if (options[option]) {
-                return option;
-            }
-        }
+    function getTask() {
+        return executingTask;
     }
 
     this.next = next;
     this.done = done;
     this.skip = skip;
     this.reset = reset;
-    this.getOption = getOption;
+    this.getTask = getTask;
 }
 
 module.exports = new factory();

@@ -1,6 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise-native');
+const requestPromise = require('request-promise');
 const assert = require('assert');
 
 const it = mocha.it;
@@ -60,11 +60,11 @@ describe('Job tests | ', () => {
         expect(g.getJob(name)).to.be.a('undefined');
     });
 
-    it('should assert that next proceedes to next middleware with an async function inside middleware', () => {
+    it('should assert that next proceedes to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('https://www.google.com').then((body) => {
+            requestPromise.get('https://www.google.com/').then((body) => {
                 state.googleBody = body;
 
                 next();
@@ -82,10 +82,12 @@ describe('Job tests | ', () => {
 
         g.runJob(g.getJob(name)).then((jobResult) => {
             expect(jobResult).to.have.property('googleBody');
+
+            done();
         });
     });
 
-    it('should assert that skip skips the single middleware and not all', () => {
+    it('should assert that skip skips the single middleware and not all', (done) => {
         const name = 'jobName';
         const model = {
             name: 'name',
@@ -137,10 +139,12 @@ describe('Job tests | ', () => {
             expect(jobResult.model.lastName).to.be.equal(model.lastName);
             expect(jobResult.model.age).to.be.equal(32);
             expect(jobResult.model.executed).to.be.true;
+
+            done();
         });
     });
 
-    it('should assert that done skips all middleware and not just the currently executing', () => {
+    it('should assert that done skips all middleware and not just the currently executing', (done) => {
         const name = 'jobName';
         const model = {
             name: 'name',
@@ -194,6 +198,8 @@ describe('Job tests | ', () => {
             expect(jobResult.model).to.not.have.property('executed');
             expect(jobResult.model).to.not.have.property('option1');
             expect(jobResult.model).to.not.have.property('option2');
+
+            done();
         });
     });
 

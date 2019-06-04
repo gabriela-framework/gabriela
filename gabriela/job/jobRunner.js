@@ -5,29 +5,31 @@ async function runMiddleware(state, middleware) {
     if (middleware && middleware.length > 0) {
         const generator = createGenerator(middleware);
 
-        let t = null;
-
         async function recursiveMiddlewareExec(exec) {
             if (!exec) {
                 return;
             }
 
-            const asyncFunc = async () => {
-                exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done])
-            }
+            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done])
 
-            await asyncFunc();
+            let task;
 
-            const option = taskRunner.getOption();
+            var wait = () => new Promise((resolve, reject)=> {
+                const check = () => {
+                    task = taskRunner.getTask();
+                    if (task) {
+                        return resolve(task);
+                    }
 
-            if (!option) {
-                const error = new Error(`'next', 'done' or 'skip' function has to be called. You have to call one of these functions (based on your logic) in order for the next middleware to be called`);
-                error.internal = true;
-            }
+                    setTimeout(check, 1);
+                }
 
-            taskRunner.reset();
+                setTimeout(check, 1);
+            });
 
-            switch (option) {
+            task = await wait();
+
+            switch (task) {
                 case 'skip': {
                     return;
                 }
@@ -72,6 +74,10 @@ function factory() {
                         if (err.internal) {
                             if (err.message === 'done') {
                                 return;
+                            }
+
+                            if (err.message === 'task') {
+                                throw new Error(`Invalid ${job.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
                             }
                         }
 

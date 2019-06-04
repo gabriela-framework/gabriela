@@ -15,6 +15,6 @@
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.7"
+    "request-promise": "^4.2.4"
   }
 }
