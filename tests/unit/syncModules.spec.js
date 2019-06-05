@@ -60,33 +60,6 @@ describe('Module tests | ', () => {
         expect(g.getModule(name)).to.be.a('undefined');
     });
 
-    it('should assert that next proceedes to next middleware with an async function inside middleware', (done) => {
-        const name = 'googleCall';
-
-        const googleRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
-                state.googleBody = body;
-
-                next();
-            });
-        }
-
-        const module = {
-            name: name,
-            moduleLogic: [googleRequest]
-        };
-
-        const g = gabriela.createModule();
-
-        g.addModule(module);
-
-        g.runModule(g.getModule(name)).then((moduleResult) => {
-            expect(moduleResult).to.have.property('googleBody');
-
-            done();
-        });
-    });
-
     it('should assert that skip skips the single middleware and not all', (done) => {
         const name = 'moduleName';
         const model = {

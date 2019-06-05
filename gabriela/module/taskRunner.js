@@ -1,37 +1,33 @@
-function factory() {
+function TaskRunner() {
     let executingTask = null;
 
     function next() {
-        executingTask = new Promise((resolve, reject) => {
-            resolve('next');
-        });
+        executingTask = 'next';
     }
 
     function skip() {
-        executingTask =  new Promise((resolve, reject) => {
-            resolve('skip');
-        });
+        executingTask = 'skip';
     }
 
     function done() {
-        executingTask = new Promise((resolve, reject) => {
-            resolve('done');
-        });
+        executingTask = 'done'
     }
 
-    function reset() {
+    function resolve() {
         executingTask = null;
-    }
-
-    function getTask() {
-        return executingTask;
     }
 
     this.next = next;
     this.done = done;
     this.skip = skip;
-    this.reset = reset;
-    this.getTask = getTask;
+    this.resolve = resolve;
+    this.getTask = () => executingTask;
+}
+
+function factory() {
+    this.create = function() {
+        return new TaskRunner();
+    }
 }
 
 module.exports = new factory();

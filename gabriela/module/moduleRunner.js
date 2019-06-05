@@ -1,38 +1,40 @@
-const taskRunner = require('./taskRunner');
+const taskRunnerFactory = require('./taskRunner');
 const createGenerator = require('../util/createGenerator');
 
 async function runMiddleware(state, middleware) {
     if (middleware && middleware.length > 0) {
         const generator = createGenerator(middleware);
-
+        const taskRunner = taskRunnerFactory.create();
+        
         async function recursiveMiddlewareExec(exec) {
             if (!exec) {
                 return;
             }
 
-            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done])
+            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done]);
 
-            let task;
-
-            var wait = () => new Promise((resolve, reject)=> {
+            const wait = () => new Promise((resolve, reject)=> {
                 const check = () => {
-                    task = taskRunner.getTask();
+                    const task = taskRunner.getTask();
                     if (task) {
                         return resolve(task);
                     }
 
-                    setTimeout(check, 1);
+                    setTimeout(check, 0);
                 }
 
-                setTimeout(check, 1);
+                setTimeout(check, 0);
             });
 
-            task = await wait();
+            const task = await wait();  
+
+            taskRunner.resolve();
 
             switch (task) {
                 case 'skip': {
                     return;
                 }
+
                 case 'done': {
                     const error = new Error('done');
                     error.internal = true;
@@ -84,7 +86,6 @@ function factory() {
                         throw err;
                     }
                 }
-
             }
 
             function getResult() {
