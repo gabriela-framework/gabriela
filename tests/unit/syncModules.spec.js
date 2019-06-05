@@ -518,4 +518,25 @@ describe('Module tests | ', () => {
             expect(moduleResult.user.userSettings.executed).to.be.true;
         });
     });
+
+    it('should catch an exception thrown inside the middleware function', (done) => {
+        const throwsException = function(state, next, skip, done, throwException) {
+            throwException(new Error('my exception'));
+        };
+
+        const mdl = {
+            name: 'name',
+            preLogicTransformers: [throwsException],
+        };
+
+        const g = gabriela.createModule();
+
+        g.addModule(mdl);
+
+        g.runModule(mdl).catch((err) => {
+            expect(err.message).to.be.equal('my exception');
+
+            done();
+        })
+    })
 });

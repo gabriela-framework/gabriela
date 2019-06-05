@@ -9,13 +9,11 @@ function factory() {
         const modules = {};
 
         function addModule(mdl) {
-            if (mdl.hasOwnProperty(mdl.name)) {
+            if (modules.hasOwnProperty(mdl.name)) {
                 throw new Error(`Module with name '${mdl.name}' already exists`);
             }
 
-            if (!modules.hasOwnProperty(mdl.name)) {
-                modules[mdl.name] = Object.assign({}, new Module(mdl));
-            }
+            modules[mdl.name] = Object.assign({}, new Module(mdl));
         }
     
         function hasModule(nameOrModuleObject) {

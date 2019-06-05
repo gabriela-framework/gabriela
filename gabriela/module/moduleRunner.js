@@ -11,7 +11,7 @@ async function runMiddleware(state, middleware) {
                 return;
             }
 
-            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done]);
+            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done, taskRunner.throwException]);
 
             const wait = () => new Promise((resolve, reject)=> {
                 const check = () => {
@@ -28,20 +28,31 @@ async function runMiddleware(state, middleware) {
 
             const task = await wait();  
 
-            taskRunner.resolve();
-
             switch (task) {
                 case 'skip': {
+                    taskRunner.resolve();
+                    
                     return;
                 }
 
-                case 'done': {
+                case 'done': {   
+                    taskRunner.resolve();
+
                     const error = new Error('done');
                     error.internal = true;
 
                     throw error;
                 }
+
+                case 'error': {
+                    const error = taskRunner.getValue();
+                    taskRunner.resolve();
+
+                    throw error;
+                }
             }
+
+            taskRunner.resolve();
 
             const next = generator.next();
 

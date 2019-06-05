@@ -1,5 +1,6 @@
 function TaskRunner() {
     let executingTask = null;
+    let value = null;
 
     function next() {
         executingTask = 'next';
@@ -13,13 +14,25 @@ function TaskRunner() {
         executingTask = 'done'
     }
 
+    function throwException(err) {
+        executingTask = 'error';
+        value = err;
+    }
+
+    function getValue() {
+        return value;
+    }
+
     function resolve() {
         executingTask = null;
+        value = null;
     }
 
     this.next = next;
     this.done = done;
     this.skip = skip;
+    this.throwException = throwException;
+    this.getValue = getValue;
     this.resolve = resolve;
     this.getTask = () => executingTask;
 }
