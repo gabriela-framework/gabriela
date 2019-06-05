@@ -1,7 +1,8 @@
 const taskRunnerFactory = require('./taskRunner');
 const createGenerator = require('../util/createGenerator');
+const getArgsNames = require('../util/arguments');
 
-async function runMiddleware(state, middleware) {
+async function runMiddleware(state, middleware, http) {
     if (middleware && middleware.length > 0) {
         const generator = createGenerator(middleware);
         const taskRunner = taskRunnerFactory.create();
@@ -11,7 +12,21 @@ async function runMiddleware(state, middleware) {
                 return;
             }
 
-            exec.call(null, ...[state, taskRunner.next, taskRunner.skip, taskRunner.done, taskRunner.throwException]);
+            const argNames = getArgsNames(exec);
+
+            const args = [];
+
+            for (const arg of argNames) {
+                if (arg === 'state') {
+                    args.push(state);
+                } else if (arg === 'http') {
+                    args.push(http);
+                } else {
+                    args.push(taskRunner[arg]);
+                }
+            }
+
+            exec.call(null, ...args);
 
             const wait = () => new Promise((resolve, reject)=> {
                 const check = () => {
@@ -66,8 +81,8 @@ async function runMiddleware(state, middleware) {
 }
 
 function factory() {
-    function create(mdl) {
-        return (function(mdl) {
+    function create(mdl, http) {
+        return (function(mdl, http) {
             const state = {};
 
             async function run(childState) {
@@ -82,7 +97,7 @@ function factory() {
 
                 for (const m of middleware) {
                     try {
-                        await runMiddleware.call(null, ...[state, m]);
+                        await runMiddleware.call(null, ...[state, m, http]);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {
@@ -109,7 +124,7 @@ function factory() {
             }
 
             return new instance();
-        }(mdl));
+        }(mdl, http));
     }
 
     this.create = create;

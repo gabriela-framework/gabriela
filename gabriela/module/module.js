@@ -5,6 +5,7 @@ function factory(mdl) {
     const e = mdl.moduleLogic;
     const n = mdl.name;
     const j = mdl.modules;
+    const http = mdl.http;
 
     return {
         get preLogicTransformers() {
@@ -29,8 +30,17 @@ function factory(mdl) {
 
         get modules() {
             return j;
+        },
+
+        get http() {
+            return http;
         }
     }
 }
 
-module.exports = factory;
+module.exports = function(mdl) {
+    const inst = new factory(mdl);
+    inst.constructor.name = 'Module';
+
+    return inst;
+}

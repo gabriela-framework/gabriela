@@ -6,7 +6,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
+const ModuleTree = require('../../gabriela/moduleTree');
 
 describe('Async modules test | ', () => {
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
@@ -25,7 +25,7 @@ describe('Async modules test | ', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -45,14 +45,14 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const mdl = {
             name: name,
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -102,7 +102,7 @@ describe('Async modules test | ', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -155,7 +155,7 @@ describe('Async modules test | ', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -194,7 +194,7 @@ describe('Async modules test | ', () => {
             postLogicTransformers: []
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 

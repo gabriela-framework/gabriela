@@ -1,13 +1,20 @@
-const BasicModule = require('./basicModule');
+const ModuleTree = require('./moduleTree');
+const Server = require('./server/server');
+const is = require('./util/is');
 
-function factory() {
-    this.createModule = function() {
-        return new BasicModule();
+const moduleTree = new ModuleTree();
+module.exports = {
+    asServer: (options) => {
+        const server = new Server(options, moduleTree);
+
+        return Object.assign({}, {
+            addModule: moduleTree.addModule,
+            runServer: server.listen.bind(server),
+            closeServer: server.close,
+        });
+    },
+
+    asRunner: function() {
+
     }
-
-    this.asServer = function() {
-        
-    }
-}
-
-module.exports = new factory();
+};

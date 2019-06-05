@@ -7,9 +7,9 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
+const ModuleTree = require('../../gabriela/ModuleTree');
 
-describe('Module tests | ', () => {
+describe('Module tree tests | ', () => {
     it('should create a module and treat it as a collection', () => {
         const name = 'moduleName';
         const mdl = {
@@ -19,7 +19,7 @@ describe('Module tests | ', () => {
             moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -103,7 +103,7 @@ describe('Module tests | ', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -160,7 +160,7 @@ describe('Module tests | ', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -203,7 +203,7 @@ describe('Module tests | ', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -243,7 +243,7 @@ describe('Module tests | ', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -279,7 +279,7 @@ describe('Module tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 
@@ -379,7 +379,7 @@ describe('Module tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(parentModule);
 
@@ -505,7 +505,7 @@ describe('Module tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(parentModule);
 
@@ -529,7 +529,7 @@ describe('Module tests | ', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = gabriela.createModule();
+        const g = new ModuleTree();
 
         g.addModule(mdl);
 

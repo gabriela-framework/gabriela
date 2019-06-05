@@ -22,13 +22,6 @@ async function runTree(tree) {
 }
 
 function instance() {
-    const jc = ModuleCollection.create();
-
-    const tree = [];
-
-    this.parent = null;
-    this.child = null;
-
     this.addModule = (mdl) => {
         if (mdl.modules) {
             const g = new factory();
@@ -36,7 +29,7 @@ function instance() {
             this.child = g;
             g.parent = this;
 
-            tree.push(g);
+            this.tree.push(g);
 
             for (const m of mdl.modules) {
                 if (m.modules) this.addModule(m);
@@ -45,28 +38,35 @@ function instance() {
             }
         }
 
-        jc.addModule(mdl);
+        this.jc.addModule(mdl);
     }
 
-    this.hasModule = jc.hasModule;
-    this.getModule = jc.getModule;
-    this.getModules = jc.getModules;
-    this.removeModule = jc.removeModule;
+    async function runModule(mdl, http) {
+        const runner = ModuleRunner.create(mdl, http);
 
-    this.runModule = runModule;
-
-    async function runModule(module) {
-        const runner = ModuleRunner.create(module);
-
-        await runner.run(await runTree(tree));
+        await runner.run(await runTree(this.tree));
 
         return runner.getResult();
     }
+
+    this.jc = ModuleCollection.create();
+
+    this.tree = [];
+
+    this.parent = null;
+    this.child = null;
+
+    this.hasModule = this.jc.hasModule;
+    this.getModule = this.jc.getModule;
+    this.getModules = this.jc.getModules;
+    this.removeModule = this.jc.removeModule;
+
+    this.runModule = runModule;
 }
 
 function factory() {
     const inst = new instance();
-    inst.constructor.name = 'basicJob';
+    inst.constructor.name = 'ModuleTree';
 
     return inst;
 }
