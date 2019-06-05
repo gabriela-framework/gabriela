@@ -1,6 +1,5 @@
 const ModuleTree = require('./moduleTree');
 const Server = require('./server/server');
-const is = require('./util/is');
 
 const moduleTree = new ModuleTree();
 module.exports = {

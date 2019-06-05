@@ -3,7 +3,7 @@ const Module = require('./module');
 function factory() {
     this.create = function() {
         return new instance();
-    }
+    };
 
     function instance() {
         const modules = {};
@@ -21,7 +21,7 @@ function factory() {
         }
     
         function getModule(name) {
-            if (!this.hasModule(name)) {
+            if (!hasModule(name)) {
                 return undefined;
             }
     
@@ -33,7 +33,7 @@ function factory() {
         }
         
         function removeModule(name) {
-            if (!this.hasModule(name)) return false;
+            if (!hasModule(name)) return false;
     
             // add code for non configurable properties or a try/catch if in strict mode
             delete modules[name];

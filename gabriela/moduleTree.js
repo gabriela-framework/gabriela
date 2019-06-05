@@ -1,65 +1,65 @@
 const ModuleCollection = require('./module/moduleCollection');
 const ModuleRunner = require('./module/moduleRunner');
 
-async function runTree(tree) {
-    let childState = null;
-    if (tree.length > 0) {
-        for (let a = 0; a < tree.length; a++) {
-            const gabriela = tree[a];
-            const modules = gabriela.getModules();
+function instance() {
+    const jc = ModuleCollection.create();
+    const tree = [];
 
-            for (const moduleName in modules) {
-                if (!childState) childState = {};
+    async function runTree(tree) {
+        let childState = null;
+        if (tree.length > 0) {
+            for (let a = 0; a < tree.length; a++) {
+                const gabriela = tree[a];
+                const modules = gabriela.getModules();
 
-                const mdl = modules[moduleName];
+                for (const moduleName in modules) {
+                    if (!childState) childState = {};
 
-                childState[mdl.name] = await gabriela.runModule(mdl);
+                    const mdl = modules[moduleName];
+
+                    childState[mdl.name] = await gabriela.runModule(mdl);
+                }
             }
         }
+
+        return childState;
     }
 
-    return childState;
-}
-
-function instance() {
-    this.addModule = (mdl) => {
+    function addModule(mdl) {
         if (mdl.modules) {
-            const g = new factory();
+            const moduleTree = new factory();
 
-            this.child = g;
-            g.parent = this;
+            this.child = moduleTree;
+            moduleTree.parent = this;
 
-            this.tree.push(g);
+            tree.push(moduleTree);
 
             for (const m of mdl.modules) {
                 if (m.modules) this.addModule(m);
 
-                g.addModule(m);
+                moduleTree.addModule(m);
             }
         }
 
-        this.jc.addModule(mdl);
-    }
+        jc.addModule(mdl);
+    };
 
     async function runModule(mdl, http) {
         const runner = ModuleRunner.create(mdl, http);
 
-        await runner.run(await runTree(this.tree));
+        await runner.run(await runTree(tree));
 
         return runner.getResult();
     }
 
-    this.jc = ModuleCollection.create();
-
-    this.tree = [];
-
     this.parent = null;
     this.child = null;
 
-    this.hasModule = this.jc.hasModule;
-    this.getModule = this.jc.getModule;
-    this.getModules = this.jc.getModules;
-    this.removeModule = this.jc.removeModule;
+    this.addModule = addModule;
+    this.hasModule = jc.hasModule;
+    this.getModule = jc.getModule;
+    this.getModules = jc.getModules;
+    this.removeModule = jc.removeModule;
 
     this.runModule = runModule;
 }

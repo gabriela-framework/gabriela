@@ -8,18 +8,20 @@ function getArgsNames(func) {
   return result;
 }
 
-function bindArgs(fn, values, specialCb) {
+function getArgs(fn, values, specialCb) {
     const argNames = getArgsNames(fn);
 
     const args = [];
 
     for (const arg of argNames) {
         if (!values.hasOwnProperty(arg)) {
-            args.push(specialCb.call(null, ...[fn, arg]));
+            args.push(specialCb.call(null, ...[arg]));
+        } else {
+            args.push(values[arg]);
         }
     }
 
     return args;
 }
 
-module.exports = bindArgs;
+module.exports = getArgs;

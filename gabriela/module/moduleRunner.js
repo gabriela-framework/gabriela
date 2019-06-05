@@ -1,6 +1,6 @@
 const taskRunnerFactory = require('./taskRunner');
 const createGenerator = require('../util/createGenerator');
-const getArgsNames = require('../util/arguments');
+const getArgs = require('../util/getArgs');
 
 async function runMiddleware(state, middleware, http) {
     if (middleware && middleware.length > 0) {
@@ -12,19 +12,20 @@ async function runMiddleware(state, middleware, http) {
                 return;
             }
 
-            const argNames = getArgsNames(exec);
-
-            const args = [];
-
-            for (const arg of argNames) {
-                if (arg === 'state') {
-                    args.push(state);
-                } else if (arg === 'http') {
-                    args.push(http);
-                } else {
-                    args.push(taskRunner[arg]);
+            const args = getArgs(exec, {
+                next: taskRunner.next,
+                done: taskRunner.done,
+                skip: taskRunner.skip,
+                throwException: taskRunner.throwException,
+            }, (argName) => {
+                if (argName === 'state') {
+                    return state;
                 }
-            }
+
+                if (argName === 'http') {
+                    return http;
+                }
+            });
 
             exec.call(null, ...args);
 
