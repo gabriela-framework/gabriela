@@ -8,6 +8,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const ModuleTree = require('../../gabriela/ModuleTree');
+const gabriela = require('../../gabriela/gabriela');
 
 describe('Module tree tests | ', () => {
     it('should create a module and treat it as a collection', () => {
@@ -19,7 +20,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -72,29 +73,29 @@ describe('Module tree tests | ', () => {
             state.model = model;
 
             next();
-        }
+        };
 
         const ageTransformer = function(state, next, skip) {
             return skip();
-        }
+        };
 
         const addOption1Property = function(state, next) {
             state.model.option1 = true;
 
             next();
-        }
+        };
 
         const addOption2Property = function(state, next) {
             state.model.option2 = true;
 
             next();
-        }
+        };
 
         const moduleLogic = function(state, next) {
             state.model.executed = true;
 
             next();
-        }
+        };
 
         const mdl = {
             name: name,
@@ -103,7 +104,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -160,7 +161,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -203,7 +204,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -243,7 +244,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -279,7 +280,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -379,7 +380,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(parentModule);
 
@@ -505,7 +506,7 @@ describe('Module tree tests | ', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(parentModule);
 
@@ -529,7 +530,7 @@ describe('Module tree tests | ', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 

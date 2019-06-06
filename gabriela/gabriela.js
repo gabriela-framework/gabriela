@@ -1,9 +1,10 @@
 const ModuleTree = require('./moduleTree');
 const Server = require('./server/server');
 
-const moduleTree = new ModuleTree();
 module.exports = {
     asServer: (options) => {
+        const moduleTree = new ModuleTree();
+
         const server = new Server(options, moduleTree);
 
         return Object.assign({}, {
@@ -14,6 +15,21 @@ module.exports = {
     },
 
     asRunner: function() {
+        const moduleTree = new ModuleTree();
+        const tree = {
+            parent: null,
+            child: null
+        };
 
+        const fn = {
+            addModule: moduleTree.addModule,
+            getModule: moduleTree.getModule,
+            hasModule: moduleTree.hasModule,
+            getModules: moduleTree.getModules,
+            removeModule: moduleTree.removeModule,
+            runModule: moduleTree.runModule,
+        };
+
+        return Object.assign({}, tree, fn);
     }
 };
