@@ -1,6 +1,19 @@
 const taskRunnerFactory = require('./taskRunner');
 const createGenerator = require('../util/createGenerator');
 const getArgs = require('../util/getArgs');
+const wait = require('../util/wait');
+
+function waitCheck(taskRunner) {
+    const task = taskRunner.getTask();
+    if (task) {
+        return {
+            success: true,
+            value: task,
+        }
+    }
+
+    return {success: false}
+}
 
 async function runMiddleware(state, middleware, http) {
     if (middleware && middleware.length > 0) {
@@ -29,20 +42,7 @@ async function runMiddleware(state, middleware, http) {
 
             exec.call(null, ...args);
 
-            const wait = () => new Promise((resolve, reject)=> {
-                const check = () => {
-                    const task = taskRunner.getTask();
-                    if (task) {
-                        return resolve(task);
-                    }
-
-                    setTimeout(check, 0);
-                }
-
-                setTimeout(check, 0);
-            });
-
-            const task = await wait();  
+            const task = await wait(waitCheck.bind(null, taskRunner));
 
             switch (task) {
                 case 'skip': {
