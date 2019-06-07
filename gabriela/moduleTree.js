@@ -42,7 +42,7 @@ function instance() {
         }
 
         jc.addModule(mdl);
-    };
+    }
 
     async function runModule(mdl, http) {
         const runner = ModuleRunner.create(mdl, http);
@@ -67,6 +67,8 @@ function instance() {
 function factory() {
     const inst = new instance();
     inst.constructor.name = 'ModuleTree';
+
+
 
     return inst;
 }

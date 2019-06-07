@@ -67,7 +67,7 @@ describe('Module tree tests | ', () => {
             name: 'name',
             lastName: 'lastName',
             age: 32
-        }
+        };
 
         const modelCreationTransformer = function(state, next) {
             state.model = model;

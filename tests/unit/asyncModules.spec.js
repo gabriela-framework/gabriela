@@ -63,7 +63,7 @@ describe('Async modules test | ', () => {
         });
     });
 
-    it(`it should assert that skip skips the rest of the middleware`, (done) => {
+    it(`should assert that skip skips the rest of the middleware`, (done) => {
         const name = 'googleCall';
 
         const firstRequest = function(state, next) {
@@ -72,7 +72,7 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const secondRequest = function(state, next, skip) {
             requestPromise.get('https://www.google.com/').then((body) => {
@@ -80,7 +80,7 @@ describe('Async modules test | ', () => {
 
                 skip();
             });
-        }
+        };
 
         const thirdRequest = function(state, next) {
             requestPromise.get('https://www.google.com/').then((body) => {
@@ -88,13 +88,13 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const postLogicTransformer = function(state, next) {
             state.postLogic = true;
 
             next();
-        }
+        };
 
         const mdl = {
             name: name,

@@ -15,6 +15,25 @@ function waitCheck(taskRunner) {
     return {success: false}
 }
 
+function callImplicitNext(args, taskRunner) {
+    const nonImplicit = ['done', 'skip', 'throwException'];
+    let hasNext = false;
+
+    for (const arg of args) {
+        if (nonImplicit.includes(arg.name)) {
+            return;
+        }
+
+        if (arg.name === 'next') {
+            hasNext = true;
+        }
+    }
+
+    if (hasNext) {
+        taskRunner.next();
+    }
+}
+
 async function runMiddleware(state, middleware, http) {
     if (middleware && middleware.length > 0) {
         const generator = createGenerator(middleware);
@@ -25,7 +44,7 @@ async function runMiddleware(state, middleware, http) {
                 return;
             }
 
-            const args = getArgs(exec, {
+            let args = getArgs(exec, {
                 next: taskRunner.next,
                 done: taskRunner.done,
                 skip: taskRunner.skip,
@@ -40,7 +59,13 @@ async function runMiddleware(state, middleware, http) {
                 }
             });
 
-            exec.call(null, ...args);
+            exec.call(null, ...args.map((val) => {
+                return val.value;
+            }));
+
+            // todo: this code should be uncommented when the configuration values for middleware
+            // includes the option to specify it as async or non async for better performance
+            //callImplicitNext(args, taskRunner);
 
             const task = await wait(waitCheck.bind(null, taskRunner));
 
