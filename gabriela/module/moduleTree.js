@@ -1,6 +1,6 @@
 const ModuleCollection = require('./moduleCollection');
 const ModuleRunner = require('./moduleRunner');
-const Validator = require('./validators');
+const Validator = require('../misc/validators');
 
 function instance() {
     const jc = ModuleCollection.create();

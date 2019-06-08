@@ -47,4 +47,14 @@ factory.moduleValidator = function(mdl) {
     }
 };
 
+factory.validateServerOptions = function(options) {
+    if (options.hasOwnProperty('port')) {
+        if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
+    }
+
+    if (options.hasOwnProperty('runCallback')) {
+        if (!is('function', options.runCallback)) throw new Error(`Invalid server configuration. 'runCallback' must be a function`);
+    }
+};
+
 module.exports = factory;
