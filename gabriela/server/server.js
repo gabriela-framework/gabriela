@@ -25,8 +25,6 @@ function Server(options, moduleTree) {
         serverInstance = native.http.listen(options.port, function() {
             if (options.runCallback) options.runCallback.call();
 
-            console.log(`Server started on port ${options.port}`);
-
             const modules = moduleTree.getModules();
             const keys = Object.keys(modules);
 
@@ -41,6 +39,8 @@ function Server(options, moduleTree) {
                     });
                 }
             }
+
+            console.log(`Server started on port ${options.port}`);
         });
     };
 

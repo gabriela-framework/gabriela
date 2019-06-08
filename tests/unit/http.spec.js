@@ -47,6 +47,30 @@ describe('Http request to gabriela', () => {
         gabrielaServer.closeServer();
     });
 
+    it('should validate server options and throw exception', () => {
+        let entersException = false;
+        try {
+            gabriela.asServer({
+                port: 'invalid',
+            });
+        } catch (err) {
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        try {
+            gabriela.asServer({
+                port: 3000,
+                runCallback: null,
+            });
+        } catch (err) {
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should accept a GET request and return a response', (done) => {
         requestPromise('http://11.11.11.12:3001/users').then((body) => {
             expect(body).to.be.equal('OK');
