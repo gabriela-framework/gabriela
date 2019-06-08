@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Module tree tests | ', () => {
+describe('Module tree tests', () => {
     it('should create a module and treat it as a collection', () => {
         const name = 'moduleName';
         const mdl = {
@@ -22,7 +22,7 @@ describe('Module tree tests | ', () => {
 
         g.addModule(mdl);
 
-        expect(g.hasModule(name)).to.be.true;
+        expect(g.hasModule(name)).to.be.equal(true);
         expect(g.getModule(name)).to.be.a('object');
 
         mdl.name = 'someOtherName';
@@ -53,7 +53,7 @@ describe('Module tree tests | ', () => {
             expect(t).to.be.a('function');
         }
 
-        expect(g.removeModule(name)).to.be.true;
+        expect(g.removeModule(name)).to.be.equal(true);
 
         expect(g.hasModule(name)).to.be.false;
         expect(g.getModule(name)).to.be.a('undefined');
@@ -172,7 +172,7 @@ describe('Module tree tests | ', () => {
             expect(moduleResult.model.name).to.be.equal(model.name);
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
             expect(moduleResult.model.age).to.be.equal(32);
-            expect(moduleResult.model.executed).to.be.true;
+            expect(moduleResult.model.executed).to.be.equal(true);
 
             done();
         });
@@ -349,7 +349,7 @@ describe('Module tree tests | ', () => {
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
             expect(moduleResult.model.age).to.be.equal(32);
             expect(moduleResult.model).to.have.property('executed');
-            expect(moduleResult.model.executed).to.be.true;
+            expect(moduleResult.model.executed).to.be.equal(true);
         });
     });
 
@@ -448,9 +448,9 @@ describe('Module tree tests | ', () => {
         expect(g.child).to.be.a('object');
         expect(g.child.parent).to.be.a('object');
 
-        expect(g.hasModule(name)).to.be.true;
-        expect(g.child.hasModule(profileModuleName)).to.be.true;
-        expect(g.child.hasModule(userSettingsModuleName)).to.be.true;
+        expect(g.hasModule(name)).to.be.equal(true);
+        expect(g.child.hasModule(profileModuleName)).to.be.equal(true);
+        expect(g.child.hasModule(userSettingsModuleName)).to.be.equal(true);
     });
 
     it('should run all parent/child modules', () => {
@@ -572,11 +572,11 @@ describe('Module tree tests | ', () => {
 
         g.runModule(parentModule).then((moduleResult) => {
             expect(moduleResult).to.have.property('user')
-            expect(moduleResult.user.executed).to.be.true;
+            expect(moduleResult.user.executed).to.be.equal(true);
             expect(moduleResult.user).to.have.property('profile');
-            expect(moduleResult.user.profile.executed).to.be.true;
+            expect(moduleResult.user.profile.executed).to.be.equal(true);
             expect(moduleResult.user).to.have.property('userSettings');
-            expect(moduleResult.user.userSettings.executed).to.be.true;
+            expect(moduleResult.user.userSettings.executed).to.be.equal(true);
         });
     });
 

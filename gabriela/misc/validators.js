@@ -57,4 +57,19 @@ factory.validateServerOptions = function(options) {
     }
 };
 
+factory.validateDICompilerInitObject = function(init) {
+    if (!is('object', init)) throw new Error(`Dependency injection error. 'init' dependency value must be an object`);
+    if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
+    if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
+    if (init.visibility) {
+        if (!is('string', init.visibility)) throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+
+        const visibilities = ['module', 'plugin', 'public'];
+
+        if (!visibilities.includes(init.visibility)) {
+            throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        }
+    }
+};
+
 module.exports = factory;
