@@ -33,7 +33,7 @@ describe('Dependency injection tests', () => {
         let us1 = compiler.compile('userService');
 
         expect(userService).to.be.equal(us1);
-        expect(us1 == userService).to.be.true;
+        expect(us1 == userService).to.be.equal(true);
     });
 
     it('should create a tree of dependencies', () => {
@@ -81,7 +81,7 @@ describe('Dependency injection tests', () => {
 
         let cs1 = compiler.compile('commentService');
 
-        expect(cs1 == commentService).to.be.true;
+        expect(cs1 == commentService).to.be.equal(true);
     });
 
     it('should resolve dependencies private to a module', () => {

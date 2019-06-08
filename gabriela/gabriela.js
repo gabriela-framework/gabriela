@@ -7,6 +7,8 @@ module.exports = {
 
         const server = new Server(options, moduleTree);
 
+        // create an interface for the server
+        // there can be no private function in fn, only public
         return Object.assign({}, {
             addModule: moduleTree.addModule,
             runServer: server.listen.bind(server),
@@ -22,6 +24,8 @@ module.exports = {
             child: null
         };
 
+        // create an interface for the runner
+        // there can be no private function in fn, only public
         const fn = {
             addModule: moduleTree.addModule,
             getModule: moduleTree.getModule,
