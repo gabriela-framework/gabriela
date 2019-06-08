@@ -1,6 +1,10 @@
 const ModuleCollection = require('./module/moduleCollection');
 const ModuleRunner = require('./module/moduleRunner');
 
+function validateModule(mdl) {
+
+}
+
 function instance() {
     const jc = ModuleCollection.create();
     const tree = [];

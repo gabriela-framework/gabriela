@@ -9,6 +9,10 @@ const Compiler = require('./../../gabriela/dependencyInjection/compiler');
 
 describe('Dependency injection tests | ', () => {
     it('should fail compiling a dependency', () => {
+        const s1 = Symbol.for('key');
+        const s2 = Symbol.for('key');
+
+        console.log(s1 === s2);
         const userServiceInit = {
             name: 'userService',
             init: function() {
@@ -75,7 +79,41 @@ describe('Dependency injection tests | ', () => {
             expect(err.message).to.be.equal(`Dependency injection error. Init object 'init' property must be a function`);
         }
 
-        expect(entersException).to.be.true;
+        const visibilities = ['module', 'plugin', 'public'];
+
+        for (const v of visibilities) {
+            entersException = false;
+            try {
+                compiler.add({
+                    name: 'name',
+                    visibility: v,
+                    init: function() {
+                        return () => {};
+                    },
+                });
+            } catch (err) {
+                entersException = true;
+            }
+
+            expect(entersException).to.be.equal(false);
+        }
+
+        entersException = false;
+        try {
+            compiler.add({
+                name: 'name',
+                visibility: 'notValid',
+                init: function() {
+                    return () => {};
+                },
+            });
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        }
+
+        expect(entersException).to.be.equal(true);
 
         entersException = false;
         try {
@@ -176,5 +214,33 @@ describe('Dependency injection tests | ', () => {
         let cs1 = compiler.compile('commentService');
 
         expect(cs1 == commentService).to.be.true;
-    })
+    });
+
+    it('should resolve dependencies private to a module', () => {
+        const commentServiceInit = {
+            name: 'commentService',
+            init: function() {
+                function commentService() {
+                    this.addComment = function() {};
+                    this.removeComment = function() {};
+                }
+
+                return new commentService();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function(commentService) {
+                function userService() {
+                    this.addUser = function() {};
+                    this.removeUser = function() {};
+
+                    this.commentService = commentService;
+                }
+
+                return new userService();
+            }
+        };
+    });
 });
