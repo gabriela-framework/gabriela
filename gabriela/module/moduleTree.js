@@ -1,9 +1,6 @@
-const ModuleCollection = require('./module/moduleCollection');
-const ModuleRunner = require('./module/moduleRunner');
-
-function validateModule(mdl) {
-
-}
+const ModuleCollection = require('./moduleCollection');
+const ModuleRunner = require('./moduleRunner');
+const Validator = require('./validators');
 
 function instance() {
     const jc = ModuleCollection.create();
@@ -30,6 +27,8 @@ function instance() {
     }
 
     function addModule(mdl) {
+        Validator.moduleValidator(mdl);
+
         if (mdl.modules) {
             const moduleTree = new factory();
 

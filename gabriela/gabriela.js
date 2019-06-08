@@ -1,4 +1,4 @@
-const ModuleTree = require('./moduleTree');
+const ModuleTree = require('./module/moduleTree');
 const Server = require('./server/server');
 
 module.exports = {
@@ -16,6 +16,7 @@ module.exports = {
 
     asRunner: function() {
         const moduleTree = new ModuleTree();
+
         const tree = {
             parent: null,
             child: null

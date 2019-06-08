@@ -6,7 +6,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const ModuleTree = require('../../gabriela/moduleTree');
+const ModuleTree = require('../../gabriela/module/moduleTree');
 
 describe('Async modules test | ', () => {
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {

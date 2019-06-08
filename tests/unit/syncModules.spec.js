@@ -1,13 +1,11 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
 const assert = require('assert');
 
 const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const ModuleTree = require('../../gabriela/ModuleTree');
 const gabriela = require('../../gabriela/gabriela');
 
 describe('Module tree tests | ', () => {
@@ -59,6 +57,68 @@ describe('Module tree tests | ', () => {
 
         expect(g.hasModule(name)).to.be.false;
         expect(g.getModule(name)).to.be.a('undefined');
+    });
+
+    it('should throw error when module definition is invalid', () => {
+        let userModule = {};
+
+        let g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        userModule = {
+            name: 'name',
+            postLogicTransformers: null,
+        };
+
+        entersException = false;
+        try {
+            g.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
+
+        for (const m of middlewareNames) {
+            userModule = {
+                name: 'name',
+            };
+
+            userModule[m] = null;
+
+            entersException = false;
+            try {
+                g.addModule(userModule);
+            } catch (err) {
+                entersException = true;
+            }
+
+            expect(entersException).to.be.equal(true);
+
+            userModule[m] = [undefined];
+
+            entersException = false;
+            try {
+                g.addModule(userModule);
+            } catch (err) {
+                entersException = true;
+            }
+
+            expect(entersException).to.be.equal(true);
+        }
     });
 
     it('should assert that skip skips the single middleware and not all', (done) => {

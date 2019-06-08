@@ -2,6 +2,7 @@ const taskRunnerFactory = require('./taskRunner');
 const createGenerator = require('../util/createGenerator');
 const getArgs = require('../util/getArgs');
 const wait = require('../util/wait');
+const is = require('../util/is');
 
 function waitCheck(taskRunner) {
     const task = taskRunner.getTask();
@@ -34,16 +35,12 @@ function callImplicitNext(args, taskRunner) {
     }
 }
 
-async function runMiddleware(state, middleware, http) {
+async function runMiddleware(name, state, middleware, http) {
     if (middleware && middleware.length > 0) {
         const generator = createGenerator(middleware);
         const taskRunner = taskRunnerFactory.create();
         
         async function recursiveMiddlewareExec(exec) {
-            if (!exec) {
-                return;
-            }
-
             let args = getArgs(exec, {
                 next: taskRunner.next,
                 done: taskRunner.done,
@@ -97,7 +94,9 @@ async function runMiddleware(state, middleware, http) {
 
             const next = generator.next();
 
-            return await recursiveMiddlewareExec((!next.done) ? next.value : false);
+            if (next.done) return;
+
+            return await recursiveMiddlewareExec(next.value);
         }
 
         const next = generator.next();
@@ -123,7 +122,7 @@ function factory() {
 
                 for (const m of middleware) {
                     try {
-                        await runMiddleware.call(null, ...[state, m, http]);
+                        await runMiddleware.call(null, ...[mdl.name, state, m, http]);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {
