@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Async modules test', () => {
+describe('Middleware execution', () => {
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
@@ -29,14 +29,14 @@ describe('Async modules test', () => {
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
         });
     });
 
-    it('should assert the second time that next proceedes to next middleware with an async function inside middleware', (done) => {
+    it('should assert the second time that next proceeds to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
@@ -56,7 +56,7 @@ describe('Async modules test', () => {
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
@@ -106,7 +106,7 @@ describe('Async modules test', () => {
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -159,7 +159,7 @@ describe('Async modules test', () => {
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -198,7 +198,7 @@ describe('Async modules test', () => {
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then(() => {
         }).catch((err) => {
             expect(err.message).to.be.equal('my exception');
 

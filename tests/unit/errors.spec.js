@@ -169,3 +169,67 @@ describe('Failing DI compiler tests', () => {
         expect(entersException).to.be.equal(true);
     });
 });
+
+describe('Failing module definition tests', () => {
+    it('should throw error when module definition is invalid', () => {
+        let userModule = {};
+
+        let g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        userModule = {
+            name: 'name',
+            postLogicTransformers: null,
+        };
+
+        entersException = false;
+        try {
+            g.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
+
+        for (const m of middlewareNames) {
+            userModule = {
+                name: 'name',
+            };
+
+            userModule[m] = null;
+
+            entersException = false;
+            try {
+                g.addModule(userModule);
+            } catch (err) {
+                entersException = true;
+            }
+
+            expect(entersException).to.be.equal(true);
+
+            userModule[m] = [undefined];
+
+            entersException = false;
+            try {
+                g.addModule(userModule);
+            } catch (err) {
+                entersException = true;
+            }
+
+            expect(entersException).to.be.equal(true);
+        }
+    });
+})

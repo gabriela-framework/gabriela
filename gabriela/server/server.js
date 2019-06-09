@@ -35,7 +35,7 @@ function Server(options, moduleTree) {
                     const route = mld.http.route;
 
                     app[route.method](route.path, (req, res) => {
-                        moduleTree.runModule(mld, Object.assign({}, mld.http, req, res));
+                        moduleTree.runModule(mld.name, Object.assign({}, mld.http, req, res));
                     });
                 }
             }

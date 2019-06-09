@@ -17,17 +17,19 @@ function factory() {
  * @param mdl
  */
 factory.moduleValidator = function(mdl) {
+    if (!mdl.hasOwnProperty('name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!mdl.name) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
 
-    const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
-
+    const middlewareNames = ['preLogicTransformers', 'validators', 'postLogicTransformers', 'moduleLogic', 'security'];
     /**
      * Traverses the middleware by middleware name and validates that every middleware has to be an array
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
      */
     for (const name of middlewareNames) {
         if (mdl.hasOwnProperty(name)) {
-            if (!Array.isArray(mdl[name])) throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions`);
+            if (!Array.isArray(mdl[name])) {
+                throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions`);
+            }
 
             for (const m of mdl[name]) {
                 if (!is('function', m)) throw new Error(`Invalid middleware value. '${name}' middleware of ${mdl.name} module must receive an array of functions`);

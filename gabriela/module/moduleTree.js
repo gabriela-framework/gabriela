@@ -6,7 +6,9 @@
 
 const ModuleCollection = require('./moduleCollection');
 const ModuleRunner = require('./moduleRunner');
-const Validator = require('../misc/validators');
+const is = require('../util/is');
+const moduleFactory = require('./module');
+const subModuleFactory = require('./subModule');
 
 function instance() {
     // A collection of modules for this ModuleTree. Hold only getters and setters for saved modules. For more information,
@@ -35,7 +37,7 @@ function instance() {
 
                     const mdl = modules[moduleName];
 
-                    childState[mdl.name] = await gabriela.runModule(mdl);
+                    childState[mdl.name] = await gabriela.runModule(mdl.name);
                 }
             }
         }
@@ -48,22 +50,22 @@ function instance() {
      * @param mdl
      */
     function addModule(mdl) {
-        Validator.moduleValidator(mdl);
+        // Todo: Handle submodules in a way that they only inherit the dependencies of their parent module and no other
+/*        if (mdl.modules) {
+            const subModulesTree = new factory();
 
-        if (mdl.modules) {
-            const moduleTree = new factory();
+            this.child = subModulesTree;
+            subModulesTree.parent = this;
 
-            this.child = moduleTree;
-            moduleTree.parent = this;
-
-            tree.push(moduleTree);
+            tree.push(subModulesTree);
 
             for (const m of mdl.modules) {
-                if (m.modules) this.addModule(m);
 
-                moduleTree.addModule(m);
+                if (m.modules) addModule(subModuleFactory(m));
+
+                subModulesTree.addModule(subModuleFactory(m));
             }
-        }
+        }*/
 
         jc.addModule(mdl);
     }
@@ -71,11 +73,16 @@ function instance() {
     /**
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
-     * @param mdl
-     * @param http
+     * @param name {string}
+     * @param http {object}
      * @returns {Promise<any>}
      */
-    async function runModule(mdl, http) {
+    async function runModule(name, http) {
+        if (!is('string', name)) throw new Error(`Module tree error. Invalid module name. Module name must be a string`);
+        if (!jc.hasModule(name)) throw new Error(`Module tree error. Module with name '${name}' does not exist`);
+
+        const mdl = jc.getModule(name);
+
         const runner = ModuleRunner.create(mdl, http);
 
         let childState = (tree.length > 0) ? await runTree(tree) : null;
@@ -87,6 +94,7 @@ function instance() {
 
     // hold the parent ModuleTree
     this.parent = null;
+    this.child = null;
 
     this.addModule = addModule;
     this.hasModule = jc.hasModule;

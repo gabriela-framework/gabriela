@@ -22,7 +22,7 @@ describe('Http request to gabriela', () => {
                     method: 'get',
                 }
             },
-            name: 'name',
+            name: 'httpTest',
             moduleLogic: [(state, next, skip, done, throwException, http) => {
                 http.res.send('OK');
                 http.res.end();

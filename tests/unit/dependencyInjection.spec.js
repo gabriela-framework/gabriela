@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
+const Scope = require('../../gabriela/dependencyInjection/scopeResolver');
 
 describe('Dependency injection tests', () => {
     it('should create a single dependency', () => {
@@ -134,5 +135,11 @@ describe('Dependency injection tests', () => {
 
             expect(entersException).to.be.equal(false);
         }
+    });
+});
+
+describe('Dependency injection scope', () => {
+    it('should create a scope for the compiler', () => {
+
     });
 });
