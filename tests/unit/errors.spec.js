@@ -35,6 +35,29 @@ describe('Failing server tests', () => {
 });
 
 describe('Failing DI compiler tests', () => {
+    it('should fail to compile a dependency because invalid isAsync option type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            isAsync: 1,
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        let entersException = false;
+        try {
+            compiler.add(userServiceInit);
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'isAsync' option must be a boolean`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail to compile a dependency because init.init does not return a function', () => {
         const userServiceInit = {
             name: 'userService',
