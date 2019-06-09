@@ -4,10 +4,8 @@ const path = require('path');
 
 const mocha = new Mocha({
   ui: 'bdd',
-  reporter: 'list'
+  reporter: 'mocha-pretty-spec-reporter',
 });
-
-const testDir = path.resolve(__dirname);
 
 const directories = [];
 

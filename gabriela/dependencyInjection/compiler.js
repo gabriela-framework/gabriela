@@ -1,16 +1,36 @@
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
+const Validator = require('../misc/validators');
 
+/**
+ * Compilers parent is resolved outside of this compiler.
+ *
+ * Depth:
+ *
+ * - module -> the deepest possible
+ * - plugin -> between module and the root. Modules are its children
+ * - framework (public) -> the root compiler. Does not have a parent. Must be self aware.
+ *
+ * Traversal:
+ *
+ * Since every dependency will be asked inside a middleware, the first compiler to be asked for a dependency is the
+ * modules compiler. If he does not have it, it searches the parent which is the plugin compiler. Plugin compiler has module
+ * compiler children. This is a good place to have a shared plugin dependency. The top level is the public level (which is
+ * in practice, the framework root compiler). The root compiler is self aware and does not even try to search its parent.
+ *
+ *
+ */
 function factory() {
-    const tree = {};
+    this.parent = null;
+    const children = {};
+
+    const selfTree = {};
     const resolved = {};
 
     function add(init) {
-        if (!is('object', init)) throw new Error(`Dependency injection error. 'init' dependency value must be an object`);
-        if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
-        if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
+        Validator.validateDICompilerInitObject(init);
 
-        tree[init.name] = init;
+        selfTree[init.name] = init;
     }
 
     function compile(name) {
@@ -18,9 +38,9 @@ function factory() {
 
         if (resolved.hasOwnProperty(name)) return resolved[name];
 
-        if (!tree.hasOwnProperty(name)) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
+        if (!selfTree.hasOwnProperty(name)) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
 
-        const serviceInit = tree[name];
+        const serviceInit = selfTree[name];
 
         const args = getArgNames(serviceInit.init);
 
@@ -40,8 +60,24 @@ function factory() {
         return resolved[serviceInit.name];
     }
 
+    function addChild(name, compiler) {
+        children[name] = compiler;
+    }
+
+    function getSelfTree() {
+        if (this.constructor.name !== 'SubModule') throw new Error(`Module function invocation error. getSelfTree() can only be called within a submodule`);
+
+        const tree = {};
+
+        for (const res in resolved) {
+            console.log(res);
+        }
+    }
+
     this.add = add;
     this.compile = compile;
+    this.addChild = addChild;
+    this.getSelfTree = getSelfTree;
 }
 
 function instance() {

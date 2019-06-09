@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
+const Validator = require('../misc/validators');
 
 function Server(options, moduleTree) {
+    Validator.validateServerOptions(options);
+
     options = options || {};
 
     options.port = (options.port) ? options.port : 3000;
@@ -22,8 +25,6 @@ function Server(options, moduleTree) {
         serverInstance = native.http.listen(options.port, function() {
             if (options.runCallback) options.runCallback.call();
 
-            console.log(`Server started on port ${options.port}`);
-
             const modules = moduleTree.getModules();
             const keys = Object.keys(modules);
 
@@ -34,10 +35,12 @@ function Server(options, moduleTree) {
                     const route = mld.http.route;
 
                     app[route.method](route.path, (req, res) => {
-                        moduleTree.runModule(mld, Object.assign({}, mld.http, req, res));
+                        moduleTree.runModule(mld.name, Object.assign({}, mld.http, req, res));
                     });
                 }
             }
+
+            console.log(`Server started on port ${options.port}`);
         });
     };
 

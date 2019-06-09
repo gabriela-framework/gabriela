@@ -6,9 +6,9 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const ModuleTree = require('../../gabriela/moduleTree');
+const gabriela = require('../../gabriela/gabriela');
 
-describe('Async modules test | ', () => {
+describe('Middleware execution', () => {
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
@@ -18,25 +18,25 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const mdl = {
             name: name,
             moduleLogic: [googleRequest]
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
         });
     });
 
-    it('should assert the second time that next proceedes to next middleware with an async function inside middleware', (done) => {
+    it('should assert the second time that next proceeds to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
@@ -52,11 +52,11 @@ describe('Async modules test | ', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
@@ -102,11 +102,11 @@ describe('Async modules test | ', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -125,7 +125,7 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const secondRequest = function(state, next, skip, done) {
             requestPromise.get('https://www.google.com/').then((body) => {
@@ -133,7 +133,7 @@ describe('Async modules test | ', () => {
 
                 done();
             });
-        }
+        };
 
         const thirdRequest = function(state, next) {
             requestPromise.get('https://www.google.com/').then((body) => {
@@ -141,13 +141,13 @@ describe('Async modules test | ', () => {
 
                 next();
             });
-        }
+        };
 
         const postLogicTransformer = function(state, next) {
             state.postLogic = true;
 
             next();
-        }
+        };
 
         const mdl = {
             name: name,
@@ -155,11 +155,11 @@ describe('Async modules test | ', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -178,7 +178,7 @@ describe('Async modules test | ', () => {
 
                 throwException(new Error('my exception'));
             });
-        }
+        };
 
         const secondRequest = function(state, next, skip, done) {
             requestPromise.get('https://www.google.com/').then((body) => {
@@ -186,7 +186,7 @@ describe('Async modules test | ', () => {
 
                 done();
             });
-        }
+        };
 
         const mdl = {
             name: name,
@@ -194,15 +194,15 @@ describe('Async modules test | ', () => {
             postLogicTransformers: []
         };
 
-        const g = new ModuleTree();
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.runModule(g.getModule(name)).then((moduleResult) => {
+        g.runModule(mdl.name).then(() => {
         }).catch((err) => {
             expect(err.message).to.be.equal('my exception');
 
             done();
         });
     })
-})
+});

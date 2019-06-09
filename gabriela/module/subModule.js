@@ -2,8 +2,7 @@ const Compiler = require('../dependencyInjection/compiler');
 const Validator = require('../misc/validators');
 
 /**
- * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
- * here in order for module dependencies to be resolved.
+ * A submodule can have only the compiler holding the dependencies of the parent submodule, both resolved and unresolved.
  * @param mdl
  * @param parentCompiler
  * @returns {Array|*[]|*[]|*[]|*[]|*[]|*[]|modules|{"istanbul-lib-instrument", nyc}|string|usersListModule.moduleLogic|Function|*[]|*[]|*[]|*[]|*|{DICompiler: *, preLogicTransformers: *, validators: *, moduleLogic: *, name: *, http: *, modules: *, postLogicTransformers: *}|*|Server | usersListModule.http | {route}|factory|null|*[]|*[]|*[]|Array|*[]|*[]|*[]|*[]|*[]|*[]|*}
@@ -11,11 +10,10 @@ const Validator = require('../misc/validators');
 function factory(mdl, parentCompiler) {
     Validator.moduleValidator(mdl);
 
-    const c = Compiler.create();
-    c.parent = parentCompiler;
-    parentCompiler.addChild(mdl.name, c);
+    const parentCompilerTree = mdl.compiler.getSelfTree.call(this);
 
-    this.compiler = c;
+    const c = Compiler.create();
+
 
     const t = mdl.preLogicTransformers;
     const v = mdl.validators;
@@ -58,7 +56,7 @@ function factory(mdl, parentCompiler) {
 
 module.exports = function(mdl, parentCompiler) {
     const inst = new factory(mdl, parentCompiler);
-    inst.constructor.name = 'Module';
+    inst.constructor.name = 'SubModule';
 
     return inst;
 };

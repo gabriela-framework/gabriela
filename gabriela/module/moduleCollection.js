@@ -1,5 +1,3 @@
-const Module = require('./module');
-
 function factory() {
     this.create = function() {
         return new instance();
@@ -10,21 +8,21 @@ function factory() {
 
         function addModule(mdl) {
             if (modules.hasOwnProperty(mdl.name)) {
-                throw new Error(`Module with name '${mdl.name}' already exists`);
+                throw new Error(`Invalid module. Module with name '${mdl.name}' already exists`);
             }
 
-            modules[mdl.name] = Object.assign({}, new Module(mdl));
+            modules[mdl.name] = Object.assign({}, mdl);
         }
     
-        function hasModule(nameOrModuleObject) {
-            return modules.hasOwnProperty(nameOrModuleObject);
+        function hasModule(name) {
+            return modules.hasOwnProperty(name);
         }
     
         function getModule(name) {
             if (!hasModule(name)) {
                 return undefined;
             }
-    
+
             return Object.assign({}, modules[name]);
         }
 
