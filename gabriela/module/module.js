@@ -13,9 +13,17 @@ function factory(mdl, parentCompiler) {
 
     const c = Compiler.create();
     c.parent = parentCompiler;
-    parentCompiler.addChild(mdl.name, c);
+    parentCompiler.addChildCompiler(mdl.name, c);
 
-    this.compiler = c;
+    if (mdl.dependencies) {
+        for (const depInit of mdl.dependencies) {
+            if (!depInit.visibility) depInit.visibility = 'module';
+
+            if (depInit.visibility === 'module') {
+                c.add(depInit);
+            }
+        }
+    }
 
     const t = mdl.preLogicTransformers;
     const v = mdl.validators;
@@ -53,6 +61,10 @@ function factory(mdl, parentCompiler) {
         get http() {
             return http;
         },
+
+        get compiler() {
+            return c;
+        }
     }
 }
 

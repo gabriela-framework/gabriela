@@ -45,17 +45,16 @@ async function runMiddleware(mdl, functions, state, http) {
                 done: taskRunner.done,
                 skip: taskRunner.skip,
                 throwException: taskRunner.throwException,
-            }, (argName) => {
-                if (argName === 'state') {
-                    return state;
-                }
-
-                if (argName === 'http') {
-                    return http;
-                }
             });
 
             exec.call(null, ...args.map((val) => {
+                if (mdl.compiler.has(val.name)) {
+                    return mdl.compiler.compile(val.name);
+                }
+
+                if (val.name === 'state') return state;
+                if (val.name === 'http') return http;
+
                 return val.value;
             }));
 

@@ -4,9 +4,9 @@ const http = require('http').createServer(app);
 const Validator = require('../misc/validators');
 
 function Server(options, moduleTree) {
-    Validator.validateServerOptions(options);
-
     options = options || {};
+
+    Validator.validateServerOptions(options);
 
     options.port = (options.port) ? options.port : 3000;
 

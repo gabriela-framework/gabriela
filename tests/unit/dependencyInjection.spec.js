@@ -6,7 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
-const Scope = require('../../gabriela/dependencyInjection/scopeResolver');
+const gabriela = require('./../../gabriela/gabriela');
 
 describe('Dependency injection tests', () => {
     it('should create a single dependency', () => {
@@ -113,7 +113,7 @@ describe('Dependency injection tests', () => {
         };
     });
 
-    it('should resolve all dependencies with visibility property', () => {
+    it('should add all dependencies with visibility property', () => {
         const visibilities = ['module', 'plugin', 'public'];
         let entersException = false;
 
@@ -136,10 +136,48 @@ describe('Dependency injection tests', () => {
             expect(entersException).to.be.equal(false);
         }
     });
+
+    it('should resolve all dependencies with visibility property', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            init: function() {
+                function userService() {
+                    this.addUser = function() {};
+                    this.removeUser = function() {};
+                }
+
+                return new userService();
+            }
+        };
+
+        let userServiceInstantiated = false;
+
+        const server = gabriela.asServer({
+            runCallback: function() {
+                expect(userServiceInstantiated).to.be.equal(true);
+
+                server.closeServer();
+            }
+        });
+
+        server.addModule({
+            name: 'dependencyInjectionVisibility',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, next) {
+                userServiceInstantiated = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                next();
+            }],
+        });
+    });
 });
 
-describe('Dependency injection scope', () => {
-    it('should create a scope for the compiler', () => {
-
+describe('Dependency injection scope - framework wide', () => {
+    it('should create a scope only for the module', () => {
     });
 });

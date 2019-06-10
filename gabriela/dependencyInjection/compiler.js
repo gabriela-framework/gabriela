@@ -33,6 +33,10 @@ function factory() {
         selfTree[init.name] = init;
     }
 
+    function has(name) {
+        return selfTree.hasOwnProperty(name);
+    }
+
     function compile(name) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
 
@@ -75,8 +79,9 @@ function factory() {
     }
 
     this.add = add;
+    this.has = has;
     this.compile = compile;
-    this.addChild = addChild;
+    this.addChildCompiler = addChild;
     this.getSelfTree = getSelfTree;
 }
 
