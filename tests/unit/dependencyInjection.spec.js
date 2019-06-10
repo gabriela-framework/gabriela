@@ -137,7 +137,7 @@ describe('Dependency injection tests', () => {
         }
     });
 
-    it('should resolve all dependencies with visibility property', () => {
+    it('should resolve a single dependency with module visibility property', () => {
         const userServiceInit = {
             name: 'userService',
             visibility: 'module',
@@ -153,15 +153,9 @@ describe('Dependency injection tests', () => {
 
         let userServiceInstantiated = false;
 
-        const server = gabriela.asServer({
-            runCallback: function() {
-                expect(userServiceInstantiated).to.be.equal(true);
+        const runner = gabriela.asRunner();
 
-                server.closeServer();
-            }
-        });
-
-        server.addModule({
+        runner.addModule({
             name: 'dependencyInjectionVisibility',
             dependencies: [userServiceInit],
             preLogicTransformers: [function(userService, next) {
@@ -174,6 +168,8 @@ describe('Dependency injection tests', () => {
                 next();
             }],
         });
+
+        runner.runModule('dependencyInjectionVisibility');
     });
 });
 

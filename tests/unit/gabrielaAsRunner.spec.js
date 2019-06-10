@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Module tree tests', () => {
+describe('Gabriela runner tests', () => {
     it('should create a module and treat it as a collection', () => {
         const name = 'moduleName';
         const mdl = {

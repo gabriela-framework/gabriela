@@ -18,7 +18,7 @@ function factory() {
  */
 factory.moduleValidator = function(mdl) {
     if (!mdl.hasOwnProperty('name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
-    if (!mdl.name) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
+    if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
 
     const middlewareNames = ['preLogicTransformers', 'validators', 'postLogicTransformers', 'moduleLogic', 'security'];
     /**
@@ -60,7 +60,7 @@ factory.validateServerOptions = function(options) {
 };
 
 factory.validateDICompilerInitObject = function(init) {
-    if (!is('object', init)) throw new Error(`Dependency injection error. 'init' dependency value must be an object`);
+    if (!is('object', init)) throw new Error(`Dependency injection error. Dependency initialization must be an object`);
     if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
     if (init.hasOwnProperty('visibility')) {

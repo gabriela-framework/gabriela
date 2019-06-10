@@ -57,7 +57,7 @@ function factory() {
 
         const service = serviceInit.init(...deps);
 
-        if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot be a falsy value`);
+        if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 
         resolved[serviceInit.name] = service;
 
