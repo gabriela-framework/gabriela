@@ -540,4 +540,8 @@ describe('Gabriela runner tests', () => {
             done();
         })
     });
+
+    it('should resolve module dependency', () => {
+
+    });
 });

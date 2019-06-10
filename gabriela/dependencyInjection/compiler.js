@@ -68,21 +68,10 @@ function factory() {
         children[name] = compiler;
     }
 
-    function getSelfTree() {
-        if (this.constructor.name !== 'SubModule') throw new Error(`Module function invocation error. getSelfTree() can only be called within a submodule`);
-
-        const tree = {};
-
-        for (const res in resolved) {
-            console.log(res);
-        }
-    }
-
     this.add = add;
     this.has = has;
     this.compile = compile;
     this.addChildCompiler = addChild;
-    this.getSelfTree = getSelfTree;
 }
 
 function instance() {

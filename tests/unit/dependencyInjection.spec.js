@@ -85,34 +85,6 @@ describe('Dependency injection tests', () => {
         expect(cs1 == commentService).to.be.equal(true);
     });
 
-    it('should resolve dependencies private to a module', () => {
-        const commentServiceInit = {
-            name: 'commentService',
-            init: function() {
-                function commentService() {
-                    this.addComment = function() {};
-                    this.removeComment = function() {};
-                }
-
-                return new commentService();
-            }
-        };
-
-        const userServiceInit = {
-            name: 'userService',
-            init: function(commentService) {
-                function userService() {
-                    this.addUser = function() {};
-                    this.removeUser = function() {};
-
-                    this.commentService = commentService;
-                }
-
-                return new userService();
-            }
-        };
-    });
-
     it('should add all dependencies with visibility property', () => {
         const visibilities = ['module', 'plugin', 'public'];
         let entersException = false;

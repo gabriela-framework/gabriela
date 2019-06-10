@@ -41,7 +41,7 @@ describe('Failing server tests', () => {
     });
 });
 
-describe('Failing DI compiler tests', () => {
+describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because init.init does not return a function', () => {
         const userServiceInit = {
             name: 'userService',
@@ -199,6 +199,34 @@ describe('Failing DI compiler tests', () => {
             entersException = true;
 
             expect(err.message).to.be.equal(`Dependency injection error. 'isAsync' option must be a boolean`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid dependency name', () => {
+        let entersException = false;
+
+        const compiler = Compiler.create();
+
+        let invalidService = {
+            name: 'name',
+            visibility: 'module',
+            init: function() {
+                function initService() {}
+
+                return new initService();
+            }
+        };
+
+        compiler.add(invalidService);
+
+        try {
+            compiler.compile(1);
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         }
 
         expect(entersException).to.be.equal(true);
