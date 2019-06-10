@@ -7,8 +7,6 @@
 const ModuleCollection = require('./moduleCollection');
 const ModuleRunner = require('./moduleRunner');
 const is = require('../util/is');
-const moduleFactory = require('./module');
-const subModuleFactory = require('./subModule');
 
 function instance() {
     // A collection of modules for this ModuleTree. Hold only getters and setters for saved modules. For more information,

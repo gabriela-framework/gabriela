@@ -12,15 +12,13 @@ module.exports = {
 
         // create an interface for the server
         // there can be no private function in fn, only public
-        const serverInterface = {
+        return {
             addModule: function(mdl) {
                 moduleTree.addModule(moduleFactory(mdl, rootCompiler));
             },
             runServer: server.listen.bind(server),
             closeServer: server.close,
         };
-
-        return Object.assign({}, serverInterface);
     },
 
     asRunner: function() {
@@ -29,7 +27,7 @@ module.exports = {
 
         // create an interface for the runner
         // there can be no private function in fn, only public
-        const runnerInterface = {
+        return {
             addModule: function(mdl) {
                 moduleTree.addModule(moduleFactory(mdl, rootCompiler));
             },
@@ -41,7 +39,5 @@ module.exports = {
                 return moduleTree.runModule(name);
             }
         };
-
-        return Object.assign({}, runnerInterface);
     }
 };

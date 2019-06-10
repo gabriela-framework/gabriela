@@ -6,7 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
-const Scope = require('../../gabriela/dependencyInjection/scopeResolver');
+const gabriela = require('./../../gabriela/gabriela');
 
 describe('Dependency injection tests', () => {
     it('should create a single dependency', () => {
@@ -85,35 +85,7 @@ describe('Dependency injection tests', () => {
         expect(cs1 == commentService).to.be.equal(true);
     });
 
-    it('should resolve dependencies private to a module', () => {
-        const commentServiceInit = {
-            name: 'commentService',
-            init: function() {
-                function commentService() {
-                    this.addComment = function() {};
-                    this.removeComment = function() {};
-                }
-
-                return new commentService();
-            }
-        };
-
-        const userServiceInit = {
-            name: 'userService',
-            init: function(commentService) {
-                function userService() {
-                    this.addUser = function() {};
-                    this.removeUser = function() {};
-
-                    this.commentService = commentService;
-                }
-
-                return new userService();
-            }
-        };
-    });
-
-    it('should resolve all dependencies with visibility property', () => {
+    it('should add all dependencies with visibility property', () => {
         const visibilities = ['module', 'plugin', 'public'];
         let entersException = false;
 
@@ -136,10 +108,44 @@ describe('Dependency injection tests', () => {
             expect(entersException).to.be.equal(false);
         }
     });
+
+    it('should resolve a single dependency with module visibility property', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            init: function() {
+                function userService() {
+                    this.addUser = function() {};
+                    this.removeUser = function() {};
+                }
+
+                return new userService();
+            }
+        };
+
+        let userServiceInstantiated = false;
+
+        const runner = gabriela.asRunner();
+
+        runner.addModule({
+            name: 'dependencyInjectionVisibility',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, next) {
+                userServiceInstantiated = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                next();
+            }],
+        });
+
+        runner.runModule('dependencyInjectionVisibility');
+    });
 });
 
-describe('Dependency injection scope', () => {
-    it('should create a scope for the compiler', () => {
-
+describe('Dependency injection scope - framework wide', () => {
+    it('should create a scope only for the module', () => {
     });
 });

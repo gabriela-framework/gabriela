@@ -6,7 +6,7 @@ function getArgs(fn, values, specialCb) {
     const args = [];
 
     for (const arg of argNames) {
-        if (!values.hasOwnProperty(arg)) {
+        if (!values.hasOwnProperty(arg) && specialCb) {
             args.push({
                 name: 'special',
                 value: specialCb.call(null, ...[arg]),

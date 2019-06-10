@@ -4,12 +4,12 @@
   "description": "Plugin based framework",
   "main": "index.js",
   "scripts": {
-    "tests": "nyc -x=tests --dir=tests/coverage --print=both node_modules/.bin/mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'"
+    "tests": "node_modules/.bin/mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
+    "coverage": "nyc -x=tests --dir=tests/coverage --print=both npm run tests"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "deepcopy": "^2.0.0",
     "express": "^4.17.1"
   },
   "devDependencies": {

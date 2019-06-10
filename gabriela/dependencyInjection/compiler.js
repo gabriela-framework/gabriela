@@ -33,6 +33,10 @@ function factory() {
         selfTree[init.name] = init;
     }
 
+    function has(name) {
+        return selfTree.hasOwnProperty(name);
+    }
+
     function compile(name) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
 
@@ -53,7 +57,7 @@ function factory() {
 
         const service = serviceInit.init(...deps);
 
-        if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot be a falsy value`);
+        if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 
         resolved[serviceInit.name] = service;
 
@@ -64,20 +68,10 @@ function factory() {
         children[name] = compiler;
     }
 
-    function getSelfTree() {
-        if (this.constructor.name !== 'SubModule') throw new Error(`Module function invocation error. getSelfTree() can only be called within a submodule`);
-
-        const tree = {};
-
-        for (const res in resolved) {
-            console.log(res);
-        }
-    }
-
     this.add = add;
+    this.has = has;
     this.compile = compile;
-    this.addChild = addChild;
-    this.getSelfTree = getSelfTree;
+    this.addChildCompiler = addChild;
 }
 
 function instance() {

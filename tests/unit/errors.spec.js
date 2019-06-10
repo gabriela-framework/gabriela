@@ -10,6 +10,8 @@ const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {
+
+        // invalid port
         let entersException = false;
         try {
             gabriela.asServer({
@@ -17,10 +19,13 @@ describe('Failing server tests', () => {
             });
         } catch (err) {
             entersException = true;
+
+            expect(err.message).to.be.equal(`Invalid server configuration. 'port' has to be an integer`);
         }
 
         expect(entersException).to.be.equal(true);
 
+        entersException = false;
         try {
             gabriela.asServer({
                 port: 3000,
@@ -28,36 +33,15 @@ describe('Failing server tests', () => {
             });
         } catch (err) {
             entersException = true;
+
+            expect(err.message).to.be.equal(`Invalid server configuration. 'runCallback' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
     });
 });
 
-describe('Failing DI compiler tests', () => {
-    it('should fail to compile a dependency because invalid isAsync option type', () => {
-        const userServiceInit = {
-            name: 'userService',
-            isAsync: 1,
-            init: function() {
-                return () => {};
-            }
-        };
-
-        const compiler = Compiler.create();
-
-        let entersException = false;
-        try {
-            compiler.add(userServiceInit);
-        } catch (err) {
-            entersException = true;
-
-            expect(err.message).to.be.equal(`Dependency injection error. 'isAsync' option must be a boolean`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
-
+describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because init.init does not return a function', () => {
         const userServiceInit = {
             name: 'userService',
@@ -76,7 +60,7 @@ describe('Failing DI compiler tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. Target service userService cannot be a falsy value`)
+            expect(err.message).to.be.equal(`Dependency injection error. Target service userService cannot return a falsy value`)
         }
 
         expect(entersException).to.be.equal(true);
@@ -108,7 +92,7 @@ describe('Failing DI compiler tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. 'init' dependency value must be an object`);
+            expect(err.message).to.be.equal(`Dependency injection error. Dependency initialization must be an object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -164,6 +148,85 @@ describe('Failing DI compiler tests', () => {
             compiler.add(invalidService);
         } catch (err) {
             entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. Init object 'name' property must be a string`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid visibility value', () => {
+        let entersException = false;
+
+        const compiler = Compiler.create();
+
+        let invalidService = {
+            name: 'name',
+            visibility: 'invalid',
+            init: function() {
+                function initService() {}
+
+                return new initService();
+            }
+        };
+
+        try {
+            compiler.add(invalidService);
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because invalid isAsync option type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            isAsync: 1,
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        let entersException = false;
+        try {
+            compiler.add(userServiceInit);
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'isAsync' option must be a boolean`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid dependency name', () => {
+        let entersException = false;
+
+        const compiler = Compiler.create();
+
+        let invalidService = {
+            name: 'name',
+            visibility: 'module',
+            init: function() {
+                function initService() {}
+
+                return new initService();
+            }
+        };
+
+        compiler.add(invalidService);
+
+        try {
+            compiler.compile(1);
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -171,7 +234,7 @@ describe('Failing DI compiler tests', () => {
 });
 
 describe('Failing module definition tests', () => {
-    it('should throw error when module definition is invalid', () => {
+    it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
         let g = gabriela.asRunner();
@@ -186,50 +249,71 @@ describe('Failing module definition tests', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
 
-        userModule = {
-            name: 'name',
-            postLogicTransformers: null,
+    it('should throw an error if module definition name is not a string', () => {
+        let userModule = {
+            name: 1
         };
 
-        entersException = false;
+        let g = gabriela.asRunner();
+
+        let entersException = false;
         try {
             g.addModule(userModule);
         } catch(err) {
             entersException = true;
 
+            expect(err.message).to.be.equal(`Modules definition error. Module 'name' property must to be a string`);
         }
 
         expect(entersException).to.be.equal(true);
+    });
 
+    it('should throw an error if any of the middleware is not an array', () => {
         const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
 
-        for (const m of middlewareNames) {
-            userModule = {
-                name: 'name',
-            };
+        let userModule = {
+            name: 'name',
+        };
 
-            userModule[m] = null;
+        let g = gabriela.asRunner();
 
-            entersException = false;
-            try {
-                g.addModule(userModule);
-            } catch (err) {
-                entersException = true;
-            }
-
-            expect(entersException).to.be.equal(true);
-
-            userModule[m] = [undefined];
+        let entersException = false;
+        for (const middlewareName of middlewareNames) {
+            userModule = {};
+            userModule.name = 'name';
+            userModule[middlewareName] = null;
 
             entersException = false;
             try {
                 g.addModule(userModule);
-            } catch (err) {
+            } catch(err) {
                 entersException = true;
+
+                expect(err.message).to.be.equal(`Module definition error. '${middlewareName}' of '${userModule.name}' module has to be an array of functions`);
             }
 
             expect(entersException).to.be.equal(true);
         }
     });
-})
+
+    it('should throw an error if module definition middleware values in the middleware array is not a function', () => {
+        let userModule = {};
+        userModule.name = 'name';
+        userModule.preLogicTransformers = [1];
+
+        const runner = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            runner.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Invalid middleware value. 'preLogicTransformers' middleware of ${userModule.name} module must receive an array of functions`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+});
