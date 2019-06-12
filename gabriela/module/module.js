@@ -69,8 +69,5 @@ function factory(mdl, parentCompiler) {
 }
 
 module.exports = function(mdl, parentCompiler) {
-    const inst = new factory(mdl, parentCompiler);
-    inst.constructor.name = 'Module';
-
-    return inst;
+    return new factory(mdl, parentCompiler);
 };

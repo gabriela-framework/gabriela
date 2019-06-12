@@ -50,7 +50,4 @@ function factory() {
     this.create = create;
 }
 
-const inst = new factory();
-inst.constructor.name = 'ModuleRunner';
-
-module.exports = inst;
+module.exports = new factory();

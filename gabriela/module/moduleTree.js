@@ -4,14 +4,22 @@
  * @type {factory|*}
  */
 
-const ModuleCollection = require('./moduleCollection');
+const ModuleCollection = require('../misc/collection');
 const ModuleRunner = require('./moduleRunner');
 const is = require('../util/is');
 
 function instance() {
     // A collection of modules for this ModuleTree. Hold only getters and setters for saved modules. For more information,
     // check this packages comments
-    const jc = ModuleCollection.create();
+    const jc = (function(jc) {
+        return {
+            addModule: jc.add,
+            getModule: jc.get,
+            getModules: jc.getAll,
+            hasModule: jc.has,
+            removeModule: jc.remove,
+        }
+    }(ModuleCollection.create()));
 
     // A simple array that hold instances of this object (ModuleTree) with if 'modules' property is specified.
     // Otherwise, it is always empty
@@ -104,10 +112,7 @@ function instance() {
 }
 
 function factory() {
-    const inst = new instance();
-    inst.constructor.name = 'ModuleTree';
-
-    return inst;
+    return new instance();
 }
 
 module.exports = factory;

@@ -6,32 +6,32 @@ function factory() {
     function instance() {
         const modules = {};
 
-        function addModule(mdl) {
-            if (modules.hasOwnProperty(mdl.name)) {
+        function add(mdl) {
+            if (has(mdl.name)) {
                 throw new Error(`Invalid module. Module with name '${mdl.name}' already exists`);
             }
 
             modules[mdl.name] = Object.assign({}, mdl);
         }
     
-        function hasModule(name) {
+        function has(name) {
             return modules.hasOwnProperty(name);
         }
     
-        function getModule(name) {
-            if (!hasModule(name)) {
+        function get(name) {
+            if (!has(name)) {
                 return undefined;
             }
 
             return Object.assign({}, modules[name]);
         }
 
-        function getModules() {
+        function getAll() {
             return modules;
         }
         
-        function removeModule(name) {
-            if (!hasModule(name)) return false;
+        function remove(name) {
+            if (!has(name)) return false;
     
             // add code for non configurable properties or a try/catch if in strict mode
             delete modules[name];
@@ -39,17 +39,17 @@ function factory() {
             return true;
         }
 
-        this.addModule = addModule;
-        this.hasModule = hasModule;
-        this.getModule = getModule;
-        this.getModules = getModules;
-        this.removeModule = removeModule;
+        this.add = add;
+        this.has = has;
+        this.get = get;
+        this.getAll = getAll;
+        this.remove = remove;
     }
 }
 
 module.exports = (function() {
     const inst = new factory();
-    inst.constructor.name = 'ModuleCollection';
+    inst.constructor.name = 'Collection';
 
     return inst;
 }());

@@ -972,6 +972,7 @@ describe('Module dependency injection tests', () => {
             name: pdfConvertModuleName,
             moduleLogic: [function(state, next) {
                 requestPromise.get('https://google.com').then(() => {
+
                     pdfConvertModuleExecuted = true;
 
                     state.name = pdfConvertModuleName;
