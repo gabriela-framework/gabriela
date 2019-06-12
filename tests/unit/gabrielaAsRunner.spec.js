@@ -856,7 +856,7 @@ describe('Module dependency injection tests', () => {
         expect(entersMiddleware).to.be.equal(true);
     });
 
-    it('should run all modules added to gabriela', (done) => {
+    it('should run all synchronous modules added to gabriela', (done) => {
         let userModuleExecuted = false;
         let appSearchModuleExecuted = false;
         let pdfConvertModuleExecuted = false;
@@ -895,6 +895,89 @@ describe('Module dependency injection tests', () => {
                 state.name = pdfConvertModuleName;
 
                 next();
+            }],
+        };
+
+        const app = gabriela.asRunner().module;
+
+        app.addModule(userModule);
+        app.addModule(appSearchModule);
+        app.addModule(pdfConvertModule);
+
+        try {
+            app.run().then((state) => {
+                expect(userModuleExecuted).to.be.equal(true);
+                expect(appSearchModuleExecuted).to.be.equal(true);
+                expect(pdfConvertModuleExecuted).to.be.equal(true);
+
+                expect(state).to.have.property(userModuleName);
+                expect(state).to.have.property(appSearchModuleName);
+                expect(state).to.have.property(pdfConvertModuleName);
+
+                const userModuleState = state[userModuleName];
+                const appSearchState = state[appSearchModuleName];
+                const pdfConvertState = state[pdfConvertModuleName];
+
+                expect(userModuleState).to.have.property('name');
+                expect(appSearchState).to.have.property('name');
+                expect(pdfConvertState).to.have.property('name');
+
+                expect(userModuleState.name).to.be.equal(userModuleName);
+                expect(appSearchState.name).to.be.equal(appSearchModuleName);
+                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
+
+                done();
+            });
+        } catch(err) {
+            assert.fail(`Test failed with message: ${err.message}`);
+        }
+    });
+
+    it('should run all asynchronous modules added to gabriela', (done) => {
+        let userModuleExecuted = false;
+        let appSearchModuleExecuted = false;
+        let pdfConvertModuleExecuted = false;
+
+        const userModuleName = 'userModule';
+        const appSearchModuleName = 'appSearchModule';
+        const pdfConvertModuleName = 'pdfConvertModuleName';
+
+        const userModule = {
+            name: userModuleName,
+            moduleLogic: [function(state, next) {
+                requestPromise.get('https://google.com').then(() => {
+                    userModuleExecuted = true;
+
+                    state.name = userModuleName;
+
+                    next();
+                });
+            }],
+        };
+
+        const appSearchModule = {
+            name: appSearchModuleName,
+            moduleLogic: [function(state, next) {
+                requestPromise.get('https://google.com').then(() => {
+                    appSearchModuleExecuted = true;
+
+                    state.name = appSearchModuleName;
+
+                    next();
+                });
+            }],
+        };
+
+        const pdfConvertModule = {
+            name: pdfConvertModuleName,
+            moduleLogic: [function(state, next) {
+                requestPromise.get('https://google.com').then(() => {
+                    pdfConvertModuleExecuted = true;
+
+                    state.name = pdfConvertModuleName;
+
+                    next();
+                });
             }],
         };
 
