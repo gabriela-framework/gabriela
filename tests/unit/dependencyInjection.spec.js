@@ -125,7 +125,7 @@ describe('Dependency injection tests', () => {
 
         let userServiceInstantiated = false;
 
-        const runner = gabriela.asRunner();
+        const runner = gabriela.asRunner().module;
 
         runner.addModule({
             name: 'dependencyInjectionVisibility',
@@ -141,7 +141,7 @@ describe('Dependency injection tests', () => {
             }],
         });
 
-        runner.runModule('dependencyInjectionVisibility');
+        runner.run('dependencyInjectionVisibility');
     });
 });
 

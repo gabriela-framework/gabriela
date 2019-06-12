@@ -248,11 +248,11 @@ describe('Failing dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule('name').then(() => {
+        g.run('name').then(() => {
             assert.fail('Success callback called. This test should not be successful. catch() function should be called');
         }).catch((err) => {
             expect(entersMiddleware).to.be.equal(false);
@@ -294,7 +294,7 @@ describe('Failing module definition tests', () => {
     it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asRunner().module;
 
         let entersException = false;
         try {
@@ -313,7 +313,7 @@ describe('Failing module definition tests', () => {
             name: 1
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asRunner().module;
 
         let entersException = false;
         try {
@@ -334,7 +334,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asRunner().module;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -360,7 +360,7 @@ describe('Failing module definition tests', () => {
         userModule.name = 'name';
         userModule.preLogicTransformers = [1];
 
-        const runner = gabriela.asRunner();
+        const runner = gabriela.asRunner().module;
 
         let entersException = false;
         try {

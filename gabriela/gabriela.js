@@ -25,9 +25,7 @@ module.exports = {
         const moduleTree = new ModuleTree();
         const rootCompiler = Compiler.create();
 
-        // create an interface for the runner
-        // there can be no private function in fn, only public
-        return {
+        const moduleInterface = {
             addModule: function(mdl) {
                 moduleTree.addModule(moduleFactory(mdl, rootCompiler));
             },
@@ -35,8 +33,32 @@ module.exports = {
             hasModule: moduleTree.hasModule,
             getModules: moduleTree.getModules,
             removeModule: moduleTree.removeModule,
-            runModule: (name) => {
-                return moduleTree.runModule(name);
+            run: async function(name) {
+                if (name) return moduleTree.runModule(name);
+
+                const modules = this.getModules();
+                const keys = Object.keys(modules);
+
+                for (const name of keys) {
+                    await moduleTree.runModule(modules[name].name);
+                }
+            }
+        };
+
+        const pluginInterface = {
+
+        };
+
+
+        // create an interface for the runner
+        // there can be no private function in fn, only public
+        return {
+            get module() {
+                return moduleInterface;
+            },
+
+            get plugin() {
+                return pluginInterface;
             }
         };
     }

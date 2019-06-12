@@ -25,11 +25,11 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
+        g.run(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
@@ -52,11 +52,11 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
+        g.run(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('googleBody');
 
             done();
@@ -102,11 +102,11 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
+        g.run(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -155,11 +155,11 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
+        g.run(mdl.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('firstRequest');
             expect(moduleResult).to.have.property('secondRequest');
             expect(moduleResult).to.not.have.property('thirdRequest');
@@ -194,11 +194,11 @@ describe('Middleware execution', () => {
             postLogicTransformers: []
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asRunner().module;
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then(() => {
+        g.run(mdl.name).then(() => {
         }).catch((err) => {
             expect(err.message).to.be.equal('my exception');
 
