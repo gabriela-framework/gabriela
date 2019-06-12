@@ -2,8 +2,9 @@ function TaskRunner() {
     let executingTask = null;
     let value = null;
 
-    function next() {
+    function next(fn) {
         executingTask = 'next';
+        value = fn;
     }
 
     function skip() {

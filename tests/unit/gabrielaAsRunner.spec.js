@@ -1,6 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const xit = mocha.xit;
@@ -58,6 +59,50 @@ describe('Gabriela runner tests', () => {
 
         expect(g.hasModule(name)).to.be.false;
         expect(g.getModule(name)).to.be.a('undefined');
+    });
+
+    it('should assert that all middleware is executed', () => {
+        let preLogicTransformerExecuted = false,
+            validatorsExecuted = false,
+            moduleLogicExecuted = false,
+            postLogicTransformersExecuted = false;
+
+        const name = 'allMiddlewareExecution';
+
+        const mdl = {
+            name: name,
+            preLogicTransformers: [function(next) {
+                preLogicTransformerExecuted = true;
+
+                next();
+            }],
+            validators: [function(next) {
+                validatorsExecuted = true;
+
+                next();
+            }],
+            moduleLogic: [function(next) {
+                moduleLogicExecuted = true;
+
+                next();
+            }],
+            postLogicTransformers: [function(next) {
+                postLogicTransformersExecuted = true;
+
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule(name).then(() => {
+            expect(preLogicTransformerExecuted).to.be.equal(true);
+            expect(validatorsExecuted).to.be.equal(true);
+            expect(moduleLogicExecuted).to.be.equal(true);
+            expect(postLogicTransformersExecuted).to.be.equal(true);
+        });
     });
 
     it('should assert that skip skips the single middleware and not all', (done) => {
@@ -540,8 +585,274 @@ describe('Gabriela runner tests', () => {
             done();
         })
     });
+});
 
-    it('should resolve module dependency', () => {
+describe('Module dependency injection tests', () => {
+    it('should resolve module dependency implicitly', () => {
+        // implicit module visibility
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function constructor() {
+                    this.addUser = null;
+                    this.removeUser = null;
+                }
 
+                return new constructor();
+            }
+        };
+
+        let middlewareEntered = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                middlewareEntered = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name');
+
+        expect(middlewareEntered).to.be.equal(true);
+    });
+
+    it('should resolve module dependency explicitly', () => {
+        // implicit module visibility
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            init: function() {
+                function constructor() {
+                    this.addUser = null;
+                    this.removeUser = null;
+                }
+
+                return new constructor();
+            }
+        };
+
+        let middlewareEntered = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                middlewareEntered = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name');
+
+        expect(middlewareEntered).to.be.equal(true);
+    });
+
+    it('should resolve module dependency tree', () => {
+        const userFriendsRepositoryServiceInit = {
+            name: 'userFriendsRepository',
+            init: function() {
+                function FriendsRepository() {
+                    this.addFriend = null;
+                }
+
+                return new FriendsRepository();
+            }
+        };
+
+        const userRepositoryServiceInit = {
+            name: 'userRepository',
+            init: function(userFriendsRepository) {
+                function UserRepository() {
+                    this.addUser = null;
+
+                    this.userFriendsRepository = userFriendsRepository;
+                }
+
+                return new UserRepository();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function(userRepository) {
+                function UserRepository() {
+                    this.createUser = null;
+
+                    this.userRepository = userRepository;
+                }
+
+                return new UserRepository();
+            }
+        };
+
+        let entersMiddleware = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                entersMiddleware = true;
+
+                expect(userService).to.have.property('createUser');
+                expect(userService).to.have.property('userRepository');
+
+                expect(userService.userRepository).to.have.property('addUser');
+                expect(userService.userRepository).to.have.property('userFriendsRepository');
+
+                expect(userService.userRepository.userFriendsRepository).to.have.property('addFriend');
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name');
+
+        expect(entersMiddleware).to.be.equal(true);
+    });
+
+    it('should resolve a single module dependency with async function inside, synchronously', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            isAsync: true,
+            init: function(next) {
+                function constructor() {
+                    this.addUser = null;
+                    this.removeUser = null;
+                }
+
+                requestPromise.get('https://www.google.com').then(() => {
+                    next(() => {
+                        return new constructor();
+                    });
+                });
+            }
+        };
+
+        let entersMiddleware = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                entersMiddleware = true;
+
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name');
+
+        expect(entersMiddleware).to.be.equal(true);
+    });
+
+    it('should resolve a dependency tree with async function inside, synchronously', () => {
+        const userFriendsRepositoryServiceInit = {
+            name: 'userFriendsRepository',
+            isAsync: true,
+            init: function(next) {
+                function FriendsRepository() {
+                    this.addFriend = null;
+                }
+
+                requestPromise.get('https://www.google.com').then(() => {
+                    next(() => {
+                        return new FriendsRepository();
+                    });
+                });
+            }
+        };
+
+        const userRepositoryServiceInit = {
+            name: 'userRepository',
+            isAsync: true,
+            init: function(userFriendsRepository, next) {
+                function UserRepository() {
+                    this.addUser = null;
+
+                    this.userFriendsRepository = userFriendsRepository;
+                }
+
+                requestPromise.get('https://www.google.com').then(() => {
+                    next(() => {
+                        return new UserRepository();
+                    });
+                });
+            }
+        };
+
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            isAsync: true,
+            init: function(userRepository, next) {
+                function constructor() {
+                    this.createUser = null;
+                    this.removeUser = null;
+
+                    this.userRepository = userRepository;
+                }
+
+                requestPromise.get('https://www.google.com').then(() => {
+                    next(() => {
+                        return new constructor();
+                    });
+                });
+            }
+        };
+
+        let entersMiddleware = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                entersMiddleware = true;
+
+                expect(userService).to.have.property('createUser');
+                expect(userService).to.have.property('userRepository');
+
+                expect(userService.userRepository).to.have.property('addUser');
+                expect(userService.userRepository).to.have.property('userFriendsRepository');
+
+                expect(userService.userRepository.userFriendsRepository).to.have.property('addFriend');
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name');
+
+        expect(entersMiddleware).to.be.equal(true);
     });
 });

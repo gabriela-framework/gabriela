@@ -1,4 +1,4 @@
-const taskRunnerFactory = require('../taskRunner');
+const taskRunnerFactory = require('../../misc/taskRunner');
 const createGenerator = require('../../util/createGenerator');
 const getArgs = require('../../util/getArgs');
 const wait = require('../../util/wait');

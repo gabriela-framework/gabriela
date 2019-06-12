@@ -1,5 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const requestPromise = require('request-promise');
+const assert = require('assert');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -7,6 +9,20 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const Validator = require('../../gabriela/misc/validators');
+
+describe('Failing validators static functions package', () => {
+    let entersException = false;
+    try {
+        new Validator();
+    } catch (e) {
+        entersException = true;
+
+        expect(e.message).to.be.equal(`Invalid usage of Validator. Validator cannot be used as an instance but only as a static method repository`);
+    }
+
+    expect(entersException).to.be.equal(true);
+});
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {
@@ -202,6 +218,47 @@ describe('Failing dependency injection tests', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency if next is not included in the argument list of an async resolvable service', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            isAsync: true,
+            init: function() {
+                function constructor() {
+                    this.addUser = null;
+                    this.removeUser = null;
+                }
+
+                requestPromise.get('https://www.google.com').then(() => {
+                    return new constructor();
+                });
+            }
+        };
+
+        let entersMiddleware = false;
+        const mdl = {
+            name: 'name',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, done) {
+                entersMiddleware = true;
+
+                done();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule('name').then(() => {
+            assert.fail('Success callback called. This test should not be successful. catch() function should be called');
+        }).catch((err) => {
+            expect(entersMiddleware).to.be.equal(false);
+
+            expect(err.message).to.be.equal(`Dependency injection error. Invalid service init for dependency with name 'userService'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+        });
     });
 
     it('should fail to compile a dependency because of invalid dependency name', () => {

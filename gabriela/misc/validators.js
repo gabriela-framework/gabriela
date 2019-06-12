@@ -9,7 +9,7 @@ const is = require('../util/is');
  * The exception message is self explanatory. This package can only be a static package of static function validators
  */
 function factory() {
-    throw new Error(`Invalid usage of Validators. Validators can only be used as a static method validators repository`);
+    throw new Error(`Invalid usage of Validator. Validator cannot be used as an instance but only as a static method repository`);
 }
 
 /**

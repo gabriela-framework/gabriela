@@ -1,9 +1,8 @@
-const gabriela = require('./gabriela/gabriela');
+const requestPromise = require('request-promise');
+const sync = require('synchronize');
 
-const mdl = {};
-
-const server = gabriela.asServer();
-
-server.addModule(mdl);
-
-server.runServer();
+const callback = function() {
+    requestPromise.get('https://google.com').then(() => {
+        return 'something';
+    });
+};

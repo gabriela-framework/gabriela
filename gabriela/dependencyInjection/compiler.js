@@ -1,7 +1,68 @@
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
 const Validator = require('../misc/validators');
+const deasync = require('deasync');
+const TaskRunner = require('../misc/taskRunner');
 
+function _waitCheck(taskRunner) {
+    const task = taskRunner.getTask();
+    if (task) {
+        return {
+            success: true,
+            value: task,
+        }
+    }
+
+    return {success: false}
+}
+
+function _getDependencies(name, serviceInit, taskRunner) {
+    const args = getArgNames(serviceInit.init);
+
+    if (serviceInit.isAsync && !args.includes('next')) {
+        throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+    }
+
+    const deps = [];
+    if (args.length > 0) {
+        for (const arg of args) {
+            if (arg === 'next') {
+                deps.push(taskRunner.next);
+            } else {
+                deps.push(this.compile(arg));
+            }
+        }
+    }
+
+    return deps;
+}
+
+function _resolveService(serviceInit, deps, taskRunner) {
+    let service;
+    if (serviceInit.isAsync) {
+        serviceInit.init(...deps);
+
+        let wait = 0;
+        while(!(_waitCheck(taskRunner)).success) {
+            wait++;
+
+            // todo: handle timeout on resolving services, maybe some config file?
+            /*                if (wait === 1000) {
+                                throw new Error(`Dependency injection error. Dependency ${name} waited too long to be resolved`);
+                            }*/
+
+            deasync.sleep(0);
+        }
+
+        service = taskRunner.getValue().call(null);
+
+        taskRunner.resolve();
+    } else {
+        service = serviceInit.init(...deps);
+    }
+
+    return service;
+}
 /**
  * Compilers parent is resolved outside of this compiler.
  *
@@ -39,23 +100,14 @@ function factory() {
 
     function compile(name) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
-
         if (resolved.hasOwnProperty(name)) return resolved[name];
-
         if (!selfTree.hasOwnProperty(name)) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
 
         const serviceInit = selfTree[name];
+        const taskRunner = TaskRunner.create();
 
-        const args = getArgNames(serviceInit.init);
-
-        const deps = [];
-        if (args.length > 0) {
-            for (const arg of args) {
-                deps.push(this.compile(arg));
-            }
-        }
-
-        const service = serviceInit.init(...deps);
+        const deps = _getDependencies.call(this, ...[name, serviceInit, taskRunner]);
+        const service = _resolveService(serviceInit, deps, taskRunner);
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 
