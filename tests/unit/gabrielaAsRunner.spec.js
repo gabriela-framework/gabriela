@@ -861,28 +861,38 @@ describe('Module dependency injection tests', () => {
         let appSearchModuleExecuted = false;
         let pdfConvertModuleExecuted = false;
 
+        const userModuleName = 'userModule';
+        const appSearchModuleName = 'appSearchModule';
+        const pdfConvertModuleName = 'pdfConvertModuleName';
+
         const userModule = {
-            name: 'userModule',
-            moduleLogic: [function(next) {
+            name: userModuleName,
+            moduleLogic: [function(state, next) {
                 userModuleExecuted = true;
+
+                state.name = userModuleName;
 
                 next();
             }],
         };
 
         const appSearchModule = {
-            name: 'appSearchModule',
-            moduleLogic: [function(next) {
+            name: appSearchModuleName,
+            moduleLogic: [function(state, next) {
                 appSearchModuleExecuted = true;
+
+                state.name = appSearchModuleName;
 
                 next();
             }],
         };
 
         const pdfConvertModule = {
-            name: 'pdfConvertModule',
-            moduleLogic: [function(next) {
+            name: pdfConvertModuleName,
+            moduleLogic: [function(state, next) {
                 pdfConvertModuleExecuted = true;
+
+                state.name = pdfConvertModuleName;
 
                 next();
             }],
@@ -895,10 +905,26 @@ describe('Module dependency injection tests', () => {
         app.addModule(pdfConvertModule);
 
         try {
-            app.run().then(() => {
+            app.run().then((state) => {
                 expect(userModuleExecuted).to.be.equal(true);
                 expect(appSearchModuleExecuted).to.be.equal(true);
                 expect(pdfConvertModuleExecuted).to.be.equal(true);
+
+                expect(state).to.have.property(userModuleName);
+                expect(state).to.have.property(appSearchModuleName);
+                expect(state).to.have.property(pdfConvertModuleName);
+
+                const userModuleState = state[userModuleName];
+                const appSearchState = state[appSearchModuleName];
+                const pdfConvertState = state[pdfConvertModuleName];
+
+                expect(userModuleState).to.have.property('name');
+                expect(appSearchState).to.have.property('name');
+                expect(pdfConvertState).to.have.property('name');
+
+                expect(userModuleState.name).to.be.equal(userModuleName);
+                expect(appSearchState.name).to.be.equal(appSearchModuleName);
+                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
 
                 done();
             });

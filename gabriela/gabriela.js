@@ -2,6 +2,7 @@ const ModuleTree = require('./module/moduleTree');
 const Compiler = require('./dependencyInjection/compiler');
 const Server = require('./server/server');
 const moduleFactory = require('./module/module');
+const deepCopy = require('deepcopy');
 
 module.exports = {
     asServer: (options) => {
@@ -39,9 +40,15 @@ module.exports = {
                 const modules = this.getModules();
                 const keys = Object.keys(modules);
 
+                let state = {};
+
                 for (const name of keys) {
-                    await moduleTree.runModule(modules[name].name);
+                    const res = await moduleTree.runModule(modules[name].name);
+
+                    state[modules[name].name] = res;
                 }
+
+                return deepCopy(state);
             }
         };
 
