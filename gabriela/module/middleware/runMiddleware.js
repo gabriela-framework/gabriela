@@ -34,7 +34,7 @@ function callImplicitNext(args, taskRunner) {
     }
 }
 
-async function runMiddleware(mdl, functions, state, http) {
+async function runMiddleware(mdl, functions, state) {
     if (functions && functions.length > 0) {
         const generator = createGenerator(functions);
         const taskRunner = taskRunnerFactory.create();
@@ -53,7 +53,6 @@ async function runMiddleware(mdl, functions, state, http) {
                 }
 
                 if (val.name === 'state') return state;
-                if (val.name === 'http') return http;
 
                 return val.value;
             }));

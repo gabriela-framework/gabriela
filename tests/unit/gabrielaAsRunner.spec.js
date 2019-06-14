@@ -31,7 +31,7 @@ describe('Gabriela runner module tests', () => {
 
         const immutableModule = g.getModule(name);
 
-        expect(immutableModule.name).to.be.equals(name);
+        expect(immutableModule.name).to.be.equal(name);
 
         expect(immutableModule.preLogicTransformers).to.be.a('array');
         expect(immutableModule.validators).to.be.a('array');
@@ -1016,6 +1016,9 @@ describe('Module dependency injection tests', () => {
             assert.fail(`Test failed with message: ${err.message}`);
         }
     });
+
+    it('should override a module', () => {
+    })
 });
 
 describe('Plugin tests', () => {

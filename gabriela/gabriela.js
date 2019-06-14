@@ -1,7 +1,7 @@
 const ModuleTree = require('./module/moduleTree');
 const Compiler = require('./dependencyInjection/compiler');
 const Server = require('./server/server');
-const moduleFactory = require('./module/module');
+const moduleFactory = require('./module/moduleFactory');
 const deepCopy = require('deepcopy');
 
 module.exports = {
@@ -28,14 +28,17 @@ module.exports = {
 
         const moduleInterface = {
             addModule: function(mdl) {
-                moduleTree.addModule(moduleFactory(mdl, rootCompiler));
+                moduleTree.addModule(mdl);
+            },
+            overrideModule: function(mdl) {
+                moduleTree.overrideModule(mdl);
             },
             getModule: moduleTree.getModule,
             hasModule: moduleTree.hasModule,
             getModules: moduleTree.getModules,
             removeModule: moduleTree.removeModule,
             run: async function(name) {
-                if (name) return moduleTree.runModule(name);
+                if (name) return moduleTree.runModule(name, rootCompiler);
 
                 const modules = this.getModules();
                 const keys = Object.keys(modules);
@@ -43,7 +46,7 @@ module.exports = {
                 let state = {};
 
                 for (const name of keys) {
-                    const res = await moduleTree.runModule(modules[name].name);
+                    const res = await moduleTree.runModule(modules[name].name, rootCompiler);
 
                     state[modules[name].name] = res;
                 }

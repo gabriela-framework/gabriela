@@ -1,8 +1,8 @@
 const runMiddleware = require('./middleware/runMiddleware');
 
 function factory() {
-    function create(mdl, http) {
-        return (function(mdl, http) {
+    function create(mdl) {
+        return (function(mdl) {
             const state = {};
 
             async function run(childState) {
@@ -17,7 +17,7 @@ function factory() {
 
                 for (const functions of middleware) {
                     try {
-                        await runMiddleware.call(null, ...[mdl, functions, state, http]);
+                        await runMiddleware.call(null, ...[mdl, functions, state]);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {
@@ -44,7 +44,7 @@ function factory() {
             }
 
             return new instance();
-        }(mdl, http));
+        }(mdl));
     }
 
     this.create = create;

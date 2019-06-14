@@ -1,3 +1,5 @@
+const deepCopy = require('deepcopy');
+
 function factory() {
     this.create = function() {
         return new instance();
@@ -11,7 +13,7 @@ function factory() {
                 throw new Error(`Invalid module. Module with name '${mdl.name}' already exists`);
             }
 
-            modules[mdl.name] = Object.assign({}, mdl);
+            modules[mdl.name] = deepCopy(mdl);
         }
     
         function has(name) {
@@ -23,10 +25,12 @@ function factory() {
                 return undefined;
             }
 
-            return Object.assign({}, modules[name]);
+            return deepCopy(modules[name]);
         }
 
         function getAll() {
+            // todo: replace this with reference safe handling because the collection cannot return
+            // the not-copied references
             return modules;
         }
         
@@ -39,17 +43,21 @@ function factory() {
             return true;
         }
 
+        function replace(mdl) {
+            if (!has(mdl.name)) return;
+
+            modules[mdl.name] = mdl;
+        }
+
         this.add = add;
         this.has = has;
         this.get = get;
+        this.replace = replace;
         this.getAll = getAll;
         this.remove = remove;
     }
 }
 
 module.exports = (function() {
-    const inst = new factory();
-    inst.constructor.name = 'Collection';
-
-    return inst;
+    return new factory();
 }());

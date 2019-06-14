@@ -4,23 +4,14 @@
  * @type {factory|*}
  */
 
-const ModuleCollection = require('../misc/collection');
 const ModuleRunner = require('./moduleRunner');
 const is = require('../util/is');
+const Validator = require('../misc/validators');
+const moduleFactory = require('./moduleFactory');
+const deepCopy = require('deepcopy');
 
 function instance() {
-    // A collection of modules for this ModuleTree. Hold only getters and setters for saved modules. For more information,
-    // check this packages comments
-    const jc = (function(jc) {
-        return {
-            addModule: jc.add,
-            getModule: jc.get,
-            getModules: jc.getAll,
-            hasModule: jc.has,
-            removeModule: jc.remove,
-        }
-    }(ModuleCollection.create()));
-
+    const modules = {};
     // A simple array that hold instances of this object (ModuleTree) with if 'modules' property is specified.
     // Otherwise, it is always empty
     const tree = [];
@@ -56,40 +47,22 @@ function instance() {
      * @param mdl
      */
     function addModule(mdl) {
-        // Todo: Handle submodules in a way that they only inherit the dependencies of their parent module and no other
-/*        if (mdl.modules) {
-            const subModulesTree = new factory();
+        Validator.moduleValidator(mdl);
 
-            this.child = subModulesTree;
-            subModulesTree.parent = this;
-
-            tree.push(subModulesTree);
-
-            for (const m of mdl.modules) {
-
-                if (m.modules) addModule(subModuleFactory(m));
-
-                subModulesTree.addModule(subModuleFactory(m));
-            }
-        }*/
-
-        jc.addModule(mdl);
+        modules[mdl.name] = deepCopy(mdl);
     }
 
     /**
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
-     * @param name {string}
-     * @param http {object}
-     * @returns {Promise<any>}
      */
-    async function runModule(name, http) {
+    async function runModule(name, rootCompiler) {
         if (!is('string', name)) throw new Error(`Module tree error. Invalid module name. Module name must be a string`);
-        if (!jc.hasModule(name)) throw new Error(`Module tree error. Module with name '${name}' does not exist`);
+        if (!this.hasModule(name)) throw new Error(`Module tree error. Module with name '${name}' does not exist`);
 
-        const mdl = jc.getModule(name);
+        const mdl = this.getModule(name);
 
-        const runner = ModuleRunner.create(mdl, http);
+        const runner = ModuleRunner.create(moduleFactory(mdl, rootCompiler));
 
         let childState = (tree.length > 0) ? await runTree(tree) : null;
 
@@ -103,10 +76,17 @@ function instance() {
     this.child = null;
 
     this.addModule = addModule;
-    this.hasModule = jc.hasModule;
-    this.getModule = jc.getModule;
-    this.getModules = jc.getModules;
-    this.removeModule = jc.removeModule;
+
+    this.hasModule = (name) => modules.hasOwnProperty(name);
+    this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
+    this.getModules = () => deepCopy(modules);
+    this.removeModule = (name) => {
+        if (!this.hasModule(name)) return false;
+
+        delete modules[name];
+
+        return true;
+    };
 
     this.runModule = runModule;
 }

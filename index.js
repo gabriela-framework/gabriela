@@ -1,25 +1,23 @@
-const gabriela = require('./gabriela/gabriela');
+const {OrderedMap} = require('immutable');
 
-const module1 = {
-    name: 'module1',
-    moduleLogic: [function(next) {
-        next();
-    }],
+const userModule = {
+    name: 'userModule',
 };
 
-const module2 = {
-    name: 'module2',
-    moduleLogic: [function(next) {
-        next();
-    }],
+const commentModule = {
+    name: 'commentModule',
 };
 
-const g  = gabriela.asRunner().module;
+let map = OrderedMap();
 
-g.addModule(module1);
-g.addModule(module2);
+map = map.set('userModule', userModule);
+map = map.set('commentModule', commentModule);
 
-g.run().then(() => {
-    console.log('stoka');
-});
+commentModule.name = 'mil';
+
+console.log(map.get('commentModule'));
+
+
+
+
 
