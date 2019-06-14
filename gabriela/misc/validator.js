@@ -27,12 +27,32 @@ factory.moduleValidator = function(mdl) {
      */
     for (const name of middlewareNames) {
         if (mdl.hasOwnProperty(name)) {
-            if (!Array.isArray(mdl[name])) {
-                throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions`);
+            if (!Array.isArray(mdl[name]) && !is('object', mdl[name])) {
+                throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions or an object with a 'name' property and a 'middleware' property that has to be an array`);
             }
 
-            for (const m of mdl[name]) {
-                if (!is('function', m)) throw new Error(`Invalid middleware value. '${name}' middleware of ${mdl.name} module must receive an array of functions`);
+            const middleware = mdl[name];
+
+            if (Array.isArray(middleware)) {
+                if (middleware.length > 0) {
+                    for (const m of mdl[name]) {
+                        if (!is('function', m)) throw new Error(`Invalid middleware value. '${name}' middleware of '${mdl.name}' module must receive an array of functions`);
+                    }
+                }
+            }
+
+            if (is('object', middleware)) {
+                if (!middleware.hasOwnProperty('name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
+                if (!middleware.hasOwnProperty('middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
+
+                if (!is('string', middleware.name)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
+                if (!Array.isArray(middleware.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array`);
+
+                if (middleware.middleware.length > 0) {
+                    for (const m of middleware.middleware) {
+                        if (!is('function', m)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
+                    }
+                }
             }
         }
     }

@@ -6,7 +6,7 @@
 
 const ModuleRunner = require('./moduleRunner');
 const is = require('../util/is');
-const Validator = require('../misc/validators');
+const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 

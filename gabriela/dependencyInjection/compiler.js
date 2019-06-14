@@ -1,6 +1,6 @@
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
-const Validator = require('../misc/validators');
+const Validator = require('../misc/validator');
 const deasync = require('deasync');
 const TaskRunner = require('../misc/taskRunner');
 

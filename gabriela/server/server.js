@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const Validator = require('../misc/validators');
+const Validator = require('../misc/validator');
 
 function Server(options, moduleTree) {
     options = options || {};
