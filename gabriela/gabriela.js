@@ -31,7 +31,7 @@ module.exports = {
                 moduleTree.addModule(mdl);
             },
             overrideModule: function(mdl) {
-
+                moduleTree.overrideModule(mdl);
             },
             getModule: moduleTree.getModule,
             hasModule: moduleTree.hasModule,

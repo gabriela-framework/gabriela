@@ -9,39 +9,74 @@ const is = require('../util/is');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
+const { middlewareTypes } = require('../misc/types');
+
+/**
+ * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
+ *
+ * @param tree
+ * @returns {Promise<null>}
+ */
+async function runTree(tree) {
+    let childState = null;
+    if (tree.length > 0) {
+        for (let a = 0; a < tree.length; a++) {
+            const gabriela = tree[a];
+            const modules = gabriela.getModules();
+
+            for (const moduleName in modules) {
+                if (!childState) childState = {};
+
+                const mdl = modules[moduleName];
+
+                childState[mdl.name] = await gabriela.runModule(mdl.name);
+            }
+        }
+    }
+
+    return childState;
+}
+
+function overrideMiddleware(mdl, existing) {
+    for (const type of middlewareTypes) {
+        if (mdl[type]) {
+            const middlewareList = mdl[type];
+
+            for (const newIndex in middlewareList) {
+                const newMiddleware = middlewareList[newIndex];
+
+                if (is('object', newMiddleware)) {
+                    if (!existing[type]) {
+                        existing[type] = mdl[type];
+                    }
+
+                    const existingMiddleware = existing[type];
+
+                    let found = false;
+                    for (const existingIndex in existingMiddleware) {
+                        if (newMiddleware.name === existingMiddleware[existingIndex].name) {
+                            existing[type][existingIndex] = newMiddleware;
+
+                            found = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        existing[type].push(newMiddleware);
+                    }
+                }
+            }
+        }
+    }
+}
 
 function instance() {
     const modules = {};
     // A simple array that hold instances of this object (ModuleTree) with if 'modules' property is specified.
     // Otherwise, it is always empty
     const tree = [];
-
-    /**
-     * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
-     *
-     * @param tree
-     * @returns {Promise<null>}
-     */
-    async function runTree(tree) {
-        let childState = null;
-        if (tree.length > 0) {
-            for (let a = 0; a < tree.length; a++) {
-                const gabriela = tree[a];
-                const modules = gabriela.getModules();
-
-                for (const moduleName in modules) {
-                    if (!childState) childState = {};
-
-                    const mdl = modules[moduleName];
-
-                    childState[mdl.name] = await gabriela.runModule(mdl.name);
-                }
-            }
-        }
-
-        return childState;
-    }
-
     /**
      * Recursive functions that adds modules to the tree if 'modules' property was specified with a list of sub modules
      * @param mdl
@@ -76,6 +111,19 @@ function instance() {
     this.child = null;
 
     this.addModule = addModule;
+    this.overrideModule = function(mdl) {
+        Validator.moduleValidator(mdl);
+
+        if (!this.hasModule(mdl.name)) {
+            throw new Error(`Module overriding error. Module with name '${mdl.name}' does not exist`);
+        }
+
+        const existing = this.getModule(mdl.name);
+
+        overrideMiddleware(mdl, existing);
+
+        modules[mdl.name] = deepCopy(existing);
+    };
 
     this.hasModule = (name) => modules.hasOwnProperty(name);
     this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;

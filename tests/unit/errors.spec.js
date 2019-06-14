@@ -493,4 +493,27 @@ describe('Failing module definition tests', () => {
             expect(entersException).to.be.equal(true);
         }
     });
+
+    it('should throw error if module to override does not exist', () => {
+        let userModule = {
+            name: 'name',
+        };
+
+        let g = gabriela.asRunner().module;
+
+        g.addModule(userModule);
+
+        let entersException = false;
+        try {
+            g.overrideModule({
+                name: 'nonExistent'
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module overriding error. Module with name 'nonExistent' does not exist`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

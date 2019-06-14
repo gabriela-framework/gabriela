@@ -4,6 +4,7 @@
  */
 
 const is = require('../util/is');
+const {middlewareTypes} = require('./types');
 
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
@@ -20,12 +21,11 @@ factory.moduleValidator = function(mdl) {
     if (!mdl.hasOwnProperty('name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
 
-    const middlewareNames = ['preLogicTransformers', 'validators', 'postLogicTransformers', 'moduleLogic', 'security'];
     /**
      * Traverses the middleware by middleware name and validates that every middleware has to be an array
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
      */
-    for (const name of middlewareNames) {
+    for (const name of middlewareTypes) {
         if (mdl.hasOwnProperty(name)) {
             if (!Array.isArray(mdl[name]) && !is('object', mdl[name])) {
                 throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions or an object with a 'name' property and a 'middleware' property that has to be an array`);

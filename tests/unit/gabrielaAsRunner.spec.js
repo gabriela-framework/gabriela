@@ -1078,8 +1078,58 @@ describe('Module dependency injection tests', () => {
         }
     });
 
-    it('should override a module', () => {
-    })
+    it('should override the modules middleware', () => {
+        let entersOriginalLogic1 = false;
+        let entersOverridenLogic1 = false;
+        let entersLogic2 = false;
+
+        const userModule = {
+            name: 'userModule',
+            moduleLogic: [{
+                name: 'logic1',
+                middleware: function(next) {
+                    requestPromise.get('https://google.com').then(() => {
+                        entersOriginalLogic1 = true;
+
+                        next();
+                    });
+                }
+            }],
+        };
+
+        const g = gabriela.asRunner().module;
+
+        g.addModule(userModule);
+
+        g.overrideModule({
+            name: 'userModule',
+            moduleLogic: [{
+                name: 'logic1',
+                middleware: function(next) {
+                    requestPromise.get('https://google.com').then(() => {
+                        entersOverridenLogic1 = true;
+
+                        next();
+                    });
+                }
+            }, {
+                name: 'logic2',
+                middleware: function(next) {
+                    requestPromise.get('https://google.com').then(() => {
+                        entersLogic2 = true;
+
+                        next();
+                    });
+                }
+            }]
+        });
+
+        g.run().then(() => {
+            expect(entersOverridenLogic1).to.be.equal(true);
+            expect(entersLogic2).to.be.equal(true);
+            expect(entersOriginalLogic1).to.be.equal(false);
+        });
+    });
 });
 
 describe('Plugin tests', () => {
