@@ -387,8 +387,7 @@ describe('Failing module definition tests', () => {
         for (const middlewareName of middlewareNames) {
             userModule = {};
             userModule.name = 'name';
-            userModule[middlewareName] = {
-            };
+            userModule[middlewareName] = [{}];
 
             entersException = false;
             try {
@@ -416,9 +415,9 @@ describe('Failing module definition tests', () => {
         for (const middlewareName of middlewareNames) {
             userModule = {};
             userModule.name = 'name';
-            userModule[middlewareName] = {
+            userModule[middlewareName] = [{
                 name: 'name'
-            };
+            }];
 
             entersException = false;
             try {
@@ -446,10 +445,10 @@ describe('Failing module definition tests', () => {
         for (const middlewareName of middlewareNames) {
             userModule = {};
             userModule.name = 'name';
-            userModule[middlewareName] = {
+            userModule[middlewareName] = [{
                 name: 1,
                 middleware: []
-            };
+            }];
 
             entersException = false;
             try {
@@ -477,10 +476,10 @@ describe('Failing module definition tests', () => {
         for (const middlewareName of middlewareNames) {
             userModule = {};
             userModule.name = 'name';
-            userModule[middlewareName] = {
+            userModule[middlewareName] = [{
                 name: 'name',
                 middleware: null
-            };
+            }];
 
             entersException = false;
             try {
@@ -488,38 +487,7 @@ describe('Failing module definition tests', () => {
             } catch(err) {
                 entersException = true;
 
-                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' has to have a 'middleware' property that must be an array`);
-            }
-
-            expect(entersException).to.be.equal(true);
-        }
-    });
-
-    it('should throw an error for invalid middleware name property property value for definition object', () => {
-        const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
-
-        let userModule = {
-            name: 'name',
-        };
-
-        let g = gabriela.asRunner().module;
-
-        let entersException = false;
-        for (const middlewareName of middlewareNames) {
-            userModule = {};
-            userModule.name = 'name';
-            userModule[middlewareName] = {
-                name: 'name',
-                middleware: [function() {}, function() {}, 1],
-            };
-
-            entersException = false;
-            try {
-                g.addModule(userModule);
-            } catch(err) {
-                entersException = true;
-
-                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' has to have a 'middleware' property that must be an array of functions`);
+                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' has to have a 'middleware' property that must be a function`);
             }
 
             expect(entersException).to.be.equal(true);

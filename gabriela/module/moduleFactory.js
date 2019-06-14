@@ -1,4 +1,5 @@
 const Compiler = require('../dependencyInjection/compiler');
+const is = require('../util/is');
 
 function bindCompiler(compiler, parentCompiler, mdl) {
     const c = Compiler.create();
@@ -17,6 +18,22 @@ function bindCompiler(compiler, parentCompiler, mdl) {
 
     return c;
 }
+
+function resolveMiddleware(mdl) {
+    const middleware = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'security'];
+
+    for (const m of middleware) {
+        if (mdl[m]) {
+            const middlewareFns = mdl[m];
+
+            for (const index in middlewareFns) {
+                if (is('object', middlewareFns[index])) {
+                    mdl[m][index] = middlewareFns[index].middleware;
+                }
+            }
+        }
+    }
+}
 /**
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
@@ -26,6 +43,7 @@ function bindCompiler(compiler, parentCompiler, mdl) {
  */
 function factory(mdl, parentCompiler) {
     mdl.compiler = bindCompiler(Compiler.create(), parentCompiler, mdl);
+    resolveMiddleware(mdl);
 
     const handlers = {
         set(obj, prop, value) {

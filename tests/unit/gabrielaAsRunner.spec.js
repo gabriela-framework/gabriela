@@ -105,6 +105,67 @@ describe('Gabriela runner module tests', () => {
         });
     });
 
+    it('should assert that all middleware created with middleware definition object is executed', () => {
+        let preLogicTransformerExecuted = false,
+            secondPreLogicExecuted = false,
+            validatorsExecuted = false,
+            moduleLogicExecuted = false,
+            postLogicTransformersExecuted = false;
+
+        const name = 'allMiddlewareExecution';
+
+        const mdl = {
+            name: name,
+            preLogicTransformers: [{
+                name: 'name',
+                middleware: function(next) {
+                    preLogicTransformerExecuted = true;
+
+                    next();
+                }
+            }, {
+                name: 'other',
+                middleware: function(next) {
+                    requestPromise.get('https://google.com').then(() => {
+                        secondPreLogicExecuted = true;
+
+                        next();
+                    });
+                }
+            }],
+            validators: [{
+                name: 'name',
+                middleware: function(next) {
+                    validatorsExecuted = true;
+
+                    next();
+                },
+            }],
+            moduleLogic: [function(next) {
+                moduleLogicExecuted = true;
+
+                next();
+            }],
+            postLogicTransformers: [function(next) {
+                postLogicTransformersExecuted = true;
+
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner().module;
+
+        g.addModule(mdl);
+
+        g.run(name).then(() => {
+            expect(secondPreLogicExecuted).to.be.equal(true);
+            expect(preLogicTransformerExecuted).to.be.equal(true);
+            expect(validatorsExecuted).to.be.equal(true);
+            expect(moduleLogicExecuted).to.be.equal(true);
+            expect(postLogicTransformersExecuted).to.be.equal(true);
+        });
+    });
+
     it('should assert that skip skips the single middleware and not all', (done) => {
         const name = 'moduleName';
         const model = {
