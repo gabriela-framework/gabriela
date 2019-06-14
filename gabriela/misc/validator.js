@@ -37,6 +37,9 @@ factory.moduleValidator = function(mdl) {
                 if (middleware.length > 0) {
                     for (const m of mdl[name]) {
                         if (is('object', m)) {
+                            if (m.disabled) {
+                                if (!is('boolean', m.disabled)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' 'disabled' property has to be a type boolean`);
+                            }
                             if (!m.hasOwnProperty('name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
                             if (!m.hasOwnProperty('middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
 

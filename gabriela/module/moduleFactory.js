@@ -25,12 +25,22 @@ function resolveMiddleware(mdl) {
     for (const m of middleware) {
         if (mdl[m]) {
             const middlewareFns = mdl[m];
+            const newMiddlewareFns = [];
 
             for (const index in middlewareFns) {
-                if (is('object', middlewareFns[index])) {
-                    mdl[m][index] = middlewareFns[index].middleware;
+                const n = middlewareFns[index];
+                if (is('object', n)) {
+                    if (n.hasOwnProperty('disabled') && n.disabled === true) {
+                        continue;
+                    }
+
+                    newMiddlewareFns.push(n.middleware);
+                } else {
+                    newMiddlewareFns.push(n);
                 }
             }
+
+            mdl[m] = newMiddlewareFns;
         }
     }
 }

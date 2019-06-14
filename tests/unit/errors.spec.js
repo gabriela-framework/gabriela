@@ -516,4 +516,36 @@ describe('Failing module definition tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should throw an error if disable property is not a boolean', () => {
+        const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
+
+        let userModule = {
+            name: 'name',
+        };
+
+        let g = gabriela.asRunner().module;
+
+        let entersException = false;
+        for (const middlewareName of middlewareNames) {
+            userModule = {};
+            userModule.name = 'name';
+            userModule[middlewareName] = [{
+                name: 'name',
+                disabled: 1,
+                middleware: function() {},
+            }];
+
+            entersException = false;
+            try {
+                g.addModule(userModule);
+            } catch(err) {
+                entersException = true;
+
+                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' 'disabled' property has to be a type boolean`);
+            }
+
+            expect(entersException).to.be.equal(true);
+        }
+    });
 });

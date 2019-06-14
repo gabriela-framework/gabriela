@@ -1130,6 +1130,101 @@ describe('Module dependency injection tests', () => {
             expect(entersOriginalLogic1).to.be.equal(false);
         });
     });
+
+    it('should not execute a disabled middleware', (done) => {
+        let transformer1Enters = false;
+        let transformer2Enters = false;
+        let logic1Enters = false;
+
+        const userModule = {
+            name: 'name',
+            preLogicTransformers: [{
+                name: 'transformer1',
+                disabled: true,
+                middleware: function(next) {
+                    transformer1Enters = true;
+
+                    next();
+                }
+            }, {
+                name: 'transformer2',
+                middleware: function(next) {
+                    transformer2Enters = true;
+
+                    next();
+                }
+            }],
+            moduleLogic: [{
+                name: 'logic1',
+                middleware: function(next) {
+                    logic1Enters = true;
+
+                    next();
+                }
+            }],
+        };
+
+        const g = gabriela.asRunner().module;
+
+        g.addModule(userModule);
+
+        g.run().then(() => {
+            expect(transformer1Enters).to.be.equal(false);
+            expect(transformer2Enters).to.be.equal(true);
+            expect(logic1Enters).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should execute plain and definition middleware', (done) => {
+        let preLogicPlain = false;
+        let preLogicDefinition = false;
+        let moduleLogicPlain = false;
+        let moduleLogicDefinition = false;
+
+        const userModule = {
+            name: 'userModule',
+            preLogicTransformers: [function(next) {
+                preLogicPlain = true;
+
+                next();
+            }, {
+                name: 'name1',
+                disabled: false,
+                middleware: function(next) {
+                    preLogicDefinition = true;
+
+                    next();
+                }
+            }],
+            moduleLogic: [function(next) {
+                moduleLogicPlain = true;
+
+                next();
+            }, {
+                name: 'modulePlain',
+                middleware: function(next) {
+                    moduleLogicDefinition = true;
+
+                    next();
+                }
+            }]
+        };
+
+        const g = gabriela.asRunner().module;
+
+        g.addModule(userModule);
+
+        g.run().then(() => {
+            expect(preLogicPlain).to.be.equal(true);
+            expect(preLogicDefinition).to.be.equal(true);
+            expect(moduleLogicPlain).to.be.equal(true);
+            expect(moduleLogicDefinition).to.be.equal(true);
+
+            done();
+        });
+    })
 });
 
 describe('Plugin tests', () => {
