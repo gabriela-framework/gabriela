@@ -92,8 +92,8 @@ function instance() {
      * server, runs them on server startup
      */
     async function runModule(name, rootCompiler, parentCompiler) {
-        if (!is('string', name)) throw new Error(`Module tree error. Invalid module name. Module name must be a string`);
-        if (!this.hasModule(name)) throw new Error(`Module tree error. Module with name '${name}' does not exist`);
+        if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
+        if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
         const mdl = this.getModule(name);
 

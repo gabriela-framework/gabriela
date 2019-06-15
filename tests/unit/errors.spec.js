@@ -568,6 +568,38 @@ describe('Failing module definition tests', () => {
             expect(entersException).to.be.equal(true);
         }
     });
+
+    it('should throw an error when executing an invalid module name', () => {
+        const userModule = {
+            name: 'name',
+        };
+
+        const m = gabriela.asRunner().module;
+
+        m.addModule(userModule);
+
+        m.run([]).then(() => {
+            assert.fail('This test should not be executed successfully');
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Module runtime tree error. Invalid module name type. Module name must be a string`);
+        });
+    });
+
+    it('should throw an error when executing a non existent module', () => {
+        const userModule = {
+            name: 'name',
+        };
+
+        const m = gabriela.asRunner().module;
+
+        m.addModule(userModule);
+
+        m.run('nonExistent').then(() => {
+            assert.fail('This test should not be executed successfully');
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
+        });
+    });
 });
 
 describe('Plugin errors', () => {
