@@ -146,24 +146,102 @@ describe('Dependency injection tests', () => {
 });
 
 describe('Dependency injection scope - framework wide', () => {
-    it('should create a plugin scope', () => {
+    it('should create a \'module\' scope and find the dependency', () => {
         const userService = {
             name: 'userService',
-            visibility: 'plugin',
+            visibility: 'module',
             init: function() {
-                function UserService() {};
+                function UserService() {
+                    this.addUser = null;
+                }
 
                 return new UserService();
             }
         };
 
-        const userManagement = {
-            name: 'userManagement',
-            dependencies: [userService]
+        const rootCompiler = Compiler.create();
+        const pluginCompiler = Compiler.create();
+        const moduleCompiler = Compiler.create();
+
+        moduleCompiler.parent = pluginCompiler;
+        moduleCompiler.root = rootCompiler;
+        pluginCompiler.root = rootCompiler;
+
+        moduleCompiler.add(userService);
+
+        expect(moduleCompiler.has('userService')).to.be.equal(true);
+        expect(moduleCompiler.parent.has('userService')).to.be.equal(false);
+        expect(moduleCompiler.root.has('userService')).to.be.equal(false);
+
+        const dep = moduleCompiler.compile('userService');
+
+        expect(dep).to.be.a('object');
+        expect(dep).to.have.property('addUser');
+    });
+
+    it('should create a \'plugin\' scope and find the dependency', () => {
+        const userService = {
+            name: 'userService',
+            visibility: 'plugin',
+            init: function() {
+                function UserService() {
+                    this.addUser = null;
+                }
+
+                return new UserService();
+            }
         };
 
-        const p = gabriela.asRunner().plugin;
+        const rootCompiler = Compiler.create();
+        const pluginCompiler = Compiler.create();
+        const moduleCompiler = Compiler.create();
 
-        p.addPlugin(userManagement);
+        moduleCompiler.parent = pluginCompiler;
+        moduleCompiler.root = rootCompiler;
+        pluginCompiler.root = rootCompiler;
+
+        moduleCompiler.parent.add(userService);
+
+        expect(moduleCompiler.has('userService')).to.be.equal(true);
+        expect(moduleCompiler.parent.has('userService')).to.be.equal(true);
+        expect(moduleCompiler.root.has('userService')).to.be.equal(false);
+
+        const dep = moduleCompiler.compile('userService');
+
+        expect(dep).to.be.a('object');
+        expect(dep).to.have.property('addUser');
+    });
+
+    it('should create a \'public\' scope and find the dependency', () => {
+        const userService = {
+            name: 'userService',
+            visibility: 'public',
+            init: function() {
+                function UserService() {
+                    this.addUser = null;
+                }
+
+                return new UserService();
+            }
+        };
+
+        const rootCompiler = Compiler.create();
+        const pluginCompiler = Compiler.create();
+        const moduleCompiler = Compiler.create();
+
+        moduleCompiler.parent = pluginCompiler;
+        moduleCompiler.root = rootCompiler;
+        pluginCompiler.root = rootCompiler;
+
+        moduleCompiler.root.add(userService);
+
+        expect(moduleCompiler.has('userService')).to.be.equal(true);
+        expect(moduleCompiler.parent.has('userService')).to.be.equal(true);
+        expect(moduleCompiler.root.has('userService')).to.be.equal(true);
+
+        const dep = moduleCompiler.compile('userService');
+
+        expect(dep).to.be.a('object');
+        expect(dep).to.have.property('addUser');
     });
 });

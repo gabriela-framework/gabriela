@@ -84,6 +84,7 @@ function _resolveService(serviceInit, deps, taskRunner) {
 function factory() {
     this.root = null;
     this.parent = null;
+    this.name = 'root';
 
     const selfTree = {};
     const resolved = {};
@@ -95,15 +96,29 @@ function factory() {
     }
 
     function has(name) {
-        return selfTree.hasOwnProperty(name);
+        if (selfTree.hasOwnProperty(name)) return true;
+        if (this.parent && this.parent.has(name)) return true;
+        if (this.root && this.root.has(name)) return true;
+
+        return false;
     }
 
     function compile(name) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];
-        if (!selfTree.hasOwnProperty(name)) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
 
-        const serviceInit = selfTree[name];
+        let serviceInit;
+
+        if (selfTree.hasOwnProperty(name)) {
+            serviceInit = selfTree[name];
+        } else if (this.parent) {
+            return this.parent.compile(name);
+        } else if (this.root) {
+            return this.root.compile(name);
+        }
+
+        if (!serviceInit) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
+
         const taskRunner = TaskRunner.create();
 
         const deps = _getDependencies.call(this, ...[name, serviceInit, taskRunner]);

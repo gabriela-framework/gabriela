@@ -85,7 +85,7 @@ describe('Plugin creation tests', () => {
                 postLogicTransformerExecuted = true;
 
                 next();
-            }]
+            }],
         };
 
         const p = gabriela.asRunner().plugin;
@@ -100,6 +100,9 @@ describe('Plugin creation tests', () => {
             expect(validatorExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(false);
             expect(postLogicTransformerExecuted).to.be.equal(true);
+        }).catch((err) => {
+            console.error(err.stack);
+            assert.fail(`This test failed with message: ${err.message}`);
         });
     });
 });
