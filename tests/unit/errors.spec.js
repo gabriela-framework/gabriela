@@ -694,4 +694,40 @@ describe('Plugin errors', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should throw an error when running a plugin with invalid type', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = {
+            name: 'plugin',
+        };
+
+        p.addPlugin(plugin);
+
+        let entersException = false;
+
+        p.run([]).then(() => {
+            assert.fail('This test should not be executed successfully');
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
+        });
+    });
+
+    it('should throw an error while executing an non existent plugin', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = {
+            name: 'plugin',
+        };
+
+        p.addPlugin(plugin);
+
+        let entersException = false;
+
+        p.run('nonExistent').then(() => {
+            assert.fail('This test should not be executed successfully');
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Plugin tree runtime error. Plugin with name 'nonExistent' does not exist`);
+        });
+    });
 });

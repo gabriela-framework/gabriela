@@ -37,7 +37,7 @@ module.exports = {
             run: async function(name) {
                 const rootCompiler = Compiler.create();
 
-                if (name) return moduleTree.runModule(name, rootCompiler);
+                if (name) return await moduleTree.runModule(name, rootCompiler);
 
                 const modules = this.getModules();
                 const keys = Object.keys(modules);
@@ -61,7 +61,9 @@ module.exports = {
             getPlugins: pluginTree.getPlugins,
             hasPlugin: pluginTree.hasPlugin,
             run: async function(name) {
-                if (name) return pluginTree.runPlugin(name);
+                const rootCompiler = Compiler.create();
+
+                if (name) return pluginTree.runPlugin(name, rootCompiler);
 
 
             }

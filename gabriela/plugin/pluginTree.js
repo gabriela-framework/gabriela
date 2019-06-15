@@ -1,6 +1,8 @@
 const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
 const ModuleTree = require('../module/moduleTree');
+const Compiler = require('../dependencyInjection/compiler');
+const is = require('../util/is');
 
 function instance() {
     const plugins = {};
@@ -28,7 +30,9 @@ function instance() {
     }
 
     function removePlugin(name) {
-        if (!hasPlugin(name)) return undefined;
+        if (!is('string', name)) throw new Error(`Plugin tree error. Invalid module name. Module name must be a string`);
+        if (!this.hasPlugin(name)) throw new Error(`Plugin tree error. Plugin with name '${name}' does not exist`);
+
 
         delete plugins[name];
 
@@ -40,7 +44,12 @@ function instance() {
     this.getPlugin = getPlugin;
     this.getPlugins = getPlugins;
     this.removePlugin = removePlugin;
-    this.runPlugin = function(name) {
+    this.runPlugin = async function(name, rootCompiler) {
+        if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
+        if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
+
+        const pluginCompiler = Compiler.create();
+        const plugin = this.getPlugin(name);
 
     }
 }
