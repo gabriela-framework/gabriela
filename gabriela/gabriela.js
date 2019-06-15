@@ -9,7 +9,6 @@ const moduleFactory = require('./module/moduleFactory');
 module.exports = {
     asServer: (options) => {
         const moduleTree = new ModuleTree();
-        const rootCompiler = Compiler.create();
 
         const server = new Server(options, moduleTree);
 
@@ -41,6 +40,8 @@ module.exports = {
             getModules: moduleTree.getModules,
             removeModule: moduleTree.removeModule,
             run: async function(name) {
+                const rootCompiler = Compiler.create();
+
                 if (name) return moduleTree.runModule(name, rootCompiler);
 
                 const modules = this.getModules();
@@ -80,6 +81,10 @@ module.exports = {
 
             get plugin() {
                 return pluginInterface;
+            },
+
+            startApp: function() {
+
             }
         };
     }

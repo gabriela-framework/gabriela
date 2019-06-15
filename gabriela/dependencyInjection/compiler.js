@@ -82,8 +82,8 @@ function _resolveService(serviceInit, deps, taskRunner) {
  *
  */
 function factory() {
+    this.root = null;
     this.parent = null;
-    const children = {};
 
     const selfTree = {};
     const resolved = {};
@@ -116,14 +116,9 @@ function factory() {
         return resolved[serviceInit.name];
     }
 
-    function addChild(name, compiler) {
-        children[name] = compiler;
-    }
-
     this.add = add;
     this.has = has;
     this.compile = compile;
-    this.addChildCompiler = addChild;
 }
 
 function instance() {

@@ -91,13 +91,13 @@ function instance() {
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
      */
-    async function runModule(name, rootCompiler) {
+    async function runModule(name, rootCompiler, parentCompiler) {
         if (!is('string', name)) throw new Error(`Module tree error. Invalid module name. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module tree error. Module with name '${name}' does not exist`);
 
         const mdl = this.getModule(name);
 
-        const runner = ModuleRunner.create(moduleFactory(mdl, rootCompiler));
+        const runner = ModuleRunner.create(moduleFactory(mdl, rootCompiler, parentCompiler));
 
         let childState = (tree.length > 0) ? await runTree(tree) : null;
 

@@ -1,10 +1,11 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
 
-function bindCompiler(compiler, parentCompiler, mdl) {
+function createCompiler(mdl, rootCompiler, parentCompiler) {
     const c = Compiler.create();
-    c.parent = parentCompiler;
-    parentCompiler.addChildCompiler(mdl.name, c);
+    c.root = parentCompiler;
+
+    if (parentCompiler) c.parent = parentCompiler;
 
     if (mdl.dependencies) {
         for (const depInit of mdl.dependencies) {
@@ -47,12 +48,9 @@ function resolveMiddleware(mdl) {
 /**
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
- * @param mdl
- * @param parentCompiler
- * @returns {Array|*[]|*[]|*[]|*[]|*[]|*[]|modules|{"istanbul-lib-instrument", nyc}|string|usersListModule.moduleLogic|Function|*[]|*[]|*[]|*[]|*|{DICompiler: *, preLogicTransformers: *, validators: *, moduleLogic: *, name: *, http: *, modules: *, postLogicTransformers: *}|*|Server | usersListModule.http | {route}|factory|null|*[]|*[]|*[]|Array|*[]|*[]|*[]|*[]|*[]|*[]|*}
  */
-function factory(mdl, parentCompiler) {
-    mdl.compiler = bindCompiler(Compiler.create(), parentCompiler, mdl);
+function factory(mdl, rootCompiler, parentCompiler) {
+    mdl.compiler = createCompiler(mdl, rootCompiler, parentCompiler);
     resolveMiddleware(mdl);
 
     const handlers = {
