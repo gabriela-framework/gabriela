@@ -74,8 +74,6 @@ factory.validatePlugin = function(plugin) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
     if (!plugin.hasOwnProperty('name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
     if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
-
-    validateDependencies(plugin);
 };
 
 factory.validateServerOptions = function(options) {

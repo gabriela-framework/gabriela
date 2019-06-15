@@ -651,24 +651,4 @@ describe('Plugin errors', () => {
 
         expect(entersException).to.be.equal(true);
     });
-
-    it('should fail when plugin dependencies are of invalid type', () => {
-        const p = gabriela.asRunner().plugin;
-
-        const userManagement = {
-            name: 'userManagement',
-            dependencies: null,
-        };
-
-        let entersException = false;
-        try {
-            p.addPlugin(userManagement);
-        } catch (e) {
-            entersException = true;
-
-            expect(e.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
 });
