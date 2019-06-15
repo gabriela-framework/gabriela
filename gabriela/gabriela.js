@@ -26,15 +26,10 @@ module.exports = {
     asRunner: function() {
         const moduleTree = new ModuleTree();
         const pluginTree = new PluginTree();
-        const rootCompiler = Compiler.create();
 
         const moduleInterface = {
-            addModule: function(mdl) {
-                moduleTree.addModule(mdl);
-            },
-            overrideModule: function(mdl) {
-                moduleTree.overrideModule(mdl);
-            },
+            addModule: moduleTree.addModule,
+            overrideModule: moduleTree.overrideModule,
             getModule: moduleTree.getModule,
             hasModule: moduleTree.hasModule,
             getModules: moduleTree.getModules,
