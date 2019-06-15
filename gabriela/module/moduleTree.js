@@ -96,8 +96,13 @@ function instance() {
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
         const mdl = this.getModule(name);
+        const constructedModule = moduleFactory(mdl, rootCompiler, parentCompiler);
 
-        const runner = ModuleRunner.create(moduleFactory(mdl, rootCompiler, parentCompiler));
+        return await runConstructedModule(constructedModule);
+    }
+
+    async function runConstructedModule(mdl) {
+        const runner = ModuleRunner.create(mdl);
 
         let childState = (tree.length > 0) ? await runTree(tree) : null;
 
@@ -137,6 +142,7 @@ function instance() {
     };
 
     this.runModule = runModule;
+    this.runConstructedModule = runConstructedModule;
 }
 
 function factory() {

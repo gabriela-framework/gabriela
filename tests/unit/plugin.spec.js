@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const assert = require('assert');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -48,12 +49,12 @@ describe('Plugin creation tests', () => {
         expect(emptyPlugins).to.not.have.property('plugin1');
     });
 
-    it('should run a plugin with a module', () => {
-        let middlewareExecuted = false;
+    it('should run a plugin with a single module', () => {
+        let preLogicTransformerExecuted = false;
         const userModule = {
             name: 'userModule',
             preLogicTransformers: [function(next) {
-                middlewareExecuted = true;
+                preLogicTransformerExecuted = true;
 
                 next();
             }],
@@ -64,6 +65,10 @@ describe('Plugin creation tests', () => {
         p.addPlugin({
             name: 'userManagement',
             modules: [userModule]
+        });
+
+        p.run('userManagement').then(() => {
+            expect(preLogicTransformerExecuted).to.be.equal(true);
         });
     });
 });

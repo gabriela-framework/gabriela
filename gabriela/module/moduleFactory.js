@@ -1,20 +1,30 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
 
+function addDependencies(mdl, compiler) {
+    for (const depInit of mdl.dependencies) {
+        if (!depInit.visibility) depInit.visibility = 'module';
+
+        if (depInit.visibility === 'module') {
+            compiler.add(depInit);
+        } else if (depInit.visibility === 'plugin') {
+            if (!compiler.parent) throw new Error(`Dependency injection error. Module ${mdl.name} has a dependency with name ${depInit.name} that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+
+            compiler.parent.add(depInit);
+        } else if (depInit.visibility === 'public') {
+            compiler.root.add(depInit);
+        }
+    }
+}
+
 function createCompiler(mdl, rootCompiler, parentCompiler) {
     const c = Compiler.create();
     c.root = parentCompiler;
 
     if (parentCompiler) c.parent = parentCompiler;
 
-    if (mdl.dependencies) {
-        for (const depInit of mdl.dependencies) {
-            if (!depInit.visibility) depInit.visibility = 'module';
-
-            if (depInit.visibility === 'module') {
-                c.add(depInit);
-            }
-        }
+    if (mdl.dependencies && mdl.dependencies.length > 0) {
+        addDependencies(mdl, c);
     }
 
     return c;

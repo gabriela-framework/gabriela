@@ -3,6 +3,8 @@ const Validator = require('../misc/validator');
 const ModuleTree = require('../module/moduleTree');
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
+const PluginRunner = require('./pluginRunner');
+const pluginFactory = require('./pluginFactory');
 
 function instance() {
     const plugins = {};
@@ -44,13 +46,18 @@ function instance() {
     this.getPlugin = getPlugin;
     this.getPlugins = getPlugins;
     this.removePlugin = removePlugin;
+
     this.runPlugin = async function(name, rootCompiler) {
         if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
-        const pluginCompiler = Compiler.create();
-        const plugin = this.getPlugin(name);
+        if (name) {
+            const plugin = this.getPlugin(name);
 
+            const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler));
+
+            await pluginRunner.run();
+        }
     }
 }
 

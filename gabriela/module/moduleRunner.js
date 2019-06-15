@@ -1,4 +1,5 @@
 const runMiddleware = require('./middleware/runMiddleware');
+const deepCopy = require('deepcopy');
 
 function factory() {
     function create(mdl) {
@@ -35,7 +36,7 @@ function factory() {
             }
 
             function getResult() {
-                return Object.assign({}, state);
+                return deepCopy(state);
             }
 
             function instance() {
