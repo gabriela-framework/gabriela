@@ -651,4 +651,47 @@ describe('Plugin errors', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should throw an error if plugin modules is not an array', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = {
+            name: 'plugin',
+            modules: null
+        };
+
+        let entersException = false;
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' 'modules' entry must be an array of module objects`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should throw an error if any of the plugin modules are invalid', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = {
+            name: 'plugin',
+            modules: [{
+                name: 'moduleName',
+                dependencies: null,
+            }]
+        };
+
+        let entersException = false;
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: 'Module definition error. 'dependencies' has to be an array of type object'`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

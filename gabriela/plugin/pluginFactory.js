@@ -1,3 +1,3 @@
-function factory(plugin) {
+function factory(plugin, rootCompiler) {
 
 }

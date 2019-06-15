@@ -74,6 +74,18 @@ factory.validatePlugin = function(plugin) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
     if (!plugin.hasOwnProperty('name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
     if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
+
+    if (plugin.hasOwnProperty('modules')) {
+        if (!Array.isArray(plugin.modules)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' 'modules' entry must be an array of module objects`);
+
+        try {
+            for (const mdl of plugin.modules) {
+                factory.moduleValidator(mdl);
+            }
+        } catch (e) {
+            throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: '${e.message}'`);
+        }
+    }
 };
 
 factory.validateServerOptions = function(options) {
