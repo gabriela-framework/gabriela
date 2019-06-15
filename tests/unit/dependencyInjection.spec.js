@@ -146,6 +146,24 @@ describe('Dependency injection tests', () => {
 });
 
 describe('Dependency injection scope - framework wide', () => {
-    it('should create a scope only for the module', () => {
+    it('should create a plugin scope', () => {
+        const userService = {
+            name: 'userService',
+            visibility: 'plugin',
+            init: function() {
+                function UserService() {};
+
+                return new UserService();
+            }
+        };
+
+        const userManagement = {
+            name: 'userManagement',
+            dependencies: [userService]
+        };
+
+        const p = gabriela.asRunner().plugin;
+
+        p.addPlugin(userManagement);
     });
 });

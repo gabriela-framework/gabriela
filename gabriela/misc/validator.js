@@ -13,6 +13,19 @@ function factory() {
     throw new Error(`Invalid usage of Validator. Validator cannot be used as an instance but only as a static method repository`);
 }
 
+function validateDependencies(value) {
+    /**
+     * Validates that dependencies have to be an array of type object
+     */
+    if (value.hasOwnProperty('dependencies')) {
+        if (!Array.isArray(value.dependencies)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
+
+        for (const d of value.dependencies) {
+            if (!is('object', d)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
+        }
+    }
+}
+
 /**
  * Validates
  * @param mdl
@@ -54,16 +67,15 @@ factory.moduleValidator = function(mdl) {
         }
     }
 
-    /**
-     * Validates that dependencies have to be an array of type object
-     */
-    if (mdl.hasOwnProperty('dependencies')) {
-        if (!Array.isArray(mdl.dependencies)) throw new Error(`Module definition error. 'dependencies' has to be an array of functions`);
+    validateDependencies(mdl);
+};
 
-        for (const d of mdl.dependencies) {
-            if (!is('object', d)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
-        }
-    }
+factory.validatePlugin = function(plugin) {
+    if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
+    if (!plugin.hasOwnProperty('name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
+    if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
+
+    validateDependencies(plugin);
 };
 
 factory.validateServerOptions = function(options) {

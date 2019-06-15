@@ -291,6 +291,26 @@ describe('Failing dependency injection tests', () => {
 });
 
 describe('Failing module definition tests', () => {
+    it('should throw an error because of invalid dependencies entry type', () => {
+        let userModule = {
+            name: 'userModule',
+            dependencies: null,
+        };
+
+        let g = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            g.addModule(userModule);
+        } catch(err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
@@ -547,5 +567,108 @@ describe('Failing module definition tests', () => {
 
             expect(entersException).to.be.equal(true);
         }
+    });
+});
+
+describe('Plugin errors', () => {
+    it('should fail plugin definition because of invalid data type', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = null;
+
+        let entersException = false;
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin definition has to be an object`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of non existent plugin name', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin = {};
+
+        let entersException = false;
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin definition has to have a 'name' property`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of invalid plugin name', () => {
+        const p = gabriela.asRunner().plugin;
+
+        let plugin = {
+            name: 1
+        };
+
+        let entersException = false;
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin 'name' must be a string`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of existing plugin', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const plugin1 = {
+            name: 'plugin1',
+        };
+
+        const plugin2 = {
+            name: 'plugin2',
+        };
+
+        p.addPlugin(plugin1);
+        p.addPlugin(plugin2);
+
+        let entersException = false;
+        try {
+            p.addPlugin({
+                name: 'plugin2',
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin2.name}' already exists`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail when plugin dependencies are of invalid type', () => {
+        const p = gabriela.asRunner().plugin;
+
+        const userManagement = {
+            name: 'userManagement',
+            dependencies: null,
+        };
+
+        let entersException = false;
+        try {
+            p.addPlugin(userManagement);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
+        }
+
+        expect(entersException).to.be.equal(true);
     });
 });

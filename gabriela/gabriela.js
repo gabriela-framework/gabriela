@@ -1,8 +1,10 @@
+const deepCopy = require('deepcopy');
+
 const ModuleTree = require('./module/moduleTree');
+const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const Server = require('./server/server');
 const moduleFactory = require('./module/moduleFactory');
-const deepCopy = require('deepcopy');
 
 module.exports = {
     asServer: (options) => {
@@ -24,6 +26,7 @@ module.exports = {
 
     asRunner: function() {
         const moduleTree = new ModuleTree();
+        const pluginTree = new PluginTree();
         const rootCompiler = Compiler.create();
 
         const moduleInterface = {
@@ -56,9 +59,17 @@ module.exports = {
         };
 
         const pluginInterface = {
+            addPlugin: pluginTree.addPlugin,
+            getPlugin: pluginTree.getPlugin,
+            removePlugin: pluginTree.removePlugin,
+            getPlugins: pluginTree.getPlugins,
+            hasPlugin: pluginTree.hasPlugin,
+            run: async function(name) {
+                if (name) return pluginTree.runPlugin(name);
 
+
+            }
         };
-
 
         // create an interface for the runner
         // there can be no private function in fn, only public
