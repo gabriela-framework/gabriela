@@ -51,6 +51,10 @@ describe('Plugin creation tests', () => {
 
     it('should run a plugin with a single module', () => {
         let preLogicTransformerExecuted = false;
+        let validatorExecuted = false;
+        let moduleLogicExecuted = false;
+        let postLogicTransformerExecuted = false;
+
         const userModule = {
             name: 'userModule',
             preLogicTransformers: [function(next) {
@@ -58,6 +62,30 @@ describe('Plugin creation tests', () => {
 
                 next();
             }],
+            validators: [{
+                name: 'validatorName',
+                middleware: function(next) {
+                    validatorExecuted = true;
+                    next();
+                }
+            }],
+            moduleLogic: [{
+                name: 'moduleLogic',
+                middleware: function(next) {
+                    moduleLogicExecuted = true;
+
+                    next();
+                }
+            }, function(next) {
+                moduleLogicExecuted = false;
+
+                next();
+            }],
+            postLogicTransformers: [function(next) {
+                postLogicTransformerExecuted = true;
+
+                next();
+            }]
         };
 
         const p = gabriela.asRunner().plugin;
@@ -69,6 +97,9 @@ describe('Plugin creation tests', () => {
 
         p.run('userManagement').then(() => {
             expect(preLogicTransformerExecuted).to.be.equal(true);
+            expect(validatorExecuted).to.be.equal(true);
+            expect(moduleLogicExecuted).to.be.equal(false);
+            expect(postLogicTransformerExecuted).to.be.equal(true);
         });
     });
 });
