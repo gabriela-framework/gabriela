@@ -64,8 +64,6 @@ module.exports = {
                 const rootCompiler = Compiler.create();
 
                 if (name) return pluginTree.runPlugin(name, rootCompiler);
-
-
             }
         };
 

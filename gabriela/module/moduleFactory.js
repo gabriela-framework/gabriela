@@ -1,14 +1,16 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
+const getArgNames = require('../util/getArgNames');
+const { asyncFlowTypes } = require('../misc/types');
 
-function addDependencies(mdl, compiler) {
+function _addDependencies(mdl, compiler) {
     for (const depInit of mdl.dependencies) {
         if (!depInit.visibility) depInit.visibility = 'module';
 
         if (depInit.visibility === 'module') {
             compiler.add(depInit);
         } else if (depInit.visibility === 'plugin') {
-            if (!compiler.parent) throw new Error(`Dependency injection error. Module ${mdl.name} has a dependency with name ${depInit.name} that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+            if (!compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
 
             compiler.parent.add(depInit);
         } else if (depInit.visibility === 'public') {
@@ -17,20 +19,49 @@ function addDependencies(mdl, compiler) {
     }
 }
 
-function createCompiler(mdl, rootCompiler, parentCompiler) {
+/**
+ *
+ * A pre check checks if the dependencies can be resolved in the future.
+ *
+ * Rules:
+ */
+function _dependencyPreCheck(mdl) {
+    if (mdl.dependencies) {
+        const dependencies = mdl.dependencies;
+        const flatMap = dependencies.map((val) => {
+            return val.name;
+        });
+
+        for (const depInit of dependencies) {
+            const argNames = getArgNames(depInit.init);
+            const depsNotFound = [];
+
+            argNames.forEach((val) => {
+                if (!flatMap.includes(val) && !asyncFlowTypes.includes(val)) depsNotFound.push(val);
+            });
+
+            if (depsNotFound.length > 0) {
+                throw new Error(`Dependency injection precompile check error. Could not find dependencies '${depsNotFound.join(',')}' for service '${depInit.name}' in module '${mdl.name}'`);
+            }
+        }
+
+    }
+}
+
+function _createCompiler(mdl, rootCompiler, parentCompiler) {
     const c = Compiler.create();
-    c.root = parentCompiler;
+    c.root = rootCompiler;
 
     if (parentCompiler) c.parent = parentCompiler;
 
     if (mdl.dependencies && mdl.dependencies.length > 0) {
-        addDependencies(mdl, c);
+        _addDependencies(mdl, c);
     }
 
     return c;
 }
 
-function resolveMiddleware(mdl) {
+function _resolveMiddleware(mdl) {
     const middleware = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'security'];
 
     for (const m of middleware) {
@@ -60,8 +91,9 @@ function resolveMiddleware(mdl) {
  * here in order for module dependencies to be resolved.
  */
 function factory(mdl, rootCompiler, parentCompiler) {
-    mdl.compiler = createCompiler(mdl, rootCompiler, parentCompiler);
-    resolveMiddleware(mdl);
+    _dependencyPreCheck(mdl);
+    mdl.compiler = _createCompiler(mdl, rootCompiler, parentCompiler);
+    _resolveMiddleware(mdl);
 
     const handlers = {
         set(obj, prop, value) {
@@ -82,6 +114,6 @@ function factory(mdl, rootCompiler, parentCompiler) {
     return new Proxy(mdl, handlers);
 }
 
-module.exports = function(mdl, parentCompiler) {
-    return new factory(mdl, parentCompiler);
+module.exports = function(mdl, rootCompiler, parentCompiler) {
+    return new factory(mdl, rootCompiler, parentCompiler);
 };

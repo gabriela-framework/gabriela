@@ -49,7 +49,7 @@ describe('Plugin creation tests', () => {
         expect(emptyPlugins).to.not.have.property('plugin1');
     });
 
-    it('should run a plugin with a single module', () => {
+    it('should run a plugin with a single module', (done) => {
         let preLogicTransformerExecuted = false;
         let validatorExecuted = false;
         let moduleLogicExecuted = false;
@@ -100,9 +100,71 @@ describe('Plugin creation tests', () => {
             expect(validatorExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(false);
             expect(postLogicTransformerExecuted).to.be.equal(true);
+
+            done();
         }).catch((err) => {
             console.error(err.stack);
             assert.fail(`This test failed with message: ${err.message}`);
         });
+    });
+
+    it('should create all types of visibility dependencies and resolve them within modules', (done) => {
+        const friendsRepositoryInit = {
+            name: 'friendsRepository',
+            visibility: 'module',
+            init: function() {
+                function FriendsRepository() {
+                    this.addFriend = null;
+                }
+
+                return new FriendsRepository();
+            }
+        };
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            visibility: 'module',
+            init: function(friendsRepository) {
+                function UserRepository() {
+                    this.addUser = null;
+
+                    this.friendsRepository = friendsRepository;
+                }
+
+                return new UserRepository();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'public',
+            init: function(userRepository) {
+                function UserService() {
+                    this.userRepository = userRepository;
+                }
+
+                return new UserService();
+            }
+        };
+
+        const userModule = {
+            name: 'userModule',
+            moduleLogic: [function(userService, next) {
+                next();
+            }],
+            dependencies: [userServiceInit, userRepositoryInit, friendsRepositoryInit],
+        };
+
+        const searchModule = {
+            name: 'searchModule',
+            moduleLogic: [function(userRepository, next) {
+                next();
+            }],
+            dependencies: [userServiceInit]
+        };
+
+        const p = gabriela.asRunner().plugin;
+
+        done();
     });
 });

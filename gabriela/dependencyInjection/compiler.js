@@ -16,12 +16,10 @@ function _waitCheck(taskRunner) {
     return {success: false}
 }
 
-function _getDependencies(name, serviceInit, taskRunner) {
+function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
     const args = getArgNames(serviceInit.init);
 
-    if (serviceInit.isAsync && !args.includes('next')) {
-        throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
-    }
+    if (serviceInit.isAsync && !args.includes('next')) throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
 
     const deps = [];
     if (args.length > 0) {
@@ -29,7 +27,7 @@ function _getDependencies(name, serviceInit, taskRunner) {
             if (arg === 'next') {
                 deps.push(taskRunner.next);
             } else {
-                deps.push(this.compile(arg));
+                deps.push(originalCompiler.compile(arg));
             }
         }
     }
@@ -103,7 +101,10 @@ function factory() {
         return false;
     }
 
-    function compile(name) {
+    function compile(name, originCompiler) {
+        // originCompiler is always the modules compiler
+        originCompiler = (originCompiler) ? originCompiler : this;
+
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];
 
@@ -112,16 +113,16 @@ function factory() {
         if (selfTree.hasOwnProperty(name)) {
             serviceInit = selfTree[name];
         } else if (this.parent) {
-            return this.parent.compile(name);
+            return this.parent.compile(name, originCompiler);
         } else if (this.root) {
-            return this.root.compile(name);
+            return this.root.compile(name, originCompiler);
         }
 
         if (!serviceInit) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
 
         const taskRunner = TaskRunner.create();
 
-        const deps = _getDependencies.call(this, ...[name, serviceInit, taskRunner]);
+        const deps = _getDependencies.call(this, ...[name, serviceInit, taskRunner, originCompiler]);
         const service = _resolveService(serviceInit, deps, taskRunner);
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
