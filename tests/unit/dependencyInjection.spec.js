@@ -65,6 +65,7 @@ describe('Dependency injection tests', () => {
         };
 
         const compiler = Compiler.create();
+        compiler.name = 'module';
 
         compiler.add(userServiceInit);
         compiler.add(commentServiceInit);

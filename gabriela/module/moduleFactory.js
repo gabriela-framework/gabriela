@@ -19,46 +19,9 @@ function _addDependencies(mdl, compiler) {
     }
 }
 
-/**
- *
- * A pre check checks if the dependencies can be resolved in the future.
- *
- * Rules:
- */
-function _dependencyPreCheck(mdl) {
-    if (mdl.dependencies) {
-        const dependencies = mdl.dependencies;
-        const flatMap = dependencies.map((val) => {
-            return val.name;
-        });
-
-        for (const depInit of dependencies) {
-            if (mdl.name === 'searchModule') {
-                console.log(mdl.compiler.root.isResolved(depInit.name));
-                console.log(depInit);
-            }
-
-            if (depInit.visibility === 'public' && mdl.compiler.isResolved(depInit.name)) {
-                continue;
-            }
-
-            const argNames = getArgNames(depInit.init);
-            const depsNotFound = [];
-
-            argNames.forEach((val) => {
-                if (!flatMap.includes(val) && !asyncFlowTypes.includes(val)) depsNotFound.push(val);
-            });
-
-            if (depsNotFound.length > 0) {
-                throw new Error(`Dependency injection precompile check error. Could not find dependencies '${depsNotFound.join(',')}' for service '${depInit.name}' in module '${mdl.name}'`);
-            }
-        }
-
-    }
-}
-
 function _createCompiler(mdl, rootCompiler, parentCompiler) {
     const c = Compiler.create();
+    c.name = 'module';
     c.root = rootCompiler;
 
     if (parentCompiler) c.parent = parentCompiler;
@@ -101,7 +64,6 @@ function _resolveMiddleware(mdl) {
  */
 function factory(mdl, rootCompiler, parentCompiler) {
     _createCompiler(mdl, rootCompiler, parentCompiler);
-    _dependencyPreCheck(mdl);
     _resolveMiddleware(mdl);
 
     const handlers = {

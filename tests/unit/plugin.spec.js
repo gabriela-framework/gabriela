@@ -158,9 +158,6 @@ describe('Plugin creation tests', () => {
         const searchModule = {
             name: 'searchModule',
             moduleLogic: [function(userService, next) {
-
-                console.log(userService);
-
                 next();
             }],
             dependencies: [userServiceInit]
@@ -168,15 +165,13 @@ describe('Plugin creation tests', () => {
 
         const p = gabriela.asRunner().plugin;
 
-        done();
-/*
         p.addPlugin({
-            name: 'name',
+            name: 'visibilityPlugin',
             modules: [userModule, searchModule],
         });
 
-        p.run('name').then(() => {
+        p.run('visibilityPlugin').then(() => {
             done();
-        });*/
+        });
     });
 });

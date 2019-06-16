@@ -3,6 +3,7 @@ const moduleFactory = require('../module/moduleFactory');
 
 function _createCompiler(plugin, rootCompiler) {
     const c = Compiler.create();
+    c.name = 'plugin';
     c.root = rootCompiler;
 
     plugin.compiler = c;

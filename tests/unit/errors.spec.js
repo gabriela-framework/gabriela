@@ -288,69 +288,6 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
-
-    it('should fail because of not included dependencies', (done) => {
-        const friendsRepositoryInit = {
-            name: 'friendsRepository',
-            visibility: 'module',
-            init: function() {
-                function FriendsRepository() {
-                    this.addFriend = null;
-                }
-
-                return new FriendsRepository();
-            }
-        };
-
-        const userRepositoryInit = {
-            name: 'userRepository',
-            visibility: 'module',
-            init: function(friendsRepository) {
-                function UserRepository() {
-                    this.addUser = null;
-
-                    this.friendsRepository = friendsRepository;
-                }
-
-                return new UserRepository();
-            }
-        };
-
-        const userServiceInit = {
-            name: 'userService',
-            visibility: 'public',
-            init: function(userRepository) {
-                function UserService() {
-                    this.userRepository = userRepository;
-                }
-
-                return new UserService();
-            }
-        };
-
-        const userModule = {
-            name: 'userModule',
-            moduleLogic: [function(userService, next) {
-                next();
-            }],
-            dependencies: [userServiceInit, friendsRepositoryInit],
-        };
-
-        const p = gabriela.asRunner().plugin;
-
-        p.addPlugin({
-            name: 'plugin',
-            modules: [userModule]
-        });
-
-        p.run('plugin').then(() => {
-            assert.fail('Test failed because running this plugin should not be successful');
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Dependency injection precompile check error. Could not find dependencies 'userRepository' for service 'userService' in module 'userModule'`);
-
-            done();
-        });
-    })
 });
 
 describe('Failing module definition tests', () => {

@@ -82,7 +82,7 @@ function _resolveService(serviceInit, deps, taskRunner) {
 function factory() {
     this.root = null;
     this.parent = null;
-    this.name = 'root';
+    this.name = null;
 
     const selfTree = {};
     const resolved = {};
@@ -110,8 +110,7 @@ function factory() {
     }
 
     function compile(name, originCompiler) {
-        // originCompiler is always the modules compiler
-        originCompiler = (originCompiler) ? originCompiler : this;
+        if (!originCompiler && this.name === 'module') originCompiler = this;
 
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];

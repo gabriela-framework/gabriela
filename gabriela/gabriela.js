@@ -62,6 +62,7 @@ module.exports = {
             hasPlugin: pluginTree.hasPlugin,
             run: async function(name) {
                 const rootCompiler = Compiler.create();
+                rootCompiler.name = 'root';
 
                 if (name) return pluginTree.runPlugin(name, rootCompiler);
             }
