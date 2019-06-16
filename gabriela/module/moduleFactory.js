@@ -58,7 +58,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler) {
         _addDependencies(mdl, c);
     }
 
-    return c;
+    mdl.compiler = c;
 }
 
 function _resolveMiddleware(mdl) {
@@ -92,7 +92,7 @@ function _resolveMiddleware(mdl) {
  */
 function factory(mdl, rootCompiler, parentCompiler) {
     _dependencyPreCheck(mdl);
-    mdl.compiler = _createCompiler(mdl, rootCompiler, parentCompiler);
+    _createCompiler(mdl, rootCompiler, parentCompiler);
     _resolveMiddleware(mdl);
 
     const handlers = {
