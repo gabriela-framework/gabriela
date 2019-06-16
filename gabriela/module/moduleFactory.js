@@ -33,6 +33,15 @@ function _dependencyPreCheck(mdl) {
         });
 
         for (const depInit of dependencies) {
+            if (mdl.name === 'searchModule') {
+                console.log(mdl.compiler.root.isResolved(depInit.name));
+                console.log(depInit);
+            }
+
+            if (depInit.visibility === 'public' && mdl.compiler.isResolved(depInit.name)) {
+                continue;
+            }
+
             const argNames = getArgNames(depInit.init);
             const depsNotFound = [];
 
@@ -91,8 +100,8 @@ function _resolveMiddleware(mdl) {
  * here in order for module dependencies to be resolved.
  */
 function factory(mdl, rootCompiler, parentCompiler) {
-    _dependencyPreCheck(mdl);
     _createCompiler(mdl, rootCompiler, parentCompiler);
+    _dependencyPreCheck(mdl);
     _resolveMiddleware(mdl);
 
     const handlers = {

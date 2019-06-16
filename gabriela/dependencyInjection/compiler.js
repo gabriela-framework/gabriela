@@ -101,6 +101,14 @@ function factory() {
         return false;
     }
 
+    function isResolved(name) {
+        if (resolved.hasOwnProperty(name)) return true;
+        if (this.parent && this.parent.isResolved(name)) return true;
+        if (this.root && this.root.isResolved(name)) return true;
+
+        return false;
+    }
+
     function compile(name, originCompiler) {
         // originCompiler is always the modules compiler
         originCompiler = (originCompiler) ? originCompiler : this;
@@ -112,9 +120,9 @@ function factory() {
 
         if (selfTree.hasOwnProperty(name)) {
             serviceInit = selfTree[name];
-        } else if (this.parent) {
+        } else if (this.parent && this.parent.has(name)) {
             return this.parent.compile(name, originCompiler);
-        } else if (this.root) {
+        } else if (this.root && this.root.has(name)) {
             return this.root.compile(name, originCompiler);
         }
 
@@ -134,6 +142,7 @@ function factory() {
 
     this.add = add;
     this.has = has;
+    this.isResolved = isResolved;
     this.compile = compile;
 }
 

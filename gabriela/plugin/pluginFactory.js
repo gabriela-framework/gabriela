@@ -5,7 +5,7 @@ function _createCompiler(plugin, rootCompiler) {
     const c = Compiler.create();
     c.root = rootCompiler;
 
-    return c;
+    plugin.compiler = c;
 }
 
 function _replaceModules(plugin) {
@@ -22,8 +22,7 @@ function _replaceModules(plugin) {
 }
 
 function factory(plugin, rootCompiler) {
-    const compiler = _createCompiler(plugin, rootCompiler);
-    plugin.compiler = compiler;
+    _createCompiler(plugin, rootCompiler);
 
     _replaceModules(plugin);
 

@@ -244,4 +244,126 @@ describe('Dependency injection scope - framework wide', () => {
         expect(dep).to.be.a('object');
         expect(dep).to.have.property('addUser');
     });
+
+    it('should return a single already resolved dependency', () => {
+        const c = Compiler.create();
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        c.add(userServiceInit);
+
+        const compiled = c.compile('userService');
+
+        expect(compiled).to.be.a('object');
+        expect(c.isResolved('userService')).to.be.equal(true);
+
+        const resolved = c.compile('userService');
+
+        expect(resolved).to.be.equal(compiled);
+        expect(resolved === compiled).to.be.equal(true);
+        expect(resolved == compiled).to.be.equal(true);
+    });
+
+    it('should return a single already resolved service from a linked list compiler structure', () => {
+        const child = Compiler.create();
+        const parent = Compiler.create();
+
+        child.parent = parent;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        parent.add(userServiceInit);
+
+        expect(child.isResolved('userService')).to.be.equal(false);
+
+        const compiled = child.compile('userService');
+
+        expect(child.isResolved('userService')).to.be.equal(true);
+
+        const resolved = child.compile('userService');
+
+        expect(compiled === resolved).to.be.equal(true);
+    });
+
+    it('should resolve a service in a compiler tree data structure with depth 2', () => {
+        const root = Compiler.create();
+        const child1 = Compiler.create();
+        const child2 = Compiler.create();
+
+        child1.root = root;
+        child2.root = root;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        child1.root.add(userServiceInit);
+
+        expect(child2.has('userService')).to.be.equal(true);
+
+        const compiled = child2.compile('userService');
+
+        expect(compiled).to.be.a('object');
+        expect(child2.isResolved('userService')).to.be.equal(true);
+        expect(child1.isResolved('userService')).to.be.equal(true);
+
+        const resolved = child1.compile('userService');
+
+        expect(resolved).to.be.a('object');
+        expect(resolved === compiled).to.be.equal(true);
+        expect(resolved).to.be.equal(compiled);
+    });
+
+    it('should resolve a service in a compiler tree data structure with depth 3', () => {
+        const root = Compiler.create();
+        const parent = Compiler.create();
+        const child1 = Compiler.create();
+        const child2 = Compiler.create();
+
+        parent.root = root;
+
+        child1.root = root;
+        child2.root = root;
+        child2.parent = parent;
+        child1.parent = parent;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        child1.root.add(userServiceInit);
+
+        const compiled = child2.compile('userService');
+
+        expect(compiled).to.be.a('object');
+        expect(child2.isResolved('userService')).to.be.equal(true);
+
+        const resolved = child2.parent.compile('userService');
+
+        expect(resolved).to.be.equal(compiled);
+    });
 });
