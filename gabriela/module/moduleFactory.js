@@ -17,7 +17,7 @@ function _addDependencies(mdl, compiler) {
     }
 }
 
-function _createCompiler(mdl, rootCompiler, parentCompiler) {
+function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     const c = Compiler.create();
     c.name = 'module';
     c.root = rootCompiler;
@@ -29,6 +29,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler) {
     }
 
     mdl.compiler = c;
+    mdl.sharedCompiler = sharedCompiler;
 }
 
 function _resolveMiddleware(mdl) {
@@ -60,8 +61,8 @@ function _resolveMiddleware(mdl) {
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
-function factory(mdl, rootCompiler, parentCompiler) {
-    _createCompiler(mdl, rootCompiler, parentCompiler);
+function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+    _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(mdl);
 
     const handlers = {
@@ -70,7 +71,7 @@ function factory(mdl, rootCompiler, parentCompiler) {
         },
 
         get(target, prop, receiver) {
-            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler', 'plugin'];
+            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler', 'sharedCompiler', 'plugin'];
 
             if (!allowed.includes(prop)) {
                 throw new Error(`Module access error. Trying to access protected property '${prop}' of a module`);
@@ -83,6 +84,6 @@ function factory(mdl, rootCompiler, parentCompiler) {
     return new Proxy(mdl, handlers);
 }
 
-module.exports = function(mdl, rootCompiler, parentCompiler) {
-    return new factory(mdl, rootCompiler, parentCompiler);
+module.exports = function(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+    return new factory(mdl, rootCompiler, parentCompiler, sharedCompiler);
 };
