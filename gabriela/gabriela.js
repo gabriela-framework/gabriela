@@ -36,9 +36,8 @@ module.exports = {
             removeModule: moduleTree.removeModule,
             run: async function(name) {
                 const rootCompiler = Compiler.create();
-                const sharedCompiler = Compiler.create();
 
-                if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
+                if (name) return await moduleTree.runModule(name, rootCompiler);
 
                 const modules = this.getModules();
                 const keys = Object.keys(modules);
@@ -46,7 +45,7 @@ module.exports = {
                 let state = {};
 
                 for (const name of keys) {
-                    const res = await moduleTree.runModule(modules[name].name, rootCompiler, null, sharedCompiler);
+                    const res = await moduleTree.runModule(modules[name].name, rootCompiler);
 
                     state[modules[name].name] = res;
                 }

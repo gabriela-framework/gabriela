@@ -1,35 +1,35 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
 
-function _addDependencies(mdl, compiler) {
-    for (const depInit of mdl.dependencies) {
+function _addDependencies(mdl) {
+    const dependencies = mdl.dependencies;
+    for (const depInit of dependencies) {
         if (!depInit.visibility) depInit.visibility = 'module';
 
         if (depInit.visibility === 'module') {
-            compiler.add(depInit);
+            mdl.compiler.add(depInit);
         } else if (depInit.visibility === 'plugin') {
-            if (!compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+            if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
 
-            compiler.parent.add(depInit);
+            mdl.compiler.parent.add(depInit);
         } else if (depInit.visibility === 'public') {
-            compiler.root.add(depInit);
+            mdl.compiler.root.add(depInit);
         }
     }
 }
 
-function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+function _createCompiler(mdl, rootCompiler, parentCompiler) {
     const c = Compiler.create();
     c.name = 'module';
     c.root = rootCompiler;
 
     if (parentCompiler) c.parent = parentCompiler;
 
-    if (mdl.dependencies && mdl.dependencies.length > 0) {
-        _addDependencies(mdl, c);
-    }
-
     mdl.compiler = c;
-    mdl.sharedCompiler = sharedCompiler;
+
+    if (mdl.dependencies && mdl.dependencies.length > 0) {
+        _addDependencies(mdl);
+    }
 }
 
 function _resolveMiddleware(mdl) {
@@ -61,8 +61,8 @@ function _resolveMiddleware(mdl) {
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
-function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
-    _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
+function factory(mdl, rootCompiler, parentCompiler) {
+    _createCompiler(mdl, rootCompiler, parentCompiler);
     _resolveMiddleware(mdl);
 
     const handlers = {
@@ -71,7 +71,7 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
         },
 
         get(target, prop, receiver) {
-            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler', 'sharedCompiler', 'plugin'];
+            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler', 'plugin'];
 
             if (!allowed.includes(prop)) {
                 throw new Error(`Module access error. Trying to access protected property '${prop}' of a module`);
@@ -84,6 +84,6 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     return new Proxy(mdl, handlers);
 }
 
-module.exports = function(mdl, rootCompiler, parentCompiler, sharedCompiler) {
-    return new factory(mdl, rootCompiler, parentCompiler, sharedCompiler);
+module.exports = function(mdl, rootCompiler, parentCompiler) {
+    return new factory(mdl, rootCompiler, parentCompiler);
 };
