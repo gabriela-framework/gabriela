@@ -101,14 +101,17 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because init dependency value not being an object', () => {
         let entersException = false;
 
-        const compiler = Compiler.create();
+        const m = gabriela.asRunner().module;
 
         try {
-            compiler.add(1);
+            m.addModule({
+                name: 'name',
+                dependencies: [1],
+            });
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. Dependency initialization must be an object`);
+            expect(err.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -117,11 +120,14 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because name property must be a string', () => {
         let entersException = false;
 
-        const compiler = Compiler.create();
+        const m = gabriela.asRunner().module;
 
         try {
-            compiler.add({
-                name: 1
+            m.addModule({
+                name: 'name',
+                dependencies: [{
+                    name: 1,
+                }],
             });
         } catch (err) {
             entersException = true;
@@ -135,12 +141,15 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because init.init must be a function', () => {
         let entersException = false;
 
-        const compiler = Compiler.create();
+        const m = gabriela.asRunner().module;
 
         try {
-            compiler.add({
+            m.addModule({
                 name: 'name',
-                init: 1,
+                dependencies: [{
+                    name: 'name',
+                    init: 1,
+                }],
             });
         } catch (err) {
             entersException = true;
@@ -154,14 +163,15 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because of invalid service name data type', () => {
         let entersException = false;
 
-        const compiler = Compiler.create();
-
-        let invalidService = {
-            name: 1,
-        };
+        const m = gabriela.asRunner().module;
 
         try {
-            compiler.add(invalidService);
+            m.addModule({
+                name: 'name',
+                dependencies: [{
+                    name: 1,
+                }],
+            });
         } catch (err) {
             entersException = true;
 
@@ -174,7 +184,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because of invalid visibility value', () => {
         let entersException = false;
 
-        const compiler = Compiler.create();
+        const m = gabriela.asRunner().module;
 
         let invalidService = {
             name: 'name',
@@ -187,7 +197,10 @@ describe('Failing dependency injection tests', () => {
         };
 
         try {
-            compiler.add(invalidService);
+            m.addModule({
+                name: 'name',
+                dependencies: [invalidService],
+            });
         } catch (err) {
             entersException = true;
 
@@ -206,11 +219,14 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const compiler = Compiler.create();
+        const m = gabriela.asRunner().module;
 
         let entersException = false;
         try {
-            compiler.add(userServiceInit);
+            m.addModule({
+                name: 'name',
+                dependencies: [userServiceInit],
+            });
         } catch (err) {
             entersException = true;
 
@@ -284,6 +300,35 @@ describe('Failing dependency injection tests', () => {
             entersException = true;
 
             expect(err.message).to.be.equal(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency if there is a shared and visibility property present', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            shared: {
+                plugins: []
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [userServiceInit],
+            });
+        } catch (e) {
+            entersException = true;
         }
 
         expect(entersException).to.be.equal(true);

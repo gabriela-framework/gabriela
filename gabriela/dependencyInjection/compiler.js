@@ -1,6 +1,5 @@
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
-const Validator = require('../misc/validator');
 const deasync = require('deasync');
 const TaskRunner = require('../misc/taskRunner');
 
@@ -100,8 +99,6 @@ function factory() {
     const resolved = {};
 
     function add(init) {
-        Validator.validateDICompilerInitObject(init);
-
         selfTree[init.name] = _createInitObject(init);
     }
 

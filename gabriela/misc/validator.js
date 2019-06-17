@@ -22,6 +22,8 @@ function validateDependencies(value) {
 
         for (const d of value.dependencies) {
             if (!is('object', d)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
+
+            factory.validateDICompilerInitObject(d);
         }
     }
 }
@@ -102,6 +104,9 @@ factory.validateDICompilerInitObject = function(init) {
     if (!is('object', init)) throw new Error(`Dependency injection error. Dependency initialization must be an object`);
     if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
+
+    if (init.hasOwnProperty('visibility') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+
     if (init.hasOwnProperty('visibility')) {
         if (!is('string', init.visibility)) throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
 
@@ -114,7 +119,6 @@ factory.validateDICompilerInitObject = function(init) {
 
     if (init.hasOwnProperty('isAsync')) {
         if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error. 'isAsync' option must be a boolean`);
-
     }
 };
 
