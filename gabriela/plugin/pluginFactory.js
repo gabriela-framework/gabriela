@@ -15,6 +15,10 @@ function _replaceModules(plugin) {
         const factoryModules = [];
 
         for (const mdl of modules) {
+            mdl.plugin = {
+                name: plugin.name,
+            };
+
             factoryModules.push(moduleFactory(mdl, plugin.compiler.root, plugin.compiler));
         }
 

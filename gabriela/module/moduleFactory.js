@@ -1,7 +1,5 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
-const getArgNames = require('../util/getArgNames');
-const { asyncFlowTypes } = require('../misc/types');
 
 function _addDependencies(mdl, compiler) {
     for (const depInit of mdl.dependencies) {
@@ -72,7 +70,7 @@ function factory(mdl, rootCompiler, parentCompiler) {
         },
 
         get(target, prop, receiver) {
-            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler'];
+            const allowed = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'compiler', 'plugin'];
 
             if (!allowed.includes(prop)) {
                 throw new Error(`Module access error. Trying to access protected property '${prop}' of a module`);

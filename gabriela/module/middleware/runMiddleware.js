@@ -15,22 +15,9 @@ function waitCheck(taskRunner) {
     return {success: false}
 }
 
-function callImplicitNext(args, taskRunner) {
-    const nonImplicit = ['done', 'skip', 'throwException'];
-    let hasNext = false;
-
-    for (const arg of args) {
-        if (nonImplicit.includes(arg.name)) {
-            return;
-        }
-
-        if (arg.name === 'next') {
-            hasNext = true;
-        }
-    }
-
-    if (hasNext) {
-        taskRunner.next();
+function resolveDependency(mdl, name) {
+    if (mdl.compiler.has(name)) {
+        return mdl.compiler.compile(name);
     }
 }
 
@@ -48,9 +35,9 @@ async function runMiddleware(mdl, functions, state) {
             });
 
             exec.call(null, ...args.map((val) => {
-                if (mdl.compiler.has(val.name)) {
-                    return mdl.compiler.compile(val.name);
-                }
+                const dep = resolveDependency(mdl, val.name);
+
+                if (dep) return dep;
 
                 if (val.name === 'state') return state;
 
