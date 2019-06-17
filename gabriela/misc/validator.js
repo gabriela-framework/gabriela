@@ -117,6 +117,19 @@ factory.validateDICompilerInitObject = function(init) {
         }
     }
 
+    if (init.hasOwnProperty('shared')) {
+        if (!is('object', init.shared)) throw new Error(`Dependency injection error. 'shared' property must be an object`);
+        if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+
+        if (init.shared.plugins) {
+            if (!Array.isArray(init.shared.plugins)) throw new Error(`Dependency injection error. 'plugins' property of 'shared' property must be an array`);
+        }
+
+        if (init.shared.modules) {
+            if (!Array.isArray(init.shared.modules)) throw new Error(`Dependency injection error. 'modules' property of 'shared' property must be an array`);
+        }
+    }
+
     if (init.hasOwnProperty('isAsync')) {
         if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error. 'isAsync' option must be a boolean`);
     }

@@ -333,6 +333,122 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail to compile a dependency because of invalid shared property', () => {
+        const userServiceInit = {
+            name: 'userService',
+            shared: null,
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [userServiceInit],
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error. 'shared' property must be an object`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid shared property not having modules of plugins properties', () => {
+        const userServiceInit = {
+            name: 'userService',
+            shared: {},
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [userServiceInit],
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid shared.plugins property data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            shared: {
+                plugins: {}
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [userServiceInit],
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error. 'plugins' property of 'shared' property must be an array`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid shared.modules property data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            shared: {
+                modules: {}
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [userServiceInit],
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error. 'modules' property of 'shared' property must be an array`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
 
 describe('Failing module definition tests', () => {
