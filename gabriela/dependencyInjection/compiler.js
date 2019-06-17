@@ -61,24 +61,36 @@ function _resolveService(serviceInit, deps, taskRunner) {
 
     return service;
 }
-/**
- * Compilers parent is resolved outside of this compiler.
- *
- * Depth:
- *
- * - module -> the deepest possible
- * - plugin -> between module and the root. Modules are its children
- * - framework (public) -> the root compiler. Does not have a parent. Must be self aware.
- *
- * Traversal:
- *
- * Since every dependency will be asked inside a middleware, the first compiler to be asked for a dependency is the
- * modules compiler. If he does not have it, it searches the parent which is the plugin compiler. Plugin compiler has module
- * compiler children. This is a good place to have a shared plugin dependency. The top level is the public level (which is
- * in practice, the framework root compiler). The root compiler is self aware and does not even try to search its parent.
- *
- *
- */
+
+function _createInitObject(init) {
+    return {
+        name: init.name,
+        init: init.init,
+        isAsync: init.isAsync,
+        visibility: init.visibility,
+        hasVisibility: function() {
+            return (this.visibility) ? true : false;
+        },
+        isShared: function() {
+            return (this.shared) ? true : false;
+        },
+        shared: init.shared,
+        sharedPlugins: function() {
+            if (this.shared.plugins) return this.shared.plugins;
+        },
+        sharedModules: function() {
+            if (this.shared.modules) return this.shared.modules;
+        },
+        isSharedWith(moduleOrPluginName) {
+            if (!this.isShared()) return false;
+
+            if (this.sharedModules().includes(moduleOrPluginName)) return true;
+
+            return !!this.sharedPlugins().includes(moduleOrPluginName);
+        }
+    }
+}
+
 function factory() {
     this.root = null;
     this.parent = null;
@@ -90,7 +102,13 @@ function factory() {
     function add(init) {
         Validator.validateDICompilerInitObject(init);
 
-        selfTree[init.name] = init;
+        selfTree[init.name] = _createInitObject(init);
+    }
+
+    function getInit(name) {
+        if (!has(name)) throw new Error(`Dependency injection error. Init object with name '${name}' not found`);
+
+        return selfTree[name];
     }
 
     function has(name) {
@@ -142,6 +160,7 @@ function factory() {
     this.add = add;
     this.has = has;
     this.isResolved = isResolved;
+    this.getInit = getInit;
     this.compile = compile;
 }
 

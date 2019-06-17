@@ -9,6 +9,71 @@ const Compiler = require('./../../gabriela/dependencyInjection/compiler');
 const gabriela = require('./../../gabriela/gabriela');
 
 describe('Dependency injection tests', () => {
+    it('should create a init object and return it', () => {
+        const userServiceInit = {
+            name: 'userService',
+            isAsync: true,
+            visibility: 'module',
+            shared: {
+                plugins: ['pluginName', 'otherPlugin'],
+                modules: ['moduleName', 'otherModule'],
+            },
+            init: function() {
+                function userService() {
+                    this.addUser = function() {};
+                    this.removeUser = function() {};
+                }
+
+                return new userService();
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(userServiceInit);
+
+        const initObject = c.getInit('userService');
+
+        expect(initObject).to.be.a('object');
+        expect(initObject).to.have.property('name');
+        expect(initObject.name).to.be.a('string');
+
+        expect(initObject).to.have.property('isAsync');
+        expect(initObject.isAsync).to.be.a('boolean');
+
+        expect(initObject).to.have.property('init');
+        expect(initObject.init).to.be.a('function');
+
+        expect(initObject).to.have.property('visibility');
+        expect(initObject.visibility).to.be.a('string');
+
+        expect(initObject).to.have.property('hasVisibility');
+        expect(initObject.hasVisibility).to.be.a('function');
+
+        expect(initObject).to.have.property('isShared');
+        expect(initObject.isShared).to.be.a('function');
+
+        expect(initObject.hasVisibility()).to.be.equal(true);
+        expect(initObject.isShared()).to.be.equal(true);
+
+        expect(initObject).to.have.property('shared');
+        expect(initObject).to.be.a('object');
+
+        expect(initObject).to.have.property('sharedPlugins');
+        expect(initObject.sharedPlugins).to.be.a('function');
+
+        expect(userServiceInit.shared.plugins).to.deep.equal(initObject.sharedPlugins());
+
+        expect(initObject).to.have.property('sharedModules');
+        expect(initObject.sharedModules).to.be.a('function');
+
+        expect(userServiceInit.shared.modules).to.deep.equal(initObject.sharedModules());
+
+        expect(initObject.isSharedWith('moduleName')).to.be.equal(true);
+        expect(initObject.isSharedWith('otherPlugin')).to.be.equal(true);
+        expect(initObject.isSharedWith('nonExistent')).to.be.equal(false);
+    });
+
     it('should create a single dependency', () => {
         const userServiceInit = {
             name: 'userService',
