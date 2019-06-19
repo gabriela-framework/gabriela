@@ -27,6 +27,37 @@ module.exports = {
         const moduleTree = new ModuleTree();
         const pluginTree = new PluginTree();
 
+        const runModule = async function(name) {
+            const rootCompiler = Compiler.create();
+            const sharedCompiler = Compiler.create();
+            sharedCompiler.name = 'shared';
+
+            if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
+
+            const modules = this.getModules();
+            const keys = Object.keys(modules);
+
+            let state = {};
+
+            for (const name of keys) {
+                const res = await moduleTree.runModule(modules[name].name, rootCompiler, null, sharedCompiler);
+
+                state[modules[name].name] = res;
+            }
+
+            return deepCopy(state);
+        };
+
+        const runPlugin = async function(name) {
+            const rootCompiler = Compiler.create();
+            rootCompiler.name = 'root';
+
+            const sharedCompiler = Compiler.create();
+            sharedCompiler.name = 'shared';
+
+            if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
+        };
+
         const moduleInterface = {
             add: moduleTree.addModule,
             override: moduleTree.overrideModule,
@@ -34,26 +65,7 @@ module.exports = {
             has: moduleTree.hasModule,
             getAll: moduleTree.getModules,
             remove: moduleTree.removeModule,
-            run: async function(name) {
-                const rootCompiler = Compiler.create();
-                const sharedCompiler = Compiler.create();
-                sharedCompiler.name = 'shared';
-
-                if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
-
-                const modules = this.getModules();
-                const keys = Object.keys(modules);
-
-                let state = {};
-
-                for (const name of keys) {
-                    const res = await moduleTree.runModule(modules[name].name, rootCompiler, null, sharedCompiler);
-
-                    state[modules[name].name] = res;
-                }
-
-                return deepCopy(state);
-            }
+            run: runModule,
         };
 
         const pluginInterface = {
@@ -62,19 +74,8 @@ module.exports = {
             remove: pluginTree.removePlugin,
             getAll: pluginTree.getPlugins,
             has: pluginTree.hasPlugin,
-            run: async function(name) {
-                const rootCompiler = Compiler.create();
-                rootCompiler.name = 'root';
-
-                const sharedCompiler = Compiler.create();
-                sharedCompiler.name = 'shared';
-
-                if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
-            }
+            run: runPlugin,
         };
-
-        // create an interface for the runner
-        // there can be no private function in fn, only public
 
         const publicInterface = {
             addModule: moduleInterface.add,
