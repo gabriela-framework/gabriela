@@ -26,7 +26,7 @@ function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
             if (arg === 'next') {
                 deps.push(taskRunner.next);
             } else {
-                deps.push(originalCompiler.compile(arg));
+                deps.push(originalCompiler.compile(arg, originalCompiler));
             }
         }
     }
@@ -135,8 +135,6 @@ function factory() {
     }
 
     function compile(name, originCompiler) {
-        if (!originCompiler && this.name === 'module') originCompiler = this;
-
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];
 

@@ -12,8 +12,6 @@ module.exports = {
 
         const server = new Server(options, moduleTree);
 
-        // create an interface for the server
-        // there can be no private function in fn, only public
         return {
             addModule: function(mdl) {
                 moduleTree.addModule(moduleFactory(mdl, rootCompiler));

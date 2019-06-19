@@ -135,7 +135,7 @@ describe('Dependency injection tests', () => {
         compiler.add(userServiceInit);
         compiler.add(commentServiceInit);
 
-        const userService = compiler.compile('userService');
+        const userService = compiler.compile('userService', compiler);
 
         expect(userService).to.have.property('addUser');
         expect(userService).to.have.property('removeUser');
@@ -146,7 +146,7 @@ describe('Dependency injection tests', () => {
         expect(commentService).to.have.property('addComment');
         expect(commentService).to.have.property('removeComment');
 
-        let cs1 = compiler.compile('commentService');
+        let cs1 = compiler.compile('commentService', compiler);
 
         expect(cs1 == commentService).to.be.equal(true);
     });

@@ -17,7 +17,7 @@ function waitCheck(taskRunner) {
 
 function resolveDependency(mdl, name) {
     if (mdl.compiler.has(name)) {
-        return mdl.compiler.compile(name);
+        return mdl.compiler.compile(name, mdl.compiler);
     } else if (mdl.sharedCompiler.has(name)) {
         const initObject = mdl.sharedCompiler.getInit(name);
 

@@ -74,13 +74,9 @@ function overrideMiddleware(mdl, existing) {
 
 function instance() {
     const modules = {};
-    // A simple array that hold instances of this object (ModuleTree) with if 'modules' property is specified.
-    // Otherwise, it is always empty
+
     const tree = [];
-    /**
-     * Recursive functions that adds modules to the tree if 'modules' property was specified with a list of sub modules
-     * @param mdl
-     */
+
     function addModule(mdl) {
         Validator.moduleValidator(mdl);
 
