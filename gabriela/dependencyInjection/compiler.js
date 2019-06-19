@@ -140,7 +140,7 @@ function factory() {
             return this.root.compile(name, originCompiler);
         }
 
-        if (!serviceInit) throw new Error(`Dependency injection error. ${name} not found in the dependency tree`);
+        if (!serviceInit) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
 
         const taskRunner = TaskRunner.create();
 

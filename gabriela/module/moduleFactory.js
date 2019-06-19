@@ -4,16 +4,37 @@ const is = require('../util/is');
 function _addDependencies(mdl) {
     const dependencies = mdl.dependencies;
     for (const depInit of dependencies) {
-        if (!depInit.visibility) depInit.visibility = 'module';
+        if (!depInit.visibility && !depInit.shared) depInit.visibility = 'module';
 
-        if (depInit.visibility === 'module') {
-            mdl.compiler.add(depInit);
-        } else if (depInit.visibility === 'plugin') {
-            if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+        if (depInit.visibility) {
+            if (depInit.visibility === 'module') {
+                mdl.compiler.add(depInit);
+            } else if (depInit.visibility === 'plugin') {
+                if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
 
-            mdl.compiler.parent.add(depInit);
-        } else if (depInit.visibility === 'public') {
-            mdl.compiler.root.add(depInit);
+                mdl.compiler.parent.add(depInit);
+            } else if (depInit.visibility === 'public') {
+                mdl.compiler.root.add(depInit);
+            }
+        }
+
+        if (depInit.shared) {
+            const modules = depInit.shared.modules;
+            const plugins = depInit.shared.plugins;
+
+            if (modules) {
+                for (const mdlName of modules) {
+                    if (mdlName === mdl.name) mdl.compiler.add(depInit);
+                }
+            }
+
+            if (plugins) {
+                for (const pluginName of plugins) {
+                    if (pluginName === mdl.plugin.name) {
+                        mdl.compiler.parent.add(depInit);
+                    }
+                }
+            }
         }
     }
 }

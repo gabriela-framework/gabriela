@@ -92,7 +92,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. nonExistentService not found in the dependency tree`)
+            expect(err.message).to.be.equal(`Dependency injection error. 'nonExistentService' not found in the dependency tree`)
         }
 
         expect(entersException).to.be.equal(true);
@@ -448,6 +448,63 @@ describe('Failing dependency injection tests', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of not found shared dependency', () => {
+        const searchServiceInit = {
+            name: 'searchService',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const sortServiceInit = {
+            name: 'sortService',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const landingPageServiceInit = {
+            name: 'landingPage',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                return () => {};
+            },
+            shared: {
+                modules: ['module']
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        m.addModule({
+            name: 'module',
+            dependencies: [searchServiceInit, sortServiceInit, userRepositoryInit, landingPageServiceInit],
+            moduleLogic: [function(sortService, next) {
+                next();
+            }],
+        });
+
+        m.addModule({
+            name: 'anotherModule',
+            dependencies: [searchServiceInit, sortServiceInit, userRepositoryInit, landingPageServiceInit],
+            moduleLogic: [function(sortService, next) {
+                next();
+            }],
+        });
+
+        m.run('anotherModule').then(() => {
+            assert.fail('This test should not be successful');
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' not found in the dependency tree`);
+        });
     });
 });
 

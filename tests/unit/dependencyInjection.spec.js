@@ -432,4 +432,56 @@ describe('Dependency injection scope - framework wide', () => {
 
         expect(resolved).to.be.equal(compiled);
     });
+
+    it('should create a shared dependency between two modules', () => {
+        const searchServiceInit = {
+            name: 'searchService',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const sortServiceInit = {
+            name: 'sortService',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const landingPageServiceInit = {
+            name: 'landingPage',
+            init: function(userRepository) {
+                return () => {};
+            }
+        };
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                return () => {};
+            },
+            shared: {
+                modules: ['module']
+            }
+        };
+
+        const m = gabriela.asRunner().module;
+
+        let entersMiddleware = false;
+        m.addModule({
+            name: 'module',
+            dependencies: [searchServiceInit, sortServiceInit, userRepositoryInit, landingPageServiceInit],
+            moduleLogic: [function(sortService, next) {
+                entersMiddleware = true;
+
+                expect(sortService).to.be.a('function');
+
+                next();
+            }],
+        });
+
+        m.run('module').then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+        });
+    });
 });
