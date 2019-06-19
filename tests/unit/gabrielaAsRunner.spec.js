@@ -20,7 +20,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
@@ -93,11 +93,11 @@ describe('Gabriela runner module tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(name).then(() => {
+        g.runModule(name).then(() => {
             expect(preLogicTransformerExecuted).to.be.equal(true);
             expect(validatorsExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(true);
@@ -153,11 +153,11 @@ describe('Gabriela runner module tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(name).then(() => {
+        g.runModule(name).then(() => {
             expect(secondPreLogicExecuted).to.be.equal(true);
             expect(preLogicTransformerExecuted).to.be.equal(true);
             expect(validatorsExecuted).to.be.equal(true);
@@ -209,11 +209,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name)
+        g.runModule(mdl.name)
         .then((moduleResult) => {
             expect(moduleResult.model.name).to.be.equal(model.name);
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
@@ -267,11 +267,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult.model.name).to.be.equal(model.name);
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
             expect(moduleResult.model.age).to.be.equal(32);
@@ -310,11 +310,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult.model.name).to.be.equal(model.name);
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
             expect(moduleResult.model.age).to.be.equal(25);
@@ -350,11 +350,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name).then(() => assert.fail('This test should be an error')).catch((err) => {
+        g.runModule(mdl.name).then(() => assert.fail('This test should be an error')).catch((err) => {
             expect(err.message).to.be.equal('Invalid models age');
         });
     });
@@ -386,11 +386,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name).then((moduleResult) => {
+        g.runModule(mdl.name).then((moduleResult) => {
             expect(moduleResult.model.name).to.be.equal(model.name);
             expect(moduleResult.model.lastName).to.be.equal(model.lastName);
             expect(moduleResult.model.age).to.be.equal(32);
@@ -486,7 +486,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(parentModule);
 
@@ -612,11 +612,11 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(parentModule);
 
-        g.run(parentModule.name).then((moduleResult) => {
+        g.runModule(parentModule.name).then((moduleResult) => {
             expect(moduleResult).to.have.property('user')
             expect(moduleResult.user.executed).to.be.equal(true);
             expect(moduleResult.user).to.have.property('profile');
@@ -636,11 +636,11 @@ describe('Gabriela runner module tests', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run(mdl.name).catch((err) => {
+        g.runModule(mdl.name).catch((err) => {
             expect(err.message).to.be.equal('my exception');
 
             done();
@@ -678,11 +678,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name');
+        g.runModule('name');
 
         expect(middlewareEntered).to.be.equal(true);
     });
@@ -717,11 +717,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name');
+        g.runModule('name');
 
         expect(middlewareEntered).to.be.equal(true);
     });
@@ -783,11 +783,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name');
+        g.runModule('name');
 
         expect(entersMiddleware).to.be.equal(true);
     });
@@ -825,11 +825,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name');
+        g.runModule('name');
 
         expect(entersMiddleware).to.be.equal(true);
     });
@@ -908,11 +908,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name');
+        g.runModule('name');
 
         expect(entersMiddleware).to.be.equal(true);
     });
@@ -959,14 +959,14 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const app = gabriela.asRunner().module;
+        const app = gabriela.asRunner();
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
         try {
-            app.run().then((state) => {
+            app.runModule().then((state) => {
                 expect(userModuleExecuted).to.be.equal(true);
                 expect(appSearchModuleExecuted).to.be.equal(true);
                 expect(pdfConvertModuleExecuted).to.be.equal(true);
@@ -1043,14 +1043,14 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const app = gabriela.asRunner().module;
+        const app = gabriela.asRunner();
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
         try {
-            app.run().then((state) => {
+            app.runModule().then((state) => {
                 expect(userModuleExecuted).to.be.equal(true);
                 expect(appSearchModuleExecuted).to.be.equal(true);
                 expect(pdfConvertModuleExecuted).to.be.equal(true);
@@ -1097,7 +1097,7 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(userModule);
 
@@ -1124,7 +1124,7 @@ describe('Module dependency injection tests', () => {
             }]
         });
 
-        g.run().then(() => {
+        g.runModule().then(() => {
             expect(entersOverridenLogic1).to.be.equal(true);
             expect(entersLogic2).to.be.equal(true);
             expect(entersOriginalLogic1).to.be.equal(false);
@@ -1164,11 +1164,11 @@ describe('Module dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(userModule);
 
-        g.run().then(() => {
+        g.runModule().then(() => {
             expect(transformer1Enters).to.be.equal(false);
             expect(transformer2Enters).to.be.equal(true);
             expect(logic1Enters).to.be.equal(true);
@@ -1212,11 +1212,11 @@ describe('Module dependency injection tests', () => {
             }]
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(userModule);
 
-        g.run().then(() => {
+        g.runModule().then(() => {
             expect(preLogicPlain).to.be.equal(true);
             expect(preLogicDefinition).to.be.equal(true);
             expect(moduleLogicPlain).to.be.equal(true);

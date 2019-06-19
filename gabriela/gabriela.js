@@ -28,16 +28,18 @@ module.exports = {
         const pluginTree = new PluginTree();
 
         const moduleInterface = {
-            addModule: moduleTree.addModule,
-            overrideModule: moduleTree.overrideModule,
-            getModule: moduleTree.getModule,
-            hasModule: moduleTree.hasModule,
-            getModules: moduleTree.getModules,
-            removeModule: moduleTree.removeModule,
+            add: moduleTree.addModule,
+            override: moduleTree.overrideModule,
+            get: moduleTree.getModule,
+            has: moduleTree.hasModule,
+            getAll: moduleTree.getModules,
+            remove: moduleTree.removeModule,
             run: async function(name) {
                 const rootCompiler = Compiler.create();
+                const sharedCompiler = Compiler.create();
+                sharedCompiler.name = 'shared';
 
-                if (name) return await moduleTree.runModule(name, rootCompiler);
+                if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
 
                 const modules = this.getModules();
                 const keys = Object.keys(modules);
@@ -45,7 +47,7 @@ module.exports = {
                 let state = {};
 
                 for (const name of keys) {
-                    const res = await moduleTree.runModule(modules[name].name, rootCompiler);
+                    const res = await moduleTree.runModule(modules[name].name, rootCompiler, null, sharedCompiler);
 
                     state[modules[name].name] = res;
                 }
@@ -55,33 +57,47 @@ module.exports = {
         };
 
         const pluginInterface = {
-            addPlugin: pluginTree.addPlugin,
-            getPlugin: pluginTree.getPlugin,
-            removePlugin: pluginTree.removePlugin,
-            getPlugins: pluginTree.getPlugins,
-            hasPlugin: pluginTree.hasPlugin,
+            add: pluginTree.addPlugin,
+            get: pluginTree.getPlugin,
+            remove: pluginTree.removePlugin,
+            getAll: pluginTree.getPlugins,
+            has: pluginTree.hasPlugin,
             run: async function(name) {
                 const rootCompiler = Compiler.create();
                 rootCompiler.name = 'root';
 
-                if (name) return pluginTree.runPlugin(name, rootCompiler);
+                const sharedCompiler = Compiler.create();
+                sharedCompiler.name = 'shared';
+
+                if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
             }
         };
 
         // create an interface for the runner
         // there can be no private function in fn, only public
-        return {
-            get module() {
-                return moduleInterface;
-            },
 
-            get plugin() {
-                return pluginInterface;
-            },
+        const publicInterface = {
+            addModule: moduleInterface.add,
+            overrideModule: moduleInterface.override,
+            getModule: moduleInterface.get,
+            removeModule: moduleInterface.remove,
+            hasModule: moduleInterface.has,
+            getModules: moduleInterface.getAll,
+            runModule: moduleInterface.run,
+            addPlugin: pluginInterface.add,
+            getPlugin: pluginInterface.get,
+            removePlugin: pluginInterface.remove,
+            hasPlugin: pluginInterface.has,
+            getPlugins: pluginInterface.getAll,
+            runPlugin: pluginInterface.run,
+            get moduleFactory() { return moduleInterface; },
+            get pluginFactory() { return pluginInterface; },
 
             startApp: function() {
 
             }
         };
+
+        return publicInterface;
     }
 };

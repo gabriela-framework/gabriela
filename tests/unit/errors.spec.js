@@ -101,7 +101,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because init dependency value not being an object', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         try {
             m.addModule({
@@ -120,7 +120,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because name property must be a string', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         try {
             m.addModule({
@@ -141,7 +141,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because init.init must be a function', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         try {
             m.addModule({
@@ -163,7 +163,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because of invalid service name data type', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         try {
             m.addModule({
@@ -184,7 +184,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because of invalid visibility value', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let invalidService = {
             name: 'name',
@@ -219,7 +219,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -264,11 +264,11 @@ describe('Failing dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner().module;
+        const g = gabriela.asRunner();
 
         g.addModule(mdl);
 
-        g.run('name').then(() => {
+        g.runModule('name').then(() => {
             assert.fail('Success callback called. This test should not be successful. catch() function should be called');
         }).catch((err) => {
             expect(entersMiddleware).to.be.equal(false);
@@ -319,7 +319,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -345,7 +345,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -373,7 +373,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -403,7 +403,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -433,7 +433,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -450,7 +450,7 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail to compile a dependency because of not found shared dependency', () => {
+    it('should fail to compile a dependency because of not found shared dependency', (done) => {
         const searchServiceInit = {
             name: 'searchService',
             init: function(userRepository) {
@@ -482,7 +482,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         m.addModule({
             name: 'module',
@@ -500,10 +500,31 @@ describe('Failing dependency injection tests', () => {
             }],
         });
 
-        m.run('anotherModule').then(() => {
+        m.runModule('anotherModule').then(() => {
             assert.fail('This test should not be successful');
         }).catch((err) => {
             expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' not found in the dependency tree`);
+
+            done();
+        });
+    });
+
+    it('should not resolve an argument if the argument is a falsy value', (done) => {
+        const m = gabriela.asRunner();
+        m.addModule({
+            name: 'module',
+            moduleLogic: [function(sortService, next) {
+                next();
+            }],
+        });
+
+        m.runModule('module').then(() => {
+            assert.fail('This test should fail');
+            done();
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'sortService'`);
+
+            done();
         });
     });
 });
@@ -515,7 +536,7 @@ describe('Failing module definition tests', () => {
             dependencies: null,
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -532,7 +553,7 @@ describe('Failing module definition tests', () => {
     it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -551,7 +572,7 @@ describe('Failing module definition tests', () => {
             name: 1
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -572,7 +593,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -598,7 +619,7 @@ describe('Failing module definition tests', () => {
         userModule.name = 'name';
         userModule.preLogicTransformers = [1];
 
-        const runner = gabriela.asRunner().module;
+        const runner = gabriela.asRunner();
 
         let entersException = false;
         try {
@@ -619,7 +640,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -647,7 +668,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -677,7 +698,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -708,7 +729,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -737,7 +758,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         g.addModule(userModule);
 
@@ -762,7 +783,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner().module;
+        let g = gabriela.asRunner();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -792,11 +813,11 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         m.addModule(userModule);
 
-        m.run([]).then(() => {
+        m.runModule([]).then(() => {
             assert.fail('This test should not be executed successfully');
         }).catch((err) => {
             expect(err.message).to.be.equal(`Module runtime tree error. Invalid module name type. Module name must be a string`);
@@ -808,11 +829,11 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         m.addModule(userModule);
 
-        m.run('nonExistent').then(() => {
+        m.runModule('nonExistent').then(() => {
             assert.fail('This test should not be executed successfully');
         }).catch((err) => {
             expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
@@ -822,7 +843,7 @@ describe('Failing module definition tests', () => {
 
 describe('Plugin errors', () => {
     it('should fail plugin definition because of invalid data type', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         const plugin = null;
 
@@ -839,7 +860,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of non existent plugin name', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         const plugin = {};
 
@@ -856,7 +877,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of invalid plugin name', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         let plugin = {
             name: 1
@@ -875,7 +896,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of existing plugin', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         const plugin1 = {
             name: 'plugin1',
@@ -903,7 +924,7 @@ describe('Plugin errors', () => {
     });
 
     it('should throw an error if plugin modules is not an array', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         const plugin = {
             name: 'plugin',
@@ -922,8 +943,8 @@ describe('Plugin errors', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should throw an error if any of the plugin modules are invalid', () => {
-        const p = gabriela.asRunner().plugin;
+    it('should throw an error if any of the plugin modules are invalid', (done) => {
+        const p = gabriela.asRunner();
 
         const plugin = {
             name: 'plugin',
@@ -939,14 +960,16 @@ describe('Plugin errors', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: 'Module definition error. 'dependencies' has to be an array of type object'`)
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: 'Module definition error. 'dependencies' has to be an array of type object'`);
+
+            done();
         }
 
         expect(entersException).to.be.equal(true);
     });
 
-    it('should throw an error when running a plugin with invalid type', () => {
-        const p = gabriela.asRunner().plugin;
+    it('should throw an error when running a plugin with invalid type', (done) => {
+        const p = gabriela.asRunner();
 
         const plugin = {
             name: 'plugin',
@@ -954,17 +977,17 @@ describe('Plugin errors', () => {
 
         p.addPlugin(plugin);
 
-        let entersException = false;
-
-        p.run([]).then(() => {
+        p.runPlugin([]).then(() => {
             assert.fail('This test should not be executed successfully');
         }).catch((err) => {
             expect(err.message).to.be.equal(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
+
+            done();
         });
     });
 
-    it('should throw an error while executing an non existent plugin', () => {
-        const p = gabriela.asRunner().plugin;
+    it('should throw an error while executing an non existent plugin', (done) => {
+        const p = gabriela.asRunner();
 
         const plugin = {
             name: 'plugin',
@@ -972,12 +995,12 @@ describe('Plugin errors', () => {
 
         p.addPlugin(plugin);
 
-        let entersException = false;
-
-        p.run('nonExistent').then(() => {
+        p.runPlugin('nonExistent').then(() => {
             assert.fail('This test should not be executed successfully');
         }).catch((err) => {
             expect(err.message).to.be.equal(`Plugin tree runtime error. Plugin with name 'nonExistent' does not exist`);
+
+            done();
         });
     });
 });

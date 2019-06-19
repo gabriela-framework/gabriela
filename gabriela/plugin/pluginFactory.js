@@ -1,11 +1,12 @@
 const Compiler = require('../dependencyInjection/compiler');
 const moduleFactory = require('../module/moduleFactory');
 
-function _createCompiler(plugin, rootCompiler) {
+function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
     c.name = 'plugin';
     c.root = rootCompiler;
 
+    plugin.sharedCompiler = sharedCompiler;
     plugin.compiler = c;
 }
 
@@ -19,15 +20,15 @@ function _replaceModules(plugin) {
                 name: plugin.name,
             };
 
-            factoryModules.push(moduleFactory(mdl, plugin.compiler.root, plugin.compiler));
+            factoryModules.push(moduleFactory(mdl, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
         }
 
         plugin.modules = factoryModules;
     }
 }
 
-function factory(plugin, rootCompiler) {
-    _createCompiler(plugin, rootCompiler);
+function factory(plugin, rootCompiler, sharedCompiler) {
+    _createCompiler(plugin, rootCompiler, sharedCompiler);
 
     _replaceModules(plugin);
 

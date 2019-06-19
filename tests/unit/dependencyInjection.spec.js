@@ -191,7 +191,7 @@ describe('Dependency injection tests', () => {
 
         let userServiceInstantiated = false;
 
-        const runner = gabriela.asRunner().module;
+        const runner = gabriela.asRunner();
 
         runner.addModule({
             name: 'dependencyInjectionVisibility',
@@ -207,7 +207,7 @@ describe('Dependency injection tests', () => {
             }],
         });
 
-        runner.run('dependencyInjectionVisibility');
+        runner.runModule('dependencyInjectionVisibility');
     });
 });
 
@@ -445,6 +445,9 @@ describe('Dependency injection scope - framework wide', () => {
             name: 'sortService',
             init: function(userRepository) {
                 return () => {};
+            },
+            shared: {
+                modules: ['module', 'anotherModule'],
             }
         };
 
@@ -465,7 +468,7 @@ describe('Dependency injection scope - framework wide', () => {
             }
         };
 
-        const m = gabriela.asRunner().module;
+        const m = gabriela.asRunner();
 
         let entersMiddleware = false;
         m.addModule({
@@ -480,8 +483,14 @@ describe('Dependency injection scope - framework wide', () => {
             }],
         });
 
-        m.run('module').then(() => {
-            expect(entersMiddleware).to.be.equal(true);
+        m.addModule({
+            name: 'anotherModule',
+            moduleLogic: [function(sortService, next) {
+                next();
+            }],
+        });
+
+        m.runModule().then(() => {
         });
     });
 });

@@ -47,14 +47,14 @@ function instance() {
     this.getPlugins = getPlugins;
     this.removePlugin = removePlugin;
 
-    this.runPlugin = async function(name, rootCompiler) {
+    this.runPlugin = async function(name, rootCompiler, sharedCompiler) {
         if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
         if (name) {
             const plugin = this.getPlugin(name);
 
-            const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler));
+            const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler, sharedCompiler));
 
             await pluginRunner.run();
         }

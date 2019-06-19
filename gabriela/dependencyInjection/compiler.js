@@ -83,9 +83,19 @@ function _createInitObject(init) {
         isSharedWith(moduleOrPluginName) {
             if (!this.isShared()) return false;
 
-            if (this.sharedModules().includes(moduleOrPluginName)) return true;
+            const sharedModules = this.sharedModules();
+            const sharedPlugins = this.sharedPlugins();
 
-            return !!this.sharedPlugins().includes(moduleOrPluginName);
+            let isShared = false;
+            if (sharedModules) {
+                isShared = sharedModules.includes(moduleOrPluginName);
+            }
+
+            if (sharedModules && !isShared) {
+                isShared = sharedPlugins.includes(moduleOrPluginName);
+            }
+
+            return isShared;
         }
     }
 }

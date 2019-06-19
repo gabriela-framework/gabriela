@@ -18,6 +18,12 @@ function waitCheck(taskRunner) {
 function resolveDependency(mdl, name) {
     if (mdl.compiler.has(name)) {
         return mdl.compiler.compile(name);
+    } else if (mdl.sharedCompiler.has(name)) {
+        const initObject = mdl.sharedCompiler.getInit(name);
+
+        if (initObject.isSharedWith(mdl.name)) {
+            return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
+        }
     }
 }
 
@@ -40,6 +46,8 @@ async function runMiddleware(mdl, functions, state) {
                 if (dep) return dep;
 
                 if (val.name === 'state') return state;
+
+                if (!val.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${val.name}'`);
 
                 return val.value;
             }));

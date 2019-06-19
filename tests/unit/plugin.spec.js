@@ -10,7 +10,7 @@ const gabriela = require('../../gabriela/gabriela');
 
 describe('Plugin creation tests', () => {
     it('should have a plugin interface', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         expect(p).to.have.property('addPlugin');
         expect(p).to.have.property('hasPlugin');
@@ -20,7 +20,7 @@ describe('Plugin creation tests', () => {
     });
 
     it('should evaluate plugin interface', () => {
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         p.addPlugin({
             name: 'plugin1',
@@ -88,14 +88,14 @@ describe('Plugin creation tests', () => {
             }],
         };
 
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         p.addPlugin({
             name: 'userManagement',
             modules: [userModule]
         });
 
-        p.run('userManagement').then(() => {
+        p.runPlugin('userManagement').then(() => {
             expect(preLogicTransformerExecuted).to.be.equal(true);
             expect(validatorExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(false);
@@ -163,14 +163,14 @@ describe('Plugin creation tests', () => {
             dependencies: [userServiceInit]
         };
 
-        const p = gabriela.asRunner().plugin;
+        const p = gabriela.asRunner();
 
         p.addPlugin({
             name: 'visibilityPlugin',
             modules: [userModule, searchModule],
         });
 
-        p.run('visibilityPlugin').then(() => {
+        p.runPlugin('visibilityPlugin').then(() => {
             done();
         });
     });
