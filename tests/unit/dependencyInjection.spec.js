@@ -8,7 +8,7 @@ const expect = chai.expect;
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
 const gabriela = require('./../../gabriela/gabriela');
 
-describe('Dependency injection tests', () => {
+describe('Basic dependency injection', () => {
     it('should create a init object and return it', () => {
         const userServiceInit = {
             name: 'userService',
@@ -150,7 +150,9 @@ describe('Dependency injection tests', () => {
 
         expect(cs1 == commentService).to.be.equal(true);
     });
+});
 
+describe('Visibility dependency injection tests', () => {
     it('should add all dependencies with visibility property', () => {
         const visibilities = ['module', 'plugin', 'public'];
         let entersException = false;
@@ -175,7 +177,7 @@ describe('Dependency injection tests', () => {
         }
     });
 
-    it('should resolve a single dependency with module visibility property', () => {
+    it('should resolve a single dependency with \'module\' visibility property', () => {
         const userServiceInit = {
             name: 'userService',
             visibility: 'module',
@@ -207,12 +209,12 @@ describe('Dependency injection tests', () => {
             }],
         });
 
-        runner.runModule('dependencyInjectionVisibility');
+        runner.runModule('dependencyInjectionVisibility').then(() => {
+            expect(userServiceInstantiated).to.be.equal(true);
+        });
     });
-});
 
-describe('Dependency injection scope - framework wide', () => {
-    it('should create a \'module\' scope and find the dependency', () => {
+    it('should create a \'module\' visibility and find the dependency within a compiler tree', () => {
         const userService = {
             name: 'userService',
             visibility: 'module',
@@ -245,7 +247,7 @@ describe('Dependency injection scope - framework wide', () => {
         expect(dep).to.have.property('addUser');
     });
 
-    it('should create a \'plugin\' scope and find the dependency', () => {
+    it('should create a \'plugin\' scope and find the dependency within a compiler tree', () => {
         const userService = {
             name: 'userService',
             visibility: 'plugin',
@@ -277,7 +279,9 @@ describe('Dependency injection scope - framework wide', () => {
         expect(dep).to.be.a('object');
         expect(dep).to.have.property('addUser');
     });
+});
 
+describe('Dependency injection scope - framework wide', () => {
     it('should create a \'public\' scope and find the dependency', () => {
         const userService = {
             name: 'userService',
@@ -491,6 +495,46 @@ describe('Dependency injection scope - framework wide', () => {
         });
 
         m.runModule().then(() => {
+        });
+    });
+
+    it('should create a dependency tree between multiple modules', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'public',
+            init: function(userRepository) {
+                return () => {};
+            },
+        };
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            visibility: 'module',
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const dependencyModule = {
+            name: 'dependencyModule',
+            dependencies: [userServiceInit, userRepositoryInit],
+        };
+
+        const userModule = {
+            name: 'userModule',
+            dependencies: [userServiceInit, userRepositoryInit],
+            moduleLogic: [function(userService, next) {
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(dependencyModule);
+        g.addModule(userModule);
+
+        g.runModule().then(() => {
+
         });
     });
 });

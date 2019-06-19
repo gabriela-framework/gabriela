@@ -527,6 +527,57 @@ describe('Failing dependency injection tests', () => {
             done();
         });
     });
+
+    it('should fail to create a dependency of dependency if the inner dependency is not shared with the right module', (done) => {
+        const m = gabriela.asRunner();
+
+        const sortServiceInit = {
+            name: 'sortService',
+            init: function(userRepository) {
+                return () => {};
+            },
+            shared: {
+                modules: ['module2'],
+            },
+        };
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                return () => {};
+            },
+            shared: {
+                modules: ['module1'],
+            },
+        };
+
+        const module1 = {
+            name: 'module1',
+        };
+
+        const module2 = {
+            name: 'module2',
+            moduleLogic: [function(sortService, next) {
+                next();
+            }],
+            dependencies: [sortServiceInit, userRepositoryInit],
+        };
+
+        m.addModule(module1);
+        m.addModule(module2);
+
+        m.runModule('module2').then(() => {
+            assert.fail('This test should fail');
+
+            done();
+        }).catch((err) => {
+            expect(err.message).to.be.equal(`Dependency injection error. 'userRepository' not found in the dependency tree`);
+
+            done();
+        });
+    });
+
+
 });
 
 describe('Failing module definition tests', () => {

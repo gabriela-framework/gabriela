@@ -1224,7 +1224,7 @@ describe('Module dependency injection tests', () => {
 
             done();
         });
-    })
+    });
 });
 
 describe('Plugin tests', () => {
