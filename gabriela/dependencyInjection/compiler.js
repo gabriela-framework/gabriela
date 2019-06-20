@@ -1,20 +1,10 @@
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
-const deasync = require('deasync');
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
 
-function _waitCheck(taskRunner) {
-    const task = taskRunner.getTask();
-    if (task) {
-        return {
-            success: true,
-            value: task,
-        }
-    }
-
-    return {success: false}
-}
+const _resolveService = require('./_resolveService');
+const _createInitObject = require('./_createInitObject');
 
 function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
     const args = getArgNames(serviceInit.init);
@@ -33,76 +23,6 @@ function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
     }
 
     return deps;
-}
-
-function _resolveService(serviceInit, deps, taskRunner) {
-    let service;
-    if (serviceInit.isAsync) {
-        serviceInit.init(...deps);
-
-        let wait = 0;
-        while(!(_waitCheck(taskRunner)).success) {
-            wait++;
-
-            // todo: handle timeout on resolving services, maybe some config file?
-            /*                if (wait === 1000) {
-                                throw new Error(`Dependency injection error. Dependency ${name} waited too long to be resolved`);
-                            }*/
-
-            deasync.sleep(0);
-        }
-
-        service = taskRunner.getValue().call(null);
-
-        taskRunner.resolve();
-    } else {
-        service = serviceInit.init(...deps);
-    }
-
-    return service;
-}
-
-function _createInitObject(init) {
-    return {
-        name: init.name,
-        init: init.init,
-        isAsync: init.isAsync,
-        visibility: init.visibility,
-        dependencies: init.dependencies,
-        hasDependencies: function() {
-            return !!(this.dependencies && this.dependencies.length > 0);
-        },
-        hasVisibility: function() {
-            return (this.visibility) ? true : false;
-        },
-        isShared: function() {
-            return (this.shared) ? true : false;
-        },
-        shared: init.shared,
-        sharedPlugins: function() {
-            if (this.shared.plugins) return this.shared.plugins;
-        },
-        sharedModules: function() {
-            if (this.shared.modules) return this.shared.modules;
-        },
-        isSharedWith(moduleOrPluginName) {
-            if (!this.isShared()) return false;
-
-            const sharedModules = this.sharedModules();
-            const sharedPlugins = this.sharedPlugins();
-
-            let isShared = false;
-            if (sharedModules) {
-                isShared = sharedModules.includes(moduleOrPluginName);
-            }
-
-            if (sharedModules && !isShared) {
-                isShared = sharedPlugins.includes(moduleOrPluginName);
-            }
-
-            return isShared;
-        }
-    }
 }
 
 function factory() {
