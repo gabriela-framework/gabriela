@@ -577,7 +577,90 @@ describe('Failing dependency injection tests', () => {
         });
     });
 
+    it('should fail to compile a dependency because \'dependencies\' property is not an array', () => {
+        const userServiceInit = {
+            name: 'userService',
+            dependencies: null,
+            init: function() {
+                return () => {};
+            }
+        };
 
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule({
+                name: 'name',
+                moduleLogic: [function(userService, next) {
+                    next();
+                }],
+                dependencies: [userServiceInit]
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}'. 'dependencies' option must be an array of dependency 'init' objects`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+});
+
+describe('Failing private compiler dependency injection tests', () => {
+    it('should fail because of not found private dependency', () => {
+        const initObject = {
+            name: 'someService',
+            dependencies: [],
+            init: function(privateDependency) {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule({
+            name: 'module',
+            dependencies: [initObject],
+            moduleLogic: [function(someService, next) {
+                next();
+            }],
+        });
+
+        g.runModule().then(() => {
+            assert.fail('This test should fail');
+        }).catch((e) => {
+            expect(e.message).to.be.equal(`Dependency injection error. 'privateDependency' not found in the dependency tree`);
+        });
+    });
+
+    it('should fail because of invalid private dependency init object', () => {
+        const privateDep = {
+            name: 'privateDep',
+            init: null,
+        };
+
+        const initObject = {
+            name: 'someService',
+            dependencies: [privateDep],
+            init: function(privateDep) {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        try {
+            g.addModule({
+                name: 'module',
+                dependencies: [initObject],
+                moduleLogic: [function(someService, next) {
+                    next();
+                }],
+            });
+        } catch (e) {
+            expect(e.message).to.be.equal(`Dependency injection error. Init object 'init' property must be a function`);
+        }
+    });
 });
 
 describe('Failing module definition tests', () => {

@@ -8,8 +8,8 @@ const expect = chai.expect;
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
 const gabriela = require('./../../gabriela/gabriela');
 
-describe('Basic dependency injection', () => {
-    it('should create a init object and return it', () => {
+describe('Compiler instance dependency injection usage tests ', () => {
+    it('should create a init object and inspect it', () => {
         const userServiceInit = {
             name: 'userService',
             isAsync: true,
@@ -72,6 +72,9 @@ describe('Basic dependency injection', () => {
         expect(initObject.isSharedWith('moduleName')).to.be.equal(true);
         expect(initObject.isSharedWith('otherPlugin')).to.be.equal(true);
         expect(initObject.isSharedWith('nonExistent')).to.be.equal(false);
+
+        expect(initObject.dependencies).to.be.equal(undefined);
+        expect(initObject.hasDependencies()).to.be.equal(false);
     });
 
     it('should create a single dependency', () => {
@@ -150,9 +153,7 @@ describe('Basic dependency injection', () => {
 
         expect(cs1 == commentService).to.be.equal(true);
     });
-});
 
-describe('Visibility dependency injection tests', () => {
     it('should add all dependencies with visibility property', () => {
         const visibilities = ['module', 'plugin', 'public'];
         let entersException = false;
@@ -175,43 +176,6 @@ describe('Visibility dependency injection tests', () => {
 
             expect(entersException).to.be.equal(false);
         }
-    });
-
-    it('should resolve a single dependency with \'module\' visibility property', () => {
-        const userServiceInit = {
-            name: 'userService',
-            visibility: 'module',
-            init: function() {
-                function userService() {
-                    this.addUser = function() {};
-                    this.removeUser = function() {};
-                }
-
-                return new userService();
-            }
-        };
-
-        let userServiceInstantiated = false;
-
-        const runner = gabriela.asRunner();
-
-        runner.addModule({
-            name: 'dependencyInjectionVisibility',
-            dependencies: [userServiceInit],
-            preLogicTransformers: [function(userService, next) {
-                userServiceInstantiated = true;
-
-                expect(userService).to.be.a('object');
-                expect(userService).to.have.property('addUser');
-                expect(userService).to.have.property('removeUser');
-
-                next();
-            }],
-        });
-
-        runner.runModule('dependencyInjectionVisibility').then(() => {
-            expect(userServiceInstantiated).to.be.equal(true);
-        });
     });
 
     it('should create a \'module\' visibility and find the dependency within a compiler tree', () => {
@@ -279,9 +243,7 @@ describe('Visibility dependency injection tests', () => {
         expect(dep).to.be.a('object');
         expect(dep).to.have.property('addUser');
     });
-});
 
-describe('Dependency injection scope - framework wide', () => {
     it('should create a \'public\' scope and find the dependency', () => {
         const userService = {
             name: 'userService',
@@ -313,6 +275,45 @@ describe('Dependency injection scope - framework wide', () => {
 
         expect(dep).to.be.a('object');
         expect(dep).to.have.property('addUser');
+    });
+});
+
+describe('Visibility dependency injection tests', () => {
+    it('should resolve a single dependency with \'module\' visibility property', () => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'module',
+            init: function() {
+                function userService() {
+                    this.addUser = function() {};
+                    this.removeUser = function() {};
+                }
+
+                return new userService();
+            }
+        };
+
+        let userServiceInstantiated = false;
+
+        const runner = gabriela.asRunner();
+
+        runner.addModule({
+            name: 'dependencyInjectionVisibility',
+            dependencies: [userServiceInit],
+            preLogicTransformers: [function(userService, next) {
+                userServiceInstantiated = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('removeUser');
+
+                next();
+            }],
+        });
+
+        runner.runModule('dependencyInjectionVisibility').then(() => {
+            expect(userServiceInstantiated).to.be.equal(true);
+        });
     });
 
     it('should return a single already resolved dependency', () => {
@@ -437,6 +438,26 @@ describe('Dependency injection scope - framework wide', () => {
         expect(resolved).to.be.equal(compiled);
     });
 
+    it('should not count a dependency as resolved if the third argument is added to the compile method', () => {
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        compiler.add(userServiceInit);
+
+        const compiled = compiler.compile('userService', compiler, false);
+
+        expect(compiled).to.be.a('function');
+        expect(compiler.isResolved('userService')).to.be.equal(false);
+    });
+});
+
+describe('Dependency injection visibility tests within the framework', () => {
     it('should create a shared dependency between two modules', () => {
         const searchServiceInit = {
             name: 'searchService',
@@ -535,6 +556,81 @@ describe('Dependency injection scope - framework wide', () => {
 
         g.runModule().then(() => {
 
+        });
+    });
+
+    it('should resolve all private dependencies of a dependency init object with \'dependencies\' array and save only the main dependency', () => {
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                function UserRepository() {
+                    this.addUser = null;
+                }
+
+                return new UserRepository();
+            }
+        };
+
+        const sourceControlRepoInit = {
+            name: 'sourceControlRepo',
+            init: function() {
+                function SourceControlRepo() {}
+
+                return new SourceControlRepo();
+            }
+        };
+
+        const sourceControlServiceInit = {
+            name: 'sourceControlService',
+            dependencies: [sourceControlRepoInit],
+            init: function(sourceControlRepo) {
+                function SourceControlService() {
+                    this.sourceControlRepo = sourceControlRepo;
+                }
+
+                return new SourceControlService();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'public',
+            dependencies: [userRepositoryInit, sourceControlServiceInit],
+            init: function(userRepository, sourceControlService) {
+                function UserService() {
+                    this.addUser = null;
+
+                    this.userRepository = userRepository;
+                    this.sourceControlService = sourceControlService;
+                }
+
+                return new UserService();
+            },
+        };
+
+        const g = gabriela.asRunner();
+
+        let middlewareEntered = false;
+        g.addModule({
+            name: 'name',
+            dependencies: [userServiceInit],
+            moduleLogic: [function(userService, next) {
+                middlewareEntered = true;
+
+                expect(userService).to.be.a('object');
+                expect(userService).to.have.property('addUser');
+                expect(userService).to.have.property('userRepository');
+                expect(userService).to.have.property('sourceControlService');
+
+                expect(userService.userRepository).to.be.a('object');
+                expect(userService.sourceControlService).to.be.a('object');
+
+                next();
+            }],
+        });
+
+        g.runModule('name').then(() => {
+            expect(middlewareEntered).to.be.equal(true);
         });
     });
 });

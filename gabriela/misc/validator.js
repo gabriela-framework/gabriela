@@ -133,6 +133,14 @@ factory.validateDICompilerInitObject = function(init) {
     if (init.hasOwnProperty('isAsync')) {
         if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error. 'isAsync' option must be a boolean`);
     }
+
+    if (init.hasOwnProperty('dependencies')) {
+        if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}'. 'dependencies' option must be an array of dependency 'init' objects`);
+
+        for (const dep of init.dependencies) {
+            factory.validateDICompilerInitObject(dep);
+        }
+    }
 };
 
 module.exports = factory;

@@ -22,9 +22,6 @@ function resolveDependency(mdl, name) {
         const initObject = mdl.sharedCompiler.getInit(name);
 
         if (initObject.isSharedWith(mdl.name)) {
-            if (mdl.name === 'module1') {
-                console.log('ulazak');
-            }
             return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
         }
     }

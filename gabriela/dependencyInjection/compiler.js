@@ -2,6 +2,7 @@ const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
 const deasync = require('deasync');
 const TaskRunner = require('../misc/taskRunner');
+const PrivateCompiler = require('./privateCompiler');
 
 function _waitCheck(taskRunner) {
     const task = taskRunner.getTask();
@@ -67,6 +68,10 @@ function _createInitObject(init) {
         init: init.init,
         isAsync: init.isAsync,
         visibility: init.visibility,
+        dependencies: init.dependencies,
+        hasDependencies: function() {
+            return !!(this.dependencies && this.dependencies.length > 0);
+        },
         hasVisibility: function() {
             return (this.visibility) ? true : false;
         },
@@ -134,7 +139,7 @@ function factory() {
         return false;
     }
 
-    function compile(name, originCompiler) {
+    function compile(name, originCompiler, save = true) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];
 
@@ -143,12 +148,16 @@ function factory() {
         if (selfTree.hasOwnProperty(name)) {
             serviceInit = selfTree[name];
         } else if (this.parent && this.parent.has(name)) {
-            return this.parent.compile(name, originCompiler);
+            return this.parent.compile(name, originCompiler, save);
         } else if (this.root && this.root.has(name)) {
-            return this.root.compile(name, originCompiler);
+            return this.root.compile(name, originCompiler, save);
         }
 
         if (!serviceInit) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
+
+        if (serviceInit.hasDependencies()) {
+            return new PrivateCompiler().compile(serviceInit);
+        }
 
         const taskRunner = TaskRunner.create();
 
@@ -156,6 +165,8 @@ function factory() {
         const service = _resolveService(serviceInit, deps, taskRunner);
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
+
+        if (!save) return service;
 
         resolved[serviceInit.name] = service;
 
