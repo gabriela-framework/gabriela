@@ -7,16 +7,16 @@ function _addDependencies(mdl) {
         if (!depInit.visibility && !depInit.shared) depInit.visibility = 'module';
 
         if (depInit.visibility) {
-            if (mdl.compiler.has(depInit.name)) throw new Error(`Dependency injection error. Dependency already exists and is added in previous modules so it cannot be added in module '${mdl.name}'`);
+            if (!mdl.compiler.has(depInit.name)) {
+                if (depInit.visibility === 'module') {
+                    mdl.compiler.add(depInit);
+                } else if (depInit.visibility === 'plugin') {
+                    if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
 
-            if (depInit.visibility === 'module') {
-                mdl.compiler.add(depInit);
-            } else if (depInit.visibility === 'plugin') {
-                if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
-
-                mdl.compiler.parent.add(depInit);
-            } else if (depInit.visibility === 'public') {
-                mdl.compiler.root.add(depInit);
+                    mdl.compiler.parent.add(depInit);
+                } else if (depInit.visibility === 'public') {
+                    mdl.compiler.root.add(depInit);
+                }
             }
         }
 
@@ -91,7 +91,7 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
 
     const handlers = {
         set(obj, prop, value) {
-            throw new Error(`Internal module factory error. You cannot add properties to an already created 'ModuleFactory'`);
+            return undefined;
         },
 
         get(target, prop, receiver) {
@@ -105,6 +105,7 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
                 'compiler',
                 'sharedCompiler',
                 'plugin',
+                'dependencies',
             ];
 
             if (!allowed.includes(prop)) {

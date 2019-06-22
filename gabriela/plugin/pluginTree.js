@@ -55,7 +55,7 @@ function instance() {
 
             const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler, sharedCompiler));
 
-            await pluginRunner.run();
+            return await pluginRunner.run();
         }
     }
 }

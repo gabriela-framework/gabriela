@@ -134,4 +134,103 @@ describe('Visibility dependency injection tests', () => {
             });
         });
     });
+
+    it('should resolve a public visibility service and give the same instance globally within the framework', (done) => {
+        const publicDependencyInit = {
+            name: 'publicDep',
+            visibility: 'public',
+            init: function() {
+                function PublicDep() {}
+
+                return new PublicDep();
+            },
+        };
+
+        let services = [];
+        const singleModule = {
+            name: 'singleModule',
+            dependencies: [publicDependencyInit],
+            moduleLogic: [function(publicDep, next) {
+                services.push(publicDep);
+
+                next();
+            }],
+        };
+
+        const pluginModule1 = {
+            name: 'pluginModule1',
+            dependencies: [publicDependencyInit],
+            moduleLogic: [function(publicDep, next) {
+                services.push(publicDep);
+
+                next();
+            }],
+        };
+
+        const pluginModule2 = {
+            name: 'pluginModule2',
+            moduleLogic: [function(publicDep, next) {
+                services.push(publicDep);
+
+                next();
+            }],
+        };
+
+        const plugin1 = {
+            name: 'plugin1',
+            modules: [pluginModule1, pluginModule2],
+        };
+
+        const plugin2 = {
+            name: 'plugin2',
+            modules: [pluginModule1, pluginModule2],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(singleModule);
+        g.addPlugin(plugin1);
+        g.addPlugin(plugin2);
+
+        /**
+         * Warning: This is convoluted.
+         *
+         * The reason why these plugins have to execute one after another is that they are the same execution but with different
+         * order. That makes better test results.
+         *
+         * If a module is ran first, the identical dependency is created then and reused in plugin dependencies. If a plugin is
+         * ran first, the dependency is created then and reused in all other modules of that plugin and in the single module.
+         */
+        g.runModule().then(() => {
+            g.runPlugin('plugin1').then(() => {
+                g.runPlugin('plugin2').then(() => {
+                    expect(services.length).to.be.equal(5);
+
+                    for (let i = 0; i < services.length; i++) {
+                        for (let a = 0; a < services.length; a++) {
+                            expect(services[i] == services[a]);
+                        }
+                    }
+
+                    services = [];
+
+                    g.runPlugin('plugin1').then(() => {
+                        g.runPlugin('plugin2').then(() => {
+                            g.runModule().then(() => {
+                                expect(services.length).to.be.equal(5);
+
+                                for (let i = 0; i < services.length; i++) {
+                                    for (let a = 0; a < services.length; a++) {
+                                        expect(services[i] == services[a]);
+                                    }
+                                }
+
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 });

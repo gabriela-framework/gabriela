@@ -34,7 +34,7 @@ function factory(plugin, rootCompiler, sharedCompiler) {
 
     const handlers = {
         set(obj, prop, value) {
-            throw new Error(`Internal plugin factory error. You cannot add properties to an already created 'PluginFactory'`);
+            throw new Error(`Internal plugin factory error. You cannot add property(s) '${prop}' to an already created 'PluginFactory'`);
         },
 
         get(target, prop, receiver) {
