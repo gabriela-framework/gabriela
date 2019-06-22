@@ -4,7 +4,7 @@
   "description": "Plugin based framework",
   "main": "index.js",
   "scripts": {
-    "tests": "node_modules/.bin/mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
+    "tests": "node_modules/.bin/mocha -S -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc -x=tests --dir=tests/coverage --print=both npm run tests"
   },
   "author": "",
