@@ -21,7 +21,13 @@ function resolveDependency(mdl, name) {
     } else if (mdl.sharedCompiler.has(name)) {
         const initObject = mdl.sharedCompiler.getInit(name);
 
+        // if it is shared with a module name
         if (initObject.isSharedWith(mdl.name)) {
+            return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
+        }
+
+        // if it is shared with a module that is in a plugin with name mdl.plugin.name
+        if (mdl.isInPlugin() && initObject.isSharedWith(mdl.plugin.name)) {
             return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
         }
     }

@@ -30,7 +30,7 @@ function _addDependencies(mdl) {
                 }
             }
 
-            if (plugins) {
+            if (plugins && mdl.isInPlugin()) {
                 for (const pluginName of plugins) {
                     if (pluginName === mdl.plugin.name) {
                         mdl.sharedCompiler.add(depInit);
@@ -81,11 +81,27 @@ function _resolveMiddleware(mdl) {
         }
     }
 }
+
+function _createModuleModel(mdl) {
+    return {
+        name: mdl.name,
+        security: mdl.security,
+        preLogicTransformers: mdl.preLogicTransformers,
+        postLogicTransformers: mdl.postLogicTransformers,
+        moduleLogic: mdl.moduleLogic,
+        validators: mdl.validators,
+        plugin: mdl.plugin,
+        dependencies: mdl.dependencies,
+        isInPlugin: () => !!(mdl.plugin),
+    }
+}
+
 /**
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
 function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+    mdl = _createModuleModel(mdl);
     _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(mdl);
 
@@ -106,6 +122,7 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
                 'sharedCompiler',
                 'plugin',
                 'dependencies',
+                'isInPlugin',
             ];
 
             if (!allowed.includes(prop)) {

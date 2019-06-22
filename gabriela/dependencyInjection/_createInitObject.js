@@ -24,19 +24,16 @@ module.exports = function _createInitObject(init) {
         isSharedWith(moduleOrPluginName) {
             if (!this.isShared()) return false;
 
-            const sharedModules = this.sharedModules();
-            const sharedPlugins = this.sharedPlugins();
+            const sharedModules = (Array.isArray(this.sharedModules())) ? this.sharedModules() : [];
+            const sharedPlugins = (Array.isArray(this.sharedPlugins())) ? this.sharedPlugins() : [];
 
             let isShared = false;
-            if (sharedModules) {
-                isShared = sharedModules.includes(moduleOrPluginName);
-            }
 
-            if (sharedPlugins && !isShared) {
-                isShared = sharedPlugins.includes(moduleOrPluginName);
-            }
+            isShared = sharedModules.includes(moduleOrPluginName);
 
-            return isShared;
+            if (isShared) return isShared;
+
+            return sharedPlugins.includes(moduleOrPluginName);
         }
     }
 };
