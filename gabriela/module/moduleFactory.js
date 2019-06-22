@@ -89,16 +89,33 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(mdl);
 
-    return {
-        name: mdl.name,
-        preLogicTransformers: mdl.preLogicTransformers,
-        postLogicTransformers: mdl.postLogicTransformers,
-        moduleLogic: mdl.moduleLogic,
-        validators: mdl.validators,
-        compiler: mdl.compiler,
-        sharedCompiler: mdl.sharedCompiler,
-        plugin:  mdl.plugin,
-    }
+    const handlers = {
+        set(obj, prop, value) {
+            throw new Error(`Internal module factory error. You cannot add properties to an already created 'ModuleFactory'`);
+        },
+
+        get(target, prop, receiver) {
+            const allowed = [
+                'name',
+                'security',
+                'preLogicTransformers',
+                'postLogicTransformers',
+                'moduleLogic',
+                'validators',
+                'compiler',
+                'sharedCompiler',
+                'plugin',
+            ];
+
+            if (!allowed.includes(prop)) {
+                throw new Error(`Module access error. Trying to access a protected or a non existent property '${prop}' of a '${mdl.name}' module`);
+            }
+
+            return target[prop];
+        }
+    };
+
+    return new Proxy(mdl, handlers);
 }
 
 module.exports = function(mdl, rootCompiler, parentCompiler, sharedCompiler) {
