@@ -52,10 +52,6 @@ async function runMiddleware(mdl, functions, state) {
                 return val.value;
             }));
 
-            // todo: this code should be uncommented when the configuration values for middleware
-            // includes the option to specify it as async or non async for better performance
-            //callImplicitNext(args, taskRunner);
-
             const task = await wait(waitCheck.bind(null, taskRunner));
 
             switch (task) {

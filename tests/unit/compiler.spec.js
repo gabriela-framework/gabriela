@@ -8,6 +8,14 @@ const expect = chai.expect;
 const Compiler = require('./../../gabriela/dependencyInjection/compiler');
 
 describe('Compiler instance tests', () => {
+    it('create() should create two different instances of the compiler', () => {
+        const compiler1 = Compiler.create();
+        const compiler2 = Compiler.create();
+
+        expect(compiler1).to.not.be.equal(compiler2);
+        expect(compiler1 != compiler2).to.be.equal(true);
+    });
+
     it('should create a init object and inspect it', () => {
         const userServiceInit = {
             name: 'userService',

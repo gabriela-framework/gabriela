@@ -1,7 +1,5 @@
 const deasync = require('deasync');
 const _waitCheck = require('./_waitCheck');
-const is = require('../util/is');
-const deepCopy = require('deepcopy');
 
 module.exports = function _resolveService(serviceInit, deps, taskRunner) {
     let service;
@@ -24,8 +22,8 @@ module.exports = function _resolveService(serviceInit, deps, taskRunner) {
 
         taskRunner.resolve();
     } else {
-        service = serviceInit.init(...deps);
+        service = serviceInit.init.call(null, ...deps);
     }
 
-    return (is('object', service)) ? deepCopy(service) : service;
+    return service;
 };

@@ -7,6 +7,8 @@ function _addDependencies(mdl) {
         if (!depInit.visibility && !depInit.shared) depInit.visibility = 'module';
 
         if (depInit.visibility) {
+            if (mdl.compiler.has(depInit.name)) throw new Error(`Dependency injection error. Dependency already exists and is added in previous modules so it cannot be added in module '${mdl.name}'`);
+
             if (depInit.visibility === 'module') {
                 mdl.compiler.add(depInit);
             } else if (depInit.visibility === 'plugin') {

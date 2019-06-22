@@ -319,4 +319,51 @@ describe('Failing module definition tests', () => {
             expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
         });
     });
+
+    it('should throw an error if multiple modules declare the same dependency', (done) => {
+        const userServiceInit = {
+            name: 'userService',
+            visibility: 'plugin',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const module1 = {
+            name: 'module1',
+            dependencies: [userServiceInit],
+            moduleLogic: [function(userService, next) {
+                next();
+            }],
+        };
+
+        const module2 = {
+            name: 'module1',
+            dependencies: [userServiceInit],
+            moduleLogic: [function(userService, next) {
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        const plugin = {
+            name: 'plugin',
+            modules: [module1, module2],
+        };
+
+        g.addPlugin(plugin);
+
+        g.runPlugin('plugin').then(() => {
+            assert.fail('This test should fail');
+
+            done();
+        }).catch((e) => {
+            expect(e.message).to.be.equal(`Dependency injection error. Dependency already exists and is added in previous modules so it cannot be added in module '${module1.name}'`);
+
+            done();
+        });
+    });
 });

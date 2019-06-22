@@ -91,7 +91,7 @@ function instance() {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        const mdl = this.getModule(name);
+        const mdl = modules[name];
         const constructedModule = moduleFactory(mdl, rootCompiler, parentCompiler, sharedCompiler);
 
         return await runConstructedModule(constructedModule);

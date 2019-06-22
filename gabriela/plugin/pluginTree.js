@@ -35,7 +35,6 @@ function instance() {
         if (!is('string', name)) throw new Error(`Plugin tree error. Invalid module name. Module name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree error. Plugin with name '${name}' does not exist`);
 
-
         delete plugins[name];
 
         return false;
@@ -52,7 +51,7 @@ function instance() {
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
         if (name) {
-            const plugin = this.getPlugin(name);
+            const plugin = plugins[name];
 
             const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler, sharedCompiler));
 

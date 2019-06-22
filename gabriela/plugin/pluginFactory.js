@@ -34,14 +34,14 @@ function factory(plugin, rootCompiler, sharedCompiler) {
 
     const handlers = {
         set(obj, prop, value) {
-            return undefined;
+            throw new Error(`Internal plugin error. You cannot add properties to an already created 'PluginFactory'`);
         },
 
         get(target, prop, receiver) {
-            const allowed = ['modules', 'name', 'compiler'];
+            const allowed = ['modules', 'name', 'compiler', 'sharedCompiler'];
 
             if (!allowed.includes(prop)) {
-                throw new Error(`Module access error. Trying to access protected property '${prop}' of a module`);
+                throw new Error(`Plugin access error. Trying to access protected property '${prop}' of a '${plugin.name}' plugin`);
             }
 
             return target[prop];
