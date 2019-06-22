@@ -491,7 +491,7 @@ describe('Module dependency injection tests', () => {
     it('should resolve a single module dependency with async function inside, synchronously', () => {
         const userServiceInit = {
             name: 'userService',
-            visibility: 'module',
+            scope: 'module',
             isAsync: true,
             init: function(next) {
                 function constructor() {
@@ -567,7 +567,7 @@ describe('Module dependency injection tests', () => {
 
         const userServiceInit = {
             name: 'userService',
-            visibility: 'module',
+            scope: 'module',
             isAsync: true,
             init: function(userRepository, next) {
                 function constructor() {

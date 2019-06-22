@@ -4,17 +4,17 @@ const is = require('../util/is');
 function _addDependencies(mdl) {
     const dependencies = mdl.dependencies;
     for (const depInit of dependencies) {
-        if (!depInit.visibility && !depInit.shared) depInit.visibility = 'module';
+        if (!depInit.scope && !depInit.shared) depInit.scope = 'module';
 
-        if (depInit.visibility) {
+        if (depInit.scope) {
             if (!mdl.compiler.has(depInit.name)) {
-                if (depInit.visibility === 'module') {
+                if (depInit.scope === 'module') {
                     mdl.compiler.add(depInit);
-                } else if (depInit.visibility === 'plugin') {
-                    if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' visibility but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+                } else if (depInit.scope === 'plugin') {
+                    if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' scope but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
 
                     mdl.compiler.parent.add(depInit);
-                } else if (depInit.visibility === 'public') {
+                } else if (depInit.scope === 'public') {
                     mdl.compiler.root.add(depInit);
                 }
             }

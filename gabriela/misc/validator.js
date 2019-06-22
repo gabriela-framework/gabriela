@@ -105,15 +105,15 @@ factory.validateDICompilerInitObject = function(init) {
     if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
 
-    if (init.hasOwnProperty('visibility') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
 
-    if (init.hasOwnProperty('visibility')) {
-        if (!is('string', init.visibility)) throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+    if (init.hasOwnProperty('scope')) {
+        if (!is('string', init.scope)) throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
 
         const visibilities = ['module', 'plugin', 'public'];
 
-        if (!visibilities.includes(init.visibility)) {
-            throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        if (!visibilities.includes(init.scope)) {
+            throw new Error(`Dependency injection error. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
     }
 

@@ -7,8 +7,8 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Visibility dependency injection tests', () => {
-    it(`should resolve the default visibility to 'module' and create two different instances`, (done) => {
+describe('Scope dependency injection tests', () => {
+    it(`should resolve the default scope to 'module' and create two different instances`, (done) => {
         const userServiceInit = {
             name: 'userService',
             init: function() {
@@ -69,10 +69,10 @@ describe('Visibility dependency injection tests', () => {
         });
     });
 
-    it(`should resolve a dependency with 'plugin' visibility and give a single instance within all modules of a plugin`, (done) => {
+    it(`should resolve a dependency with 'plugin' scope and give a single instance within all modules of a plugin`, (done) => {
         const userServiceInit = {
             name: 'difInstances',
-            visibility: 'plugin',
+            scope: 'plugin',
             init: function() {
                 function UserService() {}
 
@@ -135,10 +135,10 @@ describe('Visibility dependency injection tests', () => {
         });
     });
 
-    it('should resolve a public visibility service and give the same instance globally within the framework', (done) => {
+    it('should resolve a public scope service and give the same instance globally within the framework', (done) => {
         const publicDependencyInit = {
             name: 'publicDep',
-            visibility: 'public',
+            scope: 'public',
             init: function() {
                 function PublicDep() {}
 

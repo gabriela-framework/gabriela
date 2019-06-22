@@ -3,13 +3,13 @@ module.exports = function _createInitObject(init) {
         name: init.name,
         init: init.init,
         isAsync: init.isAsync,
-        visibility: init.visibility,
+        scope: init.scope,
         dependencies: init.dependencies,
         hasDependencies: function() {
             return !!(this.dependencies && this.dependencies.length > 0);
         },
-        hasVisibility: function() {
-            return (this.visibility) ? true : false;
+        hasScope: function() {
+            return (this.scope) ? true : false;
         },
         isShared: function() {
             return (this.shared) ? true : false;

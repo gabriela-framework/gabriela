@@ -134,14 +134,14 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail to compile a dependency because of invalid visibility value', () => {
+    it('should fail to compile a dependency because of invalid scope value', () => {
         let entersException = false;
 
         const m = gabriela.asRunner();
 
         let invalidService = {
             name: 'name',
-            visibility: 'invalid',
+            scope: 'invalid',
             init: function() {
                 function initService() {}
 
@@ -157,7 +157,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+            expect(err.message).to.be.equal(`Dependency injection error. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -192,7 +192,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency if next is not included in the argument list of an async resolvable service', () => {
         const userServiceInit = {
             name: 'userService',
-            visibility: 'module',
+            scope: 'module',
             isAsync: true,
             init: function() {
                 function constructor() {
@@ -237,7 +237,7 @@ describe('Failing dependency injection tests', () => {
 
         let invalidService = {
             name: 'name',
-            visibility: 'module',
+            scope: 'module',
             init: function() {
                 function initService() {}
 
@@ -258,10 +258,10 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail to compile a dependency if there is a shared and visibility property present', () => {
+    it('should fail to compile a dependency if there is a shared and scope property present', () => {
         const userServiceInit = {
             name: 'userService',
-            visibility: 'module',
+            scope: 'module',
             shared: {
                 plugins: []
             },

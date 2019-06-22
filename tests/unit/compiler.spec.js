@@ -20,7 +20,7 @@ describe('Compiler instance tests', () => {
         const userServiceInit = {
             name: 'userService',
             isAsync: true,
-            visibility: 'module',
+            scope: 'module',
             shared: {
                 plugins: ['pluginName', 'otherPlugin'],
                 modules: ['moduleName', 'otherModule'],
@@ -51,16 +51,16 @@ describe('Compiler instance tests', () => {
         expect(initObject).to.have.property('init');
         expect(initObject.init).to.be.a('function');
 
-        expect(initObject).to.have.property('visibility');
-        expect(initObject.visibility).to.be.a('string');
+        expect(initObject).to.have.property('scope');
+        expect(initObject.scope).to.be.a('string');
 
-        expect(initObject).to.have.property('hasVisibility');
-        expect(initObject.hasVisibility).to.be.a('function');
+        expect(initObject).to.have.property('hasScope');
+        expect(initObject.hasScope).to.be.a('function');
 
         expect(initObject).to.have.property('isShared');
         expect(initObject.isShared).to.be.a('function');
 
-        expect(initObject.hasVisibility()).to.be.equal(true);
+        expect(initObject.hasScope()).to.be.equal(true);
         expect(initObject.isShared()).to.be.equal(true);
 
         expect(initObject).to.have.property('shared');
