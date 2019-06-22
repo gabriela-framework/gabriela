@@ -32,7 +32,7 @@ module.exports = function _createInitObject(init) {
                 isShared = sharedModules.includes(moduleOrPluginName);
             }
 
-            if (sharedModules && !isShared) {
+            if (sharedPlugins && !isShared) {
                 isShared = sharedPlugins.includes(moduleOrPluginName);
             }
 
