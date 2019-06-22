@@ -1,21 +1,22 @@
-const {OrderedMap} = require('immutable');
+const deepCopy = require('deepcopy');
 
-const userModule = {
-    name: 'userModule',
-};
+function outer(obj) {
+    function inner() {
+        this.innerObj = obj;
+    }
 
-const commentModule = {
-    name: 'commentModule',
-};
+    return new inner();
+}
 
-let map = OrderedMap();
+let obj = {name: 'name'};
 
-map = map.set('userModule', userModule);
-map = map.set('commentModule', commentModule);
+const inner = outer(deepCopy(obj));
 
-commentModule.name = 'mil';
+console.log(inner);
 
-console.log(map.get('commentModule'));
+obj.name = 'othername';
+
+console.log(inner);
 
 
 

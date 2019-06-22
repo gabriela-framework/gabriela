@@ -13,7 +13,7 @@ function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
 
     const deps = [];
     if (args.length > 0) {
-        for (const arg of args) {
+        for (let arg of args) {
             if (arg === 'next') {
                 deps.push(taskRunner.next);
             } else {
