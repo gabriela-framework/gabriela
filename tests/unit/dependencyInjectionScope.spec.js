@@ -288,7 +288,7 @@ describe('Scope dependency injection tests', () => {
 
         const module1 = {
             name: 'dependencyOrderModule',
-            dependencies: [moduleUserServiceInit, pluginUserServiceInit, publicUserServiceInit],
+            dependencies: [publicUserServiceInit, pluginUserServiceInit, moduleUserServiceInit],
             moduleLogic: [function(userService, next) {
                 resolvedDependency = userService;
                 next();
