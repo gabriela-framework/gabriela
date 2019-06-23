@@ -49,4 +49,62 @@ describe('Plugin creation tests', () => {
 
         expect(emptyPlugins).to.not.have.property('plugin1');
     });
+
+    it('should execute all modules in a plugin without specifying a plugin name', (done) => {
+        let searchModuleExecuted = 0;
+        let autocompleteModuleExecuted = 0;
+        let undefinedModuleExecuted = 0;
+
+        const searchModule = {
+            name: 'searchModule',
+            moduleLogic: [function(next) {
+                ++searchModuleExecuted;
+
+                next();
+            }],
+        };
+
+        const autocompleteModule = {
+            name: 'autocompleteModule',
+            moduleLogic: [function(next) {
+                ++autocompleteModuleExecuted;
+
+                next();
+            }],
+        };
+
+        const undefinedModule = {
+            name: 'undefinedModule',
+            moduleLogic: [function(next) {
+                ++undefinedModuleExecuted;
+
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [searchModule],
+        });
+
+        g.addPlugin({
+            name: 'plugin2',
+            modules: [undefinedModule, searchModule, autocompleteModule],
+        });
+
+        g.addPlugin({
+            name: 'plugin3',
+            modules: [autocompleteModule, undefinedModule],
+        });
+
+        g.runPlugin().then(() => {
+            expect(searchModuleExecuted).to.be.equal(2);
+            expect(undefinedModuleExecuted).to.be.equal(2);
+            expect(autocompleteModuleExecuted).to.be.equal(2);
+
+            done();
+        });
+    });
 });

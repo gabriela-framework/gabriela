@@ -306,9 +306,128 @@ describe('Private dependencies', () => {
 
                     done();
                 });
-
-
             });
         });
     });
+
+    it('should execute all plugins without specifying a name for a plugin', (done) => {
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const friendsRepositoryInit = {
+            name: 'friendsRepository',
+            scope: 'public',
+            init: function() {
+                function FriendsRepository() {}
+
+                return new FriendsRepository();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'privateUserService',
+            dependencies: [userRepositoryInit, friendsRepositoryInit],
+            scope: 'public',
+            init: function(userRepository, friendsRepository) {
+                function UserService() {
+                    this.userRepository = userRepository;
+                    this.friendsRepository = friendsRepository;
+                }
+
+                return new UserService();
+            }
+        };
+
+        let moduleUserService1;
+        let moduleUserService2;
+        let moduleUserService3;
+        let pluginServices = [];
+
+        const userModule = {
+            name: 'userModule',
+            dependencies: [userServiceInit],
+            moduleLogic: [function(privateUserService, next) {
+                if (!moduleUserService1) {
+                    moduleUserService1 = privateUserService;
+                } else if (!moduleUserService2) {
+                    moduleUserService2 = privateUserService;
+                } else if (!moduleUserService3) {
+                    moduleUserService3 = privateUserService;
+                }
+
+                next();
+            }],
+        };
+
+        const searchModule = {
+            name: 'searchModule',
+            moduleLogic: [function(privateUserService, next) {
+                pluginServices.push(privateUserService);
+
+                next();
+            }],
+        };
+
+        const autocompleteModule = {
+            name: 'autocompleteModule',
+            moduleLogic: [function(privateUserService, next) {
+                pluginServices.push(privateUserService);
+
+                next();
+            }],
+        };
+
+        const undefinedModule = {
+            name: 'undefinedModule',
+            moduleLogic: [function(privateUserService, next) {
+                pluginServices.push(privateUserService);
+
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(userModule);
+
+        g.addPlugin({
+            name: 'twoModulesPlugin',
+            modules: [userModule, searchModule],
+        });
+
+        g.addPlugin({
+            name: 'fullModulesPlugin',
+            modules: [undefinedModule, autocompleteModule, searchModule, userModule],
+        });
+
+        g.runModule().then(() => {
+            expect(moduleUserService1).to.be.a('object');
+
+            g.runPlugin().then(() => {
+                expect(pluginServices.length).to.be.equal(4);
+
+                expect(moduleUserService1).to.be.a('object');
+                expect(moduleUserService2).to.be.a('object');
+                expect(moduleUserService3).to.be.a('object');
+
+                expect(moduleUserService1 == moduleUserService2).to.be.equal(true);
+                expect(moduleUserService1 == moduleUserService3).to.be.equal(true);
+                expect(moduleUserService3 == moduleUserService2).to.be.equal(true);
+
+                for (const s of pluginServices) {
+                    expect(moduleUserService1 == s).to.be.equal(true);
+                    expect(moduleUserService2 == s).to.be.equal(true);
+                    expect(moduleUserService3 == s).to.be.equal(true);
+                }
+
+                done();
+            });
+        });
+    })
 });

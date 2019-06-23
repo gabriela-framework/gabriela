@@ -31,7 +31,6 @@ module.exports = {
         rootCompiler.name = 'root';
 
         const runModule = async function(name) {
-
             if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
 
             const modules = this.getModules();
@@ -50,6 +49,13 @@ module.exports = {
 
         const runPlugin = async function(name) {
             if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
+
+            const plugins = this.getPlugins();
+            const keys = Object.keys(plugins);
+
+            for (const name of keys) {
+                await pluginTree.runPlugin(plugins[name].name, rootCompiler, sharedCompiler);
+            }
         };
 
         const moduleInterface = {

@@ -1,10 +1,12 @@
 const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
-const ModuleTree = require('../module/moduleTree');
-const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
+
+function _runPlugin() {
+
+}
 
 function instance() {
     const plugins = {};
