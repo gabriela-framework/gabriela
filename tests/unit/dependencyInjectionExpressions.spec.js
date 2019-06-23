@@ -162,7 +162,7 @@ describe('Immediately executing middleware with dependency injection and express
         });
     });
 
-    it('should resolve all dependencies of expression dependency injected dependencies as they were regular dependencies', (done) => {
+    it('should resolve all dependencies of a dependency run as an expression as they were regular dependencies', (done) => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 

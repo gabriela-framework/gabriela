@@ -24,18 +24,6 @@ function _addDependencies(mdl) {
                     mdl.compiler.root.add(depInit);
                 }
             }
-
-/*            if (!mdl.compiler.has(depInit.name)) {
-                if (depInit.scope === 'module') {
-                    mdl.compiler.add(depInit);
-                } else if (depInit.scope === 'plugin') {
-                    if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' scope but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
-
-                    mdl.compiler.parent.add(depInit);
-                } else if (depInit.scope === 'public') {
-                    mdl.compiler.root.add(depInit);
-                }
-            }*/
         }
 
         if (depInit.shared) {
@@ -126,6 +114,9 @@ function _createModuleModel(mdl) {
  */
 function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     mdl = _createModuleModel(mdl);
+
+    // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
+    // the compiler(s) can only be used, not modified
     _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(mdl);
 
