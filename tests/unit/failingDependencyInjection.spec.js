@@ -157,7 +157,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. '${invalidService.name}' 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -183,7 +183,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. 'isAsync' option must be a boolean`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. '${userServiceInit.name}' 'isAsync' option must be a boolean`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -325,7 +325,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'shared' property must be an object`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. '${userServiceInit.name}' 'shared' property must be an object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -353,7 +353,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. '${userServiceInit.name}' 'shared' property does not have neither 'modules' or a 'plugins' property`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -383,7 +383,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'plugins' property of 'shared' property must be an array`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. '${userServiceInit.name}' 'plugins' property of 'shared' property must be an array`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -413,7 +413,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'modules' property of 'shared' property must be an array`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. '${userServiceInit.name}' 'modules' property of 'shared' property must be an array`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -568,7 +568,8 @@ describe('Failing dependency injection tests', () => {
             });
         } catch (e) {
             entersException = true;
-            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'name'. 'dependencies' option must be an array of dependency 'init' objects`);
+
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'name'. '${userServiceInit.name}' 'dependencies' option must be an array of dependency 'init' objects`);
         }
 
         expect(entersException).to.be.equal(true);

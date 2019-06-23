@@ -105,37 +105,37 @@ factory.validateDICompilerInitObject = function(init, moduleName) {
     if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'init' property must be a function`);
 
-    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency '${init.name}' cannot have both 'visibility' and 'shared' properties present. Use one or another`);
 
     if (init.hasOwnProperty('scope')) {
-        if (!is('string', init.scope)) throw new Error(`Dependency injection error in module '${moduleName}'. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        if (!is('string', init.scope)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
 
         const visibilities = ['module', 'plugin', 'public'];
 
         if (!visibilities.includes(init.scope)) {
-            throw new Error(`Dependency injection error in module '${moduleName}'. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+            throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
     }
 
     if (init.hasOwnProperty('shared')) {
-        if (!is('object', init.shared)) throw new Error(`Dependency injection error in module '${moduleName}'. 'shared' property must be an object`);
-        if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error in module '${moduleName}'. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+        if (!is('object', init.shared)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property must be an object`);
+        if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property does not have neither 'modules' or a 'plugins' property`);
 
         if (init.shared.plugins) {
-            if (!Array.isArray(init.shared.plugins)) throw new Error(`Dependency injection error in module '${moduleName}'. 'plugins' property of 'shared' property must be an array`);
+            if (!Array.isArray(init.shared.plugins)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'plugins' property of 'shared' property must be an array`);
         }
 
         if (init.shared.modules) {
-            if (!Array.isArray(init.shared.modules)) throw new Error(`Dependency injection error in module '${moduleName}'. 'modules' property of 'shared' property must be an array`);
+            if (!Array.isArray(init.shared.modules)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'modules' property of 'shared' property must be an array`);
         }
     }
 
     if (init.hasOwnProperty('isAsync')) {
-        if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error in module '${moduleName}'. 'isAsync' option must be a boolean`);
+        if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'isAsync' option must be a boolean`);
     }
 
     if (init.hasOwnProperty('dependencies')) {
-        if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'dependencies' option must be an array of dependency 'init' objects`);
+        if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. '${init.name}' 'dependencies' option must be an array of dependency 'init' objects`);
 
         for (const dep of init.dependencies) {
             factory.validateDICompilerInitObject(dep, moduleName);
