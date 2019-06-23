@@ -109,7 +109,6 @@ function instance() {
 
     // hold the parent ModuleTree
     this.parent = null;
-    this.child = null;
 
     this.addModule = addModule;
     this.overrideModule = function(mdl) {

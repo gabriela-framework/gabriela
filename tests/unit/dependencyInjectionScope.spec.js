@@ -233,4 +233,79 @@ describe('Scope dependency injection tests', () => {
             });
         });
     });
+
+    it('should give precedence to module dependencies above public or plugin dependencies', (done) => {
+        let resolvedDependency;
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const publicUserServiceInit = {
+            name: 'userService',
+            scope: 'public',
+            init: function() {
+                function UserService() {
+                    this.name = 'public';
+                }
+
+                return new UserService();
+            }
+        };
+
+        const pluginUserServiceInit = {
+            name: 'userService',
+            scope: 'plugin',
+            dependencies: [userRepositoryInit],
+            init: function(userRepository) {
+                function UserService() {
+                    this.name = 'plugin';
+                    this.userRepository = userRepository;
+                }
+
+                return new UserService();
+            }
+        };
+
+        const moduleUserServiceInit = {
+            name: 'userService',
+            scope: 'module',
+            dependencies: [userRepositoryInit],
+            init: function(userRepository) {
+                function UserService() {
+                    this.userRepository = userRepository;
+                    this.name = 'module';
+                }
+
+                return new UserService();
+            }
+        };
+
+        const module1 = {
+            name: 'dependencyOrderModule',
+            dependencies: [moduleUserServiceInit, pluginUserServiceInit, publicUserServiceInit],
+            moduleLogic: [function(userService, next) {
+                resolvedDependency = userService;
+                next();
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin({
+            name: 'dependencyOrderPlugin',
+            modules: [module1],
+        });
+
+        g.runPlugin().then(() => {
+            expect(resolvedDependency.name).to.be.equal('module');
+
+            done();
+        });
+    });
 });

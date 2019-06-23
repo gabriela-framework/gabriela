@@ -43,6 +43,10 @@ function factory() {
         return selfTree[name];
     }
 
+    function hasOwn(name) {
+        return selfTree.hasOwnProperty(name);
+    }
+
     function has(name) {
         if (selfTree.hasOwnProperty(name)) return true;
         if (this.parent && this.parent.has(name)) return true;
@@ -107,6 +111,7 @@ function factory() {
 
     this.add = add;
     this.has = has;
+    this.hasOwn = hasOwn;
     this.isResolved = isResolved;
     this.getInit = getInit;
     this.compile = compile;

@@ -429,5 +429,5 @@ describe('Private dependencies', () => {
                 done();
             });
         });
-    })
+    });
 });
