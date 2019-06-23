@@ -1,5 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
+const parseExpression = require('../expression/parse');
 
 function _addDependencies(mdl) {
     const dependencies = mdl.dependencies;
@@ -59,9 +60,9 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
 function _resolveMiddleware(mdl) {
     const middleware = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'security'];
 
-    for (const m of middleware) {
-        if (mdl[m]) {
-            const middlewareFns = mdl[m];
+    for (const middlewareBlockName of middleware) {
+        if (mdl[middlewareBlockName]) {
+            const middlewareFns = mdl[middlewareBlockName];
             const newMiddlewareFns = [];
 
             for (const index in middlewareFns) {
@@ -72,12 +73,18 @@ function _resolveMiddleware(mdl) {
                     }
 
                     newMiddlewareFns.push(n.middleware);
+                } else if (is('string', n)) {
+                    const parsed = parseExpression(n);
+
+                    if (!mdl.compiler.has(parsed.fnName)) throw new Error(`Expression dependency injection error. Dependency with name '${parsed.fnName}' not found in the dependency tree`);
+
+                    newMiddlewareFns.push(mdl.compiler.compile(parsed.fnName, mdl.compiler));
                 } else {
                     newMiddlewareFns.push(n);
                 }
             }
 
-            mdl[m] = newMiddlewareFns;
+            mdl[middlewareBlockName] = newMiddlewareFns;
         }
     }
 }

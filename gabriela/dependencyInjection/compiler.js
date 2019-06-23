@@ -65,6 +65,10 @@ function factory() {
 
         let serviceInit;
 
+        if (name === 'validateEmail') {
+
+        }
+
         if (selfTree.hasOwnProperty(name)) {
             serviceInit = selfTree[name];
         } else if (this.parent && this.parent.has(name)) {

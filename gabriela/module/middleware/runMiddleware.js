@@ -2,6 +2,7 @@ const taskRunnerFactory = require('../../misc/taskRunner');
 const createGenerator = require('../../util/createGenerator');
 const getArgs = require('../../util/getArgs');
 const wait = require('../../util/wait');
+const is = require('../../util/is');
 
 function waitCheck(taskRunner) {
     const task = taskRunner.getTask();

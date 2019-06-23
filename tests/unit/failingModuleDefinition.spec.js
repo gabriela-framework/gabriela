@@ -107,7 +107,7 @@ describe('Failing module definition tests', () => {
         } catch(err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Invalid middleware value. 'preLogicTransformers' middleware of '${userModule.name}' module must receive an array of functions`);
+            expect(err.message).to.be.equal(`Invalid middleware value. 'preLogicTransformers' middleware of '${userModule.name}' module must receive an array of functions or an array of function expressions`);
         }
 
         expect(entersException).to.be.equal(true);
