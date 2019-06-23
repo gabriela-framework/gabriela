@@ -64,7 +64,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
+            expect(err.message).to.be.equal(`Module definition error in module 'name'. 'dependencies' has to be an array of type object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -85,7 +85,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. Init object 'name' property must be a string`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. Init object 'name' property must be a string`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -107,7 +107,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. Init object 'init' property must be a function`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. Init object 'init' property must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -128,7 +128,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. Init object 'name' property must be a string`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. Init object 'name' property must be a string`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -157,7 +157,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -183,7 +183,7 @@ describe('Failing dependency injection tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. 'isAsync' option must be a boolean`);
+            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. 'isAsync' option must be a boolean`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -258,6 +258,22 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
+    it('should fail to compile a dependency if the dependency data type is not an object', () => {
+        const m = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            m.addModule({
+                name: 'userModule',
+                dependencies: [null],
+            });
+        } catch (e) {
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail to compile a dependency if there is a shared and scope property present', () => {
         const userServiceInit = {
             name: 'userService',
@@ -309,7 +325,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error. 'shared' property must be an object`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'shared' property must be an object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -337,7 +353,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'shared' property does not have neither 'modules' or a 'plugins' property`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -367,7 +383,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error. 'plugins' property of 'shared' property must be an array`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'plugins' property of 'shared' property must be an array`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -397,7 +413,7 @@ describe('Failing dependency injection tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Dependency injection error. 'modules' property of 'shared' property must be an array`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'userModule'. 'modules' property of 'shared' property must be an array`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -552,7 +568,7 @@ describe('Failing dependency injection tests', () => {
             });
         } catch (e) {
             entersException = true;
-            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}'. 'dependencies' option must be an array of dependency 'init' objects`);
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'name'. 'dependencies' option must be an array of dependency 'init' objects`);
         }
 
         expect(entersException).to.be.equal(true);

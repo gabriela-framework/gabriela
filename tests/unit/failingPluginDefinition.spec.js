@@ -127,7 +127,7 @@ describe('Plugin errors', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: 'Module definition error. 'dependencies' has to be an array of type object'`);
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: 'Module definition error in module 'moduleName'. 'dependencies' has to be an array of type object'`);
 
             done();
         }

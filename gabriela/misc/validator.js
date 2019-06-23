@@ -13,17 +13,17 @@ function factory() {
     throw new Error(`Invalid usage of Validator. Validator cannot be used as an instance but only as a static method repository`);
 }
 
-function validateDependencies(value) {
+function validateDependencies(mdl) {
     /**
      * Validates that dependencies have to be an array of type object
      */
-    if (value.hasOwnProperty('dependencies')) {
-        if (!Array.isArray(value.dependencies)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
+    if (mdl.hasOwnProperty('dependencies')) {
+        if (!Array.isArray(mdl.dependencies)) throw new Error(`Module definition error in module '${mdl.name}'. 'dependencies' has to be an array of type object`);
 
-        for (const d of value.dependencies) {
-            if (!is('object', d)) throw new Error(`Module definition error. 'dependencies' has to be an array of type object`);
+        for (const d of mdl.dependencies) {
+            if (!is('object', d)) throw new Error(`Module definition error in module '${mdl.name}'. 'dependencies' has to be an array of type object`);
 
-            factory.validateDICompilerInitObject(d);
+            factory.validateDICompilerInitObject(d, mdl.name);
         }
     }
 }
@@ -100,45 +100,45 @@ factory.validateServerOptions = function(options) {
     }
 };
 
-factory.validateDICompilerInitObject = function(init) {
-    if (!is('object', init)) throw new Error(`Dependency injection error. Dependency initialization must be an object`);
-    if (!is('string', init.name)) throw new Error(`Dependency injection error. Init object 'name' property must be a string`);
-    if (!is('function', init.init)) throw new Error(`Dependency injection error. Init object 'init' property must be a function`);
+factory.validateDICompilerInitObject = function(init, moduleName) {
+    if (!is('object', init)) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency initialization must be an object`);
+    if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);
+    if (!is('function', init.init)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'init' property must be a function`);
 
-    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency cannot have both 'visibility' and 'shared' properties present. Use one or another`);
 
     if (init.hasOwnProperty('scope')) {
-        if (!is('string', init.scope)) throw new Error(`Dependency injection error. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+        if (!is('string', init.scope)) throw new Error(`Dependency injection error in module '${moduleName}'. 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
 
         const visibilities = ['module', 'plugin', 'public'];
 
         if (!visibilities.includes(init.scope)) {
-            throw new Error(`Dependency injection error. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
+            throw new Error(`Dependency injection error in module '${moduleName}'. 'scope' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
         }
     }
 
     if (init.hasOwnProperty('shared')) {
-        if (!is('object', init.shared)) throw new Error(`Dependency injection error. 'shared' property must be an object`);
-        if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error. 'shared' property does not have neither 'modules' or a 'plugins' property`);
+        if (!is('object', init.shared)) throw new Error(`Dependency injection error in module '${moduleName}'. 'shared' property must be an object`);
+        if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error in module '${moduleName}'. 'shared' property does not have neither 'modules' or a 'plugins' property`);
 
         if (init.shared.plugins) {
-            if (!Array.isArray(init.shared.plugins)) throw new Error(`Dependency injection error. 'plugins' property of 'shared' property must be an array`);
+            if (!Array.isArray(init.shared.plugins)) throw new Error(`Dependency injection error in module '${moduleName}'. 'plugins' property of 'shared' property must be an array`);
         }
 
         if (init.shared.modules) {
-            if (!Array.isArray(init.shared.modules)) throw new Error(`Dependency injection error. 'modules' property of 'shared' property must be an array`);
+            if (!Array.isArray(init.shared.modules)) throw new Error(`Dependency injection error in module '${moduleName}'. 'modules' property of 'shared' property must be an array`);
         }
     }
 
     if (init.hasOwnProperty('isAsync')) {
-        if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error. 'isAsync' option must be a boolean`);
+        if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error in module '${moduleName}'. 'isAsync' option must be a boolean`);
     }
 
     if (init.hasOwnProperty('dependencies')) {
-        if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}'. 'dependencies' option must be an array of dependency 'init' objects`);
+        if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'dependencies' option must be an array of dependency 'init' objects`);
 
         for (const dep of init.dependencies) {
-            factory.validateDICompilerInitObject(dep);
+            factory.validateDICompilerInitObject(dep, moduleName);
         }
     }
 };

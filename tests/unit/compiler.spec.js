@@ -82,6 +82,10 @@ describe('Compiler instance tests', () => {
 
         expect(initObject.dependencies).to.be.equal(undefined);
         expect(initObject.hasDependencies()).to.be.equal(false);
+
+        expect(initObject.hasScope()).to.be.equal(true);
+        expect(initObject.isShared()).to.be.equal(true);
+        expect(initObject.isSharedWith('doesNotExist')).to.be.equal(false);
     });
 
     it('should create a single dependency', () => {

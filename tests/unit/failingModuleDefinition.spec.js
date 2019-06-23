@@ -24,7 +24,7 @@ describe('Failing module definition tests', () => {
         } catch(err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Module definition error. 'dependencies' has to be an array of type object`);
+            expect(err.message).to.be.equal(`Module definition error in module 'userModule'. 'dependencies' has to be an array of type object`);
         }
 
         expect(entersException).to.be.equal(true);

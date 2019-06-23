@@ -60,7 +60,7 @@ describe('Failing private compiler dependency injection tests', () => {
                 }],
             });
         } catch (e) {
-            expect(e.message).to.be.equal(`Dependency injection error. Init object 'init' property must be a function`);
+            expect(e.message).to.be.equal(`Dependency injection error in module 'module'. Init object 'init' property must be a function`);
         }
     });
 });

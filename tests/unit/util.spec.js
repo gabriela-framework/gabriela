@@ -1,0 +1,36 @@
+const mocha = require('mocha');
+const chai = require('chai');
+
+const it = mocha.it;
+const describe = mocha.describe;
+const expect = chai.expect;
+
+const is = require('../../gabriela/util/is');
+
+describe('Utility functions and services tests', () => {
+    it('should assert that is() evaluates all data types correctly', () => {
+        const boolTrue = true;
+        const boolFalse = false;
+        const string = 'string';
+        const float = 1.1;
+        const stringObj = new String('mile');
+        const boolObject = new Boolean(true);
+        const obj = {};
+        const objectInst = new Object();
+        const func = new Function();
+        const nan = NaN;
+        const gen = function*() {};
+
+        expect(is('boolean', boolTrue)).to.be.equal(true);
+        expect(is('boolean', boolFalse)).to.be.equal(true);
+        expect(is('string', string)).to.be.equal(true);
+        expect(is('float', float)).to.be.equal(true);
+        expect(is('string', stringObj)).to.be.equal(true);
+        expect(is('boolean', boolObject)).to.be.equal(true);
+        expect(is('object', obj)).to.be.equal(true);
+        expect(is('object', objectInst)).to.be.equal(true);
+        expect(is('function', func)).to.be.equal(true);
+        expect(is('nan', nan)).to.be.equal(true);
+        expect(is('generator', gen)).to.be.equal(true);
+    })
+});
