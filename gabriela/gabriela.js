@@ -24,11 +24,13 @@ module.exports = {
     asRunner: function() {
         const moduleTree = new ModuleTree();
         const pluginTree = new PluginTree();
+        const rootCompiler = Compiler.create();
+        const sharedCompiler = Compiler.create();
+
+        sharedCompiler.name = 'shared';
+        rootCompiler.name = 'root';
 
         const runModule = async function(name) {
-            const rootCompiler = Compiler.create();
-            const sharedCompiler = Compiler.create();
-            sharedCompiler.name = 'shared';
 
             if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
 
@@ -47,12 +49,6 @@ module.exports = {
         };
 
         const runPlugin = async function(name) {
-            const rootCompiler = Compiler.create();
-            rootCompiler.name = 'root';
-
-            const sharedCompiler = Compiler.create();
-            sharedCompiler.name = 'shared';
-
             if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
         };
 

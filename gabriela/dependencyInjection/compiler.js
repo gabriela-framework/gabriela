@@ -76,6 +76,14 @@ function factory() {
         if (!serviceInit) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
 
         if (serviceInit.hasDependencies()) {
+            if (resolved.hasOwnProperty(name)) return resolved[name];
+
+            if (selfTree.hasOwnProperty(serviceInit.name)) {
+                resolved[serviceInit.name] = new PrivateCompiler().compile(serviceInit);
+
+                return resolved[serviceInit.name];
+            }
+
             return new PrivateCompiler().compile(serviceInit);
         }
 

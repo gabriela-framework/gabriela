@@ -304,4 +304,59 @@ describe('Compiler instance tests', () => {
         expect(resolved === compiled).to.be.equal(true);
         expect(resolved).to.be.equal(compiled);
     });
+
+    it('should resolve a single instance of a private dependency', () => {
+        const compiler = Compiler.create();
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const friendsRepositoryInit = {
+            name: 'friendsRepository',
+            scope: 'public',
+            init: function() {
+                function FriendsRepository() {}
+
+                return new FriendsRepository();
+            }
+        };
+
+        const userServiceInit = {
+            name: 'compilerPrivateService',
+            dependencies: [userRepositoryInit, friendsRepositoryInit],
+            scope: 'public',
+            init: function(userRepository, friendsRepository) {
+                function UserService() {
+                    this.userRepository = userRepository;
+                    this.friendsRepository = friendsRepository;
+                }
+
+                return new UserService();
+            }
+        };
+
+        compiler.add(userServiceInit);
+
+        expect(compiler.has('friendsRepository')).to.be.equal(false);
+        expect(compiler.has('userRepository')).to.be.equal(false);
+
+        const userService1 = compiler.compile('compilerPrivateService');
+        const userService2 = compiler.compile('compilerPrivateService');
+
+        expect(userService1 == userService2).to.be.equal(true);
+
+        const userService3 = compiler.compile('compilerPrivateService');
+        const userService4 = compiler.compile('compilerPrivateService');
+
+        expect(userService3 == userService4).to.be.equal(true);
+
+        expect(compiler.has('friendsRepository')).to.be.equal(false);
+        expect(compiler.has('userRepository')).to.be.equal(false);
+    });
 });
