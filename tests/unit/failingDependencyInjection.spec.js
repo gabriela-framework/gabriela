@@ -713,4 +713,35 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail to compile if a property is not found in the config for usage in a compiler pass', () => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                },
+                property: 'nonExistent',
+            },
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        compiler.add(userServiceInit);
+
+        let entersException = false;
+        try {
+            compiler.compile('userService', compiler, {
+                validation: {}
+            });
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error in a compiler pass in service '${userServiceInit.name}'. Property 'nonExistent' does not exist in config`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

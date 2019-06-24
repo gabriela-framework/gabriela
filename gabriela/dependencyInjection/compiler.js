@@ -125,7 +125,7 @@ function factory() {
 
             let possibleConfig = config;
             if (compilerPass.property) {
-                if (!config.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+                if (!possibleConfig.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
 
                 possibleConfig = config[compilerPass.property];
             }
