@@ -683,4 +683,34 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail the compiler pass if the client code tries to use the compile() method inside a compiler pass init function', () => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    compiler.compile('userRepository')
+                },
+                property: null,
+            },
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        compiler.add(userServiceInit);
+
+        let entersException = false;
+        try {
+            compiler.compile('userService');
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error in service '${userServiceInit.name}'. Compiling inside a compiler pass is forbidden`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
