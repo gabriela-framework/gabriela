@@ -6,11 +6,11 @@ const wait = require('../../util/wait');
 const inArray = require('../../util/inArray');
 const _waitCheck = require('../../util/_waitCheck');
 
-function resolveDependency(mdl, name) {
+function _resolveDependency(mdl, name) {
     if (mdl.compiler.has(name)) {
         return mdl.compiler.compile(name, mdl.compiler);
     } else if (mdl.sharedCompiler.has(name)) {
-        const initObject = mdl.sharedCompiler.getInit(name);
+        const initObject = mdl.sharedCompiler.getDefinition(name);
 
         // if it is shared with a module name
         if (initObject.isSharedWith(mdl.name)) {
@@ -38,7 +38,7 @@ async function runMiddleware(mdl, functions, state) {
             });
 
             exec.call(null, ...args.map((val) => {
-                const dep = resolveDependency(mdl, val.name);
+                const dep = _resolveDependency(mdl, val.name);
 
                 if (dep) return dep;
 

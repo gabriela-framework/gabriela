@@ -5,6 +5,10 @@ module.exports = function _createInitObject(init) {
         isAsync: init.isAsync,
         scope: init.scope,
         dependencies: init.dependencies,
+        hasCompilerPass: function() {
+            return init.hasOwnProperty('compilerPass');
+        },
+        compilerPass: init.compilerPass,
         hasDependencies: function() {
             return !!(this.dependencies && this.dependencies.length > 0);
         },

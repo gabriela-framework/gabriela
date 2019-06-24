@@ -20,6 +20,12 @@ describe('Compiler instance tests', () => {
         const userServiceInit = {
             name: 'userService',
             isAsync: true,
+            compilerPass: {
+                init: function() {
+
+                },
+                property: 'someProp',
+            },
             scope: 'module',
             shared: {
                 plugins: ['pluginName', 'otherPlugin'],
@@ -39,53 +45,63 @@ describe('Compiler instance tests', () => {
 
         c.add(userServiceInit);
 
-        const initObject = c.getInit('userService');
+        const definition = c.getDefinition('userService');
 
-        expect(initObject).to.be.a('object');
-        expect(initObject).to.have.property('name');
-        expect(initObject.name).to.be.a('string');
+        expect(definition).to.be.a('object');
+        expect(definition).to.have.property('name');
+        expect(definition.name).to.be.a('string');
 
-        expect(initObject).to.have.property('isAsync');
-        expect(initObject.isAsync).to.be.a('boolean');
+        expect(definition).to.have.property('isAsync');
+        expect(definition.isAsync).to.be.a('boolean');
 
-        expect(initObject).to.have.property('init');
-        expect(initObject.init).to.be.a('function');
+        expect(definition).to.have.property('init');
+        expect(definition.init).to.be.a('function');
 
-        expect(initObject).to.have.property('scope');
-        expect(initObject.scope).to.be.a('string');
+        expect(definition).to.have.property('scope');
+        expect(definition.scope).to.be.a('string');
 
-        expect(initObject).to.have.property('hasScope');
-        expect(initObject.hasScope).to.be.a('function');
+        expect(definition).to.have.property('hasScope');
+        expect(definition.hasScope).to.be.a('function');
 
-        expect(initObject).to.have.property('isShared');
-        expect(initObject.isShared).to.be.a('function');
+        expect(definition).to.have.property('isShared');
+        expect(definition.isShared).to.be.a('function');
 
-        expect(initObject.hasScope()).to.be.equal(true);
-        expect(initObject.isShared()).to.be.equal(true);
+        expect(definition.hasScope()).to.be.equal(true);
+        expect(definition.isShared()).to.be.equal(true);
 
-        expect(initObject).to.have.property('shared');
-        expect(initObject).to.be.a('object');
+        expect(definition).to.have.property('shared');
+        expect(definition).to.be.a('object');
 
-        expect(initObject).to.have.property('sharedPlugins');
-        expect(initObject.sharedPlugins).to.be.a('function');
+        expect(definition).to.have.property('sharedPlugins');
+        expect(definition.sharedPlugins).to.be.a('function');
 
-        expect(userServiceInit.shared.plugins).to.deep.equal(initObject.sharedPlugins());
+        expect(userServiceInit.shared.plugins).to.deep.equal(definition.sharedPlugins());
 
-        expect(initObject).to.have.property('sharedModules');
-        expect(initObject.sharedModules).to.be.a('function');
+        expect(definition).to.have.property('sharedModules');
+        expect(definition.sharedModules).to.be.a('function');
 
-        expect(userServiceInit.shared.modules).to.deep.equal(initObject.sharedModules());
+        expect(userServiceInit.shared.modules).to.deep.equal(definition.sharedModules());
 
-        expect(initObject.isSharedWith('moduleName')).to.be.equal(true);
-        expect(initObject.isSharedWith('otherPlugin')).to.be.equal(true);
-        expect(initObject.isSharedWith('nonExistent')).to.be.equal(false);
+        expect(definition.isSharedWith('moduleName')).to.be.equal(true);
+        expect(definition.isSharedWith('otherPlugin')).to.be.equal(true);
+        expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
 
-        expect(initObject.dependencies).to.be.equal(undefined);
-        expect(initObject.hasDependencies()).to.be.equal(false);
+        expect(definition.dependencies).to.be.equal(undefined);
+        expect(definition.hasDependencies()).to.be.equal(false);
 
-        expect(initObject.hasScope()).to.be.equal(true);
-        expect(initObject.isShared()).to.be.equal(true);
-        expect(initObject.isSharedWith('doesNotExist')).to.be.equal(false);
+        expect(definition.hasScope()).to.be.equal(true);
+        expect(definition.isShared()).to.be.equal(true);
+        expect(definition.isSharedWith('doesNotExist')).to.be.equal(false);
+        
+        expect(definition.hasCompilerPass()).to.be.equal(true);
+
+        const compilerPass = definition.compilerPass;
+
+        expect(compilerPass).to.be.a('object');
+        expect(compilerPass).to.have.property('init');
+        expect(compilerPass.init).to.be.a('function');
+        expect(compilerPass).to.have.property('property');
+        expect(compilerPass.property).to.be.a('string');
     });
 
     it('should create a single dependency', () => {

@@ -37,7 +37,7 @@ function factory() {
         selfTree[init.name] = _createInitObject(init);
     }
 
-    function getInit(name) {
+    function getDefinition(name) {
         if (!has(name)) throw new Error(`Dependency injection error. Init object with name '${name}' not found`);
 
         return selfTree[name];
@@ -113,7 +113,7 @@ function factory() {
     this.has = has;
     this.hasOwn = hasOwn;
     this.isResolved = isResolved;
-    this.getInit = getInit;
+    this.getDefinition = getDefinition;
     this.compile = compile;
 }
 
