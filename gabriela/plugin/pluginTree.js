@@ -4,11 +4,7 @@ const is = require('../util/is');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
 
-function _runPlugin() {
-
-}
-
-function instance() {
+function instance(config) {
     const plugins = {};
 
     function addPlugin(plugin) {
@@ -62,8 +58,8 @@ function instance() {
     }
 }
 
-function factory() {
-    return new instance();
+function factory(config) {
+    return new instance(config);
 }
 
 module.exports = factory;

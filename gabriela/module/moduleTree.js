@@ -72,7 +72,7 @@ function overrideMiddleware(mdl, existing) {
     }
 }
 
-function instance() {
+function instance(config) {
     const modules = {};
 
     const tree = [];
@@ -140,8 +140,8 @@ function instance() {
     this.runConstructedModule = runConstructedModule;
 }
 
-function factory() {
-    return new instance();
+function factory(config) {
+    return new instance(config);
 }
 
 module.exports = factory;

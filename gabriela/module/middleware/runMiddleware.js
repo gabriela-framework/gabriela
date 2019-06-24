@@ -59,6 +59,7 @@ async function runMiddleware(mdl, functions, state) {
                 return val.value;
             }));
 
+
             const task = await wait(waitCheck.bind(null, taskRunner));
 
             switch (task) {

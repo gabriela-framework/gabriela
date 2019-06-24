@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const is = require('../../gabriela/util/is');
+const inArray = require('../../gabriela/util/inArray');
 
 describe('Utility functions and services tests', () => {
     it('should assert that is() evaluates all data types correctly', () => {
@@ -32,5 +33,17 @@ describe('Utility functions and services tests', () => {
         expect(is('function', func)).to.be.equal(true);
         expect(is('nan', nan)).to.be.equal(true);
         expect(is('generator', gen)).to.be.equal(true);
-    })
+    });
+
+    it('should return true or false if an one entry in an array is in another array', () => {
+        let arg1 = ['next', 'skip'];
+        let arg2 = ['done', 'skip', 'next'];
+
+        expect(inArray(arg1, arg2)).to.be.equal(true);
+
+        arg1 = ['next', 'skip'];
+        arg2 = ['1', '2', '3'];
+
+        expect(inArray(arg1, arg2)).to.be.equal(false);
+    });
 });
