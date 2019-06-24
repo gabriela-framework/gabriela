@@ -25,8 +25,8 @@ module.exports = {
     asRunner: function(receivedConfig) {
         const config = configFactory.create(receivedConfig);
 
-        const moduleTree = new ModuleTree(config);
-        const pluginTree = new PluginTree(config);
+        const moduleTree = new ModuleTree();
+        const pluginTree = new PluginTree();
         const rootCompiler = Compiler.create();
         const sharedCompiler = Compiler.create();
 
@@ -34,7 +34,13 @@ module.exports = {
         rootCompiler.name = 'root';
 
         const runModule = async function(name) {
-            if (name) return await moduleTree.runModule(name, rootCompiler, null, sharedCompiler);
+            if (name) return await moduleTree.runModule(
+                name,
+                config,
+                rootCompiler,
+                null,
+                sharedCompiler
+            );
 
             const modules = this.getModules();
             const keys = Object.keys(modules);
@@ -42,7 +48,12 @@ module.exports = {
             let state = {};
 
             for (const name of keys) {
-                const res = await moduleTree.runModule(modules[name].name, rootCompiler, null, sharedCompiler);
+                const res = await moduleTree.runModule(
+                    modules[name].name,
+                    config,
+                    rootCompiler,
+                    null, sharedCompiler
+                );
 
                 state[modules[name].name] = res;
             }
@@ -51,13 +62,13 @@ module.exports = {
         };
 
         const runPlugin = async function(name) {
-            if (name) return pluginTree.runPlugin(name, rootCompiler, sharedCompiler);
+            if (name) return pluginTree.runPlugin(name, config, rootCompiler, sharedCompiler);
 
             const plugins = this.getPlugins();
             const keys = Object.keys(plugins);
 
             for (const name of keys) {
-                await pluginTree.runPlugin(plugins[name].name, rootCompiler, sharedCompiler);
+                await pluginTree.runPlugin(plugins[name].name, config, rootCompiler, sharedCompiler);
             }
         };
 

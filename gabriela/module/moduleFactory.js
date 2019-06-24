@@ -62,7 +62,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     }
 }
 
-function _resolveMiddleware(mdl) {
+function _resolveMiddleware(mdl, config) {
     const middleware = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'security'];
 
     for (const middlewareBlockName of middleware) {
@@ -83,7 +83,7 @@ function _resolveMiddleware(mdl) {
 
                     if (!mdl.compiler.has(parsed.fnName)) throw new Error(`Expression dependency injection error. Dependency with name '${parsed.fnName}' not found in the dependency tree`);
 
-                    newMiddlewareFns.push(mdl.compiler.compile(parsed.fnName, mdl.compiler));
+                    newMiddlewareFns.push(mdl.compiler.compile(parsed.fnName, mdl.compiler, config));
                 } else {
                     newMiddlewareFns.push(n);
                 }
@@ -112,13 +112,13 @@ function _createModuleModel(mdl) {
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
-function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
     mdl = _createModuleModel(mdl);
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
     _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
-    _resolveMiddleware(mdl);
+    _resolveMiddleware(mdl, config);
 
     const handlers = {
         set(obj, prop, value) {
@@ -151,6 +151,6 @@ function factory(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     return new Proxy(mdl, handlers);
 }
 
-module.exports = function(mdl, rootCompiler, parentCompiler, sharedCompiler) {
-    return new factory(mdl, rootCompiler, parentCompiler, sharedCompiler);
+module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
+    return new factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler);
 };

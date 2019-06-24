@@ -289,24 +289,6 @@ describe('Compiler instance tests', () => {
         expect(resolved).to.be.equal(compiled);
     });
 
-    it('should not count a dependency as resolved if the third argument is added to the compile method', () => {
-        const userServiceInit = {
-            name: 'userService',
-            init: function() {
-                return () => {};
-            }
-        };
-
-        const compiler = Compiler.create();
-
-        compiler.add(userServiceInit);
-
-        const compiled = compiler.compile('userService', compiler, false);
-
-        expect(compiled).to.be.a('function');
-        expect(compiler.isResolved('userService')).to.be.equal(false);
-    });
-
     it('should return a single already resolved dependency', () => {
         const c = Compiler.create();
 

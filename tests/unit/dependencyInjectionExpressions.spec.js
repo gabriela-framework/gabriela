@@ -240,9 +240,12 @@ describe('Immediately executing middleware with dependency injection and express
         });
     });
 
-    it('should run compiler pass function with all the required parameters without the special property option', () => {
+    it('should run compiler pass function with all the required parameters without the special property option', (done) => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
+
+        let validateEmailCompilerPassCalled = false;
+        let validateNameCompilerPassCalled = false;
 
         const userRepositoryInit = {
             name: 'userRepository',
@@ -257,8 +260,22 @@ describe('Immediately executing middleware with dependency injection and express
         const validateEmailInit = {
             name: 'validateEmail',
             compilerPass: {
-                init: function(config, compilers) {
+                init: function(config, compiler) {
+                    validateEmailCompilerPassCalled = true;
 
+                    expect(compiler).to.be.a('object');
+                    expect(config).to.be.a('object');
+                    expect(config).to.have.property('validation');
+
+                    const validation = config.validation;
+
+                    expect(validation).to.have.property('minMessage');
+                    expect(validation).to.have.property('maxMessage');
+                    expect(validation).to.have.property('invalidEmailMessage');
+
+                    expect(validation.minMessage).to.be.a('string');
+                    expect(validation.maxMessage).to.be.a('string');
+                    expect(validation.invalidEmailMessage).to.be.a('string');
                 }
             },
             dependencies: [userRepositoryInit],
@@ -277,6 +294,23 @@ describe('Immediately executing middleware with dependency injection and express
 
         const validateNameInit = {
             name: 'validateName',
+            compilerPass: {
+                init: function(config, compiler) {
+                    validateNameCompilerPassCalled = true;
+
+                    expect(compiler).to.be.a('object');
+                    expect(config).to.be.a('object');
+
+                    expect(config).to.have.property('minMessage');
+                    expect(config).to.have.property('maxMessage');
+                    expect(config).to.have.property('invalidEmailMessage');
+
+                    expect(config.minMessage).to.be.a('string');
+                    expect(config.maxMessage).to.be.a('string');
+                    expect(config.invalidEmailMessage).to.be.a('string');
+                },
+                property: 'validation',
+            },
             init: function(userRepository) {
                 function validate(state, next) {
                     ++nameMiddlewareCalled;
@@ -300,14 +334,17 @@ describe('Immediately executing middleware with dependency injection and express
             validation: {
                 minMessage: 'Minimum message',
                 maxMessage: 'Max message',
-                invalidEmalMessage: 'Invalid email',
-            }
+                invalidEmailMessage: 'Invalid email',
+            },
         });
 
         g.addModule(module1);
 
         g.runModule().then(() => {
+            expect(validateEmailCompilerPassCalled).to.be.equal(true);
+            expect(validateNameCompilerPassCalled).to.be.equal(true);
 
-        })
+            done();
+        });
     });
 });

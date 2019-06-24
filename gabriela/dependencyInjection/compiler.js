@@ -2,14 +2,15 @@ const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
+const deepCopy = require('deepcopy');
 
 const _resolveService = require('./_resolveService');
-const _createInitObject = require('./_createInitObject');
+const _createDefinitionObject = require('./_createDefinitionObject');
 
-function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
-    const args = getArgNames(serviceInit.init);
+function _getDependencies(name, definition, taskRunner, originalCompiler, config) {
+    const args = getArgNames(definition.init);
 
-    if (serviceInit.isAsync && !args.includes('next')) throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+    if (definition.isAsync && !args.includes('next')) throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
 
     const deps = [];
     if (args.length > 0) {
@@ -17,7 +18,7 @@ function _getDependencies(name, serviceInit, taskRunner, originalCompiler) {
             if (arg === 'next') {
                 deps.push(taskRunner.next);
             } else {
-                deps.push(originalCompiler.compile(arg, originalCompiler));
+                deps.push(originalCompiler.compile(arg, originalCompiler, config));
             }
         }
     }
@@ -33,8 +34,8 @@ function factory() {
     const selfTree = {};
     const resolved = {};
 
-    function add(init) {
-        selfTree[init.name] = _createInitObject(init);
+    function add(definition) {
+        selfTree[definition.name] = _createDefinitionObject(definition);
     }
 
     function getOwnDefinition(name) {
@@ -94,46 +95,66 @@ function factory() {
         return false;
     }
 
-    function compile(name, originCompiler, save = true) {
+    function compile(name, originCompiler, config) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (resolved.hasOwnProperty(name)) return resolved[name];
 
-        let serviceInit;
+        let definition;
 
         if (selfTree.hasOwnProperty(name)) {
-            serviceInit = selfTree[name];
+            definition = selfTree[name];
         } else if (this.parent && this.parent.has(name)) {
-            return this.parent.compile(name, originCompiler, save);
+            return this.parent.compile(name, originCompiler, config);
         } else if (this.root && this.root.has(name)) {
-            return this.root.compile(name, originCompiler, save);
+            return this.root.compile(name, originCompiler, config);
         }
 
-        if (!serviceInit) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
+        if (!definition) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
 
-        if (serviceInit.hasDependencies()) {
-            if (resolved.hasOwnProperty(name)) return resolved[name];
+        if (definition.hasCompilerPass()) {
+            const compilerPass = definition.compilerPass;
 
-            if (selfTree.hasOwnProperty(serviceInit.name)) {
-                resolved[serviceInit.name] = new PrivateCompiler().compile(serviceInit);
+            const handlers = {
+                set(obj, prop, value) { return undefined },
+                get(target, prop, receiver) {
+                    if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
 
-                return resolved[serviceInit.name];
+                    return target[prop];
+                }
+            };
+
+            let possibleConfig = config;
+            if (compilerPass.property) {
+                if (!config.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+
+                possibleConfig = config[compilerPass.property];
             }
 
-            return new PrivateCompiler().compile(serviceInit);
+            compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
+        }
+
+        if (definition.hasDependencies()) {
+            if (resolved.hasOwnProperty(name)) return resolved[name];
+
+            if (selfTree.hasOwnProperty(definition.name)) {
+                resolved[definition.name] = new PrivateCompiler().compile(definition, config);
+
+                return resolved[definition.name];
+            }
+
+            return new PrivateCompiler().compile(definition);
         }
 
         const taskRunner = TaskRunner.create();
 
-        const deps = _getDependencies.call(this, ...[name, serviceInit, taskRunner, originCompiler]);
-        const service = _resolveService(serviceInit, deps, taskRunner);
+        const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
+        const service = _resolveService(definition, deps, taskRunner);
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 
-        if (!save) return service;
+        resolved[definition.name] = service;
 
-        resolved[serviceInit.name] = service;
-
-        return resolved[serviceInit.name];
+        return resolved[definition.name];
     }
 
     this.add = add;

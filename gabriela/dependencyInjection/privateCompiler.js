@@ -1,20 +1,20 @@
 const TaskRunner = require('../misc/taskRunner');
 
 const _resolveService = require('./_resolveService');
-const _createInitObject = require('./_createInitObject');
+const _createDefinitionObject = require('./_createDefinitionObject');
 
 function factory() {
-    function compile(serviceInit) {
-        const dependencies = serviceInit.dependencies;
+    function compile(definition, config) {
+        const dependencies = definition.dependencies;
         const resolvedDependencies = [];
 
-        if (serviceInit.hasDependencies()) {
+        if (definition.hasDependencies()) {
             for (const dep of dependencies) {
-                resolvedDependencies.push(this.compile(_createInitObject(dep)));
+                resolvedDependencies.push(this.compile(_createDefinitionObject(dep)));
             }
         }
 
-        return _resolveService(serviceInit, resolvedDependencies, TaskRunner.create());
+        return _resolveService(definition, resolvedDependencies, TaskRunner.create());
     }
 
     this.compile = compile;

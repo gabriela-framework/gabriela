@@ -10,7 +10,7 @@ function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     plugin.compiler = c;
 }
 
-function _replaceModules(plugin) {
+function _replaceModules(plugin, config) {
     if (plugin.modules && plugin.modules.length > 0) {
         const modules = plugin.modules;
         const factoryModules = [];
@@ -20,17 +20,17 @@ function _replaceModules(plugin) {
                 name: plugin.name,
             };
 
-            factoryModules.push(moduleFactory(mdl, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
+            factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
         }
 
         plugin.modules = factoryModules;
     }
 }
 
-function factory(plugin, rootCompiler, sharedCompiler) {
+function factory(plugin, config, rootCompiler, sharedCompiler) {
     _createCompiler(plugin, rootCompiler, sharedCompiler);
 
-    _replaceModules(plugin);
+    _replaceModules(plugin, config);
 
     const handlers = {
         set(obj, prop, value) {
