@@ -5,6 +5,7 @@ const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const Server = require('./server/server');
 const moduleFactory = require('./module/moduleFactory');
+const Config = require('./config');
 
 module.exports = {
     asServer: (options) => {
@@ -21,7 +22,9 @@ module.exports = {
         };
     },
 
-    asRunner: function() {
+    asRunner: function(config) {
+        Config.create(config);
+
         const moduleTree = new ModuleTree();
         const pluginTree = new PluginTree();
         const rootCompiler = Compiler.create();
