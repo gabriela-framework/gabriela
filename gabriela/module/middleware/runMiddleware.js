@@ -3,20 +3,8 @@ const {asyncFlowTypes} = require('../../misc/types');
 const createGenerator = require('../../util/createGenerator');
 const getArgs = require('../../util/getArgs');
 const wait = require('../../util/wait');
-const is = require('../../util/is');
 const inArray = require('../../util/inArray');
-
-function waitCheck(taskRunner) {
-    const task = taskRunner.getTask();
-    if (task) {
-        return {
-            success: true,
-            value: task,
-        }
-    }
-
-    return {success: false}
-}
+const _waitCheck = require('../../util/_waitCheck');
 
 function resolveDependency(mdl, name) {
     if (mdl.compiler.has(name)) {
@@ -65,7 +53,7 @@ async function runMiddleware(mdl, functions, state) {
             if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
                 task = taskRunner.resolve();
             } else {
-                task = await wait(waitCheck.bind(null, taskRunner));
+                task = await wait(_waitCheck.bind(null, taskRunner));
             }
 
             switch (task) {

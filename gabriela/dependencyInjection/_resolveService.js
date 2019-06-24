@@ -1,5 +1,5 @@
 const deasync = require('deasync');
-const _waitCheck = require('./_waitCheck');
+const _waitCheck = require('../util/_waitCheck');
 
 module.exports = function _resolveService(serviceInit, deps, taskRunner) {
     let service;
