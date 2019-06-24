@@ -574,4 +574,89 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail to compile a dependency because of invalid compilerPass option data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: null,
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule({
+                name: 'module',
+                dependencies: [userServiceInit]
+            })
+        } catch (e) {
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'module'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid compilerPass.init option data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: {
+                init: null,
+            },
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule({
+                name: 'module',
+                dependencies: [userServiceInit]
+            })
+        } catch (e) {
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'module'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to compile a dependency because of invalid compilerPass.property option data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: {
+                init: function() {
+
+                },
+                property: null,
+            },
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addModule({
+                name: 'module',
+                dependencies: [userServiceInit]
+            })
+        } catch (e) {
+            expect(e.message).to.be.equal(`Dependency injection error for '${userServiceInit.name}' in module 'module'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

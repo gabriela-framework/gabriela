@@ -141,6 +141,19 @@ factory.validateDICompilerInitObject = function(init, moduleName) {
             factory.validateDICompilerInitObject(dep, moduleName);
         }
     }
+
+    if (init.hasOwnProperty('compilerPass')) {
+        if (!is('object', init.compilerPass)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+
+        const compilerPass = init.compilerPass;
+
+        if (!compilerPass.hasOwnProperty('init')) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+        if (!is('function', compilerPass.init)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+
+        if (compilerPass.hasOwnProperty('property')) {
+            if (!is('string', compilerPass.property)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+        }
+    }
 };
 
 module.exports = factory;
