@@ -1,8 +1,10 @@
 const taskRunnerFactory = require('../../misc/taskRunner');
+const {asyncFlowTypes} = require('../../misc/types');
 const createGenerator = require('../../util/createGenerator');
 const getArgs = require('../../util/getArgs');
 const wait = require('../../util/wait');
 const is = require('../../util/is');
+const inArray = require('../../util/inArray');
 
 function waitCheck(taskRunner) {
     const task = taskRunner.getTask();
@@ -59,8 +61,12 @@ async function runMiddleware(mdl, functions, state) {
                 return val.value;
             }));
 
-
-            const task = await wait(waitCheck.bind(null, taskRunner));
+            let task;
+            if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
+                task = taskRunner.resolve();
+            } else {
+                task = await wait(waitCheck.bind(null, taskRunner));
+            }
 
             switch (task) {
                 case 'skip': {

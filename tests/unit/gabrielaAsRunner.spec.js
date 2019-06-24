@@ -61,6 +61,42 @@ describe('Gabriela runner module tests', () => {
         expect(g.getModule(name)).to.be.a('undefined');
     });
 
+    it('should assert that there is not need to wait for async flow functions if they are not present as arguments', () => {
+        let preLogicTransformerExecuted = false,
+            validatorsExecuted = false,
+            moduleLogicExecuted = false,
+            postLogicTransformersExecuted = false;
+
+        const name = 'allMiddlewareExecution';
+
+        const mdl = {
+            name: name,
+            preLogicTransformers: [function() {
+                preLogicTransformerExecuted = true;
+            }],
+            validators: [function() {
+                validatorsExecuted = true;
+            }],
+            moduleLogic: [function() {
+                moduleLogicExecuted = true;
+            }],
+            postLogicTransformers: [function() {
+                postLogicTransformersExecuted = true;
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(mdl);
+
+        g.runModule(name).then(() => {
+            expect(preLogicTransformerExecuted).to.be.equal(true);
+            expect(validatorsExecuted).to.be.equal(true);
+            expect(moduleLogicExecuted).to.be.equal(true);
+            expect(postLogicTransformersExecuted).to.be.equal(true);
+        });
+    });
+
     it('should assert that all middleware is executed', () => {
         let preLogicTransformerExecuted = false,
             validatorsExecuted = false,
