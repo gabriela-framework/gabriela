@@ -6,25 +6,25 @@ const wait = require('../../util/wait');
 const inArray = require('../../util/inArray');
 const _waitCheck = require('../../util/_waitCheck');
 
-function _resolveDependency(mdl, name) {
+function _resolveDependency(mdl, name, config) {
     if (mdl.compiler.has(name)) {
         return mdl.compiler.compile(name, mdl.compiler);
     } else if (mdl.sharedCompiler.has(name)) {
-        const initObject = mdl.sharedCompiler.getDefinition(name);
+        const definition = mdl.sharedCompiler.getOwnDefinition(name);
 
         // if it is shared with a module name
-        if (initObject.isSharedWith(mdl.name)) {
+        if (definition.isSharedWith(mdl.name)) {
             return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
         }
 
         // if it is shared with a module that is in a plugin with name mdl.plugin.name
-        if (mdl.isInPlugin() && initObject.isSharedWith(mdl.plugin.name)) {
+        if (mdl.isInPlugin() && definition.isSharedWith(mdl.plugin.name)) {
             return mdl.sharedCompiler.compile(name, mdl.sharedCompiler);
         }
     }
 }
 
-async function runMiddleware(mdl, functions, state) {
+async function runMiddleware(mdl, functions, state, config) {
     if (functions && functions.length > 0) {
         const generator = createGenerator(functions);
         const taskRunner = taskRunnerFactory.create();
@@ -38,7 +38,7 @@ async function runMiddleware(mdl, functions, state) {
             });
 
             exec.call(null, ...args.map((val) => {
-                const dep = _resolveDependency(mdl, val.name);
+                const dep = _resolveDependency(mdl, val.name, config);
 
                 if (dep) return dep;
 

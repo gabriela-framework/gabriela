@@ -6,7 +6,7 @@ function factory() {
         return (function(mdl) {
             const state = {};
 
-            async function run(childState) {
+            async function run(childState, config) {
                 if (childState) state.child = childState;
 
                 const middleware = [
@@ -18,7 +18,7 @@ function factory() {
 
                 for (const functions of middleware) {
                     try {
-                        await runMiddleware.call(null, ...[mdl, functions, state]);
+                        await runMiddleware.call(null, ...[mdl, functions, state, config]);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {

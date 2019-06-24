@@ -53,7 +53,7 @@ function instance(config) {
 
             const pluginRunner = PluginRunner.create(pluginFactory(plugin, rootCompiler, sharedCompiler));
 
-            return await pluginRunner.run();
+            return await pluginRunner.run(config);
         }
     }
 }

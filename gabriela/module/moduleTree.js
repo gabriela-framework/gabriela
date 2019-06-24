@@ -72,7 +72,7 @@ function overrideMiddleware(mdl, existing) {
     }
 }
 
-function instance(config) {
+function instance(receivedConfig) {
     const modules = {};
 
     const tree = [];
@@ -94,15 +94,15 @@ function instance(config) {
         const mdl = modules[name];
         const constructedModule = moduleFactory(mdl, rootCompiler, parentCompiler, sharedCompiler);
 
-        return await runConstructedModule(constructedModule);
+        return await runConstructedModule(constructedModule, receivedConfig);
     }
 
-    async function runConstructedModule(mdl) {
+    async function runConstructedModule(mdl, config) {
         const runner = ModuleRunner.create(mdl);
 
         let childState = (tree.length > 0) ? await runTree(tree) : null;
 
-        await runner.run(childState);
+        await runner.run(childState, config);
 
         return runner.getResult();
     }

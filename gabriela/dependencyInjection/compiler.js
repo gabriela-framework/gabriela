@@ -37,10 +37,41 @@ function factory() {
         selfTree[init.name] = _createInitObject(init);
     }
 
-    function getDefinition(name) {
-        if (!has(name)) throw new Error(`Dependency injection error. Init object with name '${name}' not found`);
+    function getOwnDefinition(name) {
+        if (!this.has(name)) throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
 
         return selfTree[name];
+    }
+
+    /**
+     * Cannot use recursive calls to getDefinition() because I don't know where the definition is and if the
+     * definition actually exists (and on which compiler does it exist).
+     *
+     * Also, possibly shit code. getOwnDefinition() throws an exception if the definition does not exist so
+     * the 'if' checks are redundant but need to be done in order to return the first found definition.
+     */
+    function getDefinition(name) {
+        try {
+            let definition = this.getOwnDefinition(name);
+            if (definition) return definition;
+
+            if (this.parent) {
+                definition = this.parent.getOwnDefinition(name);
+
+                if (definition) return definition;
+            }
+
+            if (this.root) {
+                definition = this.root.getOwnDefinition(name);
+
+                if (definition) return definition;
+            }
+
+            throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
+
+        } catch (e) {
+            throw new Error(e.message);
+        }
     }
 
     function hasOwn(name) {
@@ -68,10 +99,6 @@ function factory() {
         if (resolved.hasOwnProperty(name)) return resolved[name];
 
         let serviceInit;
-
-        if (name === 'validateEmail') {
-
-        }
 
         if (selfTree.hasOwnProperty(name)) {
             serviceInit = selfTree[name];
@@ -113,6 +140,7 @@ function factory() {
     this.has = has;
     this.hasOwn = hasOwn;
     this.isResolved = isResolved;
+    this.getOwnDefinition = getOwnDefinition;
     this.getDefinition = getDefinition;
     this.compile = compile;
 }

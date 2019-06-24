@@ -239,4 +239,75 @@ describe('Immediately executing middleware with dependency injection and express
             done();
         });
     });
+
+    it('should run compiler pass function with all the required parameters without the special property option', () => {
+        let emailMiddlewareCalled = 0;
+        let nameMiddlewareCalled = 0;
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            scope: 'public',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const validateEmailInit = {
+            name: 'validateEmail',
+            compilerPass: {
+                init: function(config, compilers) {
+
+                }
+            },
+            dependencies: [userRepositoryInit],
+            init: function(userRepository) {
+                function validate(state, next) {
+                    ++emailMiddlewareCalled;
+
+                    expect(userRepository).to.be.a('object');
+
+                    next();
+                }
+
+                return validate;
+            }
+        };
+
+        const validateNameInit = {
+            name: 'validateName',
+            init: function(userRepository) {
+                function validate(state, next) {
+                    ++nameMiddlewareCalled;
+
+                    expect(userRepository).to.be.a('object');
+
+                    next();
+                }
+
+                return validate;
+            }
+        };
+
+        const module1 = {
+            name: 'module1',
+            dependencies: [validateEmailInit, validateNameInit, userRepositoryInit],
+            moduleLogic: ['validateEmail()', 'validateName()'],
+        };
+
+        const g = gabriela.asRunner({
+            validation: {
+                minMessage: 'Minimum message',
+                maxMessage: 'Max message',
+                invalidEmalMessage: 'Invalid email',
+            }
+        });
+
+        g.addModule(module1);
+
+        g.runModule().then(() => {
+
+        })
+    });
 });

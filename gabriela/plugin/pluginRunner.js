@@ -4,10 +4,10 @@ function factory() {
     function create(plugin) {
         const moduleTree = new ModuleTree();
 
-        async function run() {
+        async function run(config) {
             if (plugin.modules && plugin.modules.length > 0) {
                 for (const mdl of plugin.modules) {
-                    await moduleTree.runConstructedModule(mdl);
+                    await moduleTree.runConstructedModule(mdl, config);
                 }
             }
         }

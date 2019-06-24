@@ -35,6 +35,30 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
+    it('should fail to get an own definition object', () => {
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                // returns nothing
+            }
+        };
+
+        const compiler = Compiler.create();
+
+        compiler.add(userServiceInit);
+
+        let entersException = false;
+        try {
+            compiler.getOwnDefinition('nonExistent');
+        } catch (err) {
+            entersException = true;
+
+            expect(err.message).to.be.equal(`Dependency injection error. Definition object with name 'nonExistent' not found`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail to compile a dependency because of non existent service', () => {
         let entersException = false;
 

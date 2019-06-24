@@ -45,7 +45,7 @@ describe('Compiler instance tests', () => {
 
         c.add(userServiceInit);
 
-        const definition = c.getDefinition('userService');
+        const definition = c.getOwnDefinition('userService');
 
         expect(definition).to.be.a('object');
         expect(definition).to.have.property('name');
@@ -92,7 +92,7 @@ describe('Compiler instance tests', () => {
         expect(definition.hasScope()).to.be.equal(true);
         expect(definition.isShared()).to.be.equal(true);
         expect(definition.isSharedWith('doesNotExist')).to.be.equal(false);
-        
+
         expect(definition.hasCompilerPass()).to.be.equal(true);
 
         const compilerPass = definition.compilerPass;
@@ -102,6 +102,76 @@ describe('Compiler instance tests', () => {
         expect(compilerPass.init).to.be.a('function');
         expect(compilerPass).to.have.property('property');
         expect(compilerPass.property).to.be.a('string');
+    });
+
+    it('should return a root definition', () => {
+        const root = Compiler.create();
+        const parent = Compiler.create();
+        const child1 = Compiler.create();
+        const child2 = Compiler.create();
+
+        parent.root = root;
+
+        child1.root = root;
+        child2.root = root;
+        child2.parent = parent;
+        child1.parent = parent;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        child1.root.add(userServiceInit);
+
+        const definition = child2.getDefinition('userService');
+
+        expect(definition).to.be.a('object');
+        expect(definition).to.have.property('name');
+        expect(definition.name).to.be.a('string');
+
+        expect(definition).to.have.property('isAsync');
+        expect(definition.isAsync).to.be.a('undefined');
+
+        expect(definition).to.have.property('init');
+        expect(definition.init).to.be.a('function');
+
+        expect(definition).to.have.property('scope');
+        expect(definition.scope).to.be.a('undefined');
+
+        expect(definition).to.have.property('hasScope');
+        expect(definition.hasScope).to.be.a('function');
+
+        expect(definition).to.have.property('isShared');
+        expect(definition.isShared).to.be.a('function');
+
+        expect(definition.hasScope()).to.be.equal(false);
+        expect(definition.isShared()).to.be.equal(false);
+
+        expect(definition).to.have.property('shared');
+
+        expect(definition).to.have.property('sharedPlugins');
+        expect(definition.sharedPlugins).to.be.a('function');
+
+        expect(definition).to.have.property('sharedModules');
+        expect(definition.sharedModules).to.be.a('function');
+
+        expect(definition.isSharedWith('moduleName')).to.be.equal(false);
+        expect(definition.isSharedWith('otherPlugin')).to.be.equal(false);
+        expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
+
+        expect(definition.dependencies).to.be.equal(undefined);
+        expect(definition.hasDependencies()).to.be.equal(false);
+
+        expect(definition.hasScope()).to.be.equal(false);
+        expect(definition.isShared()).to.be.equal(false);
+        expect(definition.isSharedWith('doesNotExist')).to.be.equal(false);
+
+        expect(definition.hasCompilerPass()).to.be.equal(false);
     });
 
     it('should create a single dependency', () => {
