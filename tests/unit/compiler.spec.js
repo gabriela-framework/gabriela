@@ -86,7 +86,7 @@ describe('Compiler instance tests', () => {
         expect(definition.isSharedWith('otherPlugin')).to.be.equal(true);
         expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
 
-        expect(definition.dependencies).to.be.equal(undefined);
+        expect(definition.dependencies).to.be.a('array');
         expect(definition.hasDependencies()).to.be.equal(false);
 
         expect(definition.hasScope()).to.be.equal(true);
@@ -164,7 +164,7 @@ describe('Compiler instance tests', () => {
         expect(definition.isSharedWith('otherPlugin')).to.be.equal(false);
         expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
 
-        expect(definition.dependencies).to.be.equal(undefined);
+        expect(definition.dependencies).to.be.a('array');
         expect(definition.hasDependencies()).to.be.equal(false);
 
         expect(definition.hasScope()).to.be.equal(false);

@@ -23,7 +23,7 @@ function validateDependencies(mdl) {
         for (const d of mdl.dependencies) {
             if (!is('object', d)) throw new Error(`Module definition error in module '${mdl.name}'. 'dependencies' has to be an array of type object`);
 
-            factory.validateDICompilerInitObject(d, mdl.name);
+            factory.validateDefinitionObject(d, mdl.name);
         }
     }
 }
@@ -100,7 +100,7 @@ factory.validateServerOptions = function(options) {
     }
 };
 
-factory.validateDICompilerInitObject = function(init, moduleName) {
+factory.validateDefinitionObject = function(init, moduleName) {
     if (!is('object', init)) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency initialization must be an object`);
     if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'init' property must be a function`);
@@ -138,7 +138,7 @@ factory.validateDICompilerInitObject = function(init, moduleName) {
         if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. '${init.name}' 'dependencies' option must be an array of dependency 'init' objects`);
 
         for (const dep of init.dependencies) {
-            factory.validateDICompilerInitObject(dep, moduleName);
+            factory.validateDefinitionObject(dep, moduleName);
         }
     }
 

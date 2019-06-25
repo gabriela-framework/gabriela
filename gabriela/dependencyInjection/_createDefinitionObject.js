@@ -1,10 +1,12 @@
+const Validator = require('../misc/validator');
+
 module.exports = function _createInitObject(init) {
     return {
         name: init.name,
         init: init.init,
         isAsync: init.isAsync,
         scope: init.scope,
-        dependencies: init.dependencies,
+        dependencies: (!init.hasOwnProperty('dependencies')) ? [] : init.dependencies,
         hasCompilerPass: function() {
             return init.hasOwnProperty('compilerPass');
         },
