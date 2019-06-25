@@ -7,6 +7,11 @@ module.exports = function _createInitObject(init) {
         isAsync: init.isAsync,
         scope: init.scope,
         dependencies: (!init.hasOwnProperty('dependencies')) ? [] : init.dependencies,
+        addPrivateDependency: function(definition) {
+            Validator.validateDefinitionObject(definition);
+
+            this.dependencies.push(definition);
+        },
         hasCompilerPass: function() {
             return init.hasOwnProperty('compilerPass');
         },

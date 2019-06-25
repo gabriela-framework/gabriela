@@ -18,11 +18,22 @@ describe('Compiler pass tests', () => {
                 init: function(config, compiler) {
                     entersCompilerPass = true;
 
+                    compiler.getDefinition('userService').addPrivateDependency({
+                        name: 'privateDependency',
+                        init: function() {
+                            function PrivateDependency() {
+                                this.privateDepFunc = null;
+                            }
 
+                            return new PrivateDependency();
+                        }
+                    })
                 },
             },
             init: function(privateDependency) {
-                function UserService() {}
+                function UserService() {
+                    this.privateDependency = privateDependency;
+                }
 
                 return new UserService();
             }
@@ -37,6 +48,10 @@ describe('Compiler pass tests', () => {
                 entersMiddleware = true;
 
                 expect(userService).to.be.a('object');
+                expect(userService).to.have.property('privateDependency');
+                expect(userService.privateDependency).to.be.a('object');
+                expect(userService.privateDependency).to.have.property('privateDepFunc');
+
             }]
         });
 
