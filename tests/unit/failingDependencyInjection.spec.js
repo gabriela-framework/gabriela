@@ -744,4 +744,36 @@ describe('Failing dependency injection tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail to create a dependency because of invalid usage of compiler passes but within gabriela', (done) => {
+        const userServiceInit = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    compiler.compile('something');
+                },
+            },
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule({
+            name: 'module',
+            dependencies: [userServiceInit],
+            moduleLogic: [function(userService) {
+
+            }],
+        });
+
+        g.runModule().then(() => {
+            assert.fail('This test should fail');
+        }).catch((e) => {
+            expect(e.message).to.be.equal(`Dependency injection error in service 'userService'. Compiling inside a compiler pass is forbidden`);
+
+            done();
+        });
+    });
 });

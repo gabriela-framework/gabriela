@@ -1,8 +1,9 @@
+const deepCopy = require('deepcopy');
+
 const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
-const deepCopy = require('deepcopy');
 
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
@@ -25,6 +26,28 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
 
     return deps;
 }
+
+function _execCompilerPass(definition, config) {
+    const compilerPass = definition.compilerPass;
+
+    const handlers = {
+        set(obj, prop, value) { return undefined },
+        get(target, prop, receiver) {
+            if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
+
+            return target[prop];
+        }
+    };
+
+    let possibleConfig = config;
+    if (compilerPass.property) {
+        if (!possibleConfig.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+
+        possibleConfig = config[compilerPass.property];
+    }
+
+    compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
+};
 
 function factory() {
     this.root = null;
@@ -112,25 +135,7 @@ function factory() {
         if (!definition) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
 
         if (definition.hasCompilerPass()) {
-            const compilerPass = definition.compilerPass;
-
-            const handlers = {
-                set(obj, prop, value) { return undefined },
-                get(target, prop, receiver) {
-                    if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
-
-                    return target[prop];
-                }
-            };
-
-            let possibleConfig = config;
-            if (compilerPass.property) {
-                if (!possibleConfig.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
-
-                possibleConfig = config[compilerPass.property];
-            }
-
-            compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
+            _execCompilerPass.call(this, definition, config);
         }
 
         if (definition.hasDependencies()) {

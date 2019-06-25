@@ -430,4 +430,53 @@ describe('Private dependencies', () => {
             });
         });
     });
+
+    it('should not execute a compiler pass of a private dependency but it should execute a compiler pass of a parent dependency', () => {
+        let entersPrivateDepCompilerPass = false;
+        let entersParentDepCompilerPass = false;
+        let entersMiddleware = false;
+
+        const privateDependencyInit = {
+            name: 'privateDependency',
+            init: function() {
+                return () => {};
+            },
+            compilerPass: {
+                init: function() {
+                    entersPrivateDepCompilerPass = true;
+                }
+            }
+        };
+
+        const parentDependencyInit = {
+            name: 'parentDependency',
+            dependencies: [privateDependencyInit],
+            compilerPass: {
+                init: function() {
+                    entersParentDepCompilerPass = true;
+                }
+            },
+            init: function(privateDependency) {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule({
+            name: 'module',
+            dependencies: [parentDependencyInit],
+            moduleLogic: [function(parentDependency) {
+                entersMiddleware = true;
+
+                expect(parentDependency).to.be.a('function');
+            }],
+        });
+
+        g.runModule().then(() => {
+            expect(entersParentDepCompilerPass).to.be.equal(true);
+            expect(entersMiddleware).to.be.equal(true);
+            expect(entersPrivateDepCompilerPass).to.be.equal(false);
+        });
+    });
 });
