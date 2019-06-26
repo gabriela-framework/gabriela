@@ -105,6 +105,10 @@ function _createModuleModel(mdl) {
         plugin: mdl.plugin,
         dependencies: mdl.dependencies,
         isInPlugin: () => !!(mdl.plugin),
+        events: mdl.events,
+        hasEvents: function() {
+            return (this.events) ? true : false;
+        }
     }
 }
 
@@ -138,9 +142,13 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
                 'plugin',
                 'dependencies',
                 'isInPlugin',
+                'events',
+                'hasEvents',
             ];
 
             if (!allowed.includes(prop)) {
+                if (!is('string', prop)) return undefined;
+
                 throw new Error(`Module access error. Trying to access a protected or a non existent property '${prop}' of a '${mdl.name}' module`);
             }
 

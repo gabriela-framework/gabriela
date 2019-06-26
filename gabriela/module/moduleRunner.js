@@ -1,5 +1,6 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
+const events = require('./events/events');
 
 function factory() {
     function create(mdl) {
@@ -16,6 +17,7 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 
+                events.runModuleStarted(mdl);
                 for (const functions of middleware) {
                     try {
                         await runMiddleware.call(null, ...[mdl, functions, state, config]);
@@ -33,6 +35,8 @@ function factory() {
                         throw err;
                     }
                 }
+
+                events.runModuleFinished(mdl);
             }
 
             function getResult() {
