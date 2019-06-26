@@ -1,5 +1,5 @@
 function wait(cb) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve)=> {
         const check = () => {
             const res = cb();
 

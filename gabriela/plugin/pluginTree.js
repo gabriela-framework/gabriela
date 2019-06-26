@@ -1,6 +1,7 @@
 const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
 const is = require('../util/is');
+const hasKey = require('../util/hasKey');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
 
@@ -10,13 +11,13 @@ function instance() {
     function addPlugin(plugin) {
         Validator.validatePlugin(plugin);
 
-        if (plugins.hasOwnProperty(plugin.name)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
+        if (hasKey(plugins, plugin.name)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
 
         plugins[plugin.name] = deepCopy(plugin);
     }
 
     function hasPlugin(name) {
-        return plugins.hasOwnProperty(name);
+        return hasKey(plugins, name);
     }
 
     function getPlugin(name) {

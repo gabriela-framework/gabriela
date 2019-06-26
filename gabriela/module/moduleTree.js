@@ -6,6 +6,7 @@
 
 const ModuleRunner = require('./moduleRunner');
 const is = require('../util/is');
+const hasKey = require('../util/hasKey');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
@@ -125,7 +126,7 @@ function instance() {
         modules[mdl.name] = deepCopy(existing);
     };
 
-    this.hasModule = (name) => modules.hasOwnProperty(name);
+    this.hasModule = (name) => hasKey(modules, name);
     this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
     this.getModules = () => deepCopy(modules);
     this.removeModule = (name) => {

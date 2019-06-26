@@ -16,11 +16,6 @@ function Server(options, moduleTree) {
         http: http,
     };
 
-    const expressApp = {
-        module: express,
-        instance: app
-    };
-
     this.listen = function() {
         serverInstance = native.http.listen(options.port, function() {
             if (options.runCallback) options.runCallback.call();

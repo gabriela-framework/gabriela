@@ -3,11 +3,11 @@ const is = require('./util/is');
 
 function factory(config) {
     const handlers = {
-        set(obj, prop, value) {
+        set() {
             return undefined;
         },
 
-        get (target, prop, receiver) {
+        get (target, prop) {
             return target[prop];
         }
     };

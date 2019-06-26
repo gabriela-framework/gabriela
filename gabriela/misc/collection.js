@@ -1,4 +1,5 @@
 const deepCopy = require('deepcopy');
+const hasKey = require('../util/hasKey');
 
 function factory() {
     this.create = function() {
@@ -17,7 +18,7 @@ function factory() {
         }
     
         function has(name) {
-            return modules.hasOwnProperty(name);
+            return hasKey(modules, name);
         }
     
         function get(name) {

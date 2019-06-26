@@ -15,7 +15,7 @@ module.exports = {
 
         return {
             addModule: function(mdl) {
-                moduleTree.addModule(moduleFactory(mdl, rootCompiler));
+                moduleTree.addModule(moduleFactory(mdl));
             },
             runServer: server.listen.bind(server),
             closeServer: server.close,

@@ -33,11 +33,11 @@ function factory(plugin, config, rootCompiler, sharedCompiler) {
     _replaceModules(plugin, config);
 
     const handlers = {
-        set(obj, prop, value) {
+        set(obj, prop) {
             throw new Error(`Internal plugin factory error. You cannot add property(s) '${prop}' to an already created 'PluginFactory'`);
         },
 
-        get(target, prop, receiver) {
+        get(target, prop) {
             const allowed = ['modules', 'name', 'compiler', 'sharedCompiler'];
 
             if (!allowed.includes(prop)) {

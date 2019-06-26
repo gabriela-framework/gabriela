@@ -4,7 +4,7 @@ const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
 
 function factory() {
-    function compile(definition, config) {
+    function compile(definition) {
         const dependencies = definition.dependencies;
         const resolvedDependencies = [];
 

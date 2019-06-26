@@ -1,4 +1,5 @@
 const getArgNames = require('./getArgNames');
+const hasKey = require('./hasKey');
 
 function getArgs(fn, values, specialCb) {
     const argNames = getArgNames(fn);
@@ -6,7 +7,7 @@ function getArgs(fn, values, specialCb) {
     const args = [];
 
     for (const arg of argNames) {
-        if (!values.hasOwnProperty(arg) && specialCb) {
+        if (!hasKey(values, arg) && specialCb) {
             args.push({
                 name: 'special',
                 value: specialCb.call(null, ...[arg]),

@@ -4,6 +4,7 @@
  */
 
 const is = require('../util/is');
+const hasKey = require('../util/hasKey');
 const {middlewareTypes} = require('./types');
 
 /**
@@ -17,7 +18,7 @@ function validateDependencies(mdl) {
     /**
      * Validates that dependencies have to be an array of type object
      */
-    if (mdl.hasOwnProperty('dependencies')) {
+    if (hasKey(mdl, 'dependencies')) {
         if (!Array.isArray(mdl.dependencies)) throw new Error(`Module definition error in module '${mdl.name}'. 'dependencies' has to be an array of type object`);
 
         for (const d of mdl.dependencies) {
@@ -33,7 +34,7 @@ function validateDependencies(mdl) {
  * @param mdl
  */
 factory.moduleValidator = function(mdl) {
-    if (!mdl.hasOwnProperty('name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
+    if (!hasKey(mdl, 'name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
 
     /**
@@ -41,7 +42,7 @@ factory.moduleValidator = function(mdl) {
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
      */
     for (const name of middlewareTypes) {
-        if (mdl.hasOwnProperty(name)) {
+        if (hasKey(mdl, name)) {
             if (!Array.isArray(mdl[name]) && !is('object', mdl[name])) {
                 throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions or an object with a 'name' property and a 'middleware' property that has to be an array`);
             }
@@ -55,8 +56,8 @@ factory.moduleValidator = function(mdl) {
                             if (m.disabled) {
                                 if (!is('boolean', m.disabled)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' 'disabled' property has to be a type boolean`);
                             }
-                            if (!m.hasOwnProperty('name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
-                            if (!m.hasOwnProperty('middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
+                            if (!hasKey(m, 'name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
+                            if (!hasKey(m, 'middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
 
                             if (!is('string', m.name)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
                             if (!is('function', m.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a function`);
@@ -74,10 +75,10 @@ factory.moduleValidator = function(mdl) {
 
 factory.validatePlugin = function(plugin) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
-    if (!plugin.hasOwnProperty('name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
+    if (!hasKey(plugin, 'name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
     if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
 
-    if (plugin.hasOwnProperty('modules')) {
+    if (hasKey(plugin, 'modules')) {
         if (!Array.isArray(plugin.modules)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' 'modules' entry must be an array of module objects`);
 
         try {
@@ -91,11 +92,11 @@ factory.validatePlugin = function(plugin) {
 };
 
 factory.validateServerOptions = function(options) {
-    if (options.hasOwnProperty('port')) {
+    if (hasKey(options, 'port')) {
         if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
     }
 
-    if (options.hasOwnProperty('runCallback')) {
+    if (hasKey(options, 'runCallback')) {
         if (!is('function', options.runCallback)) throw new Error(`Invalid server configuration. 'runCallback' must be a function`);
     }
 };
@@ -105,9 +106,9 @@ factory.validateDefinitionObject = function(init, moduleName) {
     if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'init' property must be a function`);
 
-    if (init.hasOwnProperty('scope') && init.hasOwnProperty('shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency '${init.name}' cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+    if (hasKey(init, 'scope') && hasKey(init, 'shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency '${init.name}' cannot have both 'visibility' and 'shared' properties present. Use one or another`);
 
-    if (init.hasOwnProperty('scope')) {
+    if (hasKey(init, 'scope')) {
         if (!is('string', init.scope)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);
 
         const visibilities = ['module', 'plugin', 'public'];
@@ -117,7 +118,7 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 
-    if (init.hasOwnProperty('shared')) {
+    if (hasKey(init, 'shared')) {
         if (!is('object', init.shared)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property must be an object`);
         if (!init.shared.plugins && !init.shared.modules) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property does not have neither 'modules' or a 'plugins' property`);
 
@@ -130,11 +131,11 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 
-    if (init.hasOwnProperty('isAsync')) {
+    if (hasKey(init, 'isAsync')) {
         if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'isAsync' option must be a boolean`);
     }
 
-    if (init.hasOwnProperty('dependencies')) {
+    if (hasKey(init, 'dependencies')) {
         if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. '${init.name}' 'dependencies' option must be an array of dependency 'init' objects`);
 
         for (const dep of init.dependencies) {
@@ -142,15 +143,15 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 
-    if (init.hasOwnProperty('compilerPass')) {
+    if (hasKey(init, 'compilerPass')) {
         if (!is('object', init.compilerPass)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
 
         const compilerPass = init.compilerPass;
 
-        if (!compilerPass.hasOwnProperty('init')) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
+        if (!hasKey(compilerPass, 'init')) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
         if (!is('function', compilerPass.init)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
 
-        if (compilerPass.hasOwnProperty('property')) {
+        if (hasKey(compilerPass, 'property')) {
             if (!is('string', compilerPass.property)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
         }
     }

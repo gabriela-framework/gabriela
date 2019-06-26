@@ -1,5 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const is = require('../util/is');
+const hasKey = require('../util/hasKey');
 const parseExpression = require('../expression/parse');
 
 function _addDependencies(mdl) {
@@ -73,7 +74,7 @@ function _resolveMiddleware(mdl, config) {
             for (const index in middlewareFns) {
                 const n = middlewareFns[index];
                 if (is('object', n)) {
-                    if (n.hasOwnProperty('disabled') && n.disabled === true) {
+                    if (hasKey(n, 'disabled') && n.disabled === true) {
                         continue;
                     }
 
@@ -125,11 +126,11 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
     _resolveMiddleware(mdl, config);
 
     const handlers = {
-        set(obj, prop, value) {
+        set() {
             return undefined;
         },
 
-        get(target, prop, receiver) {
+        get(target, prop) {
             const allowed = [
                 'name',
                 'security',

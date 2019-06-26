@@ -4,6 +4,7 @@ const getArgNames = require('../util/getArgNames');
 const is = require('../util/is');
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
+const hasKey = require('../util/hasKey');
 
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
@@ -31,8 +32,8 @@ function _execCompilerPass(definition, config) {
     const compilerPass = definition.compilerPass;
 
     const handlers = {
-        set(obj, prop, value) { return undefined },
-        get(target, prop, receiver) {
+        set() { return undefined },
+        get(target, prop) {
             if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
 
             return target[prop];
@@ -41,13 +42,13 @@ function _execCompilerPass(definition, config) {
 
     let possibleConfig = config;
     if (compilerPass.property) {
-        if (!possibleConfig.hasOwnProperty(compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+        if (!hasKey(possibleConfig, compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
 
         possibleConfig = config[compilerPass.property];
     }
 
     compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
-};
+}
 
 function factory() {
     this.root = null;
@@ -99,11 +100,11 @@ function factory() {
     }
 
     function hasOwn(name) {
-        return selfTree.hasOwnProperty(name);
+        return hasKey(selfTree, name);
     }
 
     function has(name) {
-        if (selfTree.hasOwnProperty(name)) return true;
+        if (hasKey(selfTree, name)) return true;
         if (this.parent && this.parent.has(name)) return true;
         if (this.root && this.root.has(name)) return true;
 
@@ -111,7 +112,7 @@ function factory() {
     }
 
     function isResolved(name) {
-        if (resolved.hasOwnProperty(name)) return true;
+        if (hasKey(resolved, name)) return true;
         if (this.parent && this.parent.isResolved(name)) return true;
         if (this.root && this.root.isResolved(name)) return true;
 
@@ -120,11 +121,11 @@ function factory() {
 
     function compile(name, originCompiler, config) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
-        if (resolved.hasOwnProperty(name)) return resolved[name];
+        if (hasKey(resolved, name)) return resolved[name];
 
         let definition;
 
-        if (selfTree.hasOwnProperty(name)) {
+        if (hasKey(selfTree, name)) {
             definition = selfTree[name];
         } else if (this.parent && this.parent.has(name)) {
             return this.parent.compile(name, originCompiler, config);
@@ -139,9 +140,9 @@ function factory() {
         }
 
         if (definition.hasDependencies()) {
-            if (resolved.hasOwnProperty(name)) return resolved[name];
+            if (hasKey(resolved, name)) return resolved[name];
 
-            if (selfTree.hasOwnProperty(definition.name)) {
+            if (hasKey(selfTree, definition.name)) {
                 resolved[definition.name] = new PrivateCompiler().compile(definition, config);
 
                 return resolved[definition.name];
