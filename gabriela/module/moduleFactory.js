@@ -105,9 +105,9 @@ function _createModuleModel(mdl) {
         plugin: mdl.plugin,
         dependencies: mdl.dependencies,
         isInPlugin: () => !!(mdl.plugin),
-        events: mdl.events,
-        hasEvents: function() {
-            return (this.events) ? true : false;
+        mediator: mdl.mediator,
+        hasMediators: function() {
+            return (this.mediator) ? true : false;
         }
     }
 }
@@ -142,8 +142,8 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
                 'plugin',
                 'dependencies',
                 'isInPlugin',
-                'events',
-                'hasEvents',
+                'mediator',
+                'hasMediators',
             ];
 
             if (!allowed.includes(prop)) {

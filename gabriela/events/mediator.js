@@ -39,14 +39,32 @@ function _callEvent(fn) {
     taskRunner.resolve();
 }
 
-function factory() {
+function instance() {
     const mediatons = {};
 
     function mediate(name) {
+        const fn = mediatons[name];
 
+        _callEvent(fn);
     }
 
     function add(name, fn) {
+        mediatons[name] = fn;
+    }
 
+    function once(fn) {
+        _callEvent(fn);
+    }
+
+    this.mediate = mediate;
+    this.add = add;
+    this.once = once;
+}
+
+function factory() {
+    this.create = function() {
+        return new instance();
     }
 }
+
+module.exports = new factory();

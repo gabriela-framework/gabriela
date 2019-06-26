@@ -16,7 +16,7 @@ describe('Framework events', () => {
 
         const module = {
             name: 'eventsModule',
-            events: {
+            mediator: {
                 onModuleStarted: function() {
                     onModuleStarted = true;
                 },
@@ -42,7 +42,7 @@ describe('Framework events', () => {
 
         const module = {
             name: 'eventsModule',
-            events: {
+            mediator: {
                 onModuleStarted: function(next) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleStarted = true;
@@ -78,7 +78,7 @@ describe('Framework events', () => {
 
         const mdl = {
             name: 'eventsModule',
-            events: {
+            mediator: {
                 onModuleStarted: function(next) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleStarted = true;

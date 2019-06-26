@@ -1,6 +1,6 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const events = require('./events/events');
+const mediatorFactory = require('../events/mediator');
 
 function factory() {
     function create(mdl) {
@@ -9,6 +9,7 @@ function factory() {
 
             async function run(childState, config) {
                 if (childState) state.child = childState;
+                const mediator = mediatorFactory.create();
 
                 const middleware = [
                     mdl.security,
@@ -18,7 +19,9 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 
-                events.runModuleStarted(mdl);
+                if (mdl.hasMediators() && mdl.mediator.onModuleStarted) {
+                    mediator.once(mdl.mediator.onModuleStarted);
+                }
 
                 for (const functions of middleware) {
                     try {
@@ -38,7 +41,9 @@ function factory() {
                     }
                 }
 
-                events.runModuleFinished(mdl);
+                if (mdl.hasMediators() && mdl.mediator.onModuleFinished) {
+                    mediator.once(mdl.mediator.onModuleFinished);
+                }
             }
 
             function getResult() {
