@@ -1,7 +1,7 @@
 const Compiler = require('../dependencyInjection/compiler');
-const is = require('../util/is');
-const hasKey = require('../util/hasKey');
 const parseExpression = require('../expression/parse');
+
+const {is, hasKey} = require('../util/util');
 
 function _addDependencies(mdl) {
     const dependencies = mdl.dependencies;

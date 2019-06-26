@@ -3,9 +3,9 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 
-const is = require('../util/is');
-const hasKey = require('../util/hasKey');
 const {middlewareTypes} = require('./types');
+
+const {is, hasKey} = require('../util/util');
 
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators

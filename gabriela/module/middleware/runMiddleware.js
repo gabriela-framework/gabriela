@@ -1,10 +1,8 @@
 const taskRunnerFactory = require('../../misc/taskRunner');
 const {asyncFlowTypes} = require('../../misc/types');
-const createGenerator = require('../../util/createGenerator');
-const getArgs = require('../../util/getArgs');
-const wait = require('../../util/wait');
-const inArray = require('../../util/inArray');
 const _waitCheck = require('../../util/_waitCheck');
+
+const {createGenerator, getArgs, wait, inArray} = require('../../util/util');
 
 function _resolveDependency(mdl, name, config) {
     if (mdl.compiler.has(name)) {

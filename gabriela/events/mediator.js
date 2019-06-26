@@ -2,9 +2,9 @@ const deasync = require('deasync');
 
 const taskRunnerFactory = require('../misc/taskRunner');
 const {asyncFlowTypes} = require('../misc/types');
-const inArray = require('../util/inArray');
 const _waitCheck = require('../util/_waitCheck');
-const getArgs = require('../util/getArgs');
+
+const {getArgs, inArray} = require('../util/util');
 
 function _callEvent(fn) {
     const taskRunner = taskRunnerFactory.create();

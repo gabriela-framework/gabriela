@@ -1,9 +1,9 @@
 const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
-const is = require('../util/is');
-const hasKey = require('../util/hasKey');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
+
+const {is, hasKey} = require('../util/util');
 
 function instance() {
     const plugins = {};

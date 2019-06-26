@@ -1,5 +1,5 @@
 const deepCopy = require('deepcopy');
-const hasKey = require('../util/hasKey');
+const {hasKey} = require('../util/util');
 
 function factory() {
     this.create = function() {

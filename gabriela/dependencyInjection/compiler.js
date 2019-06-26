@@ -1,10 +1,9 @@
 const deepCopy = require('deepcopy');
 
-const getArgNames = require('../util/getArgNames');
-const is = require('../util/is');
+const {getArgNames, is, hasKey} = require('../util/util');
+
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
-const hasKey = require('../util/hasKey');
 
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');

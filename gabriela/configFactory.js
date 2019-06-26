@@ -1,5 +1,5 @@
 const deepCopy = require('deepcopy');
-const is = require('./util/is');
+const {is} = require('./util/util');
 
 function factory(config) {
     const handlers = {

@@ -1,5 +1,5 @@
 const Validator = require('../misc/validator');
-const hasKey = require('../util/hasKey');
+const {hasKey} = require('../util/util');
 
 module.exports = function _createInitObject(init) {
     return {

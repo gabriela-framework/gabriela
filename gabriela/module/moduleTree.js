@@ -5,12 +5,11 @@
  */
 
 const ModuleRunner = require('./moduleRunner');
-const is = require('../util/is');
-const hasKey = require('../util/hasKey');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const { middlewareTypes } = require('../misc/types');
+const {hasKey, is} = require('../util/util');
 
 /**
  * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
