@@ -1,8 +1,8 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const assert = require('assert');
 
 const it = mocha.it;
-const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -94,12 +94,33 @@ describe('Gabriela interface tests', () => {
         expect(g.startApp).to.be.a('function');
     });
 
-    xit('should evaluate that moduleFactory and pluginFactory have the same public interface', () => {
+    it('should evaluate plugin and module interfaces', () => {
         const g = gabriela.asRunner();
 
-        const moduleFactory = g.moduleFactory;
-        const pluginFactory = g.pluginFactory;
+        // Instead of testing that a module interface contains certain properties as its interface
+        // a better test would be to assert that it does not contain any other than these.
+        // it that case, this test will fail if we add another property to an interface and force us
+        // to fix the test
+        const moduleInterface = ['add', 'remove', 'override', 'get', 'has', 'getAll', 'run'];
 
-        expect(Object.keys(moduleFactory)).to.be.equal(Object.keys(pluginFactory));
+        const moduleFactory = g.moduleFactory;
+        const trueModuleInterface = Object.keys(moduleFactory);
+
+        for (const entry of trueModuleInterface) {
+            if (!moduleInterface.includes(entry)) {
+                assert.fail(`Invalid module interface. Module interface should only contain '${moduleInterface.join(' ,')}' properties`);
+            }
+        }
+
+        const pluginInterface = ['add', 'remove', 'get', 'has', 'getAll', 'run'];
+
+        const pluginFactory = g.pluginFactory;
+        const truePluginInterface = Object.keys(pluginFactory);
+
+        for (const entry of truePluginInterface) {
+            if (!pluginInterface.includes(entry)) {
+                assert.fail(`Invalid plugin interface. Plugin interface should only contain '${pluginInterface.join(' ,')}' properties`);
+            }
+        }
     });
 });
