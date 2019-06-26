@@ -63,7 +63,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
 }
 
 function _resolveMiddleware(mdl, config) {
-    const middleware = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'validators', 'security'];
+    const middleware = ['security', 'preLogicTransformers', 'validators', 'postLogicTransformers', 'moduleLogic', 'validators'];
 
     for (const middlewareBlockName of middleware) {
         if (mdl[middlewareBlockName]) {

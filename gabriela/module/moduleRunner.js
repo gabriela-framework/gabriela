@@ -11,6 +11,7 @@ function factory() {
                 if (childState) state.child = childState;
 
                 const middleware = [
+                    mdl.security,
                     mdl.preLogicTransformers,
                     mdl.validators,
                     mdl.moduleLogic,
@@ -18,6 +19,7 @@ function factory() {
                 ];
 
                 events.runModuleStarted(mdl);
+
                 for (const functions of middleware) {
                     try {
                         await runMiddleware.call(null, ...[mdl, functions, state, config]);

@@ -519,9 +519,9 @@ describe('Module dependency injection tests', () => {
 
         g.addModule(mdl);
 
-        g.runModule('name');
-
-        expect(entersMiddleware).to.be.equal(true);
+        g.runModule('name').then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+        });
     });
 
     it('should resolve a single module dependency with async function inside, synchronously', () => {
@@ -561,9 +561,9 @@ describe('Module dependency injection tests', () => {
 
         g.addModule(mdl);
 
-        g.runModule('name');
-
-        expect(entersMiddleware).to.be.equal(true);
+        g.runModule('name').then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+        });
     });
 
     it('should resolve a dependency tree with async function inside, synchronously', () => {
@@ -644,9 +644,9 @@ describe('Module dependency injection tests', () => {
 
         g.addModule(mdl);
 
-        g.runModule('name');
-
-        expect(entersMiddleware).to.be.equal(true);
+        g.runModule('name').then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+        });
     });
 
     it('should run all synchronous modules added to gabriela', (done) => {

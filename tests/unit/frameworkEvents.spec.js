@@ -76,7 +76,7 @@ describe('Framework events', () => {
 
         let execution = 0;
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             events: {
                 onModuleStarted: function(next) {
@@ -92,12 +92,19 @@ describe('Framework events', () => {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleFinished = true;
 
-                        expect(execution).to.be.equal(4);
+                        expect(execution).to.be.equal(5);
 
                         next();
                     });
                 }
             },
+            security: [function(next) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    next();
+                });
+            }],
             preLogicTransformers: [function(next) {
                 requestPromise.get('https://www.google.com').then(() => {
                     ++execution;
@@ -130,7 +137,7 @@ describe('Framework events', () => {
 
         const g = gabriela.asRunner();
 
-        g.addModule(module);
+        g.addModule(mdl);
 
         return g.runModule().then(() => {
             expect(onModuleStarted).to.be.equal(true);
