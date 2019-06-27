@@ -4,7 +4,7 @@ const parseExpression = require('../expression/parse');
 const {is, hasKey} = require('../util/util');
 
 function _addDependencies(mdl) {
-    const dependencies = mdl.dependencies;
+    const {dependencies} = mdl;
 
     for (const depInit of dependencies) {
         if (!depInit.scope && !depInit.shared) depInit.scope = 'module';
@@ -28,8 +28,7 @@ function _addDependencies(mdl) {
         }
 
         if (depInit.shared) {
-            const modules = depInit.shared.modules;
-            const plugins = depInit.shared.plugins;
+            const {modules, plugins} = depInit.shared;
 
             if (modules) {
                 for (const mdlName of modules) {
@@ -107,10 +106,10 @@ function _createModuleModel(mdl) {
         dependencies: mdl.dependencies,
         isInPlugin: () => !!(mdl.plugin),
         mediator: mdl.mediator,
-        hasMediators: function() {
+        hasMediators() {
             return (this.mediator) ? true : false;
         }
-    }
+    };
 }
 
 /**
@@ -118,12 +117,12 @@ function _createModuleModel(mdl) {
  * here in order for module dependencies to be resolved.
  */
 function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
-    mdl = _createModuleModel(mdl);
+    const moduleObject = _createModuleModel(mdl);
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
-    _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler);
-    _resolveMiddleware(mdl, config);
+    _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler);
+    _resolveMiddleware(moduleObject, config);
 
     const handlers = {
         set() {
@@ -150,14 +149,14 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
             if (!allowed.includes(prop)) {
                 if (!is('string', prop)) return undefined;
 
-                throw new Error(`Module access error. Trying to access a protected or a non existent property '${prop}' of a '${mdl.name}' module`);
+                throw new Error(`Module access error. Trying to access a protected or a non existent property '${prop}' of a '${moduleObject.name}' module`);
             }
 
             return target[prop];
         }
     };
 
-    return new Proxy(mdl, handlers);
+    return new Proxy(moduleObject, handlers);
 }
 
 module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {

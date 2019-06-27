@@ -56,7 +56,7 @@ function instance() {
 
             return await pluginRunner.run(config);
         }
-    }
+    };
 }
 
 function factory(config) {

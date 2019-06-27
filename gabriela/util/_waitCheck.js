@@ -4,8 +4,8 @@ module.exports = function _waitCheck(taskRunner) {
         return {
             success: true,
             value: task,
-        }
+        };
     }
 
-    return {success: false}
+    return {success: false};
 };

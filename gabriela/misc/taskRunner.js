@@ -12,7 +12,7 @@ function TaskRunner() {
     }
 
     function done() {
-        executingTask = 'done'
+        executingTask = 'done';
     }
 
     function throwException(err) {
@@ -41,7 +41,7 @@ function TaskRunner() {
 function factory() {
     this.create = function() {
         return new TaskRunner();
-    }
+    };
 }
 
 module.exports = (function() {

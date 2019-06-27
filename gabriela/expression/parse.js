@@ -12,10 +12,10 @@ module.exports = function(expression) {
 
     funcName = funcName[0].substring(0, expression.indexOf('('));
 
-    const deps = expression.slice(expression.indexOf('(')+1, expression.indexOf(')')).match(ARGUMENT_NAMES);
+    const deps = expression.slice(expression.indexOf('(') + 1, expression.indexOf(')')).match(ARGUMENT_NAMES);
 
     return {
         fnName: funcName,
         dependencies: (deps) ? deps : [],
-    }
+    };
 };

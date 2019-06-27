@@ -12,7 +12,7 @@ function _createCompiler(plugin, rootCompiler, sharedCompiler) {
 
 function _replaceModules(plugin, config) {
     if (plugin.modules && plugin.modules.length > 0) {
-        const modules = plugin.modules;
+        const {modules} = plugin;
         const factoryModules = [];
 
         for (const mdl of modules) {

@@ -8,13 +8,13 @@ const moduleFactory = require('./module/moduleFactory');
 const configFactory = require('./configFactory');
 
 module.exports = {
-    asServer: (options) => {
+    asServer(options) {
         const moduleTree = new ModuleTree();
 
         const server = new Server(options, moduleTree);
 
         return {
-            addModule: function(mdl) {
+            addModule(mdl) {
                 moduleTree.addModule(moduleFactory(mdl));
             },
             runServer: server.listen.bind(server),
@@ -22,7 +22,7 @@ module.exports = {
         };
     },
 
-    asRunner: function(receivedConfig) {
+    asRunner(receivedConfig) {
         const config = configFactory.create(receivedConfig);
 
         const moduleTree = new ModuleTree();
@@ -45,7 +45,7 @@ module.exports = {
             const modules = this.getModules();
             const keys = Object.keys(modules);
 
-            let state = {};
+            const state = {};
 
             for (const name of keys) {
                 const res = await moduleTree.runModule(
@@ -108,7 +108,7 @@ module.exports = {
             get moduleFactory() { return moduleInterface; },
             get pluginFactory() { return pluginInterface; },
 
-            startApp: function() {
+            startApp() {
 
             }
         };

@@ -58,8 +58,8 @@ function getArgNames(func) {
     const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     const ARGUMENT_NAMES = /([^\s,]+)/g;
 
-    let fnStr = func.toString().replace(STRIP_COMMENTS, '');
-    let result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+    const fnStr = func.toString().replace(STRIP_COMMENTS, '');
+    let result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
 
     if(result === null) {
         result = [];
@@ -91,12 +91,12 @@ function getArgs(fn, values, specialCb) {
 }
 
 module.exports = {
-    createGenerator: createGenerator,
-    getArgNames: getArgNames,
-    getArgs: getArgs,
-    hasKey: hasKey,
-    inArray: inArray,
-    is: is,
-    ucFirst: ucFirst,
-    wait: wait,
+    createGenerator,
+    getArgNames,
+    getArgs,
+    hasKey,
+    inArray,
+    is,
+    ucFirst,
+    wait,
 };

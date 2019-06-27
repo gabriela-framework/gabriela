@@ -5,7 +5,7 @@ const _createDefinitionObject = require('./_createDefinitionObject');
 
 function factory() {
     function compile(definition) {
-        const dependencies = definition.dependencies;
+        const {dependencies} = definition;
         const resolvedDependencies = [];
 
         if (definition.hasDependencies()) {

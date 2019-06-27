@@ -100,7 +100,7 @@ function instance() {
     async function runConstructedModule(mdl, config) {
         const runner = ModuleRunner.create(mdl);
 
-        let childState = (tree.length > 0) ? await runTree(tree) : null;
+        const childState = (tree.length > 0) ? await runTree(tree) : null;
 
         await runner.run(childState, config);
 

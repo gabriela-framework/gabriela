@@ -8,29 +8,29 @@ module.exports = function _createInitObject(init) {
         isAsync: init.isAsync,
         scope: init.scope,
         dependencies: (!hasKey(init, 'dependencies')) ? [] : init.dependencies,
-        addPrivateDependency: function(definition) {
+        addPrivateDependency(definition) {
             Validator.validateDefinitionObject(definition);
 
             this.dependencies.push(definition);
         },
-        hasCompilerPass: function() {
+        hasCompilerPass() {
             return hasKey(init, 'compilerPass');
         },
         compilerPass: init.compilerPass,
-        hasDependencies: function() {
+        hasDependencies() {
             return !!(this.dependencies && this.dependencies.length > 0);
         },
-        hasScope: function() {
+        hasScope() {
             return (this.scope) ? true : false;
         },
-        isShared: function() {
+        isShared() {
             return (this.shared) ? true : false;
         },
         shared: init.shared,
-        sharedPlugins: function() {
+        sharedPlugins() {
             if (this.shared.plugins) return this.shared.plugins;
         },
-        sharedModules: function() {
+        sharedModules() {
             if (this.shared.modules) return this.shared.modules;
         },
         isSharedWith(moduleOrPluginName) {
@@ -47,5 +47,5 @@ module.exports = function _createInitObject(init) {
 
             return sharedPlugins.includes(moduleOrPluginName);
         }
-    }
+    };
 };

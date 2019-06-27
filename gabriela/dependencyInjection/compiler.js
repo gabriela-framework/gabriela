@@ -15,7 +15,7 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
 
     const deps = [];
     if (args.length > 0) {
-        for (let arg of args) {
+        for (const arg of args) {
             if (arg === 'next') {
                 deps.push(taskRunner.next);
             } else {
@@ -28,10 +28,11 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
 }
 
 function _execCompilerPass(definition, config) {
-    const compilerPass = definition.compilerPass;
+    const {compilerPass} = definition;
 
     const handlers = {
-        set() { return undefined },
+        set() { return undefined; },
+
         get(target, prop) {
             if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
 
@@ -174,7 +175,7 @@ function factory() {
 function instance() {
     this.create = function() {
         return new factory();
-    }
+    };
 }
 
 module.exports = new instance();

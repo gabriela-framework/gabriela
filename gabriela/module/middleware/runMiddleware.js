@@ -23,7 +23,7 @@ function _resolveDependency(mdl, name, config) {
 }
 
 async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, generator) {
-    let args = getArgs(exec, {
+    const args = getArgs(exec, {
         next: taskRunner.next,
         done: taskRunner.done,
         skip: taskRunner.skip,

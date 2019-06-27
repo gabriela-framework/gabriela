@@ -9,7 +9,7 @@ const {getArgs, inArray} = require('../util/util');
 function _callEvent(fn) {
     const taskRunner = taskRunnerFactory.create();
 
-    let args = getArgs(fn, {
+    const args = getArgs(fn, {
         next: taskRunner.next,
         throwException: taskRunner.throwException,
     });
@@ -61,7 +61,7 @@ function instance() {
 function factory() {
     this.create = function() {
         return new instance();
-    }
+    };
 }
 
 module.exports = new factory();

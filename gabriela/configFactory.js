@@ -18,7 +18,7 @@ function factory(config) {
 function instance() {
     this.create = function(config) {
         return factory(deepCopy((is('object', config) ? config : {})));
-    }
+    };
 }
 
 module.exports = new instance();
