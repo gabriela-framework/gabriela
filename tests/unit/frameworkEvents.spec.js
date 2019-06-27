@@ -22,7 +22,7 @@ describe('Framework events', () => {
                 },
                 onModuleFinished: function() {
                     onModuleFinished = true;
-                }
+                },
             }
         };
 

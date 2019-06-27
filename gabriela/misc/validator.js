@@ -70,6 +70,22 @@ factory.moduleValidator = function(mdl) {
         }
     }
 
+    if (hasKey(mdl, 'mediator')) {
+        if (!is('object', mdl.mediator)) throw new Error(`Invalid module definition. 'mediator' property must be an object`);
+
+        if (hasKey('onModuleStarted', mdl.mediator)) {
+            if (!is('function', mdl.mediator.onModuleStarted)) throw new Error(`Invalid module definition. 'mediator.onModuleStarted' must be a function`);
+        }
+
+        if (hasKey('onModuleFinished', mdl.mediator)) {
+            if (!is('function', mdl.mediator.onModuleFinished)) throw new Error(`Invalid module definition. 'mediator.onModuleFinished' must be a function`);
+        }
+
+        if (hasKey('onError', mdl.mediator)) {
+            if (!is('function', mdl.mediator.onError)) throw new Error(`Invalid module definition. 'mediator.onError' must be a function`);
+        }
+    }
+
     validateDependencies(mdl);
 };
 
