@@ -20,7 +20,15 @@ function factory() {
                 ];
 
                 if (mdl.hasMediators() && mdl.mediator.onModuleStarted) {
-                    mediator.once(mdl.mediator.onModuleStarted);
+                    try {
+                        mediator.once(mdl.mediator.onModuleStarted);
+                    } catch (e) {
+                        if (mdl.mediator.onError) {
+                            mediator.once(mdl.mediator.onError);
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
 
                 for (const functions of middleware) {
@@ -42,7 +50,15 @@ function factory() {
                 }
 
                 if (mdl.hasMediators() && mdl.mediator.onModuleFinished) {
-                    mediator.once(mdl.mediator.onModuleFinished);
+                    try {
+                        mediator.once(mdl.mediator.onModuleFinished);
+                    } catch (e) {
+                        if (mdl.mediator.onError) {
+                            mediator.once(mdl.mediator.onError);
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
             }
 

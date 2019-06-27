@@ -24,14 +24,24 @@ function _callEvent(fn) {
         return arg.value;
     }));
 
-    while(!(_waitCheck(taskRunner)).success) {
-        // todo: handle timeout on resolving services, maybe some config file?
-        /*                if (wait === 1000) {
-                            throw new Error(`Dependency injection error. Dependency ${name} waited too long to be resolved`);
-                        }*/
+    let task;
+    if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
+        task = taskRunner.resolve();
+    } else {
+        while(!(_waitCheck(taskRunner)).success) {
+            deasync.sleep(0);
+        }
 
-        deasync.sleep(0);
+        task = taskRunner.resolve();
     }
+
+    if (task === 'error') {
+        const error = taskRunner.getValue();
+        taskRunner.resolve();
+
+        throw error;
+    }
+
 
     taskRunner.resolve();
 }
