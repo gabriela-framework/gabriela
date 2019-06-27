@@ -204,17 +204,13 @@
 <a name='L156'></a><a href='#L156'>156</a>
 <a name='L157'></a><a href='#L157'>157</a>
 <a name='L158'></a><a href='#L158'>158</a>
-<a name='L159'></a><a href='#L159'>159</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -222,8 +218,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">117x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">120x</span>
 <span class="cline-any cline-yes">65x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">63x</span>
@@ -239,25 +241,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">144x</span>
-<span class="cline-any cline-yes">143x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">142x</span>
-<span class="cline-any cline-yes">659x</span>
 <span class="cline-any cline-yes">147x</span>
+<span class="cline-any cline-yes">146x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">145x</span>
+<span class="cline-any cline-yes">674x</span>
+<span class="cline-any cline-yes">152x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">143x</span>
+<span class="cline-any cline-yes">148x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">143x</span>
-<span class="cline-any cline-yes">143x</span>
-<span class="cline-any cline-yes">136x</span>
-<span class="cline-any cline-yes">160x</span>
+<span class="cline-any cline-yes">148x</span>
+<span class="cline-any cline-yes">148x</span>
+<span class="cline-any cline-yes">141x</span>
+<span class="cline-any cline-yes">165x</span>
 <span class="cline-any cline-yes">31x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -267,7 +269,7 @@
 <span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">129x</span>
+<span class="cline-any cline-yes">134x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,7 +277,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">117x</span>
+<span class="cline-any cline-yes">120x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -367,8 +369,9 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 &nbsp;
-const is = require('../util/is');
 const {middlewareTypes} = require('./types');
+&nbsp;
+const {is, hasKey} = require('../util/util');
 &nbsp;
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
@@ -381,7 +384,7 @@ function validateDependencies(mdl) {
     /**
      * Validates that dependencies have to be an array of type object
      */
-    if (mdl.hasOwnProperty('dependencies')) {
+    if (hasKey(mdl, 'dependencies')) {
         if (!Array.isArray(mdl.dependencies)) throw new Error(`Module definition error in module '${mdl.name}'. 'dependencies' has to be an array of type object`);
 &nbsp;
         for (const d of mdl.dependencies) {
@@ -397,7 +400,7 @@ function validateDependencies(mdl) {
  * @param mdl
  */
 factory.moduleValidator = function(mdl) {
-    if (!mdl.hasOwnProperty('name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
+    if (!hasKey(mdl, 'name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
 &nbsp;
     /**
@@ -405,7 +408,7 @@ factory.moduleValidator = function(mdl) {
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
      */
     for (const name of middlewareTypes) {
-        if (mdl.hasOwnProperty(name)) {
+        if (hasKey(mdl, name)) {
             if (!Array.isArray(mdl[name]) &amp;&amp; !is('object', mdl[name])) {
                 throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions or an object with a 'name' property and a 'middleware' property that has to be an array`);
             }
@@ -419,8 +422,8 @@ factory.moduleValidator = function(mdl) {
                             if (m.disabled) {
                                 if (!is('boolean', m.disabled)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' 'disabled' property has to be a type boolean`);
                             }
-                            if (!m.hasOwnProperty('name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
-                            if (!m.hasOwnProperty('middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
+                            if (!hasKey(m, 'name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
+                            if (!hasKey(m, 'middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
 &nbsp;
                             if (!is('string', m.name)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
                             if (!is('function', m.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a function`);
@@ -438,10 +441,10 @@ factory.moduleValidator = function(mdl) {
 &nbsp;
 factory.validatePlugin = function(plugin) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
-    if (!plugin.hasOwnProperty('name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
+    if (!hasKey(plugin, 'name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
     if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
 &nbsp;
-    if (plugin.hasOwnProperty('modules')) {
+    if (hasKey(plugin, 'modules')) {
         if (!Array.isArray(plugin.modules)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' 'modules' entry must be an array of module objects`);
 &nbsp;
         try {
@@ -455,11 +458,11 @@ factory.validatePlugin = function(plugin) {
 };
 &nbsp;
 factory.validateServerOptions = function(options) {
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (options.hasOwnProperty('port')) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (hasKey(options, 'port')) {
         if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
     }
 &nbsp;
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (options.hasOwnProperty('runCallback')) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (hasKey(options, 'runCallback')) {
         <span class="missing-if-branch" title="else path not taken" >E</span>if (!is('function', options.runCallback)) throw new Error(`Invalid server configuration. 'runCallback' must be a function`);
     }
 };
@@ -469,9 +472,9 @@ factory.validateDefinitionObject = function(init, moduleName) {
     if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);
     if (!is('function', init.init)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'init' property must be a function`);
 &nbsp;
-    if (init.hasOwnProperty('scope') &amp;&amp; init.hasOwnProperty('shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency '${init.name}' cannot have both 'visibility' and 'shared' properties present. Use one or another`);
+    if (hasKey(init, 'scope') &amp;&amp; hasKey(init, 'shared')) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency '${init.name}' cannot have both 'visibility' and 'shared' properties present. Use one or another`);
 &nbsp;
-    if (init.hasOwnProperty('scope')) {
+    if (hasKey(init, 'scope')) {
         <span class="missing-if-branch" title="if path not taken" >I</span>if (!is('string', init.scope)) <span class="cstat-no" title="statement not covered" >throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'visibility' property needs to be either 'module', 'plugin' or 'public'. If not specified, it is 'module' by default`);</span>
 &nbsp;
         const visibilities = ['module', 'plugin', 'public'];
@@ -481,7 +484,7 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 &nbsp;
-    if (init.hasOwnProperty('shared')) {
+    if (hasKey(init, 'shared')) {
         if (!is('object', init.shared)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property must be an object`);
         if (!init.shared.plugins &amp;&amp; !init.shared.modules) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'shared' property does not have neither 'modules' or a 'plugins' property`);
 &nbsp;
@@ -494,11 +497,11 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 &nbsp;
-    if (init.hasOwnProperty('isAsync')) {
+    if (hasKey(init, 'isAsync')) {
         if (!is('boolean', init.isAsync)) throw new Error(`Dependency injection error in module '${moduleName}'. '${init.name}' 'isAsync' option must be a boolean`);
     }
 &nbsp;
-    if (init.hasOwnProperty('dependencies')) {
+    if (hasKey(init, 'dependencies')) {
         if (!Array.isArray(init.dependencies)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. '${init.name}' 'dependencies' option must be an array of dependency 'init' objects`);
 &nbsp;
         for (const dep of init.dependencies) {
@@ -506,15 +509,15 @@ factory.validateDefinitionObject = function(init, moduleName) {
         }
     }
 &nbsp;
-    if (init.hasOwnProperty('compilerPass')) {
+    if (hasKey(init, 'compilerPass')) {
         if (!is('object', init.compilerPass)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
 &nbsp;
-        const compilerPass = init.compilerPass;
+        const {compilerPass} = init;
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (!compilerPass.hasOwnProperty('init')) <span class="cstat-no" title="statement not covered" >throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasKey(compilerPass, 'init')) <span class="cstat-no" title="statement not covered" >throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);</span>
         if (!is('function', compilerPass.init)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
 &nbsp;
-        if (compilerPass.hasOwnProperty('property')) {
+        if (hasKey(compilerPass, 'property')) {
             if (!is('string', compilerPass.property)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
         }
     }
@@ -526,7 +529,7 @@ module.exports = factory;</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Jun 25 2019 19:34:50 GMT+0000 (Coordinated Universal Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Jun 27 2019 21:20:26 GMT+0000 (Coordinated Universal Time)
 </div>
 </div>
 <script src="../../prettify.js"></script>

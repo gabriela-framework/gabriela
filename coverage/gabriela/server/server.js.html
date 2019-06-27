@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">25.93% </span>
+        <span class="strong">26.92% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>7/27</span>
+        <span class='fraction'>7/26</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">12.5% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>1/5</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">26.92% </span>
+        <span class="strong">28% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>7/26</span>
+        <span class='fraction'>7/25</span>
       </div>
     </div>
     <p class="quiet">
@@ -94,12 +94,7 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a>
-<a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -114,11 +109,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -158,26 +148,21 @@ const http = require('http').createServer(app);
 const Validator = require('../misc/validator');
 &nbsp;
 function Server(options, moduleTree) {
-    options = options || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
+    const opts = options || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
 &nbsp;
-    Validator.validateServerOptions(options);
+    Validator.validateServerOptions(opts);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    options.port = (options.port) ? options.port : 3000;</span>
+<span class="cstat-no" title="statement not covered" >    opts.port = (opts.port) ? opts.port : 3000;</span>
 &nbsp;
     let serverInstance = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
     const native = <span class="cstat-no" title="statement not covered" >{</span>
-        http: http,
-    };
-&nbsp;
-    const expressApp = <span class="cstat-no" title="statement not covered" >{</span>
-        module: express,
-        instance: app
+        http,
     };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    this.listen = <span class="fstat-no" title="function not covered" >fu</span>nction() {</span>
-<span class="cstat-no" title="statement not covered" >        serverInstance = native.http.listen(options.port, <span class="fstat-no" title="function not covered" >fu</span>nction() {</span>
-<span class="cstat-no" title="statement not covered" >            if (options.runCallback) <span class="cstat-no" title="statement not covered" >options.runCallback.call();</span></span>
+<span class="cstat-no" title="statement not covered" >        serverInstance = native.http.listen(opts.port, <span class="fstat-no" title="function not covered" >fu</span>nction() {</span>
+<span class="cstat-no" title="statement not covered" >            if (opts.runCallback) <span class="cstat-no" title="statement not covered" >opts.runCallback.call();</span></span>
 &nbsp;
             const modules = <span class="cstat-no" title="statement not covered" >moduleTree.getModules();</span>
             const keys = <span class="cstat-no" title="statement not covered" >Object.keys(modules);</span>
@@ -186,7 +171,7 @@ function Server(options, moduleTree) {
                 const mld = <span class="cstat-no" title="statement not covered" >modules[m];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                if (mld.http) {</span>
-                    const route = <span class="cstat-no" title="statement not covered" >mld.http.route;</span>
+                    const {route} = <span class="cstat-no" title="statement not covered" >mld.http;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    app[route.method](route.path, <span class="fstat-no" title="function not covered" >(r</span>eq, res) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >                        moduleTree.runModule(mld.name, Object.assign({}, mld.http, req, res));</span>
@@ -194,7 +179,7 @@ function Server(options, moduleTree) {
                 }
             }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            console.log(`Server started on port ${options.port}`);</span>
+<span class="cstat-no" title="statement not covered" >            console.log(`Server started on port ${opts.port}`);</span>
         });
     };
 &nbsp;
@@ -202,7 +187,7 @@ function Server(options, moduleTree) {
 <span class="cstat-no" title="statement not covered" >        serverInstance.close();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        serverInstance = null;</span>
-    }
+    };
 }
 &nbsp;
 module.exports = Server;</pre></td></tr>
@@ -211,7 +196,7 @@ module.exports = Server;</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Jun 25 2019 19:34:50 GMT+0000 (Coordinated Universal Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Jun 27 2019 21:20:26 GMT+0000 (Coordinated Universal Time)
 </div>
 </div>
 <script src="../../prettify.js"></script>
