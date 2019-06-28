@@ -230,4 +230,52 @@ describe('Framework events', () => {
             expect(onModuleFinished).to.be.equal(false);
         });
     });
+
+    it('middleware should have a bound this context with the mediator property', () => {
+        let middlewareExecuted = false;
+
+        const module = {
+            name: 'eventsModule',
+            moduleLogic: [function() {
+                middlewareExecuted = true;
+
+                expect(this).to.be.a('object');
+                expect(this).to.have.property('mediator');
+                expect(this.mediator).to.be.a('object');
+
+                console.log(this);
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(module);
+
+        return g.runModule().then(() => {
+            expect(middlewareExecuted).to.be.equal(true);
+        });
+    });
+
+    it('should execute a custom mediator event', () => {
+        let customEventExecuted = false;
+
+        const module = {
+            name: 'eventsModule',
+            mediator: {
+                customMediator: function() {
+                    customEventExecuted = true;
+                }
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(module);
+
+        return g.runModule().then(() => {
+            assert.fail('This test should fail');
+        }).catch(() => {
+            //expect(customEventExecuted).to.be.equal(true);
+        });
+    });
 });

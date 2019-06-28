@@ -30,7 +30,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
         throwException: taskRunner.throwException,
     });
 
-    exec.call(null, ...args.map((val) => {
+    exec.call(this, ...args.map((val) => {
         const dep = _resolveDependency(mdl, val.name, config);
 
         if (dep) return dep;
@@ -88,7 +88,7 @@ async function runMiddleware(mdl, functions, state, config) {
 
         const next = generator.next();
 
-        await recursiveMiddlewareExec(
+        await recursiveMiddlewareExec.call(this, 
             (!next.done) ? next.value : false,
             taskRunnerFactory.create(),
             mdl,

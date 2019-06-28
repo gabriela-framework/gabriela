@@ -16,6 +16,26 @@ function _callEvent(mdl, event) {
     }
 }
 
+function _assignMediatorEvents(mdl, mediator, excludes) {
+    if (mdl.hasMediators()) {
+        const mediators = mdl.mediator;
+
+        const props = Object.keys(mediators);
+
+        for (const name of props) {
+            if (!excludes.includes(mediator)) {
+                mediator.add(name, mediators[name]);
+            }
+        }
+    }
+}
+
+function _createContext({mediator}) {
+    return {
+        mediator,
+    }
+}
+
 function factory() {
     function create(mdl) {
         return (function(mdl) {
@@ -23,7 +43,17 @@ function factory() {
 
             async function run(childState, config) {
                 if (childState) state.child = childState;
+
                 const mediator = mediatorFactory.create();
+                _assignMediatorEvents(mdl, mediator, [
+                    'onModuleStarted',
+                    'onModuleFinished',
+                    'onError',
+                ]);
+
+                const context = _createContext({
+                    mediator,
+                });
 
                 const middleware = [
                     mdl.security,
@@ -37,7 +67,7 @@ function factory() {
 
                 for (const functions of middleware) {
                     try {
-                        await runMiddleware.call(null, ...[mdl, functions, state, config]);
+                        await runMiddleware.call(context, mdl, functions, state, config);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {
