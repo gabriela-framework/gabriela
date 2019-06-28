@@ -242,8 +242,6 @@ describe('Framework events', () => {
                 expect(this).to.be.a('object');
                 expect(this).to.have.property('mediator');
                 expect(this.mediator).to.be.a('object');
-
-                console.log(this);
             }],
         };
 
@@ -265,7 +263,10 @@ describe('Framework events', () => {
                 customMediator: function() {
                     customEventExecuted = true;
                 }
-            }
+            },
+            moduleLogic: [function() {
+                this.mediator.mediate('customMediator');
+            }],
         };
 
         const g = gabriela.asRunner();
@@ -275,7 +276,7 @@ describe('Framework events', () => {
         return g.runModule().then(() => {
             assert.fail('This test should fail');
         }).catch(() => {
-            //expect(customEventExecuted).to.be.equal(true);
+            expect(customEventExecuted).to.be.equal(true);
         });
     });
 });
