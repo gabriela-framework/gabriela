@@ -44,7 +44,7 @@ function factory() {
             async function run(childState, config) {
                 if (childState) state.child = childState;
 
-                const mediator = mediatorFactory.create();
+                const mediator = mediatorFactory.create(mdl, config);
                 _assignMediatorEvents(mdl, mediator, [
                     'onModuleStarted',
                     'onModuleFinished',

@@ -3,10 +3,23 @@ const deasync = require('deasync');
 const taskRunnerFactory = require('../misc/taskRunner');
 const {asyncFlowTypes} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
+const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 
 const {getArgs, inArray} = require('../util/util');
 
-function _callEvent(fn) {
+function _callFn(fn, mdl, args, config) {
+    fn.call(null, ...args.map((arg) => {
+        const dep = resolveDependencies(mdl, arg.name, config);
+
+        if (dep) return dep;
+
+        if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
+
+        return arg.value;
+    }));
+}
+
+function _callEvent(fn, mdl, config) {
     const taskRunner = taskRunnerFactory.create();
 
     const args = getArgs(fn, {
@@ -15,14 +28,12 @@ function _callEvent(fn) {
     });
 
     if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
-        fn.call(null);
+        _callFn(fn, mdl, args, config);
 
         return;
     }
 
-    fn.call(null, ...args.map((arg) => {
-        return arg.value;
-    }));
+    _callFn(fn, mdl, args, config);
 
     while(!(_waitCheck(taskRunner)).success) {
         deasync.sleep(0);
@@ -41,13 +52,13 @@ function _callEvent(fn) {
     taskRunner.resolve();
 }
 
-function instance() {
+function instance(mdl, config) {
     const mediatons = {};
 
     function mediate(name) {
         const fn = mediatons[name];
 
-        _callEvent(fn);
+        _callEvent(fn, mdl);
     }
 
     function add(name, fn) {
@@ -55,7 +66,7 @@ function instance() {
     }
 
     function once(fn) {
-        _callEvent(fn);
+        _callEvent(fn, mdl);
     }
 
     this.mediate = mediate;
@@ -64,8 +75,8 @@ function instance() {
 }
 
 function factory() {
-    this.create = function() {
-        return new instance();
+    this.create = function(mdl, config) {
+        return new instance(mdl, config);
     };
 }
 

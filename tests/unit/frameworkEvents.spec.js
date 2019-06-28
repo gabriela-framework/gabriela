@@ -274,8 +274,42 @@ describe('Framework events', () => {
         g.addModule(module);
 
         return g.runModule().then(() => {
-            assert.fail('This test should fail');
-        }).catch(() => {
+            expect(customEventExecuted).to.be.equal(true);
+        });
+    });
+
+    it('should resolve a dependency within a custom mediator event', () => {
+        let customEventExecuted = false;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        }
+
+        const module = {
+            name: 'eventsModule',
+            mediator: {
+                customMediator: function(userService) {
+                    customEventExecuted = true;
+
+                    expect(userService).to.be.a('object');
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.mediate('customMediator');
+            }],
+            dependencies: [userServiceInit],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(module);
+
+        return g.runModule().then(() => {
             expect(customEventExecuted).to.be.equal(true);
         });
     });
