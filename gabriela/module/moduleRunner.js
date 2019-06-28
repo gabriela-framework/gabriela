@@ -8,6 +8,15 @@ function _callEvent(mdl, event) {
             this.once(mdl.mediator[event]);
         } catch (e) {
             if (mdl.mediator.onError) {
+                /**
+                 * This is clumsy and should be reexamined in the future. once() function receives the customArgs
+                 * argument which is not actually custom args but an array with a single error in it. 
+                 * 
+                 * there is acutally no point in explaining. 
+                 * 
+                 */
+
+                // TODO: REEXAMINE AND REFACTOR HANDLING OF ERRORS AND DEPENDENCY INJECTION
                 this.once(mdl.mediator.onError, [e]);
             } else {
                 throw e;
