@@ -14,16 +14,30 @@ describe('Framework events', () => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const module = {
             name: 'eventsModule',
             mediator: {
-                onModuleStarted: function() {
+                onModuleStarted: function(userService) {
                     onModuleStarted = true;
+
+                    expect(userService).to.be.a('object');
                 },
-                onModuleFinished: function() {
+                onModuleFinished: function(userService) {
                     onModuleFinished = true;
+
+                    expect(userService).to.be.a('object');
                 },
-            }
+            },
+            dependencies: [userServiceInit],
         };
 
         const g = gabriela.asRunner();
@@ -40,24 +54,38 @@ describe('Framework events', () => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const module = {
             name: 'eventsModule',
             mediator: {
-                onModuleStarted: function(next) {
+                onModuleStarted: function(next, userService) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleStarted = true;
+
+                        expect(userService).to.be.a('object');
 
                         next();
                     });
                 },
-                onModuleFinished: function(next) {
+                onModuleFinished: function(next, userService) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleFinished = true;
+
+                        expect(userService).to.be.a('object');
 
                         next();
                     });
                 }
-            }
+            },
+            dependencies: [userServiceInit],
         };
 
         const g = gabriela.asRunner();
@@ -76,23 +104,35 @@ describe('Framework events', () => {
 
         let execution = 0;
 
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const mdl = {
             name: 'eventsModule',
+            dependencies: [userServiceInit],
             mediator: {
-                onModuleStarted: function(next) {
+                onModuleStarted: function(next, userService) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleStarted = true;
 
                         expect(execution).to.be.equal(0);
+                        expect(userService).to.be.a('object');
 
                         next();
                     });
                 },
-                onModuleFinished: function(next) {
+                onModuleFinished: function(next, userService) {
                     requestPromise.get('https://www.google.com').then(() => {
                         onModuleFinished = true;
 
                         expect(execution).to.be.equal(5);
+                        expect(userService).to.be.a('object');
 
                         next();
                     });
@@ -112,9 +152,11 @@ describe('Framework events', () => {
                     next();
                 });
             }],
-            validators: [function(next) {
+            validators: [function(next, userService) {
                 requestPromise.get('https://www.google.com').then(() => {
                     ++execution;
+
+                    expect(userService).to.be.a('object');
 
                     next();
                 });
@@ -126,9 +168,11 @@ describe('Framework events', () => {
                     next();
                 });
             }],
-            postLogicTransformers: [function(next) {
+            postLogicTransformers: [function(next, userService) {
                 requestPromise.get('https://www.google.com').then(() => {
                     ++execution;
+
+                    expect(userService).to.be.a('object');
 
                     next();
                 });
@@ -150,8 +194,18 @@ describe('Framework events', () => {
         let onModuleFinished = false;
         let entersOnError = false;
 
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const module = {
             name: 'eventsModule',
+            dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
                     requestPromise.get('https://www.google.com').then(() => {
@@ -167,9 +221,12 @@ describe('Framework events', () => {
                         next();
                     });
                 },
-                onError(e) {
+                onError(e, userService) {
                     entersOnError = true;
 
+                    expect(userService).to.be.a('object');
+
+                    expect(e).to.be.instanceof(Error);
                     expect(e.message).to.be.equal('Something went wrong');
                 }
             }
@@ -191,8 +248,18 @@ describe('Framework events', () => {
         let onModuleFinished = false;
         let entersOnError = false;
 
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const module = {
             name: 'eventsModule',
+            dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
                     requestPromise.get('https://www.google.com').then(() => {
@@ -211,6 +278,7 @@ describe('Framework events', () => {
                 onError(e) {
                     entersOnError = true;
 
+                    expect(e).to.be.instanceof(Error);
                     expect(e.message).to.be.equal('Something went wrong');
 
                     throw e;

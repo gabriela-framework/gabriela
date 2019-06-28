@@ -8,7 +8,7 @@ function _callEvent(mdl, event) {
             this.once(mdl.mediator[event]);
         } catch (e) {
             if (mdl.mediator.onError) {
-                this.once(mdl.mediator.onError.bind(null, e));
+                this.once(mdl.mediator.onError, [e]);
             } else {
                 throw e;
             }
@@ -32,7 +32,7 @@ function _assignMediatorEvents(mdl, mediator, excludes) {
 
 function _createContext({mediator}) {
     return {
-        mediator,
+        mediator
     }
 }
 
@@ -67,7 +67,7 @@ function factory() {
 
                 for (const functions of middleware) {
                     try {
-                        await runMiddleware.call(context, mdl, functions, state, config);
+                        await runMiddleware.call(context, ...[mdl, functions, state, config]);
                     } catch (err) {
                         if (err.internal) {
                             if (err.message === 'done') {
