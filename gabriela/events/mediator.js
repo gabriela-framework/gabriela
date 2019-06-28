@@ -24,16 +24,11 @@ function _callEvent(fn) {
         return arg.value;
     }));
 
-    let task;
-    if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
-        task = taskRunner.resolve();
-    } else {
-        while(!(_waitCheck(taskRunner)).success) {
-            deasync.sleep(0);
-        }
-
-        task = taskRunner.resolve();
+    while(!(_waitCheck(taskRunner)).success) {
+        deasync.sleep(0);
     }
+
+    const task = taskRunner.getTask();
 
     if (task === 'error') {
         const error = taskRunner.getValue();

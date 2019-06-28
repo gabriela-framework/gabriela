@@ -144,4 +144,90 @@ describe('Framework events', () => {
             expect(onModuleFinished).to.be.equal(true);
         });
     });
+
+    it('should call the onError event if the exception is thrown within the other events', () => {
+        let onModuleStarted = false;
+        let onModuleFinished = false;
+        let entersOnError = false;
+
+        const module = {
+            name: 'eventsModule',
+            mediator: {
+                onModuleStarted(next, throwException) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleStarted = true;
+
+                        throwException(new Error(`Something went wrong`));
+                    });
+                },
+                onModuleFinished(next) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleFinished = true;
+
+                        next();
+                    });
+                },
+                onError(e) {
+                    entersOnError = true;
+
+                    expect(e.message).to.be.equal('Something went wrong');
+                }
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(module);
+
+        return g.runModule().then(() => {
+            expect(entersOnError).to.be.equal(true);
+            expect(onModuleStarted).to.be.equal(true);
+            expect(onModuleFinished).to.be.equal(true);
+        });
+    });
+
+    it('should not resolve onModuleFinished if onModuleStarted threw an error', () => {
+        let onModuleStarted = false;
+        let onModuleFinished = false;
+        let entersOnError = false;
+
+        const module = {
+            name: 'eventsModule',
+            mediator: {
+                onModuleStarted(next, throwException) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleStarted = true;
+
+                        throwException(new Error(`Something went wrong`));
+                    });
+                },
+                onModuleFinished(next) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleFinished = true;
+
+                        next();
+                    });
+                },
+                onError(e) {
+                    entersOnError = true;
+
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    throw e;
+                }
+            }
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addModule(module);
+
+        return g.runModule().then(() => {
+            assert.fail('This test should fail');
+        }).catch(() => {
+            expect(entersOnError).to.be.equal(true);
+            expect(onModuleStarted).to.be.equal(true);
+            expect(onModuleFinished).to.be.equal(false);
+        });
+    });
 });

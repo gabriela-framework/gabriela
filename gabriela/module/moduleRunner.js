@@ -2,6 +2,20 @@ const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const mediatorFactory = require('../events/mediator');
 
+function _callEvent(mdl, event) {
+    if (mdl.hasMediators() && mdl.mediator[event]) {
+        try {
+            this.once(mdl.mediator[event]);
+        } catch (e) {
+            if (mdl.mediator.onError) {
+                this.once(mdl.mediator.onError.bind(null, e));
+            } else {
+                throw e;
+            }
+        }
+    }
+}
+
 function factory() {
     function create(mdl) {
         return (function(mdl) {
@@ -19,17 +33,7 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 
-                if (mdl.hasMediators() && mdl.mediator.onModuleStarted) {
-                    try {
-                        mediator.once(mdl.mediator.onModuleStarted);
-                    } catch (e) {
-                        if (mdl.mediator.onError) {
-                            mediator.once(mdl.mediator.onError);
-                        } else {
-                            throw e;
-                        }
-                    }
-                }
+                _callEvent.call(mediator, mdl, 'onModuleStarted');
 
                 for (const functions of middleware) {
                     try {
@@ -49,17 +53,7 @@ function factory() {
                     }
                 }
 
-                if (mdl.hasMediators() && mdl.mediator.onModuleFinished) {
-                    try {
-                        mediator.once(mdl.mediator.onModuleFinished);
-                    } catch (e) {
-                        if (mdl.mediator.onError) {
-                            mediator.once(mdl.mediator.onError);
-                        } else {
-                            throw e;
-                        }
-                    }
-                }
+                _callEvent.call(mediator, mdl, 'onModuleFinished');
             }
 
             function getResult() {
