@@ -55,7 +55,7 @@ describe('Compiler pass tests', () => {
             }]
         });
 
-        g.runModule().then(() => {
+        return g.runModule().then(() => {
             expect(entersMiddleware).to.be.equal(true);
             expect(entersCompilerPass).to.be.equal(true);
         });
