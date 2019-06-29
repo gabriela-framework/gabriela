@@ -170,4 +170,34 @@ describe('Plugin errors', () => {
             done();
         });
     });
+
+    it('should fail if a inner tree of plugins has invalid definition', () => {
+        const innerPlugin1 = {
+            name: 'innerPlugin1',
+            modules: null,
+        };
+
+        const innerPlugin2 = {
+            name: 'innerPlugin2',
+            plugins: [innerPlugin1],
+        };
+
+        const mainPlugin = {
+            name: 'mainPlugin',
+            plugins: [innerPlugin2],
+        };
+
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addPlugin(mainPlugin);
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${innerPlugin1.name}' 'modules' entry must be an array of module objects`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

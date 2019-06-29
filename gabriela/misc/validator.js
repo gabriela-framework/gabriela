@@ -121,6 +121,12 @@ factory.validatePlugin = function(plugin) {
             if (!is('function', plugin.mediator.onError)) throw new Error(`Invalid plugin definition. 'mediator.onError' must be a function`);
         }
     }
+
+    if (hasKey(plugin, 'plugins')) {
+        for (const p of plugin.plugins) {
+            factory.validatePlugin(p);
+        }
+    }
 };
 
 factory.validateServerOptions = function(options) {
