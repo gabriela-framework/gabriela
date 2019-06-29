@@ -381,4 +381,45 @@ describe('Framework events', () => {
             expect(customEventExecuted).to.be.equal(true);
         });
     });
+
+    it('should execute a plugins module start and finished event', () => {
+        let onPluginFinished = false;
+        let onPluginStarted = false;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const module = {
+            name: 'eventsModule',
+            dependencies: [userServiceInit],
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [module],
+            mediator: {
+                onPluginStarted() {
+                    onPluginStarted = true;
+                },
+                onPluginFinished() {
+                    onPluginFinished = true;
+                }
+            }
+        }
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin(plugin);
+
+        return g.runPlugin().then(() => {
+            expect(onPluginStarted).to.be.equal(true);
+            expect(onPluginFinished).to.be.equal(true);
+        });
+    });
 });

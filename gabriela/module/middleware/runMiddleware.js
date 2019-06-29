@@ -14,7 +14,14 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
     });
 
     exec.call(this, ...args.map((val) => {
-        const dep = resolveDependencies(mdl, val.name, config);
+        const dep = resolveDependencies(
+            mdl.compiler,
+            mdl.sharedCompiler,
+            val.name,
+            config,
+            mdl.name,
+            mdl.plugin
+        );
 
         if (dep) return dep;
 

@@ -42,7 +42,7 @@ function _assignMediatorEvents(mdl, mediator, excludes) {
 function _createContext({mediator}) {
     return {
         mediator
-    }
+    };
 }
 
 function factory() {
