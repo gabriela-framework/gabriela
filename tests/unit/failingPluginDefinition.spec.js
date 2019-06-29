@@ -200,4 +200,34 @@ describe('Plugin errors', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should validate that plugin.plugins is an array', () => {
+        const innerPlugin1 = {
+            name: 'innerPlugin1',
+            modules: null,
+        };
+
+        const innerPlugin2 = {
+            name: 'innerPlugin2',
+            plugins: null,
+        };
+
+        const mainPlugin = {
+            name: 'mainPlugin',
+            plugins: [innerPlugin2],
+        };
+
+        const g = gabriela.asRunner();
+
+        let entersException = false;
+        try {
+            g.addPlugin(mainPlugin);
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid plugin definition in plugin '${innerPlugin2.name}'. 'plugins' property must be an array of plugin definitions`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

@@ -457,7 +457,9 @@ describe('Gabriela runner module tests', () => {
     });
 });
 
-describe('Module dependency injection tests', () => {
+describe('Module dependency injection tests', function() {
+    this.timeout(10000);
+    
     it('should resolve module dependency tree', () => {
         const userFriendsRepositoryServiceInit = {
             name: 'userFriendsRepository',

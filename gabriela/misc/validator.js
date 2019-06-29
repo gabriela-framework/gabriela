@@ -123,6 +123,8 @@ factory.validatePlugin = function(plugin) {
     }
 
     if (hasKey(plugin, 'plugins')) {
+        if (!Array.isArray(plugin.plugins)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'plugins' property must be an array of plugin definitions`);
+
         for (const p of plugin.plugins) {
             factory.validatePlugin(p);
         }
