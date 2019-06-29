@@ -646,7 +646,7 @@ describe('Module dependency injection tests', function() {
 
         g.addModule(mdl);
 
-        g.runModule('name').then(() => {
+        return g.runModule('name').then(() => {
             expect(entersMiddleware).to.be.equal(true);
         });
     });
