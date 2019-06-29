@@ -1,0 +1,2 @@
+# gabriela
+NodeJS plugin framework
