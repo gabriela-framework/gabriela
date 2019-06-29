@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const Validator = require('../misc/validator');
 
-function Server(options, moduleTree) {
+function Server(
+        options, 
+        pluginTree, 
+        moduleTree, 
+        rootCompiler, 
+        sharedCompiler
+    ) {
     const opts = options || {};
-
-    Validator.validateServerOptions(opts);
 
     opts.port = (opts.port) ? opts.port : 3000;
 
@@ -16,8 +19,11 @@ function Server(options, moduleTree) {
         http,
     };
 
+    // the order of server execution is plugins first, then modules
+    // that enables third party plugins that should be added first to be executed
+    // before client plugins
     this.listen = function() {
-        serverInstance = native.http.listen(opts.port, function() {
+        serverInstance = native.http.listen(opts.port, async function() {
             if (opts.runCallback) opts.runCallback.call();
 
             const modules = moduleTree.getModules();

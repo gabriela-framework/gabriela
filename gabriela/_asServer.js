@@ -4,9 +4,13 @@ const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
+const Server = require('./server/server');
+const Validator = require('./misc/validator');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);
+
+    Validator.validateServerOptions(config.server);
 
     const moduleTree = new ModuleTree();
     const pluginTree = new PluginTree();
@@ -82,14 +86,22 @@ module.exports = function _asServer(receivedConfig) {
         removeModule: moduleInterface.remove,
         hasModule: moduleInterface.has,
         getModules: moduleInterface.getAll,
+        runModule: moduleInterface.run,
         addPlugin: pluginInterface.add,
         getPlugin: pluginInterface.get,
         removePlugin: pluginInterface.remove,
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
+        runPlugin: pluginInterface.run,
 
         startApp() {
-
+            return new Server(
+                config.server,
+                pluginTree,
+                moduleTree,
+                rootCompiler,
+                sharedCompiler,
+            );
         }
     };
 

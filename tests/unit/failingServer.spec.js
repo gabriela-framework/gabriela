@@ -29,8 +29,10 @@ describe('Failing server tests', () => {
         entersException = false;
         try {
             gabriela.asServer({
-                port: 3000,
-                runCallback: null,
+                server: {
+                    port: 3000,
+                    runCallback: null,
+                }
             });
         } catch (err) {
             entersException = true;

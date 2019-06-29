@@ -132,12 +132,14 @@ factory.validatePlugin = function(plugin) {
 };
 
 factory.validateServerOptions = function(options) {
-    if (hasKey(options, 'port')) {
-        if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
-    }
+    if (options) {
+        if (hasKey(options, 'port')) {
+            if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
+        }
 
-    if (hasKey(options, 'runCallback')) {
-        if (!is('function', options.runCallback)) throw new Error(`Invalid server configuration. 'runCallback' must be a function`);
+        if (hasKey(options, 'runCallback')) {
+            if (!is('function', options.runCallback)) throw new Error(`Invalid server configuration. 'runCallback' must be a function`);
+        }
     }
 };
 

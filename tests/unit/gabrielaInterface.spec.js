@@ -99,6 +99,8 @@ describe('Gabriela interface tests', () => {
             'removePlugin',
             'hasPlugin',
             'getPlugins',
+            'runPlugin',
+            'runModule',
             'startApp',
         ];
 
