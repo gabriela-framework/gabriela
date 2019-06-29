@@ -1,29 +1,7 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const mediatorFactory = require('../events/mediator');
-
-function _callEvent(mdl, event) {
-    if (mdl.hasMediators() && mdl.mediator[event]) {
-        try {
-            this.once(mdl.mediator[event]);
-        } catch (e) {
-            if (mdl.mediator.onError) {
-                /**
-                 * This is clumsy and should be reexamined in the future. once() function receives the customArgs
-                 * argument which is not actually custom args but an array with a single error in it. 
-                 * 
-                 * there is acutally no point in explaining. 
-                 * 
-                 */
-
-                // TODO: REEXAMINE AND REFACTOR HANDLING OF ERRORS AND DEPENDENCY INJECTION
-                this.once(mdl.mediator.onError, [e]);
-            } else {
-                throw e;
-            }
-        }
-    }
-}
+const callEvent = require('../events/callEvent');
 
 function _assignMediatorEvents(mdl, mediator, excludes) {
     if (mdl.hasMediators()) {
@@ -72,7 +50,7 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 
-                _callEvent.call(mediator, mdl, 'onModuleStarted');
+                callEvent.call(mediator, mdl, 'onModuleStarted');
 
                 for (const functions of middleware) {
                     try {
@@ -92,7 +70,7 @@ function factory() {
                     }
                 }
 
-                _callEvent.call(mediator, mdl, 'onModuleFinished');
+                callEvent.call(mediator, mdl, 'onModuleFinished');
             }
 
             function getResult() {

@@ -5,21 +5,21 @@ const {asyncFlowTypes} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 
-const {getArgs, inArray} = require('../util/util');
+const {getArgs, inArray, hasKey} = require('../util/util');
 
-function _callFn(fn, mdl, args, config) {
+function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {
         if (arg.value instanceof Error) {
             return arg.value;
         }
 
         const dep = resolveDependencies(
-            mdl.compiler,
-            mdl.sharedCompiler,
+            moduleOrPlugin.compiler,
+            moduleOrPlugin.sharedCompiler,
             arg.name,
             config,
-            mdl.name,
-            mdl.plugin
+            moduleOrPlugin.name,
+            (hasKey('plugin', moduleOrPlugin)) ? moduleOrPlugin.plugin : null
         );
 
         if (dep) return dep;
@@ -32,7 +32,7 @@ function _callFn(fn, mdl, args, config) {
     fn.call(null, ...resolvedArgs);
 }
 
-function _callEvent(fn, mdl, config, customArgs) {
+function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     const taskRunner = taskRunnerFactory.create();
 
     const args = getArgs(fn, {
@@ -50,12 +50,12 @@ function _callEvent(fn, mdl, config, customArgs) {
 
 
     if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {
-        _callFn(fn, mdl, args, config);
+        _callFn(fn, moduleOrPlugin, args, config);
 
         return;
     }
 
-    _callFn(fn, mdl, args, config);
+    _callFn(fn, moduleOrPlugin, args, config);
 
     while(!(_waitCheck(taskRunner)).success) {
         deasync.sleep(0);
@@ -74,13 +74,13 @@ function _callEvent(fn, mdl, config, customArgs) {
     taskRunner.resolve();
 }
 
-function instance(mdl, config) {
+function instance(moduleOrPlugin, config) {
     const mediatons = {};
 
     function mediate(name, customArgs) {
         const fn = mediatons[name];
 
-        _callEvent(fn, mdl, config, customArgs);
+        _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
 
     function add(name, fn) {
@@ -88,7 +88,7 @@ function instance(mdl, config) {
     }
 
     function once(fn, customArgs) {
-        _callEvent(fn, mdl, config, customArgs);
+        _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
 
     this.mediate = mediate;
@@ -97,8 +97,8 @@ function instance(mdl, config) {
 }
 
 function factory() {
-    this.create = function(mdl, config) {
-        return new instance(mdl, config);
+    this.create = function(moduleOrPlugin, config) {
+        return new instance(moduleOrPlugin, config);
     };
 }
 

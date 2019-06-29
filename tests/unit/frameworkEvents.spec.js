@@ -280,8 +280,6 @@ describe('Framework events', () => {
 
                     expect(e).to.be.instanceof(Error);
                     expect(e.message).to.be.equal('Something went wrong');
-
-                    throw e;
                 }
             }
         };
@@ -295,7 +293,7 @@ describe('Framework events', () => {
         }).catch(() => {
             expect(entersOnError).to.be.equal(true);
             expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(false);
+            expect(onModuleFinished).to.be.equal(true);
         });
     });
 
@@ -418,6 +416,214 @@ describe('Framework events', () => {
         g.addPlugin(plugin);
 
         return g.runPlugin().then(() => {
+            expect(onPluginStarted).to.be.equal(true);
+            expect(onPluginFinished).to.be.equal(true);
+        });
+    });
+
+    it('should properly execute start and finished events when they contain async code', () => {
+        let onModuleStarted = false;
+        let onModuleFinished = false;
+
+        const userServiceInit = {
+            name: 'userService',
+            scope: 'plugin',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const module = {
+            name: 'eventsModule',
+            dependencies: [userServiceInit],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin({
+            name: 'plugin',
+            modules: [module],
+            mediator: {
+                onPluginStarted: function(next, userService) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleStarted = true;
+
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                },
+                onPluginFinished: function(next, userService) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleFinished = true;
+
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                }
+            }
+        });
+
+        return g.runPlugin().then(() => {
+            expect(onModuleStarted).to.be.equal(true);
+            expect(onModuleFinished).to.be.equal(true);
+        });
+    });
+
+    it('should properly execute start and finished events before and after all middleware executes when within a plugin', () => {
+        let onModuleStarted = false;
+        let onModuleFinished = false;
+        let onPluginStarted = false;
+        let onPluginFinished = false;
+
+        let execution = 0;
+
+        const userServiceInit = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const mdl = {
+            name: 'eventsModule',
+            dependencies: [userServiceInit],
+            mediator: {
+                onModuleStarted: function(next, userService) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleStarted = true;
+
+                        expect(execution).to.be.equal(0);
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                },
+                onModuleFinished: function(next, userService) {
+                    requestPromise.get('https://www.google.com').then(() => {
+                        onModuleFinished = true;
+
+                        expect(execution).to.be.equal(5);
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                }
+            },
+            security: [function(next) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    next();
+                });
+            }],
+            preLogicTransformers: [function(next) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    next();
+                });
+            }],
+            validators: [function(next, userService) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    expect(userService).to.be.a('object');
+
+                    next();
+                });
+            }],
+            moduleLogic: [function(next) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    next();
+                });
+            }],
+            postLogicTransformers: [function(next, userService) {
+                requestPromise.get('https://www.google.com').then(() => {
+                    ++execution;
+
+                    expect(userService).to.be.a('object');
+
+                    next();
+                });
+            }],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin({
+            name: 'name',
+            modules: [mdl],
+            mediator: {
+                onPluginStarted: function() {
+                    onPluginStarted = true;
+                },
+                onPluginFinished: function() {
+                    onPluginFinished = true;
+                }
+            }
+        });
+
+        return g.runPlugin().then(() => {
+            expect(onModuleStarted).to.be.equal(true);
+            expect(onModuleFinished).to.be.equal(true);
+            expect(onPluginStarted).to.be.equal(true);
+            expect(onPluginFinished).to.be.equal(true);
+        });
+    });
+
+    it('should not resolve onPluginFinished if onPluginStarted threw an error', () => {
+        let onPluginStarted = false;
+        let onPluginFinished = false;
+        let entersOnError = false;
+
+        const userServiceInit = {
+            name: 'userService',
+            scope: 'plugin',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const module = {
+            name: 'eventsModule',
+            dependencies: [userServiceInit],
+        };
+
+        const g = gabriela.asRunner();
+
+        g.addPlugin({
+            name: 'plugin',
+            modules: [module],
+            mediator: {
+                onPluginStarted(throwException) {
+                    onPluginStarted = true;
+
+                    throwException(new Error('Something went wrong'));
+                },
+                onPluginFinished() {
+                    onPluginFinished = true;
+                },
+                onError(e) {
+                    expect(e.message).to.be.equal('Something went wrong');
+                    entersOnError = true;
+                }
+            }
+        });
+
+        return g.runPlugin().then(() => {
+            assert.fail('This test should fail');
+        }).catch(() => {
+            expect(entersOnError).to.be.equal(true);
             expect(onPluginStarted).to.be.equal(true);
             expect(onPluginFinished).to.be.equal(true);
         });

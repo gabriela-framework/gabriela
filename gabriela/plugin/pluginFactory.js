@@ -39,7 +39,7 @@ function _createPluginObject(plugin) {
         hasMediators: function() {
             return !!plugin.mediator;
         },
-        mediators: plugin.mediator,
+        mediator: plugin.mediator,
     }
 }
 
@@ -48,33 +48,7 @@ function factory(plugin, config, rootCompiler, sharedCompiler) {
 
     _replaceModules(plugin, config);
 
-    const pluginObject = _createPluginObject(plugin);
-
-    const handlers = {
-        set(prop) {
-            throw new Error(`Internal plugin factory error. You cannot add property(s) '${prop}' to an already created 'PluginFactory'`);
-        },
-
-        get(target, prop) {
-            const allowed = [
-                'modules',
-                'name',
-                'compiler',
-                'sharedCompiler',
-                'hasModules',
-                'hasMediators',
-                'mediators',
-            ];
-
-            if (!allowed.includes(prop)) {
-                throw new Error(`Plugin access error. Trying to access a protected or non existent property '${prop}' of a '${plugin.name}' plugin`);
-            }
-
-            return target[prop];
-        }
-    };
-
-    return new Proxy(pluginObject, handlers);
+    return _createPluginObject(plugin);
 }
 
 module.exports = factory;

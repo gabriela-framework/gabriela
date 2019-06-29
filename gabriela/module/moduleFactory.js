@@ -107,7 +107,7 @@ function _createModuleModel(mdl) {
         isInPlugin: () => !!(mdl.plugin),
         mediator: mdl.mediator,
         hasMediators() {
-            return (this.mediator) ? true : false;
+            return (mdl.mediator) ? true : false;
         }
     };
 }
@@ -124,39 +124,7 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
     _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(moduleObject, config);
 
-    const handlers = {
-        set() {
-            return undefined;
-        },
-
-        get(target, prop) {
-            const allowed = [
-                'name',
-                'security',
-                'preLogicTransformers',
-                'postLogicTransformers',
-                'moduleLogic',
-                'validators',
-                'compiler',
-                'sharedCompiler',
-                'plugin',
-                'dependencies',
-                'isInPlugin',
-                'mediator',
-                'hasMediators',
-            ];
-
-            if (!allowed.includes(prop)) {
-                if (!is('string', prop)) return undefined;
-
-                throw new Error(`Module access error. Trying to access a protected or a non existent property '${prop}' of a '${moduleObject.name}' module`);
-            }
-
-            return target[prop];
-        }
-    };
-
-    return new Proxy(moduleObject, handlers);
+    return moduleObject;
 }
 
 module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
