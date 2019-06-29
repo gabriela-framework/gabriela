@@ -5,6 +5,14 @@ const pluginFactory = require('./pluginFactory');
 
 const {is, hasKey} = require('../util/util');
 
+async function _runConstructedPlugin(plugin, config, rootCompiler, sharedCompiler) {
+    const pluginModel = pluginFactory(plugin, config, rootCompiler, sharedCompiler);
+
+    const pluginRunner = PluginRunner.create(pluginModel);
+
+    return await pluginRunner.run(config);
+}
+
 function instance() {
     const plugins = {};
 
@@ -44,11 +52,7 @@ function instance() {
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
         if (name) {
-            const plugin = plugins[name];
-
-            const pluginRunner = PluginRunner.create(pluginFactory(plugin, config, rootCompiler, sharedCompiler));
-
-            return await pluginRunner.run(config);
+            return await _runConstructedPlugin(plugins[name], config, rootCompiler, sharedCompiler);
         }
     };
 

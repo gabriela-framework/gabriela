@@ -9,7 +9,9 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Framework events', () => {
+describe('Framework events', function() {
+    this.timeout(10000);
+    
     it('should execute a named module start and finished event', () => {
         let onModuleStarted = false;
         let onModuleFinished = false;
