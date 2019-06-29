@@ -50,7 +50,6 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
         }
     }
 
-
     if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {
         _callFn(fn, moduleOrPlugin, args, config);
 

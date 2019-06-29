@@ -105,6 +105,22 @@ factory.validatePlugin = function(plugin) {
             throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: '${e.message}'`);
         }
     }
+
+    if (hasKey(plugin, 'mediator')) {
+        if (!is('object', plugin.mediator)) throw new Error(`Invalid plugin definition. 'mediator' property must be an object`);
+
+        if (hasKey('onPluginStarted', plugin.mediator)) {
+            if (!is('function', plugin.mediator.onPluginStarted)) throw new Error(`Invalid plugin definition. 'mediator.onPluginStarted' must be a function`);
+        }
+
+        if (hasKey('onPluginFinished', plugin.mediator)) {
+            if (!is('function', plugin.mediator.onPluginFinished)) throw new Error(`Invalid plugin definition. 'mediator.onPluginFinished' must be a function`);
+        }
+
+        if (hasKey('onError', plugin.mediator)) {
+            if (!is('function', plugin.mediator.onError)) throw new Error(`Invalid plugin definition. 'mediator.onError' must be a function`);
+        }
+    }
 };
 
 factory.validateServerOptions = function(options) {

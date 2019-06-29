@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for gabriela/plugin/pluginRunner.js</title>
+    <title>Code coverage report for gabriela/events/callEvent.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -16,28 +16,28 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../../index.html">All files</a> / <a href="index.html">gabriela/plugin</a> pluginRunner.js
+      <a href="../../index.html">All files</a> / <a href="index.html">gabriela/events</a> callEvent.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">85.71% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>14/14</span>
+        <span class='fraction'>6/7</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75% </span>
+        <span class="strong">83.33% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>3/4</span>
+        <span class='fraction'>5/6</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>4/4</span>
+        <span class='fraction'>1/1</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">85.71% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>14/14</span>
+        <span class='fraction'>6/7</span>
       </div>
     </div>
     <p class="quiet">
@@ -67,82 +67,49 @@
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">272x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const ModuleTree = require('../module/moduleTree');
-const mediatorFactory = require('../events/mediator');
-const callEvent = require('../events/callEvent');
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">module.exports = function callEvent(moduleOrPlugin, event) {
+    if (moduleOrPlugin.hasMediators() &amp;&amp; moduleOrPlugin.mediator[event]) {
+        try {
+            this.once(moduleOrPlugin.mediator[event]);
+        } catch (e) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (moduleOrPlugin.mediator.onError) {
+                /**
+                 * This is clumsy and should be reexamined in the future. once() function receives the customArgs
+                 * argument which is not actually custom args but an array with a single error in it. 
+                 * 
+                 * there is acutally no point in explaining. 
+                 * 
+                 */
 &nbsp;
-function factory() {
-    function create(plugin) {
-        const moduleTree = new ModuleTree();
-&nbsp;
-        async function run(config) {
-            const mediator = mediatorFactory.create(plugin, config);
-&nbsp;
-            callEvent.call(mediator, plugin, 'onPluginStarted');
-&nbsp;
-            <span class="missing-if-branch" title="else path not taken" >E</span>if (plugin.modules &amp;&amp; plugin.modules.length &gt; 0) {
-                for (const mdl of plugin.modules) {
-                    await moduleTree.runConstructedModule(mdl, config);
-                }
+                // TODO: REEXAMINE AND REFACTOR HANDLING OF ERRORS AND DEPENDENCY INJECTION
+                this.once(moduleOrPlugin.mediator.onError, [e]);
+            } else {
+<span class="cstat-no" title="statement not covered" >                throw e;</span>
             }
-&nbsp;
-            callEvent.call(mediator, plugin, 'onPluginFinished');
         }
-&nbsp;
-        function instance() {
-            this.run = run;
-        }
-&nbsp;
-        return new instance();
     }
-&nbsp;
-    this.create = create;
-}
-&nbsp;
-module.exports = new factory();</pre></td></tr>
+};</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
