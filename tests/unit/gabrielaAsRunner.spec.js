@@ -532,14 +532,14 @@ describe('Module dependency injection tests', function() {
             scope: 'module',
             isAsync: true,
             init: function(next) {
-                function constructor() {
+                function UserService() {
                     this.addUser = null;
                     this.removeUser = null;
                 }
 
                 requestPromise.get('https://www.google.com').then(() => {
                     next(() => {
-                        return new constructor();
+                        return new UserService();
                     });
                 });
             },
@@ -547,7 +547,7 @@ describe('Module dependency injection tests', function() {
 
         let entersMiddleware = false;
         const mdl = {
-            name: 'name',
+            name: 'asyncModuleName',
             dependencies: [userServiceInit],
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
@@ -564,7 +564,7 @@ describe('Module dependency injection tests', function() {
 
         g.addModule(mdl);
 
-        g.runModule('name').then(() => {
+        return g.runModule('asyncModuleName').then(() => {
             expect(entersMiddleware).to.be.equal(true);
         });
     });
@@ -579,7 +579,8 @@ describe('Module dependency injection tests', function() {
                 }
 
                 requestPromise.get('https://www.google.com').then(() => {
-                    next(() => {
+
+                next(() => {
                         return new FriendsRepository();
                     });
                 });
@@ -609,7 +610,7 @@ describe('Module dependency injection tests', function() {
             scope: 'module',
             isAsync: true,
             init: function(userRepository, next) {
-                function constructor() {
+                function UserService() {
                     this.createUser = null;
                     this.removeUser = null;
 
@@ -618,7 +619,7 @@ describe('Module dependency injection tests', function() {
 
                 requestPromise.get('https://www.google.com').then(() => {
                     next(() => {
-                        return new constructor();
+                        return new UserService();
                     });
                 });
             }
@@ -626,7 +627,7 @@ describe('Module dependency injection tests', function() {
 
         let entersMiddleware = false;
         const mdl = {
-            name: 'name',
+            name: 'treeAsyncServiceDefinition',
             dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit],
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
@@ -647,7 +648,7 @@ describe('Module dependency injection tests', function() {
 
         g.addModule(mdl);
 
-        return g.runModule('name').then(() => {
+        return g.runModule('treeAsyncServiceDefinition').then(() => {
             expect(entersMiddleware).to.be.equal(true);
         });
     });

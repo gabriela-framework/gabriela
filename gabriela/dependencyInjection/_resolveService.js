@@ -1,17 +1,12 @@
 const deasync = require('deasync');
 const _waitCheck = require('../util/_waitCheck');
 
-module.exports = function _resolveService(serviceInit, deps, taskRunner) {
+module.exports = function _resolveService(definition, deps, taskRunner) {
     let service;
-    if (serviceInit.isAsync) {
-        serviceInit.init(...deps);
+    if (definition.isAsync) {
+        definition.init(...deps);
 
         while(!(_waitCheck(taskRunner)).success) {
-            // todo: handle timeout on resolving services, maybe some config file?
-            /*                if (wait === 1000) {
-                                throw new Error(`Dependency injection error. Dependency ${name} waited too long to be resolved`);
-                            }*/
-
             deasync.sleep(0);
         }
 
@@ -19,7 +14,9 @@ module.exports = function _resolveService(serviceInit, deps, taskRunner) {
 
         taskRunner.resolve();
     } else {
-        service = serviceInit.init.call(null, ...deps);
+        service = definition.init.call(null, ...deps);
+
+        taskRunner.resolve();
     }
 
     return service;
