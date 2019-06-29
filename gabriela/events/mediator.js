@@ -44,7 +44,9 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     // in client code, the error has to be the first argument
     if (customArgs && customArgs.length > 0) {
         if (customArgs[0] instanceof Error) {
-            args[0].value = customArgs[0];
+            const [error] = customArgs;
+
+            args[0].value = error;
         }
     }
 

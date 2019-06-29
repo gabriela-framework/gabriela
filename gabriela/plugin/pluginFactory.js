@@ -31,16 +31,16 @@ function _createPluginObject(plugin) {
     return {
         name: plugin.name,
         modules: plugin.modules,
-        hasModules: function() {
+        hasModules() {
             return !!plugin.modules;
         },
         compiler: plugin.compiler,
         sharedCompiler: plugin.sharedCompiler,
-        hasMediators: function() {
+        hasMediators() {
             return !!plugin.mediator;
         },
         mediator: plugin.mediator,
-    }
+    };
 }
 
 function factory(plugin, config, rootCompiler, sharedCompiler) {
