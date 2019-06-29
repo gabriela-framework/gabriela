@@ -1,3 +1,5 @@
+"use strict";
+
 const deepCopy = require('deepcopy');
 
 const ModuleTree = require('./module/moduleTree');
@@ -95,13 +97,15 @@ module.exports = function _asServer(receivedConfig) {
         runPlugin: pluginInterface.run,
 
         startApp() {
-            return new Server(
+            const server = new Server(
                 config.server,
                 pluginTree,
                 moduleTree,
                 rootCompiler,
                 sharedCompiler,
             );
+
+            server.listen();
         }
     };
 

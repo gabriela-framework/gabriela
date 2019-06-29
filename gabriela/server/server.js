@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 
+async function listenCallback(opts) {
+    console.log(`Server started on port ${opts.port}`);
+}
+
 function Server(
         options, 
         pluginTree, 
@@ -9,6 +13,7 @@ function Server(
         rootCompiler, 
         sharedCompiler
     ) {
+
     const opts = options || {};
 
     opts.port = (opts.port) ? opts.port : 3000;
@@ -19,22 +24,22 @@ function Server(
         http,
     };
 
-    // the order of server execution is plugins first, then modules
-    // that enables third party plugins that should be added first to be executed
-    // before client plugins
-    this.listen = function() {
-        serverInstance = native.http.listen(opts.port, async function() {
-            if (opts.runCallback) opts.runCallback.call(null);
+    function listen() {
+        if (serverInstance) process.emitWarning(`Gabriela warning. A server created with this instance of Gabriela is already running. If you which to run another server, create a new instance of Gabriela and run a new server with it.`);
 
-            console.log(`Server started on port ${opts.port}`);
-        });
+        serverInstance = native.http.listen(opts.port, listenCallback.bind(this, opts));
     };
 
-    this.close = function() {
+    function close() {
         serverInstance.close();
 
         serverInstance = null;
-    };
+
+        console.log('Server closed');
+    }
+
+    this.listen = listen;
+    this.close = close;
 }
 
 module.exports = Server;
