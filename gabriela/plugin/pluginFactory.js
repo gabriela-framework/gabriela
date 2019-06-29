@@ -27,18 +27,44 @@ function _replaceModules(plugin, config) {
     }
 }
 
+function _createPluginObject(plugin) {
+    return {
+        name: plugin.name,
+        modules: plugin.modules,
+        hasModules: function() {
+            return !!plugin.modules;
+        },
+        compiler: plugin.compiler,
+        sharedCompiler: plugin.sharedCompiler,
+        hasMediators: function() {
+            return !!plugin.mediator;
+        },
+        mediators: plugin.mediator,
+    }
+}
+
 function factory(plugin, config, rootCompiler, sharedCompiler) {
     _createCompiler(plugin, rootCompiler, sharedCompiler);
 
     _replaceModules(plugin, config);
 
+    const pluginObject = _createPluginObject(plugin);
+
     const handlers = {
-        set(obj, prop) {
+        set(prop) {
             throw new Error(`Internal plugin factory error. You cannot add property(s) '${prop}' to an already created 'PluginFactory'`);
         },
 
         get(target, prop) {
-            const allowed = ['modules', 'name', 'compiler', 'sharedCompiler'];
+            const allowed = [
+                'modules',
+                'name',
+                'compiler',
+                'sharedCompiler',
+                'hasModules',
+                'hasMediators',
+                'mediators',
+            ];
 
             if (!allowed.includes(prop)) {
                 throw new Error(`Plugin access error. Trying to access a protected or non existent property '${prop}' of a '${plugin.name}' plugin`);
@@ -48,7 +74,7 @@ function factory(plugin, config, rootCompiler, sharedCompiler) {
         }
     };
 
-    return new Proxy(plugin, handlers);
+    return new Proxy(pluginObject, handlers);
 }
 
 module.exports = factory;

@@ -14,11 +14,11 @@ function _callFn(fn, mdl, args, config) {
         }
 
         const dep = resolveDependencies(
-            mdl.compiler, 
-            mdl.sharedCompiler, 
-            arg.name, 
-            config, 
-            mdl.name, 
+            mdl.compiler,
+            mdl.sharedCompiler,
+            arg.name,
+            config,
+            mdl.name,
             mdl.plugin
         );
 

@@ -67,7 +67,15 @@ describe('Test gabriela internals', () => {
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {
-        const interface = ['modules', 'name', 'compiler', 'sharedCompiler'];
+        const interface = [
+            'modules', 
+            'name',
+            'compiler', 
+            'sharedCompiler',
+            'hasModules',
+            'hasMediators',
+            'mediators'
+        ];
 
         const plugin = {
             name: 'name',
@@ -81,8 +89,11 @@ describe('Test gabriela internals', () => {
         expect(pluginModelProps).to.have.members(interface);
 
         expect(pluginModel).to.have.property('name', 'name');
-        expect(plugin.modules).to.be.a('array');
-        expect(plugin.compiler).to.be.a('object');
-        expect(plugin.sharedCompiler).to.be.a('object');
+        expect(pluginModel.modules).to.be.a('array');
+        expect(pluginModel.compiler).to.be.a('object');
+        expect(pluginModel.sharedCompiler).to.be.a('object');
+        expect(pluginModel.hasMediators).to.be.a('function');
+        expect(pluginModel.hasModules).to.be.a('function');
+        expect(pluginModel.mediators).to.be.a('undefined');
     });
 });
