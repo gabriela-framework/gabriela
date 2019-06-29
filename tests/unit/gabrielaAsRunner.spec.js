@@ -542,7 +542,7 @@ describe('Module dependency injection tests', function() {
                         return new constructor();
                     });
                 });
-            }
+            },
         };
 
         let entersMiddleware = false;
@@ -552,6 +552,7 @@ describe('Module dependency injection tests', function() {
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
 
+                expect(userService).to.be.a('object');
                 expect(userService).to.have.property('addUser');
                 expect(userService).to.have.property('removeUser');
 

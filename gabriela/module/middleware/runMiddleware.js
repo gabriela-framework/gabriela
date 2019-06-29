@@ -34,7 +34,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
 
     let task;
     if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
-        task = taskRunner.resolve();
+        task = taskRunner.getTask();
     } else {
         task = await wait(_waitCheck.bind(null, taskRunner));
     }

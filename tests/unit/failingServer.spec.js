@@ -14,7 +14,9 @@ describe('Failing server tests', () => {
         let entersException = false;
         try {
             gabriela.asServer({
-                port: 'invalid',
+                server: {
+                    port: 'invalid'
+                },
             });
         } catch (err) {
             entersException = true;
