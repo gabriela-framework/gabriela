@@ -24,22 +24,7 @@ function Server(
     // before client plugins
     this.listen = function() {
         serverInstance = native.http.listen(opts.port, async function() {
-            if (opts.runCallback) opts.runCallback.call();
-
-            const modules = moduleTree.getModules();
-            const keys = Object.keys(modules);
-
-            for (const m of keys) {
-                const mld = modules[m];
-
-                if (mld.http) {
-                    const {route} = mld.http;
-
-                    app[route.method](route.path, (req, res) => {
-                        moduleTree.runModule(mld.name, Object.assign({}, mld.http, req, res));
-                    });
-                }
-            }
+            if (opts.runCallback) opts.runCallback.call(null);
 
             console.log(`Server started on port ${opts.port}`);
         });
