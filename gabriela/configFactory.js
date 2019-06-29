@@ -2,17 +2,7 @@ const deepCopy = require('deepcopy');
 const {is} = require('./util/util');
 
 function factory(config) {
-    const handlers = {
-        set() {
-            return undefined;
-        },
-
-        get (target, prop) {
-            return target[prop];
-        }
-    };
-
-    return new Proxy(config , handlers);
+    return config;
 }
 
 function instance() {
