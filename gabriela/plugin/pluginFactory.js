@@ -42,6 +42,7 @@ function _createPluginObject(plugin) {
         hasPlugins() {
             return !!plugin.plugins;
         },
+        plugins: plugin.plugins,
         mediator: plugin.mediator,
     };
 }

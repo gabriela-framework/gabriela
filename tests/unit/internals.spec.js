@@ -75,12 +75,14 @@ describe('Test gabriela internals', () => {
             'hasModules',
             'hasMediators',
             'hasPlugins',
+            'plugins',
             'mediator'
         ];
 
         const plugin = {
             name: 'name',
             modules: [],
+            plugins: [],
         };
 
         const pluginModel = pluginFactory(plugin, null, Compiler.create(), Compiler.create());
@@ -97,5 +99,6 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasModules).to.be.a('function');
         expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
+        expect(pluginModel.plugins).to.be.a('array');
     });
 });
