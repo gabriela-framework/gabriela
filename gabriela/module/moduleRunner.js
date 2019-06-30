@@ -1,6 +1,7 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const mediatorFactory = require('../events/mediator');
+const emitterFactory = require('../events/emitter');
 const callEvent = require('../events/callEvent');
 
 function _assignMediatorEvents(mdl, mediator, excludes) {
@@ -17,9 +18,10 @@ function _assignMediatorEvents(mdl, mediator, excludes) {
     }
 }
 
-function _createContext({mediator}) {
+function _createContext({mediator, emitter}) {
     return {
-        mediator
+        mediator,
+        emitter,
     };
 }
 
@@ -32,6 +34,8 @@ function factory() {
                 if (childState) state.child = childState;
 
                 const mediator = mediatorFactory.create(mdl, config);
+                const emitter = emitterFactory.create(mdl, config);
+
                 _assignMediatorEvents(mdl, mediator, [
                     'onModuleStarted',
                     'onModuleFinished',
@@ -40,6 +44,7 @@ function factory() {
 
                 const context = _createContext({
                     mediator,
+                    emitter,
                 });
 
                 const middleware = [

@@ -310,6 +310,9 @@ describe('Framework events', function() {
                 expect(this).to.be.a('object');
                 expect(this).to.have.property('mediator');
                 expect(this.mediator).to.be.a('object');
+
+                expect(this).to.have.property('emitter');
+                expect(this.emitter).to.be.a('object');
             }],
         };
 

@@ -4,7 +4,6 @@ const taskRunnerFactory = require('../misc/taskRunner');
 const {asyncFlowTypes} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 const resolveDependencies = require('../dependencyInjection/resolveDependencies');
-
 const {getArgs, inArray, hasKey} = require('../util/util');
 
 function _callFn(fn, moduleOrPlugin, args, config) {
