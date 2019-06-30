@@ -1,15 +1,31 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
-const assert = require('assert');
 
 const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const Mediator = require('../../gabriela/events/mediator');
 
 describe('Failing framework events', () => {
+    it('a concrete mediator should fail if an event that already exist is added', () => {
+        const mediator = Mediator.create(null, null);
+
+        mediator.add('event1', () => {});
+
+        let entersException = false;
+        try {
+            mediator.add('event1', () => {});
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'event1' already exist`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail if mediator is not a valid data type', () => {
         const mdl = {
             name: 'name',
