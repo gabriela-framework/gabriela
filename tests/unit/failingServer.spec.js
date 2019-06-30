@@ -9,7 +9,6 @@ const gabriela = require('../../gabriela/gabriela');
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {
-
         // invalid port
         let entersException = false;
         try {
@@ -25,19 +24,24 @@ describe('Failing server tests', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
 
-        entersException = false;
+    it('should fail the server because of invalid onAppStarted event', () => {
+        const g = gabriela.asServer({
+            server: {
+                port: 4000,
+            },
+        });
+
+        let entersException = false;
         try {
-            gabriela.asServer({
-                server: {
-                    port: 3000,
-                    runCallback: null,
-                }
+            g.startApp({
+                onAppStarted: null,
             });
-        } catch (err) {
+        } catch(e) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Invalid server configuration. 'runCallback' must be a function`);
+            expect(e.message).to.be.equal(`Invalid event. 'onAppStarted' must be a function. Due to this error, the server has closed.`);
         }
 
         expect(entersException).to.be.equal(true);

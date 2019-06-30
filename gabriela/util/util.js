@@ -51,6 +51,8 @@ function wait(cb) {
 }
 
 function hasKey(obj, key) {
+    if (!is('object', obj)) return false;
+    
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
