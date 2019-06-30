@@ -2,6 +2,7 @@ const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
 const requestPromise = require('request-promise');
+const deasync = require('deasync');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -572,7 +573,7 @@ describe('Framework events', function() {
                 },
                 onPluginFinished: function() {
                     onPluginFinished = true;
-                }
+                },
             }
         });
 
@@ -632,5 +633,9 @@ describe('Framework events', function() {
             expect(onPluginStarted).to.be.equal(true);
             expect(onPluginFinished).to.be.equal(true);
         });
+    });
+
+    it('should execute all the events asyncronously with the emitter', () => {
+
     });
 });

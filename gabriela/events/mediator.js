@@ -70,7 +70,6 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
         throw error;
     }
 
-
     taskRunner.resolve();
 }
 
@@ -87,6 +86,13 @@ function instance(moduleOrPlugin, config) {
         mediatons[name] = fn;
     }
 
+    function runOnError(fn, e) {
+        const args = getArgs(fn);
+        args[0].value = e;
+
+        _callFn(fn, moduleOrPlugin, args, config);
+    }
+
     function once(fn, customArgs) {
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
@@ -94,6 +100,7 @@ function instance(moduleOrPlugin, config) {
     this.mediate = mediate;
     this.add = add;
     this.once = once;
+    this.runOnError = runOnError;
 }
 
 function factory() {
