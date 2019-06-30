@@ -18,7 +18,7 @@ describe('Failing private compiler dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',
@@ -49,7 +49,7 @@ describe('Failing private compiler dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addModule({

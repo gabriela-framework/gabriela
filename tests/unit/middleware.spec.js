@@ -25,7 +25,7 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -52,7 +52,7 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -102,7 +102,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -155,7 +155,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -194,7 +194,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: []
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 

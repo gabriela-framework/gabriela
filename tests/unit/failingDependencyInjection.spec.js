@@ -78,7 +78,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because init dependency value not being an object', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         try {
             m.addModule({
@@ -97,7 +97,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because name property must be a string', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         try {
             m.addModule({
@@ -118,7 +118,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because init.init must be a function', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         try {
             m.addModule({
@@ -140,7 +140,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because of invalid service name data type', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         try {
             m.addModule({
@@ -161,7 +161,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile a dependency because of invalid scope value', () => {
         let entersException = false;
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let invalidService = {
             name: 'name',
@@ -196,7 +196,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -241,7 +241,7 @@ describe('Failing dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -283,7 +283,7 @@ describe('Failing dependency injection tests', () => {
     });
 
     it('should fail to compile a dependency if the dependency data type is not an object', () => {
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -312,7 +312,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -338,7 +338,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -366,7 +366,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -396,7 +396,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -426,7 +426,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -475,7 +475,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         m.addModule({
             name: 'module',
@@ -503,7 +503,7 @@ describe('Failing dependency injection tests', () => {
     });
 
     it('should not resolve an argument if the argument is a falsy value', (done) => {
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
         m.addModule({
             name: 'module',
             moduleLogic: [function(sortService, next) {
@@ -522,7 +522,7 @@ describe('Failing dependency injection tests', () => {
     });
 
     it('should fail to create a dependency of dependency if the inner dependency is not shared with the right module', (done) => {
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         const sortServiceInit = {
             name: 'sortService',
@@ -579,7 +579,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -608,7 +608,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -636,7 +636,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -667,7 +667,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -758,7 +758,7 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',

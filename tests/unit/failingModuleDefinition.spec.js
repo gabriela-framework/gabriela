@@ -16,7 +16,7 @@ describe('Failing module definition tests', () => {
             dependencies: null,
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -33,7 +33,7 @@ describe('Failing module definition tests', () => {
     it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -52,7 +52,7 @@ describe('Failing module definition tests', () => {
             name: 1
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -73,7 +73,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -99,7 +99,7 @@ describe('Failing module definition tests', () => {
         userModule.name = 'name';
         userModule.preLogicTransformers = [1];
 
-        const runner = gabriela.asRunner();
+        const runner = gabriela.asProcess();
 
         let entersException = false;
         try {
@@ -120,7 +120,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -148,7 +148,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -178,7 +178,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -209,7 +209,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -238,7 +238,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -263,7 +263,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asRunner();
+        let g = gabriela.asProcess();
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -293,7 +293,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         m.addModule(userModule);
 
@@ -309,7 +309,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asRunner();
+        const m = gabriela.asProcess();
 
         m.addModule(userModule);
 

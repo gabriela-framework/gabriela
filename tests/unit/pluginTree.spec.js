@@ -53,7 +53,7 @@ describe('Plugin tree execution tests', function() {
             plugins: [logicPlugin],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin(presentationPlugin);
 

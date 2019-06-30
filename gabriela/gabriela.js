@@ -1,5 +1,5 @@
 require('strict-mode')(function () {
-    const _asRunner = require('./_asRunner');
+    const _asProcess = require('./_asProcess');
     const _asServer = require('./_asServer');
 
     module.exports = {
@@ -7,8 +7,8 @@ require('strict-mode')(function () {
             return _asServer.call(null, receivedConfig);
         },
 
-        asRunner(receivedConfig) {
-            return _asRunner.call(null, receivedConfig);
+        asProcess(receivedConfig) {
+            return _asProcess.call(null, receivedConfig);
         }
     };
 });

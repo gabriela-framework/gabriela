@@ -20,7 +20,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -85,7 +85,7 @@ describe('Gabriela runner module tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -129,7 +129,7 @@ describe('Gabriela runner module tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -189,7 +189,7 @@ describe('Gabriela runner module tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -245,7 +245,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -303,7 +303,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -346,7 +346,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -386,7 +386,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -422,7 +422,7 @@ describe('Gabriela runner module tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -445,7 +445,7 @@ describe('Gabriela runner module tests', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 

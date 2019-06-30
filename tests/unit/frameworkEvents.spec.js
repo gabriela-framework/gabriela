@@ -42,7 +42,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -90,7 +90,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -181,7 +181,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -234,7 +234,7 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -286,7 +286,7 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -313,7 +313,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -337,7 +337,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -373,7 +373,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module);
 
@@ -413,7 +413,7 @@ describe('Framework events', function() {
             }
         }
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin(plugin);
 
@@ -442,7 +442,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -558,7 +558,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'name',
@@ -601,7 +601,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',

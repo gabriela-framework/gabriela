@@ -30,7 +30,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()']
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(middlewareModule);
 
@@ -81,7 +81,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()']
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(middlewareModule);
 
@@ -147,7 +147,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()']
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -225,7 +225,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()'],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -330,7 +330,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()'],
         };
 
-        const g = gabriela.asRunner({
+        const g = gabriela.asProcess({
             validation: {
                 minMessage: 'Minimum message',
                 maxMessage: 'Max message',

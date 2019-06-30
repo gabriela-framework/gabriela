@@ -39,7 +39,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',

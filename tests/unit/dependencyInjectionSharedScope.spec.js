@@ -82,7 +82,7 @@ describe('Shared scope dependency injection tests', () => {
             modules: [module1, module2, module3]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module1);
         g.addModule(module2);
@@ -182,7 +182,7 @@ describe('Shared scope dependency injection tests', () => {
             modules: [singleModule, testingModule],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);

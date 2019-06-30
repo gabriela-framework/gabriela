@@ -82,7 +82,7 @@ describe('Framework usability tests', () => {
             }],
         };
 
-        const runnerApp = gabriela.asRunner();
+        const runnerApp = gabriela.asProcess();
 
         runnerApp.addModule(requestModule);
 

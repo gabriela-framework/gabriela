@@ -51,7 +51,7 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(module1);
         g.addModule(module2);
@@ -110,7 +110,7 @@ describe('Scope dependency injection tests', () => {
             modules: [module1, module2],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);
@@ -186,7 +186,7 @@ describe('Scope dependency injection tests', () => {
             modules: [pluginModule1, pluginModule2],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(singleModule);
         g.addPlugin(plugin1);
@@ -295,7 +295,7 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'dependencyOrderPlugin',

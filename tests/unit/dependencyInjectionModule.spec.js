@@ -68,7 +68,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -111,7 +111,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -195,7 +195,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -246,7 +246,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asRunner();
+        const app = gabriela.asProcess();
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
@@ -330,7 +330,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asRunner();
+        const app = gabriela.asProcess();
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
@@ -384,7 +384,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -451,7 +451,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -499,7 +499,7 @@ describe('Module dependency injection tests', function() {
             }]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 

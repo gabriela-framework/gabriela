@@ -51,7 +51,7 @@ describe('Private dependencies', () => {
             }]
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -125,7 +125,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -258,7 +258,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -392,7 +392,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule(userModule);
 
@@ -461,7 +461,7 @@ describe('Private dependencies', () => {
             }
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',

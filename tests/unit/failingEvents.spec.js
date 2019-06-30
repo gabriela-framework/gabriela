@@ -16,7 +16,7 @@ describe('Failing framework events', () => {
             mediator: null,
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addModule(mdl);
@@ -33,7 +33,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addModule(mdl);
@@ -50,7 +50,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addModule(mdl);
@@ -67,7 +67,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addModule(mdl);
@@ -81,7 +81,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addPlugin({
@@ -99,7 +99,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addPlugin({
@@ -119,7 +119,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addPlugin({
@@ -139,7 +139,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asRunner();
+        const g = gabriela.asProcess();
 
         try {
             g.addPlugin({
