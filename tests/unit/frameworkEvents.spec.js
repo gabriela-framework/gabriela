@@ -673,7 +673,7 @@ describe('Framework events', function() {
             },
             moduleLogic: [function(throwException) {
                 throwException(new Error('Something went wrong'));
-            }]
+            }],
         }
 
         const g = gabriela.asProcess();
