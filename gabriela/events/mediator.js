@@ -34,7 +34,7 @@ function _callFn(fn, moduleOrPlugin, args, config) {
 function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     const taskRunner = taskRunnerFactory.create();
 
-    const args = getArgs(fn, {
+    let args = getArgs(fn, {
         next: taskRunner.next,
         throwException: taskRunner.throwException,
     });
@@ -42,11 +42,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     // if an error occurres, it must be the first argument of customArgs
     // in client code, the error has to be the first argument
     if (customArgs && customArgs.length > 0) {
-        if (customArgs[0] instanceof Error) {
-            const [error] = customArgs;
-
-            args[0].value = error;
-        }
+        args = [...args, ...customArgs]
     }
 
     if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {
@@ -82,6 +78,10 @@ function instance(moduleOrPlugin, config) {
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
 
+    function has(name) {
+        return hasKey(mediations, name);
+    }
+
     function add(name, fn) {
         mediatons[name] = fn;
     }
@@ -98,6 +98,7 @@ function instance(moduleOrPlugin, config) {
     }
 
     this.mediate = mediate;
+    this.has = has;
     this.add = add;
     this.once = once;
     this.runOnError = runOnError;

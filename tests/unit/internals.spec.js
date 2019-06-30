@@ -8,6 +8,7 @@ const expect = chai.expect;
 const moduleFactory = require('../../gabriela/module/moduleFactory');
 const pluginFactory = require('../../gabriela/plugin/pluginFactory');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const Mediator = require('../../gabriela/events/mediator');
 
 describe('Test gabriela internals', () => {
     it('should properly call properties on a module object create by moduleFactory', () => {
@@ -100,5 +101,23 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
         expect(pluginModel.plugins).to.be.a('array');
+    });
+
+    it('should determine that mediator interface has not changed', () => {
+        const allowed = ['mediate', 'has', 'add', 'once', 'runOnError'];
+
+        // the mediator can me created without module or plugin and config but that will 
+        // not happen(?!) in the application
+        const mediator = Mediator.create(null, null);
+
+        const props = Object.keys(mediator);
+
+        expect(allowed).to.have.members(props);
+
+        expect(mediator.mediate).to.be.a('function');
+        expect(mediator.add).to.be.a('function');
+        expect(mediator.has).to.be.a('function');
+        expect(mediator.once).to.be.a('function');
+        expect(mediator.runOnError).to.be.a('function');
     });
 });
