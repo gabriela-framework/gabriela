@@ -71,7 +71,13 @@ function factory() {
                             }
                         }
 
-                        throw err;
+                        // throw error if it doesnt have any mediators
+                        if (!mdl.hasMediators()) throw err;
+
+                        // throw error if it has mediators but it does not have onError
+                        if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
+
+                        mediator.runOnError(mdl.mediator.onError, err);
                     }
                 }
 

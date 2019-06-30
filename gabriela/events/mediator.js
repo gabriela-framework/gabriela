@@ -84,7 +84,7 @@ function instance(moduleOrPlugin, config) {
 
     function add(name, fn) {
         if (has(name)) throw new Error(`Invalid mediator event. Mediator with name '${name}' already exist`);
-        
+
         mediations[name] = fn;
     }
 

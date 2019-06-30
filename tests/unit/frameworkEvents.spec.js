@@ -648,7 +648,40 @@ describe('Framework events', function() {
         });
     });
 
-    it('should execute all the events asyncronously with the emitter', () => {
+    it('should run the onError mediator event if the exception is thrown inside middleware fn', () => {
+        let onErrorCalled = false;
 
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const mdl = {
+            name: 'errorModule',
+            dependencies: [userServiceDefinition],
+            mediator: {
+                onError(e, userService) {
+                    onErrorCalled = true;
+
+                    expect(e).to.be.instanceof(Error);
+                    expect(userService).to.be.a('object');
+                }
+            },
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Something went wrong'));
+            }]
+        }
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        return g.runModule().then(() => {
+            expect(onErrorCalled).to.be.equal(true);
+        });
     });
 });
