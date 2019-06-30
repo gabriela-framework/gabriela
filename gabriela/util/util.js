@@ -74,7 +74,12 @@ function getArgs(fn, values, specialCb) {
     const args = [];
 
     for (const arg of argNames) {
-        if (!hasKey(values, arg) && specialCb) {
+        if (!is('object', values)) {
+            args.push({
+                name: arg,
+                value: null,
+            });
+        } else if (!hasKey(values, arg) && specialCb) {
             args.push({
                 name: 'special',
                 value: specialCb.call(null, ...[arg]),

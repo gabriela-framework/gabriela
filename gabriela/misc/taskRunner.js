@@ -46,7 +46,6 @@ function factory() {
 
 module.exports = (function() {
     const inst = new factory();
-    inst.constructor.name = 'TaskRunner';
 
     return inst;
 }());

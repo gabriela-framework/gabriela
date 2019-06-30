@@ -22,7 +22,7 @@ module.exports = function _asServer(receivedConfig) {
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
-    const runModule = async function(name) {
+    async function runModule(name) {
         if (name) return await moduleTree.runModule(
             name,
             config,
@@ -31,7 +31,7 @@ module.exports = function _asServer(receivedConfig) {
             sharedCompiler
         );
 
-        const modules = this.getModules();
+        const modules = this.getAll();
         const keys = Object.keys(modules);
 
         const state = {};
@@ -51,10 +51,10 @@ module.exports = function _asServer(receivedConfig) {
         return deepCopy(state);
     };
 
-    const runPlugin = async function(name) {
+    async function runPlugin(name) {
         if (name) return pluginTree.runPlugin(name, config, rootCompiler, sharedCompiler);
 
-        const plugins = this.getPlugins();
+        const plugins = this.getAll();
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
@@ -88,21 +88,22 @@ module.exports = function _asServer(receivedConfig) {
         removeModule: moduleInterface.remove,
         hasModule: moduleInterface.has,
         getModules: moduleInterface.getAll,
-        runModule: moduleInterface.run,
+        runModule: runModule,
         addPlugin: pluginInterface.add,
         getPlugin: pluginInterface.get,
         removePlugin: pluginInterface.remove,
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
-        runPlugin: pluginInterface.run,
+        runPlugin: runPlugin,
 
-        startApp() {
+        startApp(events) {
+
             const server = new Server(
                 config.server,
-                pluginTree,
-                moduleTree,
+                events,
                 rootCompiler,
-                sharedCompiler,
+                pluginInterface,
+                moduleInterface,
             );
 
             server.listen();
