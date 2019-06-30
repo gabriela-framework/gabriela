@@ -70,10 +70,10 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 }
 
 function instance(moduleOrPlugin, config) {
-    const mediatons = {};
+    const mediations = {};
 
     function mediate(name, customArgs) {
-        const fn = mediatons[name];
+        const fn = mediations[name];
 
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
@@ -83,7 +83,7 @@ function instance(moduleOrPlugin, config) {
     }
 
     function add(name, fn) {
-        mediatons[name] = fn;
+        mediations[name] = fn;
     }
 
     function runOnError(fn, e) {

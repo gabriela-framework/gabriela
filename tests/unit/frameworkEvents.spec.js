@@ -9,9 +9,22 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const Mediator = require('../../gabriela/events/mediator');
 
 describe('Framework events', function() {
     this.timeout(10000);
+
+    it('should validate that the mediator interface is working as expected', () => {
+        const mediator = Mediator.create(null, null);
+
+        // only the has() method is tested because the mediator has to have a 
+        // module or plugin that has all the neccessary compilers with them
+        mediator.add('event1', function() {});
+        mediator.add('event2', function() {});
+
+        expect(mediator.has('event1')).to.be.equal(true);
+        expect(mediator.has('event2')).to.be.equal(true);
+    });
     
     it('should execute a named module start and finished event', () => {
         let onModuleStarted = false;
