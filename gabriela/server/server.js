@@ -64,7 +64,7 @@ function Server(
             pluginInterface,
             moduleInterface,
         ));
-    };
+    }
 
     function close() {
         serverInstance.close();

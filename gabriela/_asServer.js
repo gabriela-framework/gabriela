@@ -49,7 +49,7 @@ module.exports = function _asServer(receivedConfig) {
         }
 
         return deepCopy(state);
-    };
+    }
 
     async function runPlugin(name) {
         if (name) return pluginTree.runPlugin(name, config, rootCompiler, sharedCompiler);
@@ -60,7 +60,7 @@ module.exports = function _asServer(receivedConfig) {
         for (const name of keys) {
             await pluginTree.runPlugin(plugins[name].name, config, rootCompiler, sharedCompiler);
         }
-    };
+    }
 
     const moduleInterface = {
         add: moduleTree.addModule,
@@ -88,13 +88,13 @@ module.exports = function _asServer(receivedConfig) {
         removeModule: moduleInterface.remove,
         hasModule: moduleInterface.has,
         getModules: moduleInterface.getAll,
-        runModule: runModule,
+        runModule,
         addPlugin: pluginInterface.add,
         getPlugin: pluginInterface.get,
         removePlugin: pluginInterface.remove,
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
-        runPlugin: runPlugin,
+        runPlugin,
 
         startApp(events) {
 
@@ -111,4 +111,4 @@ module.exports = function _asServer(receivedConfig) {
     };
 
     return publicInterface;
-}
+};

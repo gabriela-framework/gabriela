@@ -95,4 +95,4 @@ module.exports = function _asRunner(receivedConfig) {
     };
 
     return publicInterface;
-}
+};

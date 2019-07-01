@@ -15,7 +15,6 @@ module.exports = {
     "rules": {
         "accessor-pairs": ["error"],
         "block-scoped-var": ["error"],
-        "require-await": ["warn"],
         "for-direction": ["error"],
         "getter-return": ["warn"],
         "no-compare-neg-zero": ["error"],

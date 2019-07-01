@@ -42,7 +42,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     // if an error occurres, it must be the first argument of customArgs
     // in client code, the error has to be the first argument
     if (customArgs && customArgs.length > 0) {
-        args = [...args, ...customArgs]
+        args = [...args, ...customArgs];
     }
 
     if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {

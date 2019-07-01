@@ -5,7 +5,7 @@ const pluginFactory = require('./pluginFactory');
 
 const {is, hasKey} = require('../util/util');
 
-async function _runConstructedPlugin(pluginModel, config, rootCompiler, sharedCompiler) {
+async function _runConstructedPlugin(pluginModel, config) {
     const pluginRunner = PluginRunner.create(pluginModel);
 
     return await pluginRunner.run(config);

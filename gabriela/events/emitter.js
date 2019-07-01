@@ -47,7 +47,7 @@ function instance(moduleOrPlugin, config) {
 function factory(moduleOrPlugin, config) {
     this.create = function() {
         return new instance(moduleOrPlugin, config);
-    }
+    };
 }
 
 module.exports = new factory();
