@@ -136,6 +136,22 @@ factory.validatePlugin = function(plugin) {
         if (hasKey(plugin.mediator, 'onError')) {
             if (!is('function', plugin.mediator.onError)) throw new Error(`Invalid plugin definition. 'mediator.onError' must be a function`);
         }
+
+        const mediators = plugin.mediator;
+        const props = Object.keys(mediators);
+        const builtInMediators = [
+            'onPluginStarted',
+            'onPluginFinished',
+            'onError',
+        ];
+
+        for (const prop of props) {
+            if (!builtInMediators.includes(prop)) {
+                const fn = mediators[prop];
+
+                if (!is('function', fn)) throw new Error(`Invalid plugin definition. 'mediator.${prop}' must be a function`);
+            }
+        }
     }
 
     if (hasKey(plugin, 'plugins')) {
