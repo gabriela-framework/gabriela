@@ -186,31 +186,6 @@ describe('Failing framework events', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail if mediator in plugin has invalid onError event data type', () => {
-        const mdl = {
-            name: 'name',
-        };
-
-        const g = gabriela.asProcess();
-
-        let entersException = false;
-
-        try {
-            g.addPlugin({
-                name: 'plugin',
-                modules: [mdl],
-                mediator: {
-                    onError: null,
-                }
-            });
-        } catch (e) {
-            entersException = true;
-            expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onError' must be a function`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
-
     it('should fail if the mediator event value is not a function', () => {
         const mdl = {
             name: 'name',
