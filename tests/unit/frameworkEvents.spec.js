@@ -674,7 +674,7 @@ describe('Framework events', function() {
             moduleLogic: [function(throwException) {
                 throwException(new Error('Something went wrong'));
             }],
-        }
+        };
 
         const g = gabriela.asProcess();
 
@@ -683,5 +683,56 @@ describe('Framework events', function() {
         return g.runModule().then(() => {
             expect(onErrorCalled).to.be.equal(true);
         });
+    });
+
+    it('should run a batch of async events of a single event', (done) => {
+        // create a changeDetector (watcher) with onChange to watch for prop changes on batchesCalled
+        const changeDetector = (object, onChange) => {
+            const handler = {
+                get(target, property, receiver) {
+                    return target[property];
+                },
+                set(obj, prop, value) {
+                    obj[prop] = value;
+
+                    onChange.call(null, obj);
+                }
+            };
+
+            return new Proxy(object, handler);
+        };
+
+        const batchesCalled = changeDetector({num: 0}, function(obj) {
+            if (obj.num === 3) {
+                done();
+            }
+        });
+
+        const mdl = {
+            name: 'eventEmitterModule',
+            emitter: {
+                onRunJob: [
+                    function() {
+                        console.log('ulazak');
+                        batchesCalled.num = batchesCalled.num + 1;
+                    },
+                    function() {
+                        batchesCalled.num = batchesCalled.num + 1;
+                    },
+                    function() {
+                        batchesCalled.num = batchesCalled.num + 1;
+                    },
+                ],
+            },
+            moduleLogic: [function() {
+                this.emitter.emit('onRunJob');
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.runModule();
     });
 });

@@ -108,7 +108,11 @@ function _createModuleModel(mdl) {
         mediator: mdl.mediator,
         hasMediators() {
             return (mdl.mediator) ? true : false;
-        }
+        },
+        hasEmitters() {
+            return (mdl.emitter) ? true : false;
+        },
+        emitter: mdl.emitter,
     };
 }
 

@@ -11,7 +11,7 @@ const Compiler = require('../../gabriela/dependencyInjection/compiler');
 const Mediator = require('../../gabriela/events/mediator');
 
 describe('Test gabriela internals', () => {
-    it('should properly call properties on a module object create by moduleFactory', () => {
+    it('should properly call properties on a module object created by moduleFactory', () => {
         const allowedModuleProps = [
             'name',
             'security',
@@ -26,6 +26,8 @@ describe('Test gabriela internals', () => {
             'mediator',
             'isInPlugin',
             'hasMediators',
+            'hasEmitters',
+            'emitter',
         ];
 
         const mdl = {
@@ -44,6 +46,13 @@ describe('Test gabriela internals', () => {
                 onModuleFinished: () => {},
                 onError: () => {},
             },
+            emitter: {
+                onRunJob: [function() {
+
+                }, function() {
+
+                }],
+            }
         };
 
         const moduleObject = moduleFactory(mdl, {}, Compiler.create(), Compiler.create(), Compiler.create());
@@ -65,6 +74,8 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.dependencies).to.be.a('array');
         expect(moduleObject.hasMediators()).to.be.equal(true);
         expect(moduleObject.isInPlugin()).to.be.equal(true);
+        expect(moduleObject.hasEmitters()).to.be.equal(true);
+        expect(moduleObject.emitter).to.be.a('object');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {

@@ -1,6 +1,7 @@
-const {getArgs} = require('../util/util');
+const {getArgs, hasKey} = require('../util/util');
+const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 
-async function _callFn(fn, moduleOrPlugin, args, config) {
+function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {
         if (arg.value instanceof Error) {
             return arg.value;
@@ -32,7 +33,11 @@ function instance(moduleOrPlugin, config) {
         const fns = subscribers[name];
 
         for (const fn of fns) {
-            _callFn(fn, moduleOrPlugin, getArgs(fn), config);
+            new Promise((resolve) => {
+                _callFn(fn, moduleOrPlugin, getArgs(fn), config);
+
+                resolve();
+            });
         }
     }
 

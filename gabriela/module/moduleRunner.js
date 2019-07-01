@@ -18,6 +18,18 @@ function _assignMediatorEvents(mdl, mediator, excludes) {
     }
 }
 
+function _assignEmitterEvents(mdl, emitter) {
+    if (mdl.hasEmitters()) {
+        const subscribers = mdl.emitter;
+
+        const props = Object.keys(subscribers);
+
+        for (const name of props) {
+            emitter.add(name, subscribers[name]);
+        }
+    }
+}
+
 function _createContext({mediator, emitter}) {
     return {
         mediator,
@@ -41,6 +53,8 @@ function factory() {
                     'onModuleFinished',
                     'onError',
                 ]);
+
+                _assignEmitterEvents(mdl, emitter);
 
                 const context = _createContext({
                     mediator,

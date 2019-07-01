@@ -57,7 +57,7 @@ function Server(
         }
 
         serverInstance = native.http.listen(opts.port, listenCallback.bind(
-            this, 
+            this,
             opts,
             events,
             rootCompiler,
