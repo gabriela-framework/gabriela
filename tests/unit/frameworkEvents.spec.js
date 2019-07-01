@@ -713,7 +713,6 @@ describe('Framework events', function() {
             emitter: {
                 onRunJob: [
                     function() {
-                        console.log('ulazak');
                         batchesCalled.num = batchesCalled.num + 1;
                     },
                     function() {
@@ -726,6 +725,83 @@ describe('Framework events', function() {
             },
             moduleLogic: [function() {
                 this.emitter.emit('onRunJob');
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.runModule();
+    });
+
+    it('should run a batch of async event of multiple emitters', (done) => {
+        const changeDetector = (object, onChange) => {
+            const handler = {
+                get(target, property, receiver) {
+                    return target[property];
+                },
+                set(obj, prop, value) {
+                    obj[prop] = value;
+
+                    onChange.call(null, obj);
+                }
+            };
+
+            return new Proxy(object, handler);
+        };
+
+        let oneFinished = false;
+
+        const onRun1 = changeDetector({num: 0}, function(obj) {
+            if (obj.num === 3 && oneFinished) {
+                done();
+            }
+
+            if (obj.num === 3 && !oneFinished) {
+                oneFinished = true;
+            }
+        });
+
+        const onRun2 = changeDetector({num: 0}, function(obj) {
+            if (obj.num === 3 && oneFinished) {
+                done();
+            }
+
+            if (obj.num === 3 && !oneFinished) {
+                oneFinished = true;
+            }
+        });
+
+        const mdl = {
+            name: 'eventEmitterModule',
+            emitter: {
+                onRun1: [
+                    function() {
+                        onRun1.num = onRun1.num + 1;
+                    },
+                    function() {
+                        onRun1.num = onRun1.num + 1;
+                    },
+                    function() {
+                        onRun1.num = onRun1.num + 1;
+                    },
+                ],
+                onRun2: [
+                    function() {
+                        onRun2.num = onRun2.num + 1;
+                    },
+                    function() {
+                        onRun2.num = onRun2.num + 1;
+                    },
+                    function() {
+                        onRun2.num = onRun2.num + 1;
+                    },
+                ],
+            },
+            moduleLogic: [function() {
+                this.emitter.emit('onRun1');
+                this.emitter.emit('onRun2');
             }],
         };
 
