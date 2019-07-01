@@ -4,14 +4,10 @@ const taskRunnerFactory = require('../misc/taskRunner');
 const {asyncFlowTypes} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 const resolveDependencies = require('../dependencyInjection/resolveDependencies');
-const {getArgs, inArray, hasKey} = require('../util/util');
+const {getArgs, inArray, hasKey, is} = require('../util/util');
 
 function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {
-        if (arg.value instanceof Error) {
-            return arg.value;
-        }
-
         const dep = resolveDependencies(
             moduleOrPlugin.compiler,
             moduleOrPlugin.sharedCompiler,
@@ -41,8 +37,16 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 
     // if an error occurres, it must be the first argument of customArgs
     // in client code, the error has to be the first argument
-    if (customArgs && customArgs.length > 0) {
-        args = [...args, ...customArgs];
+    if (customArgs && is('object', customArgs)) {
+        for (const name in customArgs) {
+            if (hasKey(customArgs, name)) {
+                for (const arg of args) {
+                    if (arg.name === name) arg.value = customArgs[name];
+                }
+            }
+        }
+
+        args = [...args];
     }
 
     if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {

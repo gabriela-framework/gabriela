@@ -685,6 +685,49 @@ describe('Framework events', function() {
         });
     });
 
+    it('should pass custom arguments along with dependency injected arguments to mediator event', () => {
+        let mediatorCalled = false;
+
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const mdl = {
+            name: 'errorModule',
+            dependencies: [userServiceDefinition],
+            mediator: {
+                onMediatorEvent(userService, customArg, aString, someObject) {
+                    mediatorCalled = true;
+
+                    expect(userService).to.be.a('object');
+                    expect(customArg).to.be.equal(5);
+                    expect(aString).to.be.equal('string');
+                    expect(someObject).to.be.a('object');
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.mediate('onMediatorEvent', {
+                    customArg: 5,
+                    aString: 'string',
+                    someObject: {},
+                })
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.runModule().then(() => {
+            expect(mediatorCalled).to.be.equal(true);
+        })
+    });
+
     it('should run a batch of async events of a single event in a module context', (done) => {
         // create a changeDetector (watcher) with onChange to watch for prop changes on batchesCalled
         const changeDetector = (object, onChange) => {
