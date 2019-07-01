@@ -34,11 +34,16 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addModule(mdl);
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid module definition. 'mediator' property must be an object`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator has invalid onModuleStarted event data type', () => {
@@ -51,11 +56,16 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addModule(mdl);
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onModuleStarted' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator has invalid onModuleFinished event data type', () => {
@@ -68,11 +78,16 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addModule(mdl);
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onModuleFinished' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator has invalid onError event data type', () => {
@@ -85,11 +100,16 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addModule(mdl);
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onError' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator in plugin is not a valid data type', () => {
@@ -99,6 +119,7 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addPlugin({
                 name: 'plugin',
@@ -106,8 +127,12 @@ describe('Failing framework events', () => {
                 mediator: null,
             });
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator' property must be an object`);
         }
+
+        entersException = false;
     });
 
     it('should fail if mediator in plugin has invalid onPluginStarted event data type', () => {
@@ -117,6 +142,7 @@ describe('Failing framework events', () => {
 
         const g = gabriela.asProcess();
 
+        let entersException = false;
         try {
             g.addPlugin({
                 name: 'name',
@@ -126,8 +152,12 @@ describe('Failing framework events', () => {
                 }
             });
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onPluginStarted' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator in plugin has invalid onPluginFinished event data type', () => {
@@ -136,6 +166,8 @@ describe('Failing framework events', () => {
         };
 
         const g = gabriela.asProcess();
+
+        let entersException = false;
 
         try {
             g.addPlugin({
@@ -146,8 +178,12 @@ describe('Failing framework events', () => {
                 }
             });
         } catch (e) {
+            entersException = true;
+
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onPluginFinished' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if mediator in plugin has invalid onError event data type', () => {
@@ -156,6 +192,8 @@ describe('Failing framework events', () => {
         };
 
         const g = gabriela.asProcess();
+
+        let entersException = false;
 
         try {
             g.addPlugin({
@@ -166,8 +204,11 @@ describe('Failing framework events', () => {
                 }
             });
         } catch (e) {
+            entersException = true;
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onError' must be a function`);
         }
+
+        expect(entersException).to.be.equal(true);
     });
 
     it('should fail if the mediator event value is not a function', () => {
