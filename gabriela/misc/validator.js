@@ -84,6 +84,22 @@ factory.moduleValidator = function(mdl) {
         if (hasKey('onError', mdl.mediator)) {
             if (!is('function', mdl.mediator.onError)) throw new Error(`Invalid module definition. 'mediator.onError' must be a function`);
         }
+
+        const mediators = mdl.mediator;
+        const props = Object.keys(mediators);
+        const builtInMediators = [
+            'onModuleStarted',
+            'onModuleFinished',
+            'onError',
+        ];
+
+        for (const prop of props) {
+            if (!builtInMediators.includes(prop)) {
+                const fn = mediators[prop];
+
+                if (!is('function', fn)) throw new Error(`Invalid module definition. 'mediator.${prop}' must be a function`);
+            }
+        }
     }
 
     validateDependencies(mdl);

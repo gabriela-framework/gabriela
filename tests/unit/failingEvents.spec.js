@@ -169,4 +169,26 @@ describe('Failing framework events', () => {
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onError' must be a function`);
         }
     });
+
+    it('should fail if the mediator event value is not a function', () => {
+        const mdl = {
+            name: 'name',
+            mediator: {
+                onEvent: null,
+            },
+        };
+
+        const g = gabriela.asProcess();
+
+        let entersException = false;
+        try {
+            g.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onEvent' must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
