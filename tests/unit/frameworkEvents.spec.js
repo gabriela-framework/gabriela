@@ -685,7 +685,7 @@ describe('Framework events', function() {
         });
     });
 
-    it('should run a batch of async events of a single event', (done) => {
+    it('should run a batch of async events of a single event in a module context', (done) => {
         // create a changeDetector (watcher) with onChange to watch for prop changes on batchesCalled
         const changeDetector = (object, onChange) => {
             const handler = {
@@ -735,7 +735,7 @@ describe('Framework events', function() {
         g.runModule();
     });
 
-    it('should run a batch of async event of multiple emitters', (done) => {
+    it('should run a batch of async event of multiple emitters in a module context', (done) => {
         const changeDetector = (object, onChange) => {
             const handler = {
                 get(target, property, receiver) {
