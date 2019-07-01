@@ -7,9 +7,10 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
+const Emitter = require('../../gabriela/events/emitter');
 
 describe('Failing framework events', () => {
-    it('a concrete mediator should fail if an event that already exist is added', () => {
+    it('a concrete mediator should fail if an event that already exists is added', () => {
         const mediator = Mediator.create(null, null);
 
         mediator.add('event1', () => {});
@@ -21,6 +22,23 @@ describe('Failing framework events', () => {
             entersException = true;
 
             expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'event1' already exist`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('a concrete mediator should fail if an event that already exists is added', () => {
+        const emitter = Emitter.create(null, null);
+
+        emitter.add('event1', () => {});
+
+        let entersException = false;
+        try {
+            emitter.add('event1', () => {});
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid emitter event. Emitter with name 'event1' already exist`)
         }
 
         expect(entersException).to.be.equal(true);
