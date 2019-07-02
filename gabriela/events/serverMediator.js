@@ -12,8 +12,8 @@ function _callFn(fn, rootCompiler, args, context) {
     fn.call((context) ? context : null, ...resolvedArgs);
 }
 
-function instance() {
-    function callEvent(fn, rootCompiler, context) {        
+function instance(rootCompiler) {
+    function callEvent(fn, context) {
         const args = getArgs(fn);
 
         _callFn(fn, rootCompiler, args, context);
@@ -23,8 +23,8 @@ function instance() {
 }
 
 function factory() {
-    this.create = function() {
-        return new instance();
+    this.create = function(rootCompiler) {
+        return new instance(rootCompiler);
     };
 }
 

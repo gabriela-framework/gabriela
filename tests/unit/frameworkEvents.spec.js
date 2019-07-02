@@ -10,9 +10,39 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
+const ServerMediator = require('../../gabriela/events/serverMediator');
+const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Framework events', function() {
     this.timeout(10000);
+
+    it('a server mediator event should execute an fn', () => {
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            },
+        };
+        const rootCompiler = Compiler.create();
+        rootCompiler.add(userServiceDefinition);
+
+        const serverMediator = ServerMediator.create(rootCompiler);
+
+        const context = {name: 'thisContext'};
+
+        let called = false;
+        serverMediator.callEvent(function(userService) {
+            called = true;
+
+            expect(userService).to.be.a('object');
+            expect(this).to.have.property('name');
+            expect(this.name).to.be.equal('thisContext');
+        }, context);
+
+        expect(called).to.be.equal(true);
+    });
 
     it('should validate that the mediator interface is working as expected', () => {
         const mediator = Mediator.create(null, null);

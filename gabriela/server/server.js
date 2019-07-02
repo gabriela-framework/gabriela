@@ -15,9 +15,9 @@ async function listenCallback(
     await moduleInterface.run();
 
     if (events && events.onAppStarted) {
-        const mediator = ServerMediator.create();
+        const mediator = ServerMediator.create(rootCompiler);
 
-        mediator.callEvent(events.onAppStarted, rootCompiler, {
+        mediator.callEvent(events.onAppStarted, {
             server: this,
         });
     }
