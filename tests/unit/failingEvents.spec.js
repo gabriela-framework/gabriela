@@ -8,8 +8,27 @@ const expect = chai.expect;
 const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
 const Emitter = require('../../gabriela/events/emitter');
+const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const ServerMediator = require('../../gabriela/events/serverMediator');
 
 describe('Failing framework events', () => {
+    it('a concrete server mediator should fail to compile a dependency if it does not exist', () => {
+        const rootCompiler = Compiler.create();
+
+        const serverMediator = ServerMediator.create(rootCompiler);
+
+        const context = {name: 'thisContext'};
+
+        let enteredException = false;
+        try {
+            serverMediator.callEvent(function(userService) {}, context);
+        } catch (e) {
+            enteredException = true;
+        }
+
+        expect(enteredException).to.be.equal(true);
+    });
+
     it('a concrete mediator should fail if an event that already exists is added', () => {
         const mediator = Mediator.create(null, null);
 
