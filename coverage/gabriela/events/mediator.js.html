@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">98.18% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>54/55</span>
+        <span class='fraction'>47/47</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">85% </span>
+        <span class="strong">92.86% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>17/20</span>
+        <span class='fraction'>13/14</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>12/12</span>
+        <span class='fraction'>10/10</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>50/50</span>
+        <span class='fraction'>44/44</span>
       </div>
     </div>
     <p class="quiet">
@@ -143,55 +143,13 @@
 <a name='L95'></a><a href='#L95'>95</a>
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
-<a name='L98'></a><a href='#L98'>98</a>
-<a name='L99'></a><a href='#L99'>99</a>
-<a name='L100'></a><a href='#L100'>100</a>
-<a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a>
-<a name='L103'></a><a href='#L103'>103</a>
-<a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a>
-<a name='L108'></a><a href='#L108'>108</a>
-<a name='L109'></a><a href='#L109'>109</a>
-<a name='L110'></a><a href='#L110'>110</a>
-<a name='L111'></a><a href='#L111'>111</a>
-<a name='L112'></a><a href='#L112'>112</a>
-<a name='L113'></a><a href='#L113'>113</a>
-<a name='L114'></a><a href='#L114'>114</a>
-<a name='L115'></a><a href='#L115'>115</a>
-<a name='L116'></a><a href='#L116'>116</a>
-<a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a>
-<a name='L119'></a><a href='#L119'>119</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
@@ -224,7 +182,7 @@
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">559x</span>
+<span class="cline-any cline-yes">493x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
@@ -287,29 +245,8 @@
 const taskRunnerFactory = require('../misc/taskRunner');
 const {asyncFlowTypes} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
-const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 const {getArgs, inArray, hasKey, is} = require('../util/util');
-&nbsp;
-function _callFn(fn, moduleOrPlugin, args, config) {
-    const resolvedArgs = args.map((arg) =&gt; {
-        const dep = resolveDependencies(
-            moduleOrPlugin.compiler,
-            moduleOrPlugin.sharedCompiler,
-            arg.name,
-            config,
-            moduleOrPlugin.name,
-            (hasKey('plugin', moduleOrPlugin)) ? <span class="branch-0 cbranch-no" title="branch not covered" >moduleOrPlugin.plugin </span>: null
-        );
-&nbsp;
-        if (dep) return dep;
-&nbsp;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (!arg.value) <span class="cstat-no" title="statement not covered" >throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);</span>
-&nbsp;
-        return arg.value;
-    });
-&nbsp;
-    fn.call(null, ...resolvedArgs);
-}
+const _callFn = require('./_callFn');
 &nbsp;
 function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     const taskRunner = taskRunnerFactory.create();
@@ -360,7 +297,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 function instance(moduleOrPlugin, config) {
     const mediations = {};
 &nbsp;
-    function mediate(name, customArgs) {
+    function emit(name, customArgs) {
         const fn = mediations[name];
 &nbsp;
         _callEvent(fn, moduleOrPlugin, config, customArgs);
@@ -387,7 +324,7 @@ function instance(moduleOrPlugin, config) {
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
 &nbsp;
-    this.mediate = mediate;
+    this.emit = emit;
     this.has = has;
     this.add = add;
     this.once = once;
@@ -406,7 +343,7 @@ module.exports = new factory();</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Mon Jul 01 2019 22:09:46 GMT+0000 (Coordinated Universal Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Jul 02 2019 20:47:11 GMT+0000 (Coordinated Universal Time)
 </div>
 </div>
 <script src="../../prettify.js"></script>
