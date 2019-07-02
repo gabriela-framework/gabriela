@@ -45,13 +45,23 @@ module.exports = function _asRunner(receivedConfig) {
     };
 
     const runPlugin = async function(name) {
-        if (name) return pluginTree.runPlugin(name, config, rootCompiler, sharedCompiler);
+        if (name) return pluginTree.runPlugin(
+            name,
+            config,
+            rootCompiler,
+            sharedCompiler
+        );
 
         const plugins = this.getPlugins();
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
-            await pluginTree.runPlugin(plugins[name].name, config, rootCompiler, sharedCompiler);
+            await pluginTree.runPlugin(
+                plugins[name].name,
+                config,
+                rootCompiler,
+                sharedCompiler
+            );
         }
     };
 

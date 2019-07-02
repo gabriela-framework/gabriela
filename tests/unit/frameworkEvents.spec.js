@@ -380,7 +380,7 @@ describe('Framework events', function() {
                 }
             },
             moduleLogic: [function() {
-                this.mediator.mediate('customMediator');
+                this.mediator.emit('customMediator');
             }],
         };
 
@@ -415,7 +415,7 @@ describe('Framework events', function() {
                 }
             },
             moduleLogic: [function() {
-                this.mediator.mediate('customMediator');
+                this.mediator.emit('customMediator');
             }],
             dependencies: [userServiceInit],
         };
@@ -741,7 +741,7 @@ describe('Framework events', function() {
                 }
             },
             moduleLogic: [function() {
-                this.mediator.mediate('onMediatorEvent', {
+                this.mediator.emit('onMediatorEvent', {
                     customArg: 5,
                     aString: 'string',
                     someObject: {},

@@ -115,7 +115,7 @@ describe('Test gabriela internals', () => {
     });
 
     it('should determine that mediator interface has not changed', () => {
-        const allowed = ['mediate', 'has', 'add', 'once', 'runOnError'];
+        const allowed = ['emit', 'has', 'add', 'once', 'runOnError'];
 
         // the mediator can me created without module or plugin and config but that will 
         // not happen(?!) in the application
@@ -125,7 +125,7 @@ describe('Test gabriela internals', () => {
 
         expect(allowed).to.have.members(props);
 
-        expect(mediator.mediate).to.be.a('function');
+        expect(mediator.emit).to.be.a('function');
         expect(mediator.add).to.be.a('function');
         expect(mediator.has).to.be.a('function');
         expect(mediator.once).to.be.a('function');

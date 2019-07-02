@@ -55,7 +55,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 function instance(moduleOrPlugin, config) {
     const mediations = {};
 
-    function mediate(name, customArgs) {
+    function emit(name, customArgs) {
         const fn = mediations[name];
 
         _callEvent(fn, moduleOrPlugin, config, customArgs);
@@ -82,7 +82,7 @@ function instance(moduleOrPlugin, config) {
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }
 
-    this.mediate = mediate;
+    this.emit = emit;
     this.has = has;
     this.add = add;
     this.once = once;
