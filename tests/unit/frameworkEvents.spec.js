@@ -884,4 +884,99 @@ describe('Framework events', function() {
 
         g.runModule();
     });
+
+    it('should run a batch of async event of multiple emitters in a module context and with custom arguments', (done) => {
+        const changeDetector = (object, onChange) => {
+            const handler = {
+                get(target, property, receiver) {
+                    return target[property];
+                },
+                set(obj, prop, value) {
+                    obj[prop] = value;
+
+                    onChange.call(null, obj);
+                }
+            };
+
+            return new Proxy(object, handler);
+        };
+
+        let oneFinished = false;
+
+        const onRun1 = changeDetector({num: 0}, function(obj) {
+            if (obj.num === 3 && oneFinished) {
+                done();
+            }
+
+            if (obj.num === 3 && !oneFinished) {
+                oneFinished = true;
+            }
+        });
+
+        const onRun2 = changeDetector({num: 0}, function(obj) {
+            if (obj.num === 3 && oneFinished) {
+                done();
+            }
+
+            if (obj.num === 3 && !oneFinished) {
+                oneFinished = true;
+            }
+        });
+
+        const mdl = {
+            name: 'eventEmitterModule',
+            emitter: {
+                onRun1: [
+                    function(num, aString) {
+                        onRun1.num = onRun1.num + 1;
+
+                        expect(num).to.be.equal(5);
+                        expect(aString).to.be.equal('string');
+                    },
+                    function(num, aString) {
+                        onRun1.num = onRun1.num + 1;
+
+                        expect(num).to.be.equal(5);
+                        expect(aString).to.be.equal('string');
+                    },
+                    function(num, aString) {
+                        onRun1.num = onRun1.num + 1;
+
+                        expect(num).to.be.equal(5);
+                        expect(aString).to.be.equal('string');
+                    },
+                ],
+                onRun2: [
+                    function(num, aString) {
+                        onRun2.num = onRun2.num + 1;
+
+                        expect(num).to.be.equal(7);
+                        expect(aString).to.be.equal('aString');
+                    },
+                    function(num, aString) {
+                        onRun2.num = onRun2.num + 1;
+
+                        expect(num).to.be.equal(7);
+                        expect(aString).to.be.equal('aString');
+                    },
+                    function(num, aString) {
+                        onRun2.num = onRun2.num + 1;
+
+                        expect(num).to.be.equal(7);
+                        expect(aString).to.be.equal('aString');
+                    },
+                ],
+            },
+            moduleLogic: [function() {
+                this.emitter.emit('onRun1', {num: 5, aString: 'string'});
+                this.emitter.emit('onRun2', {num: 7, aString: 'aString'});
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.runModule();
+    });
 });

@@ -1,18 +1,36 @@
-const {getArgs, hasKey} = require('../util/util');
+const {getArgs, hasKey, is} = require('../util/util');
 const _callFn = require('./_callFn');
+
+function _sendEvent(fn, moduleOrPlugin, config, customArgs) {
+    new Promise((resolve) => {
+        let args = getArgs(fn);
+
+        if (customArgs && is('object', customArgs)) {
+            for (const name in customArgs) {
+                if (hasKey(customArgs, name)) {
+                    for (const arg of args) {
+                        if (arg.name === name) arg.value = customArgs[name];
+                    }
+                }
+            }
+
+            args = [...args];
+        }
+
+        _callFn(fn, moduleOrPlugin, args, config);
+
+        resolve();
+    });
+}
 
 function instance(moduleOrPlugin, config) {
     const subscribers = {};
 
-    function emit(name) {
+    function emit(name, customArgs) {
         const fns = subscribers[name];
 
         for (const fn of fns) {
-            new Promise((resolve) => {
-                _callFn(fn, moduleOrPlugin, getArgs(fn), config);
-
-                resolve();
-            });
+            _sendEvent(fn, moduleOrPlugin, config, customArgs);
         }
     }
 
@@ -26,8 +44,8 @@ function instance(moduleOrPlugin, config) {
     this.add = add;
 }
 
-function factory(moduleOrPlugin, config) {
-    this.create = function() {
+function factory() {
+    this.create = function(moduleOrPlugin, config) {
         return new instance(moduleOrPlugin, config);
     };
 }
