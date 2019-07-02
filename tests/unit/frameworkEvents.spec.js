@@ -886,6 +886,15 @@ describe('Framework events', function() {
     });
 
     it('should run a batch of async event of multiple emitters in a module context and with custom arguments', (done) => {
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
         const changeDetector = (object, onChange) => {
             const handler = {
                 get(target, property, receiver) {
@@ -925,6 +934,7 @@ describe('Framework events', function() {
 
         const mdl = {
             name: 'eventEmitterModule',
+            dependencies: [userServiceDefinition],
             emitter: {
                 onRun1: [
                     function(num, aString) {
@@ -933,14 +943,18 @@ describe('Framework events', function() {
                         expect(num).to.be.equal(5);
                         expect(aString).to.be.equal('string');
                     },
-                    function(num, aString) {
+                    function(num, aString, userService) {
                         onRun1.num = onRun1.num + 1;
+
+                        expect(userService).to.be.a('object');
 
                         expect(num).to.be.equal(5);
                         expect(aString).to.be.equal('string');
                     },
-                    function(num, aString) {
+                    function(num, aString, userService) {
                         onRun1.num = onRun1.num + 1;
+
+                        expect(userService).to.be.a('object');
 
                         expect(num).to.be.equal(5);
                         expect(aString).to.be.equal('string');
@@ -953,14 +967,18 @@ describe('Framework events', function() {
                         expect(num).to.be.equal(7);
                         expect(aString).to.be.equal('aString');
                     },
-                    function(num, aString) {
+                    function(num, aString, userService) {
                         onRun2.num = onRun2.num + 1;
+
+                        expect(userService).to.be.a('object');
 
                         expect(num).to.be.equal(7);
                         expect(aString).to.be.equal('aString');
                     },
-                    function(num, aString) {
+                    function(num, aString, userService) {
                         onRun2.num = onRun2.num + 1;
+
+                        expect(userService).to.be.a('object');
 
                         expect(num).to.be.equal(7);
                         expect(aString).to.be.equal('aString');
