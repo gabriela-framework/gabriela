@@ -18,6 +18,7 @@ function instance(moduleOrPlugin, config) {
 
     function add(name, fn) {
         if (hasKey(subscribers, name)) throw new Error(`Invalid emitter event. Emitter with name '${name}' already exist`);
+
         subscribers[name] = fn;
     }
 
