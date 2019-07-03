@@ -20,4 +20,4 @@ module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
     });
 
     fn.call(null, ...resolvedArgs);
-}
+};
