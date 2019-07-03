@@ -1,7 +1,6 @@
 const {hasKey} = require('../util/util');
-const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 
-function _callFn(compiler, args) {
+function _callFn(fn, compiler, args) {
     const resolvedArgs = args.map((arg) => {
         let dep;
 
@@ -19,8 +18,34 @@ function _callFn(compiler, args) {
     fn.call(null, ...resolvedArgs);
 }
 
-function factory(compiler) {
+function _callEvent(fn, compiler, customArgs) {
+    let args = getArgs(fn);
+
+    // if an error occurres, it must be the first argument of customArgs
+    // in client code, the error has to be the first argument
+    if (customArgs && is('object', customArgs)) {
+        for (const name in customArgs) {
+            if (hasKey(customArgs, name)) {
+                for (const arg of args) {
+                    if (arg.name === name) arg.value = customArgs[name];
+                }
+            }
+        }
+
+        args = [...args];
+    }
+
+    _callFn(fn, compiler, args);
+}
+
+function factory() {
     const definitions = {};
+    
+    function emit(name, customArgs, compiler) {
+        if (!hasKey(definitions, name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' does not exist`);
+
+        _callEvent(definitions[name], compiler, customArgs);
+    }
 
     function add(definition) {
         definitions[definition.name] = definition;
@@ -30,10 +55,7 @@ function factory(compiler) {
         return hasKey(definitions, name);
     }
 
-    function once(name) {
-
-    }
-
+    this.emit = emit;
     this.add = add;
     this.has = has;
 }

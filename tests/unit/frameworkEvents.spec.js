@@ -808,7 +808,7 @@ describe('Framework events', function() {
                 function UserService() {}
 
                 return new UserService();
-            }
+            },
         };
 
         const mdl = {
