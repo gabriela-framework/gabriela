@@ -20,7 +20,7 @@ function _replaceModules(plugin, config) {
         for (const mdl of modules) {
             mdl.plugin = {
                 name: plugin.name,
-                mediator: plugin.mediator,
+                mediatorInstance: plugin.mediatorInstance,
             };
 
             factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));

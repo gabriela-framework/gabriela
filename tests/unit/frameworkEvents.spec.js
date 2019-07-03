@@ -759,6 +759,46 @@ describe('Framework events', function() {
         });
     });
 
+    it('should propagate the mediator event from module to plugin if not exist in module', () => {
+        let pluginEventCalled = false;
+
+        const userServiceDefinition = {
+            name: 'userService',
+            scope: 'plugin',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const mdl = {
+            name: 'errorModule',
+            dependencies: [userServiceDefinition],
+            moduleLogic: [function() {
+                this.mediator.emit('onPluginEvent');
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addPlugin({
+            name: 'plugin',
+            mediator: {
+                onPluginEvent: function(userService) {
+                    pluginEventCalled = true;
+
+                    expect(userService).to.be.a('object');
+                }
+            },
+            modules: [mdl],
+        });
+
+        g.runPlugin().then(() => {
+            expect(pluginEventCalled).to.be.equal(true);
+        });
+    });
+
     it('should pass custom arguments along with dependency injected arguments to mediator event', () => {
         let mediatorCalled = false;
 

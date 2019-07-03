@@ -56,6 +56,8 @@ function instance(moduleOrPlugin, config) {
     const mediations = {};
 
     function emit(name, customArgs) {
+        if (!hasKey(mediations, name)) throw new Error(`Invalid mediator event. Mediator with name '${name}' does not exist in module or plugin '${moduleOrPlugin.name}'`);
+
         const fn = mediations[name];
 
         _callEvent(fn, moduleOrPlugin, config, customArgs);

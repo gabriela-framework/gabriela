@@ -1,11 +1,31 @@
 const ModuleTree = require('../module/moduleTree');
 const callEvent = require('../events/callEvent');
 
+function _assignMediatorEvents(plugin, excludes) {
+    if (plugin.hasMediators()) {
+        const mediators = plugin.mediator;
+
+        const props = Object.keys(mediators);
+
+        for (const name of props) {
+            if (!excludes.includes(name)) {
+                plugin.mediatorInstance.add(name, mediators[name]);
+            }
+        }
+    }
+}
+
 function factory() {
     function create(plugin) {
         const moduleTree = new ModuleTree();
 
         async function run(config) {
+            _assignMediatorEvents(plugin, [
+                'onPluginStarted',
+                'onPluginFinished',
+                'onError',
+            ]);
+
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
             if (plugin.modules && plugin.modules.length > 0) {
