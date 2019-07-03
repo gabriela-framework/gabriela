@@ -43,5 +43,37 @@ describe('Exposed (third party) events tests', () => {
 
         expect(exposedEvents.has(onEmailInvalidEvent.name)).to.be.equal(true);
         expect(exposedEvents.has(onNameInvalidEvent.name)).to.be.equal(true);
+
+        const compiler = Compiler.create();
+
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        compiler.add(userServiceDefinition);
+
+        let eventCalled = false;
+        const eventDefinition = {
+            name: 'event',
+            init: function(userService, num, aString) {
+                eventCalled = true;
+
+                expect(userService).to.be.a('object');
+                expect(num).to.be.equal(5);
+                expect(aString).to.be.equal('string');
+            }
+        };
+
+        exposedEvents.add(eventDefinition);
+
+        exposedEvents.emit('event', compiler, {
+            num: 5,
+            aString: 'string',
+        });
     });
 });

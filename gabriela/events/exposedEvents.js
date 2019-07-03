@@ -1,11 +1,11 @@
-const {hasKey} = require('../util/util');
+const {hasKey, getArgs, is} = require('../util/util');
 
 function _callFn(fn, compiler, args) {
     const resolvedArgs = args.map((arg) => {
         let dep;
 
         if (compiler.has(arg.name)) {
-            dep = compiler.compile(name, compiler);
+            dep = compiler.compile(arg.name, compiler);
         }
 
         if (dep) return dep;
@@ -41,10 +41,10 @@ function _callEvent(fn, compiler, customArgs) {
 function factory() {
     const definitions = {};
 
-    function emit(name, customArgs, compiler) {
+    function emit(name, compiler, customArgs) {
         if (!hasKey(definitions, name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' does not exist`);
 
-        _callEvent(definitions[name], compiler, customArgs);
+        _callEvent(definitions[name].init, compiler, customArgs);
     }
 
     function add(definition) {
