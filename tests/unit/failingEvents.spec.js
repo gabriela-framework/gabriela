@@ -317,4 +317,60 @@ describe('Failing framework events', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should throw an error if a service in emitted exposed event does not exist', () => {
+        const exposedEvents = new ExposedEvents();
+        const compiler = Compiler.create();
+
+        let eventCalled = false;
+        const eventDefinition = {
+            name: 'event',
+            init: function(userService) {
+                eventCalled = true;
+            }
+        };
+
+        exposedEvents.add(eventDefinition);
+
+        let entersException = false;
+        try {
+            exposedEvents.emit('event', compiler, {
+                num: 5,
+                aString: 'string',
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'userService'`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should throw an error if a custom argument cannot be resolved in a emitted exposed event', () => {
+        const exposedEvents = new ExposedEvents();
+
+        let eventCalled = false;
+        const eventDefinition = {
+            name: 'event',
+            init: function(num, aString) {
+                eventCalled = true;
+            }
+        };
+
+        exposedEvents.add(eventDefinition);
+
+        let entersException = false;
+        try {
+            exposedEvents.emit('event', Compiler.create(), {
+                num: 5,
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'aString'`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
