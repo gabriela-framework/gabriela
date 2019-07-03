@@ -1,6 +1,7 @@
 const Compiler = require('../dependencyInjection/compiler');
 const parseExpression = require('../expression/parse');
-
+const Mediator = require('../events/mediator');
+const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
 
 function _addDependencies(mdl) {
@@ -116,17 +117,24 @@ function _createModuleModel(mdl) {
     };
 }
 
+function _bindEventSystem(moduleObject, config) {
+    moduleObject.mediatorInstance = Mediator.create(moduleObject, config);
+    moduleObject.emitterInstance = Emitter.create(moduleObject, config);
+}
+
 /**
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
 function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler) {
-    const moduleObject = _createModuleModel(mdl);
+    const moduleObject = _createModuleModel(mdl, config);
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
     _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(moduleObject, config);
+
+    _bindEventSystem(moduleObject, config);
 
     return moduleObject;
 }

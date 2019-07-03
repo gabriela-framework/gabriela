@@ -23,6 +23,8 @@ describe('Test gabriela internals', () => {
             'sharedCompiler',
             'plugin',
             'dependencies',
+            'mediatorInstance',
+            'emitterInstance',
             'mediator',
             'isInPlugin',
             'hasMediators',
@@ -72,6 +74,8 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.sharedCompiler).to.be.a('object');
         expect(moduleObject.plugin).to.have.property('name');
         expect(moduleObject.dependencies).to.be.a('array');
+        expect(moduleObject.mediatorInstance).to.be.a('object');
+        expect(moduleObject.emitterInstance).to.be.a('object');
         expect(moduleObject.hasMediators()).to.be.equal(true);
         expect(moduleObject.isInPlugin()).to.be.equal(true);
         expect(moduleObject.hasEmitters()).to.be.equal(true);
