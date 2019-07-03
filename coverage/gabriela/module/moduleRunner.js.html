@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">91.67% </span>
+        <span class="strong">91.11% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>44/48</span>
+        <span class='fraction'>41/45</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">70% </span>
+        <span class="strong">75% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>14/20</span>
+        <span class='fraction'>15/20</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>9/9</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">95.56% </span>
+        <span class="strong">95.24% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>43/45</span>
+        <span class='fraction'>40/42</span>
       </div>
     </div>
     <p class="quiet">
@@ -158,12 +158,7 @@
 <a name='L110'></a><a href='#L110'>110</a>
 <a name='L111'></a><a href='#L111'>111</a>
 <a name='L112'></a><a href='#L112'>112</a>
-<a name='L113'></a><a href='#L113'>113</a>
-<a name='L114'></a><a href='#L114'>114</a>
-<a name='L115'></a><a href='#L115'>115</a>
-<a name='L116'></a><a href='#L116'>116</a>
-<a name='L117'></a><a href='#L117'>117</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L113'></a><a href='#L113'>113</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -176,7 +171,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -207,9 +202,6 @@
 <span class="cline-any cline-yes">129x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">129x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">129x</span>
 <span class="cline-any cline-yes">129x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">129x</span>
@@ -280,32 +272,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const mediatorFactory = require('../events/mediator');
 const emitterFactory = require('../events/emitter');
 const callEvent = require('../events/callEvent');
 &nbsp;
-function _assignMediatorEvents(mdl, mediator, excludes) {
+function _assignMediatorEvents(mdl, excludes) {
     if (mdl.hasMediators()) {
         const mediators = mdl.mediator;
 &nbsp;
         const props = Object.keys(mediators);
 &nbsp;
         for (const name of props) {
-            <span class="missing-if-branch" title="else path not taken" >E</span>if (!excludes.includes(mediator)) {
-                mediator.add(name, mediators[name]);
+            if (!excludes.includes(name)) {
+                mdl.mediatorInstance.add(name, mediators[name]);
             }
         }
     }
 }
 &nbsp;
-function _assignEmitterEvents(mdl, emitter) {
+function _assignEmitterEvents(mdl) {
     if (mdl.hasEmitters()) {
         const subscribers = mdl.emitter;
 &nbsp;
         const props = Object.keys(subscribers);
 &nbsp;
         for (const name of props) {
-            emitter.add(name, subscribers[name]);
+            mdl.emitterInstance.add(name, subscribers[name]);
         }
     }
 }
@@ -325,20 +316,17 @@ function factory() {
             async function run(childState, config) {
                 <span class="missing-if-branch" title="if path not taken" >I</span>if (childState) <span class="cstat-no" title="statement not covered" >state.child = childState;</span>
 &nbsp;
-                const mediator = mediatorFactory.create(mdl, config);
-                const emitter = emitterFactory.create(mdl, config);
-&nbsp;
-                _assignMediatorEvents(mdl, mediator, [
+                _assignMediatorEvents(mdl, [
                     'onModuleStarted',
                     'onModuleFinished',
                     'onError',
                 ]);
 &nbsp;
-                _assignEmitterEvents(mdl, emitter);
+                _assignEmitterEvents(mdl);
 &nbsp;
                 const context = _createContext({
-                    mediator,
-                    emitter,
+                    mediator: mdl.mediatorInstance,
+                    emitter: mdl.emitterInstance,
                 });
 &nbsp;
                 const middleware = [
@@ -349,7 +337,7 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 &nbsp;
-                callEvent.call(mediator, mdl, 'onModuleStarted');
+                callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
 &nbsp;
                 for (const functions of middleware) {
                     try {
@@ -371,11 +359,11 @@ function factory() {
                         // throw error if it has mediators but it does not have onError
                         <span class="missing-if-branch" title="if path not taken" >I</span>if (mdl.hasMediators() &amp;&amp; !mdl.mediator.onError) <span class="cstat-no" title="statement not covered" >throw err;</span>
 &nbsp;
-                        mediator.runOnError(mdl.mediator.onError, err);
+                        mdl.mediatorInstance.runOnError(mdl.mediator.onError, err);
                     }
                 }
 &nbsp;
-                callEvent.call(mediator, mdl, 'onModuleFinished');
+                callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
             }
 &nbsp;
             function getResult() {
@@ -400,7 +388,7 @@ module.exports = new factory();</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Jul 02 2019 20:47:11 GMT+0000 (Coordinated Universal Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Jul 03 2019 17:12:14 GMT+0000 (Coordinated Universal Time)
 </div>
 </div>
 <script src="../../prettify.js"></script>

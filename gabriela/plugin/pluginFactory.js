@@ -1,5 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const moduleFactory = require('../module/moduleFactory');
+const Mediator = require('../events/mediator');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
@@ -47,12 +48,20 @@ function _createPluginObject(plugin) {
     };
 }
 
+function _bindEventSystem(pluginObject, config) {
+    pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
+}
+
 function factory(plugin, config, rootCompiler, sharedCompiler) {
     _createCompiler(plugin, rootCompiler, sharedCompiler);
 
     _replaceModules(plugin, config);
 
-    return _createPluginObject(plugin);
+    const pluginObject = _createPluginObject(plugin);
+
+    _bindEventSystem(pluginObject, config);
+
+    return pluginObject;
 }
 
 module.exports = factory;

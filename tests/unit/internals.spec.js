@@ -92,7 +92,8 @@ describe('Test gabriela internals', () => {
             'hasMediators',
             'hasPlugins',
             'plugins',
-            'mediator'
+            'mediator',
+            'mediatorInstance',
         ];
 
         const plugin = {
@@ -116,6 +117,7 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
         expect(pluginModel.plugins).to.be.a('array');
+        expect(pluginModel.mediatorInstance).to.be.a('object');
     });
 
     it('should determine that mediator interface has not changed', () => {
