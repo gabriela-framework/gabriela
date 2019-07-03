@@ -1,6 +1,5 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const emitterFactory = require('../events/emitter');
 const callEvent = require('../events/callEvent');
 
 function _assignMediatorEvents(mdl, excludes) {

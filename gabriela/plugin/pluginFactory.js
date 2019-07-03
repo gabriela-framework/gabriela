@@ -20,6 +20,7 @@ function _replaceModules(plugin, config) {
         for (const mdl of modules) {
             mdl.plugin = {
                 name: plugin.name,
+                mediator: plugin.mediator,
             };
 
             factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
@@ -29,8 +30,8 @@ function _replaceModules(plugin, config) {
     }
 }
 
-function _createPluginObject(plugin) {
-    return {
+function _createPluginObject(plugin, rootCompiler, sharedCompiler, config) {
+    const pluginObject = {
         name: plugin.name,
         modules: plugin.modules,
         exposedEvents: plugin.exposedEvents,
@@ -51,6 +52,12 @@ function _createPluginObject(plugin) {
         plugins: plugin.plugins,
         mediator: plugin.mediator,
     };
+
+    _createCompiler(pluginObject, rootCompiler, sharedCompiler);
+    _bindEventSystem(pluginObject, config);
+    _replaceModules(pluginObject, config);
+
+    return pluginObject;
 }
 
 function _bindEventSystem(pluginObject, config) {
@@ -69,15 +76,7 @@ function _bindEventSystem(pluginObject, config) {
 }
 
 function factory(plugin, config, rootCompiler, sharedCompiler) {
-    _createCompiler(plugin, rootCompiler, sharedCompiler);
-
-    _replaceModules(plugin, config);
-
-    const pluginObject = _createPluginObject(plugin);
-
-    _bindEventSystem(pluginObject, config);
-
-    return pluginObject;
+    return _createPluginObject(plugin, rootCompiler, sharedCompiler, config);
 }
 
 module.exports = factory;
