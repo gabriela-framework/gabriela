@@ -52,7 +52,9 @@ function factory() {
                 _assignEmitterEvents(mdl);
 
                 const context = _createContext({
-                    mediator: mdl.mediatorInstance,
+                    mediator: {
+                        emit: mdl.mediatorInstance.emit
+                    },
                     emitter: mdl.emitterInstance,
                 });
 

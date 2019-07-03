@@ -10,7 +10,17 @@ function factory() {
 
             if (plugin.modules && plugin.modules.length > 0) {
                 for (const mdl of plugin.modules) {
-                    await moduleTree.runConstructedModule(mdl, config);
+                    try {
+                        await moduleTree.runConstructedModule(mdl, config);
+                    } catch (err) {
+                        // throw error if it doesnt have any mediators
+                        if (!plugin.hasMediators()) throw err;
+
+                        // throw error if it has mediators but it does not have onError
+                        if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
+
+                        plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
+                    }
                 }
             }
 

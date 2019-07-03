@@ -715,6 +715,50 @@ describe('Framework events', function() {
         });
     });
 
+    it('should run the plugins onError if the module does not have an onError mediator event', (done) => {
+        let onErrorCalled = false;
+
+        const userServiceDefinition = {
+            name: 'userService',
+            scope: 'plugin',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const mdl = {
+            name: 'errorModule',
+            dependencies: [userServiceDefinition],
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Something went wrong'));
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addPlugin({
+            name: 'errorPlugin',
+            mediator: {
+                onError(e, userService) {
+                    onErrorCalled = true;
+
+                    expect(userService).to.be.a('object');
+                    expect(e).to.be.instanceof(Error);
+                    expect(e.message).to.be.equal('Something went wrong');
+                }
+            },
+            modules: [mdl],
+        });
+
+        g.runPlugin().then(() => {
+            expect(onErrorCalled).to.be.equal(true);
+
+            done();
+        });
+    });
+
     it('should pass custom arguments along with dependency injected arguments to mediator event', () => {
         let mediatorCalled = false;
 
