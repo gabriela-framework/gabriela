@@ -83,7 +83,7 @@ describe('Test gabriela internals', () => {
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {
-        const interface = [
+        const pluginInterface = [
             'modules', 
             'name',
             'compiler', 
@@ -94,6 +94,9 @@ describe('Test gabriela internals', () => {
             'plugins',
             'mediator',
             'mediatorInstance',
+            'exposedEvents',
+            'exposedEventsInstance',
+            'hasExposedEvents',
         ];
 
         const plugin = {
@@ -106,7 +109,7 @@ describe('Test gabriela internals', () => {
 
         const pluginModelProps = Object.keys(pluginModel);
 
-        expect(pluginModelProps).to.have.members(interface);
+        expect(pluginModelProps).to.have.members(pluginInterface);
 
         expect(pluginModel).to.have.property('name', 'name');
         expect(pluginModel.modules).to.be.a('array');
@@ -116,8 +119,13 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasModules).to.be.a('function');
         expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
+        expect(pluginModel.exposedEvents).to.be.a('undefined');
         expect(pluginModel.plugins).to.be.a('array');
         expect(pluginModel.mediatorInstance).to.be.a('object');
+        expect(pluginModel.exposedEvents).to.be.a('undefined');
+        expect(pluginModel.exposedEventsInstance).to.be.a('object');
+        expect(pluginModel.hasExposedEvents()).to.be.equal(false);
+
     });
 
     it('should determine that mediator interface has not changed', () => {

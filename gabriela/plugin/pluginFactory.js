@@ -1,6 +1,7 @@
 const Compiler = require('../dependencyInjection/compiler');
 const moduleFactory = require('../module/moduleFactory');
 const Mediator = require('../events/mediator');
+const ExposedEvents = require('../events/exposedEvents');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
@@ -32,6 +33,10 @@ function _createPluginObject(plugin) {
     return {
         name: plugin.name,
         modules: plugin.modules,
+        exposedEvents: plugin.exposedEvents,
+        hasExposedEvents() {
+            return !!plugin.exposedEvents;
+        },
         hasModules() {
             return !!plugin.modules;
         },
@@ -50,6 +55,17 @@ function _createPluginObject(plugin) {
 
 function _bindEventSystem(pluginObject, config) {
     pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
+    const exposedEventsInstance = new ExposedEvents(pluginObject.compiler.root);
+
+    if (pluginObject.hasExposedEvents()) {
+        const exposedEvents = pluginObject.exposedEvents;
+
+        for (const eventDefinition of exposedEvents) {
+            exposedEventsInstance.add(eventDefinition);
+        }
+    }
+
+    pluginObject.exposedEventsInstance = exposedEventsInstance;
 }
 
 function factory(plugin, config, rootCompiler, sharedCompiler) {
