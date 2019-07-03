@@ -40,7 +40,7 @@ function _callEvent(fn, compiler, customArgs) {
 
 function factory() {
     const definitions = {};
-    
+
     function emit(name, customArgs, compiler) {
         if (!hasKey(definitions, name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' does not exist`);
 
@@ -48,6 +48,8 @@ function factory() {
     }
 
     function add(definition) {
+        if (has(definition.name)) throw new Error(`Invalid exposed event. Exposed event with name '${definition.name} already exists'`);
+
         definitions[definition.name] = definition;
     }
 

@@ -10,6 +10,7 @@ const Mediator = require('../../gabriela/events/mediator');
 const Emitter = require('../../gabriela/events/emitter');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 const ServerMediator = require('../../gabriela/events/serverMediator');
+const ExposedEvents = require('../../gabriela/events/exposedEvents');
 
 describe('Failing framework events', () => {
     it('a concrete server mediator should fail to compile a dependency if it does not exist', () => {
@@ -266,6 +267,52 @@ describe('Failing framework events', () => {
             entersException = true;
 
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator.onEvent' must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('exposed event should throw an exception if it already exists', () => {
+        const exposedEvents = new ExposedEvents();
+
+        const event1 = {
+            name: 'event1',
+            init: function() {}
+        };
+
+        const event2 = {
+            name: 'event2',
+            init: function() {},
+        };
+
+        exposedEvents.add(event1);
+        exposedEvents.add(event2);
+
+        let entersException = false;
+        try {
+            exposedEvents.add({
+                name: 'event1',
+                init: function() {},
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid exposed event. Exposed event with name '${event1.name} already exists'`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should throw an error if an emitted exposed event does not exist', () => {
+        const exposedEvents = new ExposedEvents();
+
+        let entersException = false;
+        try {
+            exposedEvents.emit('nonExistent');
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid exposed event. Exposed event with name 'nonExistent' does not exist`);
         }
 
         expect(entersException).to.be.equal(true);
