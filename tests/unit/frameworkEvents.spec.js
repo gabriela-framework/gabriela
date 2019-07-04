@@ -1081,4 +1081,42 @@ describe('Framework events', function() {
 
         g.runModule();
     });
+
+    it('should propagate a mediator event from module to plugin', (done) => {
+        let mdlEventCalled = false;
+        let pluginEventCalled = false;
+
+        const mdl = {
+            name: 'module',
+            mediator: {
+                onEvent: function() {
+                    mdlEventCalled = true;
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onEvent', null, true);
+            }]
+        };
+
+        const plugin = {
+            name: 'plugin',
+            mediator: {
+                onEvent: function() {
+                    pluginEventCalled = true;
+                }
+            },
+            modules: [mdl],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addPlugin(plugin);
+
+        g.runPlugin().then(() => {
+            expect(mdlEventCalled).to.be.equal(true);
+            expect(pluginEventCalled).to.be.equal(true);
+            
+            done();
+        });
+    });
 });
