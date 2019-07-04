@@ -10,7 +10,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
-const ServerMediator = require('../../gabriela/events/serverMediator');
+const ServerMediator = require('../../gabriela/events/genericMediator');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Framework events', function() {

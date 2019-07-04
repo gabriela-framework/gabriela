@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const ServerMediator = require('../events/serverMediator');
+const ServerMediator = require('../events/genericMediator');
 const {is, hasKey} = require('../util/util');
 
 async function listenCallback(

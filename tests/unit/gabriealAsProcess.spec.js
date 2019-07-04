@@ -10,7 +10,81 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 
-describe('Gabriela runner module tests', () => {
+describe('Gabriela as process tests', () => {
+    it('should create a gabriela process instance and run it', (done) => {
+        const g = gabriela.asProcess();
+
+        g.startApp().then(() => {
+            done();
+        });
+    });
+
+    it('should run the onAppStarted event when using gabriela as process', (done) => {
+        const g = gabriela.asProcess();
+        let eventCalled = false;
+
+        g.startApp({
+            onAppStarted: function() {
+                eventCalled = true;
+            }
+        }).then(() => {
+            expect(eventCalled).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should run all middleware withing a standalone module and plugin(s) plus an onAppStarted event', (done) => {
+        let eventCalled = false;
+        let mdl1Called = false;
+        let mdl2Called = false;
+        let standaloneModuleCalled = false;
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function() {
+                mdl1Called = true;
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [function() {
+                mdl2Called = true;
+            }],
+        };
+
+        const standaloneModule = {
+            name: 'standaloneModule',
+            moduleLogic: [function() {
+                standaloneModuleCalled = true;
+            }],
+        };
+
+        const plugin = {
+            name: 'plugin1',
+            modules: [mdl1, mdl2],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addPlugin(plugin);
+        g.addModule(standaloneModule);
+
+        g.startApp({
+            onAppStarted: function() {
+                eventCalled = true;
+            }
+        }).then(() => {
+            expect(eventCalled).to.be.equal(true);
+            expect(mdl1Called).to.be.equal(true);
+            expect(mdl2Called).to.be.equal(true);
+            expect(standaloneModuleCalled).to.be.equal(true);
+
+            done();
+        });
+    });
+
     it('should create a module and treat it as a collection', () => {
         const name = 'moduleName';
         const mdl = {

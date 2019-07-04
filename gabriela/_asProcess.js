@@ -4,6 +4,7 @@ const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
+const Process = require('./process/process');
 
 module.exports = function _asRunner(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -25,7 +26,9 @@ module.exports = function _asRunner(receivedConfig) {
             sharedCompiler
         );
 
-        const modules = this.getModules();
+        const getModules = (this.getAll) ? this.getAll : this.getModules;
+
+        const modules = getModules();
         const keys = Object.keys(modules);
 
         const state = {};
@@ -52,7 +55,9 @@ module.exports = function _asRunner(receivedConfig) {
             sharedCompiler
         );
 
-        const plugins = this.getPlugins();
+        const getPlugins = (this.getAll) ? this.getAll : this.getPlugins;
+
+        const plugins = getPlugins();
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
@@ -99,8 +104,16 @@ module.exports = function _asRunner(receivedConfig) {
         getPlugins: pluginInterface.getAll,
         runPlugin: pluginInterface.run,
 
-        startApp() {
+        startApp(events) {
+            const process = new Process(
+                config,
+                events,
+                rootCompiler,
+                pluginInterface,
+                moduleInterface,
+            );
 
+            return process.run();
         }
     };
 

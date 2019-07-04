@@ -10,20 +10,20 @@ const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
 const Emitter = require('../../gabriela/events/emitter');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
-const ServerMediator = require('../../gabriela/events/serverMediator');
+const GenericMediator = require('../../gabriela/events/genericMediator');
 const ExposedEvents = require('../../gabriela/events/exposedEvents');
 
 describe('Failing framework events', () => {
     it('a concrete server mediator should fail to compile a dependency if it does not exist', () => {
         const rootCompiler = Compiler.create();
 
-        const serverMediator = ServerMediator.create(rootCompiler);
+        const genericMediator = GenericMediator.create(rootCompiler);
 
         const context = {name: 'thisContext'};
 
         let enteredException = false;
         try {
-            serverMediator.callEvent(function(userService) {}, context);
+            genericMediator.callEvent(function(userService) {}, context);
         } catch (e) {
             enteredException = true;
         }
