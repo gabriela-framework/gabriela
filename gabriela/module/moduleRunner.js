@@ -1,6 +1,7 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const callEvent = require('../events/callEvent');
+const {is} = require('../util/util');
 
 function _assignMediatorEvents(mdl, excludes) {
     if (mdl.hasMediators()) {
@@ -53,7 +54,16 @@ function factory() {
 
                 const context = _createContext({
                     mediator: {
-                        emit(name, customArgs) {
+                        emit(name, customArgs, propagate = false) {
+                            if (!is('boolean', propagate)) throw new Error(`Invalid mediator event. Propagation argument for event '${name}' has to be a boolean`);
+
+                            if (propagate) {
+                                if (mdl.mediatorInstance.has(name)) mdl.mediatorInstance.emit(name, customArgs);
+                                if (mdl.isInPlugin() && mdl.plugin.mediatorInstance.has(name)) return mdl.plugin.mediatorInstance.emit(name, customArgs);
+
+                                return;
+                            }
+
                             if (mdl.mediatorInstance.has(name)) return mdl.mediatorInstance.emit(name, customArgs);
 
                             if (mdl.isInPlugin() && mdl.plugin.mediatorInstance.has(name)) return mdl.plugin.mediatorInstance.emit(name, customArgs);

@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const assert = require('assert');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -170,7 +171,31 @@ describe('Failing framework events', () => {
             expect(e.message).to.be.equal(`Invalid plugin definition. 'mediator' property must be an object`);
         }
 
-        entersException = false;
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to emit an propagated event if the third argument to emit() is not a boolean', (done) => {
+        const mdl = {
+            name: 'module',
+            mediator: {
+                onEvent: function() {
+
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onEvent', null, 'nonBoolean');
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.runModule().then(() => {
+            assert.fail('This test should fail')
+        }).catch(() => {
+            done();
+        });
     });
 
     it('should fail if mediator in plugin has invalid onPluginStarted event data type', () => {
