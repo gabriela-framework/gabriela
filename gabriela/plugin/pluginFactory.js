@@ -21,6 +21,7 @@ function _replaceModules(plugin, config) {
             mdl.plugin = {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
+                exposedEventsInstance: plugin.exposedEventsInstance,
             };
 
             factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
@@ -28,6 +29,21 @@ function _replaceModules(plugin, config) {
 
         plugin.modules = factoryModules;
     }
+}
+
+function _bindEventSystem(pluginObject, config) {
+    pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
+    const exposedEventsInstance = new ExposedEvents();
+
+    if (pluginObject.hasExposedEvents()) {
+        const exposedEvents = pluginObject.exposedEvents;
+
+        for (const eventDefinition of exposedEvents) {
+            exposedEventsInstance.add(eventDefinition);
+        }
+    }
+
+    pluginObject.exposedEventsInstance = exposedEventsInstance;
 }
 
 function _createPluginObject(plugin, rootCompiler, sharedCompiler, config) {
@@ -58,21 +74,6 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config) {
     _replaceModules(pluginObject, config);
 
     return pluginObject;
-}
-
-function _bindEventSystem(pluginObject, config) {
-    pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
-    const exposedEventsInstance = new ExposedEvents(pluginObject.compiler.root);
-
-    if (pluginObject.hasExposedEvents()) {
-        const exposedEvents = pluginObject.exposedEvents;
-
-        for (const eventDefinition of exposedEvents) {
-            exposedEventsInstance.add(eventDefinition);
-        }
-    }
-
-    pluginObject.exposedEventsInstance = exposedEventsInstance;
 }
 
 function factory(plugin, config, rootCompiler, sharedCompiler) {
