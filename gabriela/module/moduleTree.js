@@ -72,7 +72,7 @@ function overrideMiddleware(mdl, existing) {
     }
 }
 
-function instance() {
+function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const modules = {};
 
     const tree = [];
@@ -87,17 +87,17 @@ function instance() {
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
      */
-    async function runModule(name, receivedConfig, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
+    async function runModule(name) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
         const mdl = modules[name];
-        const constructedModule = moduleFactory(mdl, receivedConfig, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
+        const constructedModule = moduleFactory(mdl, config, rootCompiler, null, sharedCompiler, exposedMediator);
 
-        return await runConstructedModule(constructedModule, receivedConfig);
+        return await runConstructedModule(constructedModule, config);
     }
 
-    async function runConstructedModule(mdl, config) {
+    async function runConstructedModule(mdl) {
         const runner = ModuleRunner.create(mdl);
 
         const childState = (tree.length > 0) ? await runTree(tree) : null;
@@ -107,11 +107,7 @@ function instance() {
         return runner.getResult();
     }
 
-    // hold the parent ModuleTree
-    this.parent = null;
-
-    this.addModule = addModule;
-    this.overrideModule = function(mdl) {
+    function overrideModule(mdl) {
         Validator.moduleValidator(mdl);
 
         if (!this.hasModule(mdl.name)) {
@@ -123,25 +119,32 @@ function instance() {
         overrideMiddleware(mdl, existing);
 
         modules[mdl.name] = deepCopy(existing);
-    };
+    }
 
-    this.hasModule = (name) => hasKey(modules, name);
-    this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
-    this.getModules = () => deepCopy(modules);
-    this.removeModule = (name) => {
+    function removeModule(name) {
         if (!this.hasModule(name)) return false;
 
         delete modules[name];
 
         return true;
-    };
+    }
+
+    // hold the parent ModuleTree
+    this.parent = null;
+
+    this.addModule = addModule;
+    this.overrideModule = overrideModule;
+    this.hasModule = (name) => hasKey(modules, name);
+    this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
+    this.getModules = () => deepCopy(modules);
+    this.removeModule = removeModule;
 
     this.runModule = runModule;
     this.runConstructedModule = runConstructedModule;
 }
 
-function factory(config) {
-    return new instance(config);
+function factory(config, rootCompiler, sharedCompiler, exposedMediator) {
+    return new instance(config, rootCompiler, sharedCompiler, exposedMediator);
 }
 
 module.exports = factory;

@@ -14,22 +14,16 @@ module.exports = function _asServer(receivedConfig) {
 
     Validator.validateServerOptions(config.server);
 
-    const moduleTree = new ModuleTree();
-    const pluginTree = new PluginTree();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
+    const moduleTree = new ModuleTree(config, rootCompiler, sharedCompiler, null);
+    const pluginTree = new PluginTree(config, rootCompiler, sharedCompiler, null);
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
     async function runModule(name) {
-        if (name) return await moduleTree.runModule(
-            name,
-            config,
-            rootCompiler,
-            null,
-            sharedCompiler
-        );
+        if (name) return await moduleTree.runModule(name);
 
         const modules = this.getAll();
         const keys = Object.keys(modules);
@@ -37,13 +31,7 @@ module.exports = function _asServer(receivedConfig) {
         const state = {};
 
         for (const name of keys) {
-            const res = await moduleTree.runModule(
-                modules[name].name,
-                config,
-                rootCompiler,
-                null,
-                sharedCompiler,
-            );
+            const res = await moduleTree.runModule(modules[name].name,);
 
             state[modules[name].name] = res;
         }
