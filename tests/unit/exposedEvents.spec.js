@@ -77,37 +77,4 @@ describe('Exposed (third party) events tests', () => {
             aString: 'string',
         });
     });
-
-    it('should call an exposed event from a third party plugin', (done) => {
-        const thirdPartyModule = {
-            name: 'thirdPartyModule',
-            moduleLogic: [function() {
-                this.mediator.emit('onExposedEvent');
-            }],
-        };
-
-        const thirdPartyPlugin = {
-            name: 'thirdPartyPlugin',
-            modules: [thirdPartyModule],
-            exposedEvents: ['onExposedEvent'],
-        };
-
-        const clientCodeModule = {
-            name: 'clientCodeModule',
-            mediator: {
-                onExposedEvent: function() {
-
-                }
-            }
-        };
-
-        const g = gabriela.asProcess();
-
-        g.addPlugin(thirdPartyPlugin);
-        g.addModule(clientCodeModule);
-
-        g.runPlugin().then(() => {
-            done();
-        });
-    });
 });
