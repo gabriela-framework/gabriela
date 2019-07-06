@@ -37,7 +37,7 @@ async function runTree(tree) {
     return childState;
 }
 
-function overrideMiddleware(mdl, existing) {
+function _overrideMiddleware(mdl, existing) {
     for (const type of middlewareTypes) {
         if (mdl[type]) {
             const middlewareList = mdl[type];
@@ -80,7 +80,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     function addModule(mdl) {
         Validator.moduleValidator(mdl);
 
-        modules[mdl.name] = deepCopy(mdl);
+        modules[mdl.name] = moduleFactory(deepCopy(mdl), config, rootCompiler, null, sharedCompiler, exposedMediator);
     }
 
     /**
@@ -91,10 +91,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        const mdl = modules[name];
-        const constructedModule = moduleFactory(mdl, config, rootCompiler, null, sharedCompiler, exposedMediator);
-
-        return await runConstructedModule(constructedModule, config);
+        return await runConstructedModule(modules[name], config);
     }
 
     async function runConstructedModule(mdl) {
@@ -116,9 +113,9 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
 
         const existing = this.getModule(mdl.name);
 
-        overrideMiddleware(mdl, existing);
+        _overrideMiddleware(mdl, existing);
 
-        modules[mdl.name] = deepCopy(existing);
+        modules[mdl.name] = existing;
     }
 
     function removeModule(name) {
