@@ -116,7 +116,7 @@ describe('Test gabriela internals', () => {
         );
 
         const pluginModelProps = Object.keys(pluginModel);
-        
+
         expect(pluginModelProps).to.have.members(pluginInterface);
 
         expect(pluginModel).to.have.property('name', 'name');

@@ -1,7 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const moduleFactory = require('../module/moduleFactory');
 const Mediator = require('../events/mediator');
-const ModuleTree = require('../module/moduleTree');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
@@ -37,25 +36,6 @@ function _replaceModules(plugin, config, exposedMediatorInstance) {
     }
 }
 
-function _createModuleTree(pluginObject, config, exposedMediator) {
-    if (pluginObject.modules && pluginObject.modules.length > 0) {
-        const moduleTree = new ModuleTree(config, pluginObject.compiler.root, pluginObject.compiler, pluginObject.sharedCompiler, exposedMediator);
-
-        const {modules} = pluginObject;
-
-        for (const mdl of modules) {
-            mdl.plugin = {
-                name: pluginObject.name,
-                mediatorInstance: pluginObject.mediatorInstance,
-            };
-
-            moduleTree.addModule(mdl);
-        }
-
-        pluginObject.moduleTree = moduleTree;
-    }
-}
-
 function _bindEventSystem(pluginObject, config, exposedMediatorInstance) {
     pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
 
@@ -68,7 +48,7 @@ function _bindEventSystem(pluginObject, config, exposedMediatorInstance) {
     }
 }
 
-function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, exposedMediator) {
+function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, exposedMediatorInstance) {
     const pluginObject = {
         name: plugin.name,
         modules: plugin.modules,
@@ -77,7 +57,7 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
             return !!plugin.exposedMediators;
         },
         hasModules() {
-            return !!this.moduleTree;
+            return !!plugin.modules;
         },
         compiler: plugin.compiler,
         sharedCompiler: plugin.sharedCompiler,
@@ -92,8 +72,8 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
     };
 
     _createCompiler(pluginObject, rootCompiler, sharedCompiler);
-    _bindEventSystem(pluginObject, config, exposedMediator);
-    _createModuleTree(pluginObject, config, exposedMediator);
+    _bindEventSystem(pluginObject, config, exposedMediatorInstance);
+    _replaceModules(pluginObject, config, exposedMediatorInstance);
 
     return pluginObject;
 }

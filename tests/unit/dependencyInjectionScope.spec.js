@@ -2,7 +2,6 @@ const mocha = require('mocha');
 const chai = require('chai');
 
 const it = mocha.it;
-const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -136,7 +135,7 @@ describe('Scope dependency injection tests', () => {
         });
     });
 
-    it('should resolve a public scope service and give the same instance globally within the framework', () => {
+    it('should resolve a public scope service and give the same instance globally within the framework', (done) => {
         const publicDependencyInit = {
             name: 'publicDep',
             scope: 'public',
@@ -202,7 +201,7 @@ describe('Scope dependency injection tests', () => {
          * If a module is ran first, the identical dependency is created then and reused in plugin dependencies. If a plugin is
          * ran first, the dependency is created then and reused in all other modules of that plugin and in the single module.
          */
-        return g.runModule().then(() => {
+        g.runModule().then(() => {
             g.runPlugin('plugin1').then(() => {
                 g.runPlugin('plugin2').then(() => {
                     expect(services.length).to.be.equal(5);
@@ -225,6 +224,8 @@ describe('Scope dependency injection tests', () => {
                                         expect(services[i] == services[a]);
                                     }
                                 }
+
+                                done();
                             });
                         });
                     });
@@ -233,7 +234,7 @@ describe('Scope dependency injection tests', () => {
         });
     });
 
-    it('should give precedence to module dependencies above public or plugin dependencies', () => {
+    it('should give precedence to module dependencies above public or plugin dependencies', (done) => {
         let resolvedDependency;
 
         const userRepositoryInit = {
@@ -301,8 +302,10 @@ describe('Scope dependency injection tests', () => {
             modules: [module1],
         });
 
-        return g.runPlugin().then(() => {
+        g.runPlugin().then(() => {
             expect(resolvedDependency.name).to.be.equal('module');
+
+            done();
         });
     });
 });

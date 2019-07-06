@@ -13,20 +13,19 @@ const userServiceDefinition = {
 const mdl = {
     name: 'module',
     dependencies: [userServiceDefinition],
-    moduleLogic: [function(userService) {
-        console.log('ulazak');
-    }],
-};
+}
 
-const g = gabriela.asProcess();
-
-g.addPlugin({
-    name: 'plugin',
-    modules: [mdl],
+const g = gabriela.asServer({
+    server: {
+        port: 4000,
+    },
 });
+
+g.addModule(mdl);
 
 g.startApp({
     onAppStarted: function(userService) {
-        console.log('Koji kurac');
+        console.log(userService);
+        this.server.close();
     }
 });

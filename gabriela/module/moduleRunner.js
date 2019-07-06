@@ -36,14 +36,14 @@ function _createContext({mediator, emitter}) {
 
 function factory() {
     function create(mdl) {
+        _assignMediatorEvents(mdl);
+        _assignEmitterEvents(mdl);
+
         return (function(mdl) {
             const state = {};
 
             async function run(childState, config) {
                 if (childState) state.child = childState;
-
-                _assignMediatorEvents(mdl);
-                _assignEmitterEvents(mdl);
 
                 const context = _createContext({
                     mediator: {

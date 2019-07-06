@@ -8,23 +8,28 @@ const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
 const Server = require('./server/server');
 const Validator = require('./misc/validator');
-const ExposedMediator = require('./events/exposedMediator');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);
 
     Validator.validateServerOptions(config.server);
 
+    const moduleTree = new ModuleTree();
+    const pluginTree = new PluginTree();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
-    const moduleTree = new ModuleTree(config, rootCompiler, null, sharedCompiler, new ExposedMediator());
-    const pluginTree = new PluginTree(config, rootCompiler, null, sharedCompiler, new ExposedMediator());
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
     async function runModule(name) {
-        if (name) return await moduleTree.runModule(name);
+        if (name) return await moduleTree.runModule(
+            name,
+            config,
+            rootCompiler,
+            null,
+            sharedCompiler
+        );
 
         const modules = this.getAll();
         const keys = Object.keys(modules);
@@ -32,7 +37,13 @@ module.exports = function _asServer(receivedConfig) {
         const state = {};
 
         for (const name of keys) {
-            const res = await moduleTree.runModule(modules[name].name,);
+            const res = await moduleTree.runModule(
+                modules[name].name,
+                config,
+                rootCompiler,
+                null,
+                sharedCompiler,
+            );
 
             state[modules[name].name] = res;
         }

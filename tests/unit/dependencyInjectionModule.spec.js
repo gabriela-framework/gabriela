@@ -3,7 +3,6 @@ const chai = require('chai');
 const requestPromise = require('request-promise');
 
 const it = mocha.it;
-const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -205,7 +204,7 @@ describe('Module dependency injection tests', function() {
         });
     });
 
-    it('should run all synchronous modules added to gabriela', () => {
+    it('should run all synchronous modules added to gabriela', (done) => {
         let userModuleExecuted = false;
         let appSearchModuleExecuted = false;
         let pdfConvertModuleExecuted = false;
@@ -253,30 +252,36 @@ describe('Module dependency injection tests', function() {
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
-        return app.runModule().then((state) => {
-            expect(userModuleExecuted).to.be.equal(true);
-            expect(appSearchModuleExecuted).to.be.equal(true);
-            expect(pdfConvertModuleExecuted).to.be.equal(true);
+        try {
+            app.runModule().then((state) => {
+                expect(userModuleExecuted).to.be.equal(true);
+                expect(appSearchModuleExecuted).to.be.equal(true);
+                expect(pdfConvertModuleExecuted).to.be.equal(true);
 
-            expect(state).to.have.property(userModuleName);
-            expect(state).to.have.property(appSearchModuleName);
-            expect(state).to.have.property(pdfConvertModuleName);
+                expect(state).to.have.property(userModuleName);
+                expect(state).to.have.property(appSearchModuleName);
+                expect(state).to.have.property(pdfConvertModuleName);
 
-            const userModuleState = state[userModuleName];
-            const appSearchState = state[appSearchModuleName];
-            const pdfConvertState = state[pdfConvertModuleName];
+                const userModuleState = state[userModuleName];
+                const appSearchState = state[appSearchModuleName];
+                const pdfConvertState = state[pdfConvertModuleName];
 
-            expect(userModuleState).to.have.property('name');
-            expect(appSearchState).to.have.property('name');
-            expect(pdfConvertState).to.have.property('name');
+                expect(userModuleState).to.have.property('name');
+                expect(appSearchState).to.have.property('name');
+                expect(pdfConvertState).to.have.property('name');
 
-            expect(userModuleState.name).to.be.equal(userModuleName);
-            expect(appSearchState.name).to.be.equal(appSearchModuleName);
-            expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
-        });
+                expect(userModuleState.name).to.be.equal(userModuleName);
+                expect(appSearchState.name).to.be.equal(appSearchModuleName);
+                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
+
+                done();
+            });
+        } catch(err) {
+            assert.fail(`Test failed with message: ${err.message}`);
+        }
     });
 
-    it('should run all asynchronous modules added to gabriela', () => {
+    it('should run all asynchronous modules added to gabriela', (done) => {
         let userModuleExecuted = false;
         let appSearchModuleExecuted = false;
         let pdfConvertModuleExecuted = false;
@@ -331,30 +336,36 @@ describe('Module dependency injection tests', function() {
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
-        return app.runModule().then((state) => {
-            expect(userModuleExecuted).to.be.equal(true);
-            expect(appSearchModuleExecuted).to.be.equal(true);
-            expect(pdfConvertModuleExecuted).to.be.equal(true);
+        try {
+            app.runModule().then((state) => {
+                expect(userModuleExecuted).to.be.equal(true);
+                expect(appSearchModuleExecuted).to.be.equal(true);
+                expect(pdfConvertModuleExecuted).to.be.equal(true);
 
-            expect(state).to.have.property(userModuleName);
-            expect(state).to.have.property(appSearchModuleName);
-            expect(state).to.have.property(pdfConvertModuleName);
+                expect(state).to.have.property(userModuleName);
+                expect(state).to.have.property(appSearchModuleName);
+                expect(state).to.have.property(pdfConvertModuleName);
 
-            const userModuleState = state[userModuleName];
-            const appSearchState = state[appSearchModuleName];
-            const pdfConvertState = state[pdfConvertModuleName];
+                const userModuleState = state[userModuleName];
+                const appSearchState = state[appSearchModuleName];
+                const pdfConvertState = state[pdfConvertModuleName];
 
-            expect(userModuleState).to.have.property('name');
-            expect(appSearchState).to.have.property('name');
-            expect(pdfConvertState).to.have.property('name');
+                expect(userModuleState).to.have.property('name');
+                expect(appSearchState).to.have.property('name');
+                expect(pdfConvertState).to.have.property('name');
 
-            expect(userModuleState.name).to.be.equal(userModuleName);
-            expect(appSearchState.name).to.be.equal(appSearchModuleName);
-            expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
-        });
+                expect(userModuleState.name).to.be.equal(userModuleName);
+                expect(appSearchState.name).to.be.equal(appSearchModuleName);
+                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
+
+                done();
+            });
+        } catch(err) {
+            assert.fail(`Test failed with message: ${err.message}`);
+        }
     });
 
-    xit('should override the modules middleware', () => {
+    it('should override the modules middleware', () => {
         let entersOriginalLogic1 = false;
         let entersOverridenLogic1 = false;
         let entersLogic2 = false;
@@ -400,14 +411,14 @@ describe('Module dependency injection tests', function() {
             }]
         });
 
-        return g.runModule().then(() => {
+        g.runModule().then(() => {
             expect(entersOverridenLogic1).to.be.equal(true);
             expect(entersLogic2).to.be.equal(true);
             expect(entersOriginalLogic1).to.be.equal(false);
         });
     });
 
-    it('should not execute a disabled middleware', () => {
+    it('should not execute a disabled middleware', (done) => {
         let transformer1Enters = false;
         let transformer2Enters = false;
         let logic1Enters = false;
@@ -444,14 +455,16 @@ describe('Module dependency injection tests', function() {
 
         g.addModule(userModule);
 
-        return g.runModule().then(() => {
+        g.runModule().then(() => {
             expect(transformer1Enters).to.be.equal(false);
             expect(transformer2Enters).to.be.equal(true);
             expect(logic1Enters).to.be.equal(true);
+
+            done();
         });
     });
 
-    it('should execute plain and definition middleware', () => {
+    it('should execute plain and definition middleware', (done) => {
         let preLogicPlain = false;
         let preLogicDefinition = false;
         let moduleLogicPlain = false;
@@ -490,11 +503,13 @@ describe('Module dependency injection tests', function() {
 
         g.addModule(userModule);
 
-        return g.runModule().then(() => {
+        g.runModule().then(() => {
             expect(preLogicPlain).to.be.equal(true);
             expect(preLogicDefinition).to.be.equal(true);
             expect(moduleLogicPlain).to.be.equal(true);
             expect(moduleLogicDefinition).to.be.equal(true);
+
+            done();
         });
     });
 });
