@@ -21,7 +21,6 @@ function _replaceModules(plugin, config) {
             mdl.plugin = {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
-                exposedEventsInstance: plugin.exposedEventsInstance,
             };
 
             factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
