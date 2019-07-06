@@ -2,6 +2,7 @@ const mocha = require('mocha');
 const chai = require('chai');
 
 const it = mocha.it;
+const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -10,7 +11,7 @@ const ExposedEvents = require('../../gabriela/events/exposedEvents');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Exposed (third party) events tests', () => {
-    it('a concrete exposed events instance should run all common methods of its interface', () => {
+    xit('a concrete exposed events instance should run all common methods of its interface', () => {
         const rootCompiler = Compiler.create();
 
         rootCompiler.add({
@@ -74,6 +75,39 @@ describe('Exposed (third party) events tests', () => {
         exposedEvents.emit('event', compiler, {
             num: 5,
             aString: 'string',
+        });
+    });
+
+    it('should call an exposed event from a third party plugin', (done) => {
+        const thirdPartyModule = {
+            name: 'thirdPartyModule',
+            moduleLogic: [function() {
+                this.mediator.emit('onExposedEvent');
+            }],
+        };
+
+        const thirdPartyPlugin = {
+            name: 'thirdPartyPlugin',
+            modules: [thirdPartyModule],
+            exposedEvents: ['onExposedEvent'],
+        };
+
+        const clientCodeModule = {
+            name: 'clientCodeModule',
+            mediator: {
+                onExposedEvent: function() {
+
+                }
+            }
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addPlugin(thirdPartyPlugin);
+        g.addModule(clientCodeModule);
+
+        g.runPlugin().then(() => {
+            done();
         });
     });
 });

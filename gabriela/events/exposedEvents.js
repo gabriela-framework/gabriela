@@ -47,10 +47,10 @@ function factory() {
         _callEvent(definitions[name].init, compiler, customArgs);
     }
 
-    function add(definition) {
-        if (has(definition.name)) throw new Error(`Invalid exposed event. Exposed event with name '${definition.name} already exists'`);
+    function add(name) {
+        if (has(name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' already exists`);
 
-        definitions[definition.name] = definition;
+        definitions[name] = null;
     }
 
     function has(name) {

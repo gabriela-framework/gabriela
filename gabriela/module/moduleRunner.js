@@ -3,16 +3,14 @@ const deepCopy = require('deepcopy');
 const callEvent = require('../events/callEvent');
 const {is} = require('../util/util');
 
-function _assignMediatorEvents(mdl, excludes) {
+function _assignMediatorEvents(mdl) {
     if (mdl.hasMediators()) {
         const mediators = mdl.mediator;
 
         const props = Object.keys(mediators);
 
         for (const name of props) {
-            if (!excludes.includes(name)) {
-                mdl.mediatorInstance.add(name, mediators[name]);
-            }
+            mdl.mediatorInstance.add(name, mediators[name]);
         }
     }
 }
@@ -44,18 +42,17 @@ function factory() {
             async function run(childState, config) {
                 if (childState) state.child = childState;
 
-                _assignMediatorEvents(mdl, [
-                    'onModuleStarted',
-                    'onModuleFinished',
-                    'onError',
-                ]);
-
+                _assignMediatorEvents(mdl);
                 _assignEmitterEvents(mdl);
 
                 const context = _createContext({
                     mediator: {
                         emit(name, customArgs, propagate = false) {
                             if (!is('boolean', propagate)) throw new Error(`Invalid mediator event. Propagation argument for event '${name}' has to be a boolean`);
+
+                            if (mdl.exposedEventsInstance.has(name)) {
+                                return;
+                            }
 
                             if (propagate) {
                                 if (mdl.mediatorInstance.has(name)) mdl.mediatorInstance.emit(name, customArgs);
@@ -82,33 +79,33 @@ function factory() {
                     mdl.postLogicTransformers,
                 ];
 
-                callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
+                try {
+                    if(mdl.mediatorInstance.has('onModuleStarted')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
 
-                for (const functions of middleware) {
-                    try {
+                    for (const functions of middleware) {
                         await runMiddleware.call(context, ...[mdl, functions, state, config]);
-                    } catch (err) {
-                        if (err.internal) {
-                            if (err.message === 'done') {
-                                return;
-                            }
+                    }
 
-                            if (err.message === 'task') {
-                                throw new Error(`Invalid ${mdl.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
-                            }
+                    if(mdl.mediatorInstance.has('onModuleFinished')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
+                } catch (err) {
+                    if (err.internal) {
+                        if (err.message === 'done') {
+                            return;
                         }
 
-                        // throw error if it doesnt have any mediators
-                        if (!mdl.hasMediators()) throw err;
-
-                        // throw error if it has mediators but it does not have onError
-                        if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
-
-                        mdl.mediatorInstance.runOnError(mdl.mediator.onError, err);
+                        if (err.message === 'task') {
+                            throw new Error(`Invalid ${mdl.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
+                        }
                     }
-                }
 
-                callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
+                    // throw error if it doesnt have any mediators
+                    if (!mdl.hasMediators()) throw err;
+
+                    // throw error if it has mediators but it does not have onError
+                    if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
+
+                    mdl.mediatorInstance.runOnError(mdl.mediator.onError, err);
+                }
             }
 
             function getResult() {

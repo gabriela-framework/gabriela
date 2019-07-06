@@ -163,10 +163,7 @@ factory.validatePlugin = function(plugin) {
         const exposedEvents = plugin.exposedEvents;
 
         for (const event of exposedEvents) {
-            if (!is('object', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedEvents' must be of object type`);
-
-            if (!hasKey(event, 'name') && is('string', event.name)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Exposed event definition 'name' property must exist and must be a string`);
-            if (!hasKey(event, 'init') && is('string', event.init)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Exposed event definition 'init' property must exist and must be a function`);
+            if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedEvents' must be a string`);
         }
     }
 };

@@ -1,7 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const moduleFactory = require('../module/moduleFactory');
 const Mediator = require('../events/mediator');
-const ExposedEvents = require('../events/exposedEvents');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
@@ -12,7 +11,7 @@ function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     plugin.compiler = c;
 }
 
-function _replaceModules(plugin, config) {
+function _replaceModules(plugin, config, exposedEventsInstance) {
     if (plugin.modules && plugin.modules.length > 0) {
         const {modules} = plugin;
         const factoryModules = [];
@@ -23,29 +22,33 @@ function _replaceModules(plugin, config) {
                 mediatorInstance: plugin.mediatorInstance,
             };
 
-            factoryModules.push(moduleFactory(mdl, config, plugin.compiler.root, plugin.compiler, plugin.sharedCompiler));
+            factoryModules.push(moduleFactory(
+                mdl,
+                config,
+                plugin.compiler.root,
+                plugin.compiler,
+                plugin.sharedCompiler,
+                exposedEventsInstance,
+            ));
         }
 
         plugin.modules = factoryModules;
     }
 }
 
-function _bindEventSystem(pluginObject, config) {
+function _bindEventSystem(pluginObject, config, exposedEventsInstance) {
     pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
-    const exposedEventsInstance = new ExposedEvents();
 
     if (pluginObject.hasExposedEvents()) {
         const exposedEvents = pluginObject.exposedEvents;
 
-        for (const eventDefinition of exposedEvents) {
-            exposedEventsInstance.add(eventDefinition);
+        for (const name of exposedEvents) {
+            exposedEventsInstance.add(name);
         }
     }
-
-    pluginObject.exposedEventsInstance = exposedEventsInstance;
 }
 
-function _createPluginObject(plugin, rootCompiler, sharedCompiler, config) {
+function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, exposedEventsInstance) {
     const pluginObject = {
         name: plugin.name,
         modules: plugin.modules,
@@ -69,14 +72,14 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config) {
     };
 
     _createCompiler(pluginObject, rootCompiler, sharedCompiler);
-    _bindEventSystem(pluginObject, config);
-    _replaceModules(pluginObject, config);
+    _bindEventSystem(pluginObject, config, exposedEventsInstance);
+    _replaceModules(pluginObject, config, exposedEventsInstance);
 
     return pluginObject;
 }
 
-function factory(plugin, config, rootCompiler, sharedCompiler) {
-    return _createPluginObject(plugin, rootCompiler, sharedCompiler, config);
+function factory(plugin, config, rootCompiler, sharedCompiler, exposedEventsInstance) {
+    return _createPluginObject(plugin, rootCompiler, sharedCompiler, config, exposedEventsInstance);
 }
 
 module.exports = factory;

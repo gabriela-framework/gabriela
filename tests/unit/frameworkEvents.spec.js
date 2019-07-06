@@ -1087,15 +1087,15 @@ describe('Framework events', function() {
         let pluginEventCalled = false;
 
         const mdl = {
-            name: 'module',
+            name: 'propagationModule',
             mediator: {
                 onEvent: function() {
                     mdlEventCalled = true;
-                }
+                },
             },
             moduleLogic: [function() {
                 this.mediator.emit('onEvent', null, true);
-            }]
+            }],
         };
 
         const plugin = {
@@ -1103,7 +1103,7 @@ describe('Framework events', function() {
             mediator: {
                 onEvent: function() {
                     pluginEventCalled = true;
-                }
+                },
             },
             modules: [mdl],
         };
