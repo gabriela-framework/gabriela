@@ -72,7 +72,7 @@ function _overrideMiddleware(mdl, existing) {
     }
 }
 
-function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
+function instance(config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
     const modules = {};
 
     const tree = [];
@@ -80,7 +80,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     function addModule(mdl) {
         Validator.moduleValidator(mdl);
 
-        modules[mdl.name] = moduleFactory(deepCopy(mdl), config, rootCompiler, null, sharedCompiler, exposedMediator);
+        modules[mdl.name] = moduleFactory(deepCopy(mdl), config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
     }
 
     /**
@@ -92,6 +92,20 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
         return await runConstructedModule(modules[name], config);
+    }
+
+    async function runAll() {
+        const keys = Object.keys(modules);
+
+        const state = {};
+
+        for (const name of keys) {
+            const res = await this.runModule(modules[name].name);
+
+            state[modules[name].name] = res;
+        }
+
+        return deepCopy(state);
     }
 
     async function runConstructedModule(mdl) {
@@ -137,11 +151,11 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     this.removeModule = removeModule;
 
     this.runModule = runModule;
-    this.runConstructedModule = runConstructedModule;
+    this.runAll = runAll;
 }
 
-function factory(config, rootCompiler, sharedCompiler, exposedMediator) {
-    return new instance(config, rootCompiler, sharedCompiler, exposedMediator);
+function factory(config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
+    return new instance(config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
 }
 
 module.exports = factory;

@@ -23,7 +23,7 @@ async function _runPluginTree(plugins, config, rootCompiler, sharedCompiler) {
     }
 }
 
-function instance() {
+function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const plugins = {};
 
     function addPlugin(plugin) {
@@ -31,7 +31,7 @@ function instance() {
 
         if (hasKey(plugins, plugin.name)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
 
-        plugins[plugin.name] = deepCopy(plugin);
+        plugins[plugin.name] = pluginFactory(deepCopy(plugin), config, rootCompiler, sharedCompiler, exposedMediator);
     }
 
     function hasPlugin(name) {
@@ -57,12 +57,12 @@ function instance() {
         return false;
     }
 
-    this.runPlugin = async function(name, config, rootCompiler, sharedCompiler, exposedMediatorsInstance) {
+    this.runPlugin = async function(name) {
         if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
         if (name) {
-            const pluginModel = pluginFactory(plugins[name], config, rootCompiler, sharedCompiler, exposedMediatorsInstance);
+            const pluginModel = plugins[name];
 
             if (pluginModel.hasPlugins()) {
                 await _runPluginTree(pluginModel.plugins);
@@ -79,8 +79,8 @@ function instance() {
     this.removePlugin = removePlugin;
 }
 
-function factory(config) {
-    return new instance(config);
+function factory(config, rootCompiler, sharedCompiler, exposedMediator) {
+    return new instance(config, rootCompiler, sharedCompiler, exposedMediator);
 }
 
 module.exports = factory;

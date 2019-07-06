@@ -23,16 +23,12 @@ function factory() {
             'onError',
         ]);
 
-        const moduleTree = new ModuleTree();
-
         async function run() {
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
-            if (plugin.modules && plugin.modules.length > 0) {
+            if (plugin.hasModules()) {
                 try {
-                    for (const mdl of plugin.modules) {
-                        await moduleTree.runConstructedModule(mdl);
-                    }
+                    await plugin.moduleTree.runAll();
                 } catch (err) {
                     // throw error if it doesnt have any mediators
                     if (!plugin.hasMediators()) throw err;

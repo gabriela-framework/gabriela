@@ -8,6 +8,7 @@ const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
 const Server = require('./server/server');
 const Validator = require('./misc/validator');
+const ExposedMediator = require('./events/exposedMediator');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -16,8 +17,8 @@ module.exports = function _asServer(receivedConfig) {
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
-    const moduleTree = new ModuleTree(config, rootCompiler, sharedCompiler, null);
-    const pluginTree = new PluginTree(config, rootCompiler, sharedCompiler, null);
+    const moduleTree = new ModuleTree(config, rootCompiler, null, sharedCompiler, new ExposedMediator());
+    const pluginTree = new PluginTree(config, rootCompiler, null, sharedCompiler, new ExposedMediator());
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
