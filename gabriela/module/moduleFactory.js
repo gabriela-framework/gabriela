@@ -117,17 +117,17 @@ function _createModuleModel(mdl) {
     };
 }
 
-function _bindEventSystem(moduleObject, config, exposedEvents) {
+function _bindEventSystem(moduleObject, config, exposedMediator) {
     moduleObject.mediatorInstance = Mediator.create(moduleObject, config);
     moduleObject.emitterInstance = Emitter.create(moduleObject, config);
-    moduleObject.exposedEventsInstance = exposedEvents;
+    moduleObject.exposedMediatorInstance = exposedMediator;
 }
 
 /**
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
-function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedEvents) {
+function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
     const moduleObject = _createModuleModel(mdl, config);
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
@@ -135,11 +135,11 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, expo
     _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler);
     _resolveMiddleware(moduleObject, config);
 
-    _bindEventSystem(moduleObject, config, exposedEvents);
+    _bindEventSystem(moduleObject, config, exposedMediator);
 
     return moduleObject;
 }
 
-module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedEvents) {
-    return new factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedEvents);
+module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
+    return new factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
 };

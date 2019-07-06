@@ -7,7 +7,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
-const ExposedEvents = require('../../gabriela/events/exposedEvents');
+const ExposedMediator = require('../../gabriela/events/exposedMediator');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Exposed (third party) events tests', () => {
@@ -23,7 +23,7 @@ describe('Exposed (third party) events tests', () => {
             }
         });
 
-        const exposedEvents = new ExposedEvents(rootCompiler);
+        const exposedMediator = new ExposedMediator(rootCompiler);
 
         const onEmailInvalidEvent = {
             name: 'onEmailInvalid',
@@ -39,11 +39,11 @@ describe('Exposed (third party) events tests', () => {
             }
         };
 
-        exposedEvents.add(onEmailInvalidEvent);
-        exposedEvents.add(onNameInvalidEvent);
+        exposedMediator.add(onEmailInvalidEvent);
+        exposedMediator.add(onNameInvalidEvent);
 
-        expect(exposedEvents.has(onEmailInvalidEvent.name)).to.be.equal(true);
-        expect(exposedEvents.has(onNameInvalidEvent.name)).to.be.equal(true);
+        expect(exposedMediator.has(onEmailInvalidEvent.name)).to.be.equal(true);
+        expect(exposedMediator.has(onNameInvalidEvent.name)).to.be.equal(true);
 
         const compiler = Compiler.create();
 
@@ -70,9 +70,9 @@ describe('Exposed (third party) events tests', () => {
             }
         };
 
-        exposedEvents.add(eventDefinition);
+        exposedMediator.add(eventDefinition);
 
-        exposedEvents.emit('event', compiler, {
+        exposedMediator.emit('event', compiler, {
             num: 5,
             aString: 'string',
         });

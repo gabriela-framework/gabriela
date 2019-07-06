@@ -9,7 +9,7 @@ const moduleFactory = require('../../gabriela/module/moduleFactory');
 const pluginFactory = require('../../gabriela/plugin/pluginFactory');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 const Mediator = require('../../gabriela/events/mediator');
-const ExposedEvents = require('../../gabriela/events/exposedEvents');
+const ExposedMediator = require('../../gabriela/events/exposedMediator');
 
 describe('Test gabriela internals', () => {
     it('should properly call properties on a module object created by moduleFactory', () => {
@@ -31,7 +31,7 @@ describe('Test gabriela internals', () => {
             'hasMediators',
             'hasEmitters',
             'emitter',
-            'exposedEventsInstance',
+            'exposedMediatorInstance',
         ];
 
         const mdl = {
@@ -59,7 +59,7 @@ describe('Test gabriela internals', () => {
             }
         };
 
-        const moduleObject = moduleFactory(mdl, {}, Compiler.create(), Compiler.create(), Compiler.create(), new ExposedEvents());
+        const moduleObject = moduleFactory(mdl, {}, Compiler.create(), Compiler.create(), Compiler.create(), new ExposedMediator());
 
         const moduleObjectProps = Object.keys(moduleObject);
 
@@ -82,7 +82,7 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.isInPlugin()).to.be.equal(true);
         expect(moduleObject.hasEmitters()).to.be.equal(true);
         expect(moduleObject.emitter).to.be.a('object');
-        expect(moduleObject.exposedEventsInstance).to.be.a('object');
+        expect(moduleObject.exposedMediatorInstance).to.be.a('object');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {
@@ -97,8 +97,8 @@ describe('Test gabriela internals', () => {
             'plugins',
             'mediator',
             'mediatorInstance',
-            'exposedEvents',
-            'hasExposedEvents',
+            'exposedMediators',
+            'hasExposedMediators',
         ];
 
         const plugin = {
@@ -112,11 +112,11 @@ describe('Test gabriela internals', () => {
             null,
             Compiler.create(),
             Compiler.create(),
-            new ExposedEvents(),
+            new ExposedMediator(),
         );
 
         const pluginModelProps = Object.keys(pluginModel);
-
+        
         expect(pluginModelProps).to.have.members(pluginInterface);
 
         expect(pluginModel).to.have.property('name', 'name');
@@ -127,11 +127,11 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasModules).to.be.a('function');
         expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
-        expect(pluginModel.exposedEvents).to.be.a('undefined');
+        expect(pluginModel.exposedMediators).to.be.a('undefined');
         expect(pluginModel.plugins).to.be.a('array');
         expect(pluginModel.mediatorInstance).to.be.a('object');
-        expect(pluginModel.exposedEvents).to.be.a('undefined');
-        expect(pluginModel.hasExposedEvents()).to.be.equal(false);
+        expect(pluginModel.exposedMediators).to.be.a('undefined');
+        expect(pluginModel.hasExposedMediators()).to.be.equal(false);
 
     });
 

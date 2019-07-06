@@ -50,7 +50,7 @@ function factory() {
                         emit(name, customArgs, propagate = false) {
                             if (!is('boolean', propagate)) throw new Error(`Invalid mediator event. Propagation argument for event '${name}' has to be a boolean`);
 
-                            if (mdl.exposedEventsInstance.has(name)) {
+                            if (mdl.exposedMediatorInstance.has(name)) {
                                 return;
                             }
 

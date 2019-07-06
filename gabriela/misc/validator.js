@@ -157,13 +157,13 @@ factory.validatePlugin = function(plugin) {
         }
     }
 
-    if (hasKey(plugin, 'exposedEvents')) {
-        if (!Array.isArray(plugin.exposedEvents)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'exposedEvents' must be an array`);
+    if (hasKey(plugin, 'exposedMediators')) {
+        if (!Array.isArray(plugin.exposedMediators)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'exposedMediators' must be an array`);
 
-        const exposedEvents = plugin.exposedEvents;
+        const exposedMediators = plugin.exposedMediators;
 
-        for (const event of exposedEvents) {
-            if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedEvents' must be a string`);
+        for (const event of exposedMediators) {
+            if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedMediators' must be a string`);
         }
     }
 };

@@ -11,7 +11,7 @@ const Mediator = require('../../gabriela/events/mediator');
 const Emitter = require('../../gabriela/events/emitter');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 const GenericMediator = require('../../gabriela/events/genericMediator');
-const ExposedEvents = require('../../gabriela/events/exposedEvents');
+const ExposedMediator = require('../../gabriela/events/exposedMediator');
 
 describe('Failing framework events', () => {
     it('a concrete server mediator should fail to compile a dependency if it does not exist', () => {
@@ -298,14 +298,14 @@ describe('Failing framework events', () => {
     });
 
     it('exposed event should throw an exception if it already exists', () => {
-        const exposedEvents = new ExposedEvents();
+        const exposedMediator = new ExposedMediator();
 
-        exposedEvents.add('event1');
-        exposedEvents.add('event2');
+        exposedMediator.add('event1');
+        exposedMediator.add('event2');
 
         let entersException = false;
         try {
-            exposedEvents.add('event1');
+            exposedMediator.add('event1');
         } catch (e) {
             entersException = true;
 
@@ -316,11 +316,11 @@ describe('Failing framework events', () => {
     });
 
     it('should throw an error if an emitted exposed event does not exist', () => {
-        const exposedEvents = new ExposedEvents();
+        const exposedMediator = new ExposedMediator();
 
         let entersException = false;
         try {
-            exposedEvents.emit('nonExistent');
+            exposedMediator.emit('nonExistent');
         } catch (e) {
             entersException = true;
 
