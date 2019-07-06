@@ -17,15 +17,15 @@ function _assignMediatorEvents(plugin, excludes) {
 
 function factory() {
     function create(plugin) {
+        _assignMediatorEvents(plugin, [
+            'onPluginStarted',
+            'onPluginFinished',
+            'onError',
+        ]);
+
         const moduleTree = new ModuleTree();
 
         async function run(config) {
-            _assignMediatorEvents(plugin, [
-                'onPluginStarted',
-                'onPluginFinished',
-                'onError',
-            ]);
-
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
             if (plugin.modules && plugin.modules.length > 0) {
