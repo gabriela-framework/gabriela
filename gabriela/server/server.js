@@ -1,6 +1,5 @@
-const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
+const restify = require('restify');
+
 const ServerMediator = require('../events/genericMediator');
 const {is, hasKey} = require('../util/util');
 
@@ -32,6 +31,8 @@ function Server(
         pluginInterface, 
         moduleInterface,
     ) {
+
+    let server = restify.createServer();
     
     if (is('object', events) && hasKey(events, 'onAppStarted')) {
         if (!is('function', events.onAppStarted)) {
@@ -43,20 +44,8 @@ function Server(
 
     opts.port = (opts.port) ? opts.port : 3000;
 
-    let serverInstance = null;
-
-    const native = {
-        http,
-    };
-
-    function listen() {
-        if (serverInstance) {
-            process.emitWarning(`Gabriela warning. A server created with this instance of Gabriela is already running. If you which to run another server, create a new instance of Gabriela and run a new server with it.`);
-
-            return;
-        }
-
-        serverInstance = native.http.listen(opts.port, listenCallback.bind(
+    function run() {
+        server.listen(opts.port, listenCallback.bind(
             this,
             opts,
             events,
@@ -67,14 +56,12 @@ function Server(
     }
 
     function close() {
-        serverInstance.close();
+        server.close();
 
-        serverInstance = null;
-
-        console.log('Server closed');
+        server = null;
     }
 
-    this.listen = listen;
+    this.run = run;
     this.close = close;
 }
 

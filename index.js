@@ -1,31 +1,27 @@
-const gabriela = require('./gabriela/gabriela');
+const mdl = {
+    name: 'httpModule',
+    http: {
+        route: {
+            name: 'index',
+            path: '/',
+            preRequest(http) {
 
-const userServiceDefinition = {
-    name: 'userService',
-    scope: 'public',
-    init: function() {
-        function UserService() {}
+            },
+            preResponse(http) {
 
-        return new UserService();
-    }
+            },
+            postResponse() {
+
+            }
+        }
+    },
+    moduleLogic: [function(state) {
+        state.response = 'string';
+    }],
 };
 
-const mdl = {
-    name: 'module',
-    dependencies: [userServiceDefinition],
-}
-
-const g = gabriela.asServer({
-    server: {
-        port: 4000,
-    },
-});
+const g = gabriela.asServer();
 
 g.addModule(mdl);
 
-g.startApp({
-    onAppStarted: function(userService) {
-        console.log(userService);
-        this.server.close();
-    }
-});
+g.startApp();

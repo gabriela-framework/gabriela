@@ -106,7 +106,7 @@ module.exports = function _asServer(receivedConfig) {
                 moduleInterface,
             );
 
-            server.listen();
+            server.run();
         }
     };
 
