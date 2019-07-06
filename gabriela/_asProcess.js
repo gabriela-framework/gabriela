@@ -5,6 +5,7 @@ const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
 const Process = require('./process/process');
+const ExposedEvents = require('./events/exposedEvents');
 
 module.exports = function _asRunner(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -13,6 +14,7 @@ module.exports = function _asRunner(receivedConfig) {
     const pluginTree = new PluginTree();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
+    const exposedEvents = new ExposedEvents();
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
@@ -23,7 +25,8 @@ module.exports = function _asRunner(receivedConfig) {
             config,
             rootCompiler,
             null,
-            sharedCompiler
+            sharedCompiler,
+            exposedEvents,
         );
 
         const getModules = (this.getAll) ? this.getAll : this.getModules;
@@ -38,7 +41,8 @@ module.exports = function _asRunner(receivedConfig) {
                 modules[name].name,
                 config,
                 rootCompiler,
-                null, sharedCompiler
+                null, sharedCompiler,
+                exposedEvents,
             );
 
             state[modules[name].name] = res;
@@ -52,7 +56,8 @@ module.exports = function _asRunner(receivedConfig) {
             name,
             config,
             rootCompiler,
-            sharedCompiler
+            sharedCompiler,
+            exposedEvents,
         );
 
         const getPlugins = (this.getAll) ? this.getAll : this.getPlugins;
@@ -65,7 +70,8 @@ module.exports = function _asRunner(receivedConfig) {
                 plugins[name].name,
                 config,
                 rootCompiler,
-                sharedCompiler
+                sharedCompiler,
+                exposedEvents,
             );
         }
     };
