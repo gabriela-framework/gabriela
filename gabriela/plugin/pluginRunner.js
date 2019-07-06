@@ -23,20 +23,24 @@ function factory() {
             'onError',
         ]);
 
-        async function run() {
+        const moduleTree = new ModuleTree();
+
+        async function run(config) {
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
-            if (plugin.hasModules()) {
-                try {
-                    await plugin.moduleTree.runAll();
-                } catch (err) {
-                    // throw error if it doesnt have any mediators
-                    if (!plugin.hasMediators()) throw err;
+            if (plugin.modules && plugin.modules.length > 0) {
+                for (const mdl of plugin.modules) {
+                    try {
+                        await moduleTree.runConstructedModule(mdl, config);
+                    } catch (err) {
+                        // throw error if it doesnt have any mediators
+                        if (!plugin.hasMediators()) throw err;
 
-                    // throw error if it has mediators but it does not have onError
-                    if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
+                        // throw error if it has mediators but it does not have onError
+                        if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
 
-                    plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
+                        plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
+                    }
                 }
             }
 
