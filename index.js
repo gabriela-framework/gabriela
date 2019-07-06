@@ -1,13 +1,16 @@
+const gabriela = require('./gabriela/gabriela');
+
 const mdl = {
     name: 'httpModule',
     http: {
         route: {
             name: 'index',
             path: '/',
+            method: 'get',
             preRequest(http) {
 
             },
-            preResponse(http) {
+            preResponse(state) {
 
             },
             postResponse() {

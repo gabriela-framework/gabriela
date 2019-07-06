@@ -32,7 +32,9 @@ function Server(
         moduleInterface,
     ) {
 
-    let server = restify.createServer();
+    let server = restify.createServer({
+        strictNext: true,
+    });
     
     if (is('object', events) && hasKey(events, 'onAppStarted')) {
         if (!is('function', events.onAppStarted)) {
