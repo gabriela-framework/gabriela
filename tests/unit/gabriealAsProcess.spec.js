@@ -135,6 +135,31 @@ describe('Gabriela as process tests', () => {
         expect(g.getModule(name)).to.be.a('undefined');
     });
 
+    it('should shuffle removing and adding new modules without problems', (done) => {
+        const mdl = {
+            name: 'name',
+            moduleLogic: [function() {
+
+            }],
+        };
+
+        const g = gabriela.asProcess();
+
+        g.addModule(mdl);
+
+        g.removeModule('name');
+
+        g.runModule('name').then(() => {
+            assert.fail(`Test failed. Module with name '${mdl.name}' should fail`)
+        }).catch((e) => {
+            g.addModule(mdl);
+
+            g.runModule('name').then(() => {
+                done();
+            });
+        });
+    });
+
     it('should assert that there is not need to wait for async flow functions if they are not present as arguments', () => {
         let preLogicTransformerExecuted = false,
             validatorsExecuted = false,

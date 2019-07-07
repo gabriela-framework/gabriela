@@ -139,6 +139,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     function removeModule(name) {
         if (!this.hasModule(name)) return false;
 
+        delete constructed[name];
         delete modules[name];
 
         return true;
