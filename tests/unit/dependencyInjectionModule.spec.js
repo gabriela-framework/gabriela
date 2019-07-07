@@ -411,7 +411,7 @@ describe('Module dependency injection tests', function() {
             }]
         });
 
-        g.runModule().then(() => {
+        return g.runModule().then(() => {
             expect(entersOverridenLogic1).to.be.equal(true);
             expect(entersLogic2).to.be.equal(true);
             expect(entersOriginalLogic1).to.be.equal(false);
