@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const faker = require('faker');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -138,6 +139,88 @@ describe('Gabriela server tests', function() {
                 expect(pluginModule2Executed).to.be.equal(true);
                 expect(standaloneModuleExecuted).to.be.equal(true);
 
+                this.server.close();
+
+                done();
+            }
+        });
+    });
+
+    it('should declare two routes within multiple modules within a plugin', (done) => {
+        const g = gabriela.asServer();
+
+        const userRepositoryDefinition = {
+            name: 'userRepository',
+            scope: 'public',
+            init: function() {
+                function UserRepository() {
+                    this.getUsers = function() {
+                        return [
+                            {
+                                name: faker.name.firstName(),
+                                lastName: faker.name.lastName(),
+                                email: faker.internet.email(),
+                                city: faker.address.city(),
+                            },
+                            {
+                                name: faker.name.firstName(),
+                                lastName: faker.name.lastName(),
+                                email: faker.internet.email(),
+                                city: faker.address.city(),
+                            }
+                        ]
+                    }
+                }
+
+                return new UserRepository();
+            }
+        };
+
+        const getUsersModule = {
+            name: 'getUsers',
+            dependencies: [userRepositoryDefinition],
+            http: {
+                route: {
+                    name: 'getUsers',
+                    path: '/users',
+                    method: 'GET',
+                }
+            },
+            moduleLogic: [{
+                name: 'getUsers',
+                middleware: function(userRepository) {
+
+                }
+            }]
+        };
+
+        const findUserModule = {
+            name: 'findUser',
+            dependencies: [userRepositoryDefinition],
+            http: {
+                route: {
+                    name: 'findUser',
+                    path: '/user/:id',
+                    method: 'GET',
+                }
+            },
+            moduleLogic: [{
+                name: 'getUsers',
+                middleware: function(userRepository) {
+
+                }
+            }],
+        };
+
+        const app = gabriela.asServer();
+
+        app.addPlugin({
+            name: 'userManagement',
+            modules: [getUsersModule, findUserModule],
+        });
+
+        g.startApp({
+            onAppStarted() {
                 this.server.close();
 
                 done();

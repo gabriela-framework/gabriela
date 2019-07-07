@@ -14,10 +14,10 @@ module.exports = function _asServer(receivedConfig) {
 
     Validator.validateServerOptions(config.server);
 
-    const moduleTree = new ModuleTree();
-    const pluginTree = new PluginTree();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
+    const moduleTree = new ModuleTree();
+    const pluginTree = new PluginTree();
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';

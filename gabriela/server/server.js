@@ -25,7 +25,7 @@ async function listenCallback(
 }
 
 function Server(
-        options, 
+        options,
         events,
         rootCompiler,
         pluginInterface, 
