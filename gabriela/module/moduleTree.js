@@ -37,7 +37,7 @@ async function runTree(tree) {
     return childState;
 }
 
-function overrideMiddleware(mdl, existing) {
+function _overrideMiddleware(mdl, existing) {
     for (const type of middlewareTypes) {
         if (mdl[type]) {
             const middlewareList = mdl[type];
@@ -121,11 +121,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         return deepCopy(state);
     }
 
-    // hold the parent ModuleTree
-    this.parent = null;
-
-    this.addModule = addModule;
-    this.overrideModule = function(mdl, parentCompiler) {
+    function overrideModule(mdl, parentCompiler) {
         Validator.moduleValidator(mdl);
 
         if (!this.hasModule(mdl.name)) {
@@ -134,23 +130,29 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
 
         const existing = this.getModule(mdl.name);
 
-        overrideMiddleware(mdl, existing);
+        _overrideMiddleware(mdl, existing);
 
         modules[mdl.name] = deepCopy(existing);
         constructed[mdl.name] = moduleFactory(modules[mdl.name], config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
-    };
+    }
 
-    this.hasModule = (name) => hasKey(modules, name);
-    this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
-    this.getModules = () => deepCopy(modules);
-    this.removeModule = (name) => {
+    function removeModule(name) {
         if (!this.hasModule(name)) return false;
 
         delete modules[name];
 
         return true;
-    };
+    }
 
+    // hold the parent ModuleTree
+    this.parent = null;
+
+    this.addModule = addModule;
+    this.overrideModule = overrideModule;
+    this.hasModule = (name) => hasKey(modules, name);
+    this.getModule = (name) => (this.hasModule(name)) ? deepCopy(modules[name]) : undefined;
+    this.getModules = () => deepCopy(modules);
+    this.removeModule = removeModule;
     this.runModule = runModule;
     this.runTree = runTree;
 }

@@ -22,33 +22,13 @@ module.exports = function _asRunner(receivedConfig) {
     const runModule = async function(name) {
         if (name) return await moduleTree.runModule(name);
 
-        const getModules = (this.getAll) ? this.getAll : this.getModules;
-
-        const modules = getModules();
-        const keys = Object.keys(modules);
-
-        const state = {};
-
-        for (const name of keys) {
-            const res = await moduleTree.runModule(modules[name].name);
-
-            state[modules[name].name] = res;
-        }
-
-        return deepCopy(state);
+        return moduleTree.runTree();
     };
 
     const runPlugin = async function(name) {
         if (name) return pluginTree.runPlugin(name);
 
-        const getPlugins = (this.getAll) ? this.getAll : this.getPlugins;
-
-        const plugins = getPlugins();
-        const keys = Object.keys(plugins);
-
-        for (const name of keys) {
-            await pluginTree.runPlugin(plugins[name].name);
-        }
+        return pluginTree.runTree();
     };
 
     const moduleInterface = {

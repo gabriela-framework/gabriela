@@ -1,7 +1,5 @@
 "use strict";
 
-const deepCopy = require('deepcopy');
-
 const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
@@ -27,29 +25,13 @@ module.exports = function _asServer(receivedConfig) {
     async function runModule(name) {
         if (name) return await moduleTree.runModule(name);
 
-        const modules = this.getAll();
-        const keys = Object.keys(modules);
-
-        const state = {};
-
-        for (const name of keys) {
-            const res = await moduleTree.runModule(modules[name].name);
-
-            state[modules[name].name] = res;
-        }
-
-        return deepCopy(state);
+        return moduleTree.runTree();
     }
 
     async function runPlugin(name) {
         if (name) return pluginTree.runPlugin(name);
 
-        const plugins = this.getAll();
-        const keys = Object.keys(plugins);
-
-        for (const name of keys) {
-            await pluginTree.runPlugin(plugins[name].name);
-        }
+        return pluginTree.runTree();
     }
 
     const moduleInterface = {

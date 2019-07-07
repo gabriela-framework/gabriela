@@ -57,7 +57,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         return false;
     }
 
-    this.runPlugin = async function(name) {
+    async function runPlugin(name) {
         if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
@@ -70,13 +70,23 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
 
             return await _runConstructedPlugin(pluginModel, config);
         }
-    };
+    }
+
+    async function runTree() {
+        const keys = Object.keys(plugins);
+
+        for (const name of keys) {
+            await this.runPlugin(plugins[name].name);
+        }
+    }
 
     this.addPlugin = addPlugin;
     this.hasPlugin = hasPlugin;
     this.getPlugin = getPlugin;
     this.getPlugins = getPlugins;
     this.removePlugin = removePlugin;
+    this.runPlugin = runPlugin;
+    this.runTree = runTree;
 }
 
 function factory(config, rootCompiler, sharedCompiler, exposedMediator) {
