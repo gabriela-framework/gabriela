@@ -21,7 +21,7 @@ function _replaceModules(plugin, config, exposedMediatorInstance) {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
             };
-
+/*
             factoryModules.push(moduleFactory(
                 mdl,
                 config,
@@ -29,21 +29,22 @@ function _replaceModules(plugin, config, exposedMediatorInstance) {
                 plugin.compiler,
                 plugin.sharedCompiler,
                 exposedMediatorInstance,
-            ));
+            ));*/
         }
 
-        plugin.modules = factoryModules;
+        //plugin.modules = factoryModules;
     }
 }
 
 function _bindEventSystem(pluginObject, config, exposedMediatorInstance) {
     pluginObject.mediatorInstance = Mediator.create(pluginObject, config);
+    pluginObject.exposedMediator = exposedMediatorInstance;
 
     if (pluginObject.hasExposedMediators()) {
         const exposedMediators = pluginObject.exposedMediators;
 
         for (const name of exposedMediators) {
-            exposedMediatorInstance.add(name);
+            pluginObject.exposedMediator.add(name);
         }
     }
 }

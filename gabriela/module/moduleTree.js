@@ -72,29 +72,29 @@ function overrideMiddleware(mdl, existing) {
     }
 }
 
-function instance() {
+function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const modules = {};
+    const constructed = {};
 
     const tree = [];
 
-    function addModule(mdl) {
+    function addModule(mdl, parentCompiler) {
         Validator.moduleValidator(mdl);
 
         modules[mdl.name] = deepCopy(mdl);
+
+        constructed[mdl.name] = moduleFactory(modules[mdl.name], config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
     }
 
     /**
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
      */
-    async function runModule(name, receivedConfig, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
+    async function runModule(name) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        const mdl = modules[name];
-        const constructedModule = moduleFactory(mdl, receivedConfig, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
-
-        return await runConstructedModule(constructedModule, receivedConfig);
+        return await runConstructedModule(constructed[name], config);
     }
 
     async function runConstructedModule(mdl, config) {
@@ -105,6 +105,20 @@ function instance() {
         await runner.run(childState, config);
 
         return runner.getResult();
+    }
+
+    async function runTree() {
+        const keys = Object.keys(modules);
+
+        const state = {};
+
+        for (const name of keys) {
+            const res = await this.runModule(modules[name].name);
+
+            state[modules[name].name] = res;
+        }
+
+        return deepCopy(state);
     }
 
     // hold the parent ModuleTree
@@ -137,11 +151,11 @@ function instance() {
     };
 
     this.runModule = runModule;
-    this.runConstructedModule = runConstructedModule;
+    this.runTree = runTree;
 }
 
-function factory(config) {
-    return new instance(config);
+function factory(config, rootCompiler, sharedCompiler, exposedMediator) {
+    return new instance(config, rootCompiler, sharedCompiler, exposedMediator);
 }
 
 module.exports = factory;

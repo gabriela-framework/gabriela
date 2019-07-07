@@ -10,24 +10,17 @@ const ExposedMediator = require('./events/exposedMediator');
 module.exports = function _asRunner(receivedConfig) {
     const config = configFactory.create(receivedConfig);
 
-    const moduleTree = new ModuleTree();
-    const pluginTree = new PluginTree();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
     const exposedMediator = new ExposedMediator();
+    const moduleTree = new ModuleTree(config, rootCompiler, sharedCompiler, exposedMediator);
+    const pluginTree = new PluginTree(config, rootCompiler, sharedCompiler, exposedMediator);
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
     const runModule = async function(name) {
-        if (name) return await moduleTree.runModule(
-            name,
-            config,
-            rootCompiler,
-            null,
-            sharedCompiler,
-            exposedMediator,
-        );
+        if (name) return await moduleTree.runModule(name);
 
         const getModules = (this.getAll) ? this.getAll : this.getModules;
 
@@ -37,13 +30,7 @@ module.exports = function _asRunner(receivedConfig) {
         const state = {};
 
         for (const name of keys) {
-            const res = await moduleTree.runModule(
-                modules[name].name,
-                config,
-                rootCompiler,
-                null, sharedCompiler,
-                exposedMediator,
-            );
+            const res = await moduleTree.runModule(modules[name].name);
 
             state[modules[name].name] = res;
         }
@@ -52,13 +39,7 @@ module.exports = function _asRunner(receivedConfig) {
     };
 
     const runPlugin = async function(name) {
-        if (name) return pluginTree.runPlugin(
-            name,
-            config,
-            rootCompiler,
-            sharedCompiler,
-            exposedMediator,
-        );
+        if (name) return pluginTree.runPlugin(name);
 
         const getPlugins = (this.getAll) ? this.getAll : this.getPlugins;
 
@@ -66,18 +47,14 @@ module.exports = function _asRunner(receivedConfig) {
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
-            await pluginTree.runPlugin(
-                plugins[name].name,
-                config,
-                rootCompiler,
-                sharedCompiler,
-                exposedMediator,
-            );
+            await pluginTree.runPlugin(plugins[name].name);
         }
     };
 
     const moduleInterface = {
-        add: moduleTree.addModule,
+        add(mdl) {
+            moduleTree.addModule(mdl);
+        },
         override: moduleTree.overrideModule,
         get: moduleTree.getModule,
         has: moduleTree.hasModule,

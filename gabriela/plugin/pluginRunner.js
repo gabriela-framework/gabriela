@@ -23,28 +23,36 @@ function factory() {
             'onError',
         ]);
 
-        const moduleTree = new ModuleTree();
-
         async function run(config) {
-            callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
+            const moduleTree = new ModuleTree(
+                config,
+                plugin.compiler.root,
+                plugin.sharedCompiler,
+                plugin.exposedMediator
+            );
+
 
             if (plugin.modules && plugin.modules.length > 0) {
-                for (const mdl of plugin.modules) {
-                    try {
-                        await moduleTree.runConstructedModule(mdl, config);
-                    } catch (err) {
-                        // throw error if it doesnt have any mediators
-                        if (!plugin.hasMediators()) throw err;
-
-                        // throw error if it has mediators but it does not have onError
-                        if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
-
-                        plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
+                try {
+                    for (const mdl of plugin.modules) {
+                        moduleTree.addModule(mdl, plugin.compiler);
                     }
+
+                    callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
+
+                    await moduleTree.runTree(config, plugin.compiler);
+
+                    callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
+                } catch (err) {
+                    // throw error if it doesnt have any mediators
+                    if (!plugin.hasMediators()) throw err;
+
+                    // throw error if it has mediators but it does not have onError
+                    if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
+
+                    plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
                 }
             }
-
-            callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
         }
 
         function instance() {

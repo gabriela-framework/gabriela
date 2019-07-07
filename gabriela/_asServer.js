@@ -8,6 +8,7 @@ const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
 const Server = require('./server/server');
 const Validator = require('./misc/validator');
+const ExposedMediator = require('./events/exposedMediator');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -16,20 +17,15 @@ module.exports = function _asServer(receivedConfig) {
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
-    const moduleTree = new ModuleTree();
-    const pluginTree = new PluginTree();
+    const exposedMediator = new ExposedMediator();
+    const moduleTree = new ModuleTree(config, rootCompiler, sharedCompiler, exposedMediator);
+    const pluginTree = new PluginTree(config, rootCompiler, sharedCompiler, exposedMediator);
 
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
     async function runModule(name) {
-        if (name) return await moduleTree.runModule(
-            name,
-            config,
-            rootCompiler,
-            null,
-            sharedCompiler
-        );
+        if (name) return await moduleTree.runModule(name);
 
         const modules = this.getAll();
         const keys = Object.keys(modules);
@@ -37,13 +33,7 @@ module.exports = function _asServer(receivedConfig) {
         const state = {};
 
         for (const name of keys) {
-            const res = await moduleTree.runModule(
-                modules[name].name,
-                config,
-                rootCompiler,
-                null,
-                sharedCompiler,
-            );
+            const res = await moduleTree.runModule(modules[name].name);
 
             state[modules[name].name] = res;
         }
@@ -52,18 +42,20 @@ module.exports = function _asServer(receivedConfig) {
     }
 
     async function runPlugin(name) {
-        if (name) return pluginTree.runPlugin(name, config, rootCompiler, sharedCompiler);
+        if (name) return pluginTree.runPlugin(name);
 
         const plugins = this.getAll();
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
-            await pluginTree.runPlugin(plugins[name].name, config, rootCompiler, sharedCompiler);
+            await pluginTree.runPlugin(plugins[name].name);
         }
     }
 
     const moduleInterface = {
-        add: moduleTree.addModule,
+        add(mdl) {
+            moduleTree.addModule(mdl);
+        },
         override: moduleTree.overrideModule,
         get: moduleTree.getModule,
         has: moduleTree.hasModule,

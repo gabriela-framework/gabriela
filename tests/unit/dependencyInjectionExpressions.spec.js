@@ -99,7 +99,7 @@ describe('Immediately executing middleware with dependency injection and express
         });
     });
 
-    it('should execute all middleware executed within a plugin', (done) => {
+    it('should execute all middleware executed within a plugin', () => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -130,21 +130,21 @@ describe('Immediately executing middleware with dependency injection and express
         };
 
         const module1 = {
-            name: 'middlewareModule',
+            name: 'middlewareModule1',
             dependencies: [validateEmailInit, validateNameInit],
             moduleLogic: ['validateEmail()']
         };
 
         const module2 = {
-            name: 'middlewareModule',
+            name: 'middlewareModule2',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateName()']
+            moduleLogic: ['validateName()'],
         };
 
         const module3 = {
-            name: 'middlewareModule',
+            name: 'middlewareModule3',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()', 'validateName()']
+            moduleLogic: ['validateEmail()', 'validateName()'],
         };
 
         const g = gabriela.asProcess();
@@ -154,15 +154,13 @@ describe('Immediately executing middleware with dependency injection and express
             modules: [module1, module2, module3],
         });
 
-        g.runPlugin().then(() => {
+        return g.runPlugin().then(() => {
             expect(emailMiddlewareCalled).to.be.equal(2);
             expect(nameMiddlewareCalled).to.be.equal(2);
-
-            done();
         });
     });
 
-    it('should resolve all dependencies of a dependency run as an expression as they were regular dependencies', (done) => {
+    it('should resolve all dependencies of a dependency run as an expression as they were regular dependencies', () => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -232,15 +230,13 @@ describe('Immediately executing middleware with dependency injection and express
             modules: [module1, module2, module3],
         });
 
-        g.runPlugin().then(() => {
+        return g.runPlugin().then(() => {
             expect(emailMiddlewareCalled).to.be.equal(2);
             expect(nameMiddlewareCalled).to.be.equal(2);
-
-            done();
         });
     });
 
-    it('should run compiler pass function with all the required parameters without the special property option', (done) => {
+    it('should run compiler pass function with all the required parameters without the special property option', () => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -340,11 +336,9 @@ describe('Immediately executing middleware with dependency injection and express
 
         g.addModule(module1);
 
-        g.runModule().then(() => {
+        return g.runModule().then(() => {
             expect(validateEmailCompilerPassCalled).to.be.equal(true);
             expect(validateNameCompilerPassCalled).to.be.equal(true);
-
-            done();
         });
     });
 });

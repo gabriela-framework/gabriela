@@ -31,7 +31,7 @@ describe('Test gabriela internals', () => {
             'hasMediators',
             'hasEmitters',
             'emitter',
-            'exposedMediatorInstance',
+            'exposedMediator',
         ];
 
         const mdl = {
@@ -82,7 +82,7 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.isInPlugin()).to.be.equal(true);
         expect(moduleObject.hasEmitters()).to.be.equal(true);
         expect(moduleObject.emitter).to.be.a('object');
-        expect(moduleObject.exposedMediatorInstance).to.be.a('object');
+        expect(moduleObject.exposedMediator).to.be.a('object');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {
@@ -99,6 +99,7 @@ describe('Test gabriela internals', () => {
             'mediatorInstance',
             'exposedMediators',
             'hasExposedMediators',
+            'exposedMediator',
         ];
 
         const plugin = {
@@ -132,6 +133,7 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.mediatorInstance).to.be.a('object');
         expect(pluginModel.exposedMediators).to.be.a('undefined');
         expect(pluginModel.hasExposedMediators()).to.be.equal(false);
+        expect(pluginModel.exposedMediator).to.be.a('object');
 
     });
 

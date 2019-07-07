@@ -109,7 +109,7 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             mediator: {
                 onModuleStarted: function(next, userService) {
@@ -136,7 +136,7 @@ describe('Framework events', function() {
 
         const g = gabriela.asProcess();
 
-        g.addModule(module);
+        g.addModule(mdl);
 
         return g.runModule().then(() => {
             expect(onModuleStarted).to.be.equal(true);
@@ -484,8 +484,8 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
-            name: 'eventsModule',
+        const mdl = {
+            name: 'asyncEventsModule',
             dependencies: [userServiceInit],
         };
 
@@ -493,7 +493,7 @@ describe('Framework events', function() {
 
         g.addPlugin({
             name: 'plugin',
-            modules: [module],
+            modules: [mdl],
             mediator: {
                 onPluginStarted: function(next, userService) {
                     requestPromise.get('https://www.google.com').then(() => {

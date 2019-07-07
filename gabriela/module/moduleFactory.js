@@ -120,7 +120,7 @@ function _createModuleModel(mdl) {
 function _bindEventSystem(moduleObject, config, exposedMediator) {
     moduleObject.mediatorInstance = Mediator.create(moduleObject, config);
     moduleObject.emitterInstance = Emitter.create(moduleObject, config);
-    moduleObject.exposedMediatorInstance = exposedMediator;
+    moduleObject.exposedMediator = exposedMediator;
 }
 
 /**
