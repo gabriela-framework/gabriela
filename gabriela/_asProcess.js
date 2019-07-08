@@ -4,6 +4,8 @@ const Compiler = require('./dependencyInjection/compiler');
 const configFactory = require('./configFactory');
 const Process = require('./process/process');
 const ExposedMediator = require('./events/exposedMediator');
+const moduleExecutionFactory = require('./module/executeFactory');
+const pluginExecutionFactory = require('./plugin/executeFactory');
 
 module.exports = function _asRunner(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -18,15 +20,15 @@ module.exports = function _asRunner(receivedConfig) {
     rootCompiler.name = 'root';
 
     const runModule = async function(name) {
-        if (name) return await moduleTree.runModule(name);
+        if (name) return await moduleTree.runModule(name, moduleExecutionFactory.bind(null, null));
 
-        return moduleTree.runTree();
+        return moduleTree.runTree(config, moduleExecutionFactory.bind(null, null));
     };
 
     const runPlugin = async function(name) {
-        if (name) return pluginTree.runPlugin(name);
+        if (name) return pluginTree.runPlugin(name, pluginExecutionFactory.bind(null, moduleExecutionFactory, null));
 
-        return pluginTree.runTree();
+        return pluginTree.runTree(pluginExecutionFactory.bind(null, moduleExecutionFactory, null));
     };
 
     const moduleInterface = {

@@ -22,7 +22,7 @@ function factory() {
 
         async function run(config, executeFactory) {
             if (plugin.modules && plugin.modules.length > 0) {
-                await executeFactory().call(null, plugin, config);
+                await executeFactory.call().call(null, plugin, config);
             }
         }
 

@@ -1,7 +1,7 @@
 const ModuleTree = require('../module/moduleTree');
 const callEvent = require('../events/callEvent');
 
-function factory(moduleExecuteFactory) {
+function factory(moduleExecuteFactory, server) {
     return async function(plugin, config) {
         const moduleTree = new ModuleTree(
             config,
@@ -17,7 +17,7 @@ function factory(moduleExecuteFactory) {
 
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
-            await moduleTree.runTree(config, moduleExecuteFactory);
+            await moduleTree.runTree(config, moduleExecuteFactory.bind(null, server));
 
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
         } catch (err) {

@@ -33,6 +33,7 @@ describe('Test gabriela internals', () => {
             'emitter',
             'exposedMediator',
             'isHttp',
+            'http',
         ];
 
         const mdl = {

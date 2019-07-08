@@ -9,8 +9,8 @@ async function runApp(
     pluginInterface,
     moduleInterface,
 ) {
-    await pluginInterface.run(pluginExecuteFactory);
-    await moduleInterface.run(moduleExecuteFactory);
+    await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
+    await moduleInterface.run(config, moduleExecuteFactory.bind(null, null));
 
     if (events && events.onAppStarted) {
         const mediator = GenericMediator.create(rootCompiler);

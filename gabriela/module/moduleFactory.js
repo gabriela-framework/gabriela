@@ -107,6 +107,7 @@ function _createModuleModel(mdl) {
         dependencies: mdl.dependencies,
         mediator: mdl.mediator,
         emitter: mdl.emitter,
+        http: mdl.http,
         isHttp() {
             return !!mdl.http;
         },

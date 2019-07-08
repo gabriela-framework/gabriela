@@ -13,9 +13,16 @@ async function _listenCallback(
     _runEvents.call(this, events, rootCompiler);
 }
 
-async function _runComponents(pluginInterface, moduleInterface) {
-    await pluginInterface.run(pluginExecuteFactory);
-    await moduleInterface.run(moduleExecuteFactory);
+/**
+ *
+ * Must be run before server because of app crucial plugins, like mongo, mysql, redis etc...
+ *
+ * TODO: Since 'config' is injected everywhere with for future functionality (?), here is an empty object. Create the
+ * TODO: functionality for config
+ */
+async function _runComponents(pluginInterface, moduleInterface, server) {
+    await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
+    await moduleInterface.run({}, moduleExecuteFactory.bind(null, server));
 }
 
 function _runEvents(events, rootCompiler) {
@@ -50,7 +57,7 @@ function Server(
     });
 
     function run() {
-        _runComponents(pluginInterface, moduleInterface).then(() => {
+        _runComponents(pluginInterface, moduleInterface, server).then(() => {
             server.listen(opts.port, _listenCallback.bind(
                 this,
                 opts,

@@ -26,3 +26,16 @@ const mdl = {
 const g = gabriela.asServer();
 
 g.addModule(mdl);
+
+function fn(someArg, second) {
+    console.log(someArg);
+    console.log(second);
+}
+
+const context = {
+    obj: {},
+};
+
+const bound = fn.bind(null, {});
+
+bound.call(null, null);

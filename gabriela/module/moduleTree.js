@@ -4,7 +4,6 @@ const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const { middlewareTypes } = require('../misc/types');
 const {hasKey, is} = require('../util/util');
-const defaultExecuteFactory = require('./executeFactory');
 
 /**
  * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
@@ -99,7 +98,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        return await _runConstructedModule(constructed[name], tree, config, (executeFactory) ? executeFactory : defaultExecuteFactory);
+        return await _runConstructedModule(constructed[name], tree, config, executeFactory);
     }
 
     async function runTree(config, executeFactory) {

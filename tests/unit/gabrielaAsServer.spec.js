@@ -80,7 +80,7 @@ describe('Gabriela server tests', function() {
         });
     });
 
-    it('should resolve a public depenendecy only of either a plugin or a module in the onAppStartedEvent', (done) => {
+    it('should resolve a public dependency only of either a plugin or a module in the onAppStartedEvent', (done) => {
         let standaloneModuleExecuted = false;
         let pluginModule1Executed = false;
         let pluginModule2Executed = false;
@@ -147,8 +147,6 @@ describe('Gabriela server tests', function() {
     });
 
     it('should declare two routes within multiple modules within a plugin', (done) => {
-        const g = gabriela.asServer();
-
         const userRepositoryDefinition = {
             name: 'userRepository',
             scope: 'public',
@@ -205,7 +203,7 @@ describe('Gabriela server tests', function() {
                 }
             },
             moduleLogic: [{
-                name: 'getUsers',
+                name: 'getUsersLogic',
                 middleware: function(userRepository) {
 
                 }
@@ -219,7 +217,7 @@ describe('Gabriela server tests', function() {
             modules: [getUsersModule, findUserModule],
         });
 
-        g.startApp({
+        app.startApp({
             onAppStarted() {
                 this.server.close();
 
@@ -227,6 +225,4 @@ describe('Gabriela server tests', function() {
             }
         });
     });
-
-
 });

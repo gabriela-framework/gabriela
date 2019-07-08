@@ -73,7 +73,7 @@ function factory() {
                 try {
                     if(mdl.mediatorInstance.has('onModuleStarted')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
 
-                    await executeFactory(mdl).call(null, mdl, context, [state, config]);
+                    await executeFactory.call(null, mdl).call(null, mdl, context, [state, config]);
 
                     if(mdl.mediatorInstance.has('onModuleFinished')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
                 } catch (err) {
