@@ -1,5 +1,3 @@
-const deepCopy = require('deepcopy');
-
 const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
@@ -68,6 +66,8 @@ module.exports = function _asRunner(receivedConfig) {
         runPlugin: pluginInterface.run,
 
         startApp(events) {
+            pluginInterface.run = pluginTree.runTree.bind(pluginTree);
+            moduleInterface.run = moduleTree.runTree.bind(moduleTree);
             const process = new Process(
                 config,
                 events,

@@ -3,16 +3,11 @@ const restify = require('restify');
 const ServerMediator = require('../events/genericMediator');
 const {is, hasKey} = require('../util/util');
 
-async function listenCallback(
+async function _listenCallback(
     opts,
     events,
     rootCompiler,
-    pluginInterface,
-    moduleInterface,
 ) {
-    await pluginInterface.run();
-    await moduleInterface.run();
-
     if (events && events.onAppStarted) {
         const mediator = ServerMediator.create(rootCompiler);
 
@@ -28,10 +23,13 @@ function Server(
         options,
         events,
         rootCompiler,
-        pluginInterface, 
+        pluginInterface,
         moduleInterface,
     ) {
-
+    /**
+     * 1. plugin and module interfaces cannot be changed to accommodate http
+     * 2. plugin and module trees cannot know that they are executed within an http context
+     */
     let server = restify.createServer({
         strictNext: true,
     });
@@ -47,13 +45,11 @@ function Server(
     opts.port = (opts.port) ? opts.port : 3000;
 
     function run() {
-        server.listen(opts.port, listenCallback.bind(
+        server.listen(opts.port, _listenCallback.bind(
             this,
             opts,
             events,
             rootCompiler,
-            pluginInterface,
-            moduleInterface,
         ));
     }
 

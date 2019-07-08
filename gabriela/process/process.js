@@ -1,4 +1,5 @@
 const GenericMediator = require('../events/genericMediator');
+const pluginExecuteFactory = require('../plugin/executeFactory');
 
 async function runApp(
     config,
@@ -7,7 +8,7 @@ async function runApp(
     pluginInterface,
     moduleInterface,
 ) {
-    await pluginInterface.run();
+    await pluginInterface.run(pluginExecuteFactory);
     await moduleInterface.run();
 
     if (events && events.onAppStarted) {

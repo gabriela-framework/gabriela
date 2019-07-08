@@ -1,7 +1,7 @@
-const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const callEvent = require('../events/callEvent');
 const {is} = require('../util/util');
+const executeFactory = require('./executeFactory');
 
 function _assignMediatorEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -71,20 +71,11 @@ function factory() {
                     emitter: mdl.emitterInstance,
                 });
 
-                const middleware = [
-                    mdl.security,
-                    mdl.preLogicTransformers,
-                    mdl.validators,
-                    mdl.moduleLogic,
-                    mdl.postLogicTransformers,
-                ];
-
                 try {
                     if(mdl.mediatorInstance.has('onModuleStarted')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
 
-                    for (const functions of middleware) {
-                        await runMiddleware.call(context, ...[mdl, functions, state, config]);
-                    }
+                    await executeFactory(mdl).call(null, mdl, context, [state, config]);
+                    //await executeFactory.call(null, mdl).call(mdl, context, [state, config]);
 
                     if(mdl.mediatorInstance.has('onModuleFinished')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
                 } catch (err) {

@@ -1,6 +1,3 @@
-const ModuleTree = require('../module/moduleTree');
-const callEvent = require('../events/callEvent');
-
 function _assignMediatorEvents(plugin, excludes) {
     if (plugin.hasMediators()) {
         const mediators = plugin.mediator;
@@ -23,35 +20,9 @@ function factory() {
             'onError',
         ]);
 
-        async function run(config) {
-            const moduleTree = new ModuleTree(
-                config,
-                plugin.compiler.root,
-                plugin.sharedCompiler,
-                plugin.exposedMediator
-            );
-
-
+        async function run(config, executeFactory) {
             if (plugin.modules && plugin.modules.length > 0) {
-                try {
-                    for (const mdl of plugin.modules) {
-                        moduleTree.addModule(mdl, plugin.compiler);
-                    }
-
-                    callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
-
-                    await moduleTree.runTree(config, plugin.compiler);
-
-                    callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
-                } catch (err) {
-                    // throw error if it doesnt have any mediators
-                    if (!plugin.hasMediators()) throw err;
-
-                    // throw error if it has mediators but it does not have onError
-                    if (plugin.hasMediators() && !plugin.mediator.onError) throw err;
-
-                    plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
-                }
+                await executeFactory().call(null, plugin, config);
             }
         }
 

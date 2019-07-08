@@ -2,29 +2,20 @@ const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
+const defaultExecuteFactory = require('./executeFactory');
 
 const {is, hasKey} = require('../util/util');
 
-async function _runConstructedPlugin(pluginModel, config) {
+async function _runConstructedPlugin(pluginModel, config, executeFactory) {
     const pluginRunner = PluginRunner.create(pluginModel);
 
-    return await pluginRunner.run(config);
-}
-
-async function _runPluginTree(plugins, config, rootCompiler, sharedCompiler) {
-    for (const item of plugins) {
-        const itemModel = pluginFactory(item, config, rootCompiler, sharedCompiler);
-
-        if (itemModel.hasPlugins()) {
-            await _runPluginTree(itemModel.plugins, config, rootCompiler, sharedCompiler);
-        }
-
-        await _runConstructedPlugin(itemModel, config, rootCompiler, sharedCompiler);
-    }
+    return await pluginRunner.run(config, executeFactory);
 }
 
 function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const plugins = {};
+
+    const constructed = {};
 
     function addPlugin(plugin) {
         Validator.validatePlugin(plugin);
@@ -32,6 +23,8 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (hasKey(plugins, plugin.name)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
 
         plugins[plugin.name] = deepCopy(plugin);
+
+        constructed[plugin.name] = pluginFactory(plugins[plugin.name], config, rootCompiler, sharedCompiler, exposedMediator);
     }
 
     function hasPlugin(name) {
@@ -53,30 +46,30 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree error. Plugin with name '${name}' does not exist`);
 
         delete plugins[name];
+        delete constructed[name];
 
         return false;
     }
 
-    async function runPlugin(name) {
+    async function runPlugin(name, executeFactory) {
         if (!is('string', name)) throw new Error(`Plugin tree runtime error. Invalid plugin name type. Plugin name must be a string`);
         if (!this.hasPlugin(name)) throw new Error(`Plugin tree runtime error. Plugin with name '${name}' does not exist`);
 
         if (name) {
-            const pluginModel = pluginFactory(plugins[name], config, rootCompiler, sharedCompiler, exposedMediator);
+            const pluginModel = constructed[name];
 
             if (pluginModel.hasPlugins()) {
-                await _runPluginTree(pluginModel.plugins);
             }
 
-            return await _runConstructedPlugin(pluginModel, config);
+            return await _runConstructedPlugin(pluginModel, config, (executeFactory) ? executeFactory : defaultExecuteFactory);
         }
     }
 
-    async function runTree() {
+    async function runTree(executeFactory) {
         const keys = Object.keys(plugins);
 
         for (const name of keys) {
-            await this.runPlugin(plugins[name].name);
+            await this.runPlugin(plugins[name].name, executeFactory);
         }
     }
 
