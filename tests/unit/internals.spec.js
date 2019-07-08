@@ -32,6 +32,7 @@ describe('Test gabriela internals', () => {
             'hasEmitters',
             'emitter',
             'exposedMediator',
+            'isHttp',
         ];
 
         const mdl = {
@@ -83,6 +84,7 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.hasEmitters()).to.be.equal(true);
         expect(moduleObject.emitter).to.be.a('object');
         expect(moduleObject.exposedMediator).to.be.a('object');
+        expect(moduleObject.isHttp).to.be.a('function');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {

@@ -10,7 +10,7 @@ const expect = chai.expect;
 const gabriela = require('../../gabriela/gabriela');
 
 describe('Plugin tree execution tests', function() {
-    it('should execute a tree of plugins', () => {
+    xit('should execute a tree of plugins', () => {
         let dataSourceModuleExecuted = false;
         let logicModuleExecuted = false;
         let presentationModuleExecuted = false;

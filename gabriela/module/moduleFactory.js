@@ -105,15 +105,18 @@ function _createModuleModel(mdl) {
         validators: mdl.validators,
         plugin: mdl.plugin,
         dependencies: mdl.dependencies,
-        isInPlugin: () => !!(mdl.plugin),
         mediator: mdl.mediator,
+        emitter: mdl.emitter,
+        isHttp() {
+            return !!mdl.http;
+        },
         hasMediators() {
             return (mdl.mediator) ? true : false;
         },
         hasEmitters() {
             return (mdl.emitter) ? true : false;
         },
-        emitter: mdl.emitter,
+        isInPlugin: () => !!(mdl.plugin),
     };
 }
 

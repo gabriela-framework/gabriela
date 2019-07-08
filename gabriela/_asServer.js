@@ -7,6 +7,7 @@ const configFactory = require('./configFactory');
 const Server = require('./server/server');
 const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
+const restify = require('restify');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);
@@ -69,6 +70,8 @@ module.exports = function _asServer(receivedConfig) {
         getPlugins: pluginInterface.getAll,
 
         startApp(events) {
+            pluginInterface.run = pluginTree.runTree.bind(pluginTree);
+            moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 
             const server = new Server(
                 config.server,

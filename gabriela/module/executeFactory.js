@@ -1,6 +1,10 @@
 const runMiddleware = require('./middleware/runMiddleware');
 
-function factory() {
+function factory(mdl) {
+    if (mdl.isHttp()) {
+
+    }
+
     return async function(mdl, context, args) {
         const middleware = [
             mdl.security,

@@ -68,6 +68,7 @@ module.exports = function _asRunner(receivedConfig) {
         startApp(events) {
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
+
             const process = new Process(
                 config,
                 events,

@@ -4,7 +4,7 @@ const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const { middlewareTypes } = require('../misc/types');
 const {hasKey, is} = require('../util/util');
-const defaultExecuteFactory = require('./processExecuteFactory');
+const defaultExecuteFactory = require('./executeFactory');
 
 /**
  * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.

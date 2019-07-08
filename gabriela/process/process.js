@@ -1,5 +1,6 @@
 const GenericMediator = require('../events/genericMediator');
-const pluginExecuteFactory = require('../plugin/processExecuteFactory');
+const pluginExecuteFactory = require('../plugin/executeFactory');
+const moduleExecuteFactory = require('../module/executeFactory');
 
 async function runApp(
     config,
@@ -9,7 +10,7 @@ async function runApp(
     moduleInterface,
 ) {
     await pluginInterface.run(pluginExecuteFactory);
-    await moduleInterface.run();
+    await moduleInterface.run(moduleExecuteFactory);
 
     if (events && events.onAppStarted) {
         const mediator = GenericMediator.create(rootCompiler);
