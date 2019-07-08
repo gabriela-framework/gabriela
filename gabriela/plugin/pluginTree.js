@@ -2,7 +2,7 @@ const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
-const defaultExecuteFactory = require('./executeFactory');
+const defaultExecuteFactory = require('./processExecuteFactory');
 
 const {is, hasKey} = require('../util/util');
 

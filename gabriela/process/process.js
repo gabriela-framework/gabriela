@@ -1,5 +1,5 @@
 const GenericMediator = require('../events/genericMediator');
-const pluginExecuteFactory = require('../plugin/executeFactory');
+const pluginExecuteFactory = require('../plugin/processExecuteFactory');
 
 async function runApp(
     config,

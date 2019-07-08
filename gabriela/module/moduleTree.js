@@ -1,15 +1,10 @@
-/**
- * ModuleTree hold the tree of modules (if modules property was specified). Running a module is always async.
- *
- * @type {factory|*}
- */
-
 const ModuleRunner = require('./moduleRunner');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const { middlewareTypes } = require('../misc/types');
 const {hasKey, is} = require('../util/util');
+const defaultExecuteFactory = require('./processExecuteFactory');
 
 /**
  * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
@@ -72,12 +67,12 @@ function _overrideMiddleware(mdl, existing) {
     }
 }
 
-async function _runConstructedModule(mdl, tree, config) {
+async function _runConstructedModule(mdl, tree, config, executeFactory) {
     const runner = ModuleRunner.create(mdl);
 
     const childState = (tree.length > 0) ? await runTree(tree) : null;
 
-    await runner.run(childState, config);
+    await runner.run(childState, config, executeFactory);
 
     return runner.getResult();
 }
@@ -100,20 +95,20 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
      * Runs the module in async. This is a public method only when Gabriela is created as a runner. If created as a
      * server, runs them on server startup
      */
-    async function runModule(name) {
+    async function runModule(name, executeFactory) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        return await _runConstructedModule(constructed[name], tree, config);
+        return await _runConstructedModule(constructed[name], tree, config, (executeFactory) ? executeFactory : defaultExecuteFactory);
     }
 
-    async function runTree() {
+    async function runTree(config, executeFactory) {
         const keys = Object.keys(modules);
 
         const state = {};
 
         for (const name of keys) {
-            const res = await this.runModule(modules[name].name);
+            const res = await this.runModule(modules[name].name, executeFactory);
 
             state[modules[name].name] = res;
         }

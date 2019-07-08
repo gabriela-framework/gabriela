@@ -26,5 +26,3 @@ const mdl = {
 const g = gabriela.asServer();
 
 g.addModule(mdl);
-
-g.startApp();

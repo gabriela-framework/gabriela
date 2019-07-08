@@ -1,7 +1,6 @@
 const deepCopy = require('deepcopy');
 const callEvent = require('../events/callEvent');
 const {is} = require('../util/util');
-const executeFactory = require('./executeFactory');
 
 function _assignMediatorEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -42,7 +41,7 @@ function factory() {
         return (function(mdl) {
             const state = {};
 
-            async function run(childState, config) {
+            async function run(childState, config, executeFactory) {
                 if (childState) state.child = childState;
 
                 const context = _createContext({
@@ -74,8 +73,7 @@ function factory() {
                 try {
                     if(mdl.mediatorInstance.has('onModuleStarted')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
 
-                    await executeFactory(mdl).call(null, mdl, context, [state, config]);
-                    //await executeFactory.call(null, mdl).call(mdl, context, [state, config]);
+                    await executeFactory().call(null, mdl, context, [state, config]);
 
                     if(mdl.mediatorInstance.has('onModuleFinished')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
                 } catch (err) {
