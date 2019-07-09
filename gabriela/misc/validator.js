@@ -3,7 +3,7 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 
-const {middlewareTypes, mandatoryRouteProps} = require('./types');
+const {middlewareTypes, mandatoryRouteProps, httpMethods} = require('./types');
 
 const {is, hasKey} = require('../util/util');
 
@@ -118,6 +118,8 @@ factory.moduleValidator = function(mdl) {
         if (!is('string', http.route.name)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.name' must be a string`);
         if (!is('string', http.route.path)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.path' must be a string`);
         if (!is('string', http.route.method)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.method' must be a string`);
+
+        if (!httpMethods.includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
     }
 
     validateDependencies(mdl);

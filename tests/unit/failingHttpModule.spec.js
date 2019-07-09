@@ -134,6 +134,31 @@ describe('Failing tests using modules as http modules',() => {
 
             expect(entersException).to.be.equal(true);
         }
+    });
 
+    it('should fail if http.route.method is not a supported HTTP method', () => {
+        const mdl = {
+            name: 'httpModule',
+            http: {
+                route: {
+                    name: 'name',
+                    path: 'path',
+                    method: 'unsupported',
+                },
+            },
+        };
+
+        const app = gabriela.asProcess();
+
+        let entersException = false;
+        try {
+            app.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. ${mdl.http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`)
+        }
+
+        expect(entersException).to.be.equal(true);
     });
 });
