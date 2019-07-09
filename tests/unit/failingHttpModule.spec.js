@@ -97,4 +97,45 @@ describe('Failing tests using modules as http modules',() => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if http.route does not have mandatory properties', () => {
+        const mdl = {
+            name: 'httpModule',
+            http: {
+                route: {
+                    name: 'name',
+                    path: 'path',
+                    method: 'get',
+                },
+            },
+        };
+
+        let app;
+
+        const allowedEntries = ['name', 'path', 'method'];
+        let previous = null;
+        for (const entry of allowedEntries) {
+            let entersException = false;
+            try {
+                app = gabriela.asProcess();
+
+                if (previous) previous = mdl.http.route[previous] = 'string';
+
+                mdl.http.route[entry] = null;
+
+                console.log(mdl.http.route);
+
+                previous = entry;
+
+                app.addModule(mdl);
+            } catch (e) {
+                entersException = true;
+
+                expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route.${entry}' must be a string`)
+            }
+
+            expect(entersException).to.be.equal(true);
+        }
+
+    });
 });
