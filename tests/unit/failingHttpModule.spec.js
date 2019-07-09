@@ -48,4 +48,26 @@ describe('Failing tests using modules as http modules',() => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if http.route is not an object type', () => {
+        const mdl = {
+            name: 'httpModule',
+            http: {
+                route: null,
+            },
+        };
+
+        const app = gabriela.asProcess();
+
+        let entersException = false;
+        try {
+            app.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route' must be an object`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
