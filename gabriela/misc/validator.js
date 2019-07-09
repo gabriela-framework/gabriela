@@ -110,6 +110,12 @@ factory.moduleValidator = function(mdl) {
         if (!hasKey(http, 'route')) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' property must exist and be an object if the 'http' property exists`);
 
         if (!is('object', http.route)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must be an object`);
+
+        const allowedEntries = ['name', 'path', 'method'];
+
+        for (const entry of allowedEntries) {
+            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${allowedEntries.join(', ')}'`)
+        }
     }
 
     validateDependencies(mdl);

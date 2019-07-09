@@ -70,4 +70,31 @@ describe('Failing tests using modules as http modules',() => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if http.route does not have mandatory properties', () => {
+        const mdl = {
+            name: 'httpModule',
+            http: {
+                route: {
+                    name: 'name',
+                    path: 'path',
+                },
+            },
+        };
+
+        const app = gabriela.asProcess();
+
+        let entersException = false;
+        try {
+            app.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            const allowedEntries = ['name', 'path', 'method'];
+
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${allowedEntries.join(', ')}'`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
