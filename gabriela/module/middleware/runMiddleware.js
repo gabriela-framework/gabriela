@@ -72,7 +72,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
     return await recursiveMiddlewareExec(next.value, taskRunnerFactory.create(), mdl, state, config, generator);
 }
 
-async function runMiddleware(mdl, functions, state, config) {
+async function runMiddleware(mdl, functions, config, state) {
     if (functions && functions.length > 0) {
         const generator = createGenerator(functions);
 

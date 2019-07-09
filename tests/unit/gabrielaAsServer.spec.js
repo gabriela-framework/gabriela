@@ -1,6 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
 const faker = require('faker');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -186,8 +187,8 @@ describe('Gabriela server tests', function() {
             },
             moduleLogic: [{
                 name: 'getUsers',
-                middleware: function(userRepository) {
-
+                middleware: function(userRepository, state) {
+                    state.model = userRepository.getUsers();
                 }
             }]
         };
@@ -205,7 +206,7 @@ describe('Gabriela server tests', function() {
             moduleLogic: [{
                 name: 'getUsersLogic',
                 middleware: function(userRepository) {
-
+                    state.model = 'findUser';
                 }
             }],
         };
@@ -219,9 +220,21 @@ describe('Gabriela server tests', function() {
 
         app.startApp({
             onAppStarted() {
-                this.server.close();
+                requestPromise.get('http://localhost:3000/users', (err, res) => {
+                    const data = JSON.parse(res.body);
 
-                done();
+                    expect(data).to.have.property('model');
+                    expect(data.model).to.be.a('array');
+
+                    expect(data.model.length).to.be.equal(2);
+
+                    expect(data.model[0]).to.be.a('object');
+                    expect(data.model[1]).to.be.a('object');
+
+                    this.server.close();
+
+                    done();
+                });
             }
         });
     });
