@@ -3,7 +3,7 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 
-const {middlewareTypes} = require('./types');
+const {middlewareTypes, mandatoryRouteProps} = require('./types');
 
 const {is, hasKey} = require('../util/util');
 
@@ -111,10 +111,8 @@ factory.moduleValidator = function(mdl) {
 
         if (!is('object', http.route)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must be an object`);
 
-        const allowedEntries = ['name', 'path', 'method'];
-
-        for (const entry of allowedEntries) {
-            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${allowedEntries.join(', ')}'`)
+        for (const entry of mandatoryRouteProps) {
+            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${mandatoryRouteProps.join(', ')}'`)
         }
 
         if (!is('string', http.route.name)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.name' must be a string`);

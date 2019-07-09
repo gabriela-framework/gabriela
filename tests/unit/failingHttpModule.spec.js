@@ -7,6 +7,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const {mandatoryRouteProps} = require('../../gabriela/misc/types');
 
 describe('Failing tests using modules as http modules',() => {
     it('should fail if http is not of type object', () => {
@@ -90,9 +91,7 @@ describe('Failing tests using modules as http modules',() => {
         } catch (e) {
             entersException = true;
 
-            const allowedEntries = ['name', 'path', 'method'];
-
-            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${allowedEntries.join(', ')}'`)
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${mandatoryRouteProps.join(', ')}'`)
         }
 
         expect(entersException).to.be.equal(true);
@@ -112,9 +111,8 @@ describe('Failing tests using modules as http modules',() => {
 
         let app;
 
-        const allowedEntries = ['name', 'path', 'method'];
         let previous = null;
-        for (const entry of allowedEntries) {
+        for (const entry of mandatoryRouteProps) {
             let entersException = false;
             try {
                 app = gabriela.asProcess();
