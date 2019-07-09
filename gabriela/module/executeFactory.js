@@ -17,10 +17,9 @@ function factory(server, mdl) {
 
             server[method](path, async function(req, res, next) {
                 for (const functions of middleware) {
-                    await runMiddleware.call(context, ...[mdl, functions, config, state]);
+                    await runMiddleware.call(context, ...[mdl, functions, config, state, {req, res}]);
                 }
 
-                res.setHeader('Content-Type', 'application/json');
                 res.send(200, state);
 
                 return next();
@@ -38,7 +37,7 @@ function factory(server, mdl) {
         ];
 
         for (const functions of middleware) {
-            await runMiddleware.call(context, ...[mdl, functions, config, state]);
+            await runMiddleware.call(context, ...[mdl, functions, config, state, null]);
         }
     };
 }

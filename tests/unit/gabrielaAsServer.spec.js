@@ -187,7 +187,11 @@ describe('Gabriela server tests', function() {
             },
             moduleLogic: [{
                 name: 'getUsers',
-                middleware: function(userRepository, state) {
+                middleware: function(userRepository, state, http) {
+                    expect(http).to.be.a('object');
+                    expect(http).to.have.property('req');
+                    expect(http).to.have.property('res');
+                    
                     state.model = userRepository.getUsers();
                 }
             }]

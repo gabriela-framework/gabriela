@@ -5,7 +5,7 @@ const resolveDependencies = require('../../dependencyInjection/resolveDependenci
 
 const {createGenerator, getArgs, wait, inArray} = require('../../util/util');
 
-async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, generator) {
+async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, http, generator) {
     const args = getArgs(exec, {
         next: taskRunner.next,
         done: taskRunner.done,
@@ -26,6 +26,8 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
         if (dep) return dep;
 
         if (val.name === 'state') return state;
+
+        if (val.name === 'http') return http;
 
         if (!val.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${val.name}'`);
 
@@ -69,10 +71,10 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, gen
 
     if (next.done) return;
 
-    return await recursiveMiddlewareExec(next.value, taskRunnerFactory.create(), mdl, state, config, generator);
+    return await recursiveMiddlewareExec(next.value, taskRunnerFactory.create(), mdl, state, config, http, generator);
 }
 
-async function runMiddleware(mdl, functions, config, state) {
+async function runMiddleware(mdl, functions, config, state, http) {
     if (functions && functions.length > 0) {
         const generator = createGenerator(functions);
 
@@ -84,6 +86,7 @@ async function runMiddleware(mdl, functions, config, state) {
             mdl,
             state,
             config,
+            http,
             generator
         );
     }
