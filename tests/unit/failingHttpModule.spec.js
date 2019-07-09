@@ -28,4 +28,24 @@ describe('Failing tests using modules as http modules',() => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if the route property does not exist if http property exists', () => {
+        const mdl = {
+            name: 'httpModule',
+            http: {},
+        };
+
+        const app = gabriela.asProcess();
+
+        let entersException = false;
+        try {
+            app.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'http.route' property must exist and be an object if the 'http' property exists`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
