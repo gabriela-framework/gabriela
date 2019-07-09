@@ -61,7 +61,22 @@ describe('Test gabriela internals', () => {
             }
         };
 
-        const moduleObject = moduleFactory(mdl, {}, Compiler.create(), Compiler.create(), Compiler.create(), new ExposedMediator());
+        const config = {};
+        const rootCompiler = Compiler.create();
+        const parentCompiler = Compiler.create();
+        const sharedCompiler = Compiler.create();
+        const exposedMediator = new ExposedMediator();
+
+        const buildStageArgs = {
+            mdl: mdl,
+            config,
+            rootCompiler,
+            parentCompiler,
+            sharedCompiler,
+            exposedMediator,
+        };
+
+        const moduleObject = moduleFactory(buildStageArgs);
 
         const moduleObjectProps = Object.keys(moduleObject);
 

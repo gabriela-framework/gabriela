@@ -2,7 +2,7 @@ const runMiddleware = require('./middleware/runMiddleware');
 
 function factory(server, mdl) {
     if (mdl.isHttp()) {
-        const http = mdl.http;
+        const {http} = mdl.http;
     }
 
     return async function(mdl, context, args) {
@@ -17,7 +17,7 @@ function factory(server, mdl) {
         for (const functions of middleware) {
             await runMiddleware.call(context, ...[mdl, functions, ...args]);
         }
-    }
+    };
 }
 
 module.exports = factory;

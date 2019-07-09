@@ -29,7 +29,7 @@ function factory(moduleExecuteFactory, server) {
 
             plugin.mediatorInstance.runOnError(plugin.mediator.onError, err);
         }
-    }
+    };
 }
 
 module.exports = factory;

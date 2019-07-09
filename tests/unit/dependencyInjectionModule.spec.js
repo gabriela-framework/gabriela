@@ -371,7 +371,7 @@ describe('Module dependency injection tests', function() {
         let entersLogic2 = false;
 
         const userModule = {
-            name: 'userModule',
+            name: 'overrideUserModule',
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {
@@ -389,7 +389,7 @@ describe('Module dependency injection tests', function() {
         g.addModule(userModule);
 
         g.overrideModule({
-            name: 'userModule',
+            name: 'overrideUserModule',
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {

@@ -7,7 +7,6 @@ const configFactory = require('./configFactory');
 const Server = require('./server/server');
 const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
-const restify = require('restify');
 
 module.exports = function _asServer(receivedConfig) {
     const config = configFactory.create(receivedConfig);

@@ -14,7 +14,11 @@ describe('Failing internal components tests', () => {
             name: 'name',
         };
 
-        const mdl = moduleFactory(moduleSpec);
+        const buildStageArgs = {
+            mdl: moduleSpec,
+        };
+
+        const mdl = moduleFactory(buildStageArgs);
 
         try {
             const nonExistent = mdl.nonExistent;

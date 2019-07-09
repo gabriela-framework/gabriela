@@ -131,7 +131,7 @@ function _bindEventSystem(moduleObject, config, exposedMediator) {
  * The dependency injection compiler has to be here. It does not have to be instantiated or created here but it has to be
  * here in order for module dependencies to be resolved.
  */
-function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
+function factory({mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator}) {
     const moduleObject = _createModuleModel(mdl, config);
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
@@ -144,6 +144,6 @@ function factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, expo
     return moduleObject;
 }
 
-module.exports = function(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator) {
-    return new factory(mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
+module.exports = function(buildStageArgs) {
+    return new factory(buildStageArgs);
 };

@@ -1,5 +1,4 @@
 const Compiler = require('../dependencyInjection/compiler');
-const moduleFactory = require('../module/moduleFactory');
 const Mediator = require('../events/mediator');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
@@ -29,7 +28,7 @@ function _bindEventSystem(pluginObject, config, exposedMediatorInstance) {
     pluginObject.exposedMediator = exposedMediatorInstance;
 
     if (pluginObject.hasExposedMediators()) {
-        const exposedMediators = pluginObject.exposedMediators;
+        const {exposedMediators} = pluginObject.exposedMediators;
 
         for (const name of exposedMediators) {
             pluginObject.exposedMediator.add(name);

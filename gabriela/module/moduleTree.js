@@ -87,7 +87,16 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
 
         modules[mdl.name] = deepCopy(mdl);
 
-        constructed[mdl.name] = moduleFactory(modules[mdl.name], config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
+        const buildStageArgs = {
+            mdl: modules[mdl.name],
+            config,
+            rootCompiler,
+            parentCompiler,
+            sharedCompiler,
+            exposedMediator,
+        };
+
+        constructed[mdl.name] = moduleFactory(buildStageArgs);
     }
 
     /**
@@ -127,7 +136,17 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         _overrideMiddleware(mdl, existing);
 
         modules[mdl.name] = deepCopy(existing);
-        constructed[mdl.name] = moduleFactory(modules[mdl.name], config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator);
+
+        const buildStageArgs = {
+            mdl: modules[mdl.name],
+            config,
+            rootCompiler,
+            parentCompiler,
+            sharedCompiler,
+            exposedMediator,
+        };
+
+        constructed[mdl.name] = moduleFactory(buildStageArgs);
     }
 
     function removeModule(name) {
