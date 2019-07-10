@@ -58,7 +58,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (name) {
             const pluginModel = constructed[name];
 
-            return await _runConstructedPlugin(pluginModel, config, (executeFactory) ? executeFactory : defaultExecuteFactory);
+            return await _runConstructedPlugin(pluginModel, config, executeFactory);
         }
     }
 

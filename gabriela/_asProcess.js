@@ -19,16 +19,32 @@ module.exports = function _asRunner(receivedConfig) {
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
-    const runModule = async function(name) {
-        if (name) return await moduleTree.runModule(name, moduleExecutionFactory.bind(null, null));
+    const runModule = async function(name, customExecutionFactory) {
+        // TODO: validate that customExecutionFactory is a function, maybe add a warning and test it
+        let executeFactory;
+        if (customExecutionFactory) {
+            executeFactory = customExecutionFactory.bind(null, null);
+        } else {
+            executeFactory = moduleExecutionFactory.bind(null, null);
+        }
 
-        return moduleTree.runTree(moduleExecutionFactory.bind(null, null));
+        if (name) return await moduleTree.runModule(name, executeFactory);
+
+        return moduleTree.runTree(executeFactory);
     };
 
-    const runPlugin = async function(name) {
-        if (name) return pluginTree.runPlugin(name, pluginExecutionFactory.bind(null, moduleExecutionFactory, null));
+    const runPlugin = async function(name, customPluginExecutionFactory, customModuleExecutionFactory) {
+        // TODO: validate that customPluginExecutionFactory and customModule... are functions, maybe add a warning and test it
+        let executeFactory;
+        if (customPluginExecutionFactory && customModuleExecutionFactory) {
+            executeFactory = customPluginExecutionFactory.bind(null, customModuleExecutionFactory, null);
+        } else {
+            executeFactory = pluginExecutionFactory.bind(null, moduleExecutionFactory, null)
+        }
 
-        return pluginTree.runTree(pluginExecutionFactory.bind(null, moduleExecutionFactory, null));
+        if (name) return pluginTree.runPlugin(name, executeFactory);
+
+        return pluginTree.runTree(executeFactory);
     };
 
     const moduleInterface = {

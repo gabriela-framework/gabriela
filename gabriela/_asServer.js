@@ -22,16 +22,16 @@ module.exports = function _asServer(receivedConfig) {
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
-    async function runModule(name) {
-        if (name) return await moduleTree.runModule(name);
+    async function runModule(name, executeFactory) {
+        if (name) return await moduleTree.runModule(name, executeFactory);
 
-        return moduleTree.runTree();
+        return moduleTree.runTree(executeFactory);
     }
 
-    async function runPlugin(name) {
-        if (name) return pluginTree.runPlugin(name);
+    async function runPlugin(name, executeFactory) {
+        if (name) return pluginTree.runPlugin(name, executeFactory);
 
-        return pluginTree.runTree();
+        return pluginTree.runTree(executeFactory);
     }
 
     const moduleInterface = {
@@ -69,6 +69,7 @@ module.exports = function _asServer(receivedConfig) {
         getPlugins: pluginInterface.getAll,
 
         startApp(events) {
+            // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 

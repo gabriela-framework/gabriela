@@ -120,9 +120,7 @@ describe('Failing tests using modules as http modules',() => {
                 if (previous) previous = mdl.http.route[previous] = 'string';
 
                 mdl.http.route[entry] = null;
-
-                console.log(mdl.http.route);
-
+                
                 previous = entry;
 
                 app.addModule(mdl);
