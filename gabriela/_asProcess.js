@@ -22,7 +22,7 @@ module.exports = function _asRunner(receivedConfig) {
     const runModule = async function(name) {
         if (name) return await moduleTree.runModule(name, moduleExecutionFactory.bind(null, null));
 
-        return moduleTree.runTree(config, moduleExecutionFactory.bind(null, null));
+        return moduleTree.runTree(moduleExecutionFactory.bind(null, null));
     };
 
     const runPlugin = async function(name) {

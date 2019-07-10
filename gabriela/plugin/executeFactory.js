@@ -17,7 +17,7 @@ function factory(moduleExecuteFactory, server) {
 
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
 
-            await moduleTree.runTree(config, moduleExecuteFactory.bind(null, server));
+            await moduleTree.runTree(moduleExecuteFactory.bind(null, server));
 
             callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
         } catch (err) {

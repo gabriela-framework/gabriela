@@ -22,7 +22,7 @@ async function _listenCallback(
  */
 async function _runComponents(pluginInterface, moduleInterface, server) {
     await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
-    await moduleInterface.run({}, moduleExecuteFactory.bind(null, server));
+    await moduleInterface.run(moduleExecuteFactory.bind(null, server));
 }
 
 function _runEvents(events, rootCompiler) {

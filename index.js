@@ -1,41 +1,41 @@
 const gabriela = require('./gabriela/gabriela');
+const requestPromise = require('request-promise');
 
 const mdl = {
-    name: 'httpModule',
     http: {
         route: {
-            name: 'index',
-            path: '/',
+            name: 'users',
+            path: '/users',
             method: 'get',
-            preRequest(http) {
-
-            },
-            preResponse(state) {
-
-            },
-            postResponse() {
-
-            }
         }
     },
+    name: 'mdl',
     moduleLogic: [function(state) {
-        state.response = 'string';
+        state.model = {
+            name: 'name',
+            lastname: 'lastname',
+            age: 85,
+        }
     }],
 };
 
 const g = gabriela.asServer();
-
 g.addModule(mdl);
 
-function fn(someArg, second) {
-    console.log(someArg);
-    console.log(second);
-}
+g.startApp({
+    onAppStarted() {
+        let count = 0;
+        setInterval(function() {
+            console.log('BATCH RUNNING');
 
-const context = {
-    obj: {},
-};
+            let requestCount = (count <= 10) ? count * 100 : 10;
+            for (let i = 0; i < requestCount; i++) {
+                requestPromise.get('http://localhost:3000/users').then(() => {
 
-const bound = fn.bind(null, {});
+                });
+            }
 
-bound.call(null, null);
+            count++;
+        }, 5000);
+    }
+});

@@ -1,4 +1,5 @@
 const runMiddleware = require('./middleware/runMiddleware');
+const deepCopy = require('deepcopy');
 
 function factory(server, mdl) {
     if (mdl.isHttp()) {
@@ -7,20 +8,20 @@ function factory(server, mdl) {
             const method = http.route.method.toLowerCase();
             const path = http.route.path;
 
-            const middleware = [
-                mdl.security,
-                mdl.preLogicTransformers,
-                mdl.validators,
-                mdl.moduleLogic,
-                mdl.postLogicTransformers,
-            ];
-
             server[method](path, async function(req, res, next) {
+                const middleware = [
+                    mdl.security,
+                    mdl.preLogicTransformers,
+                    mdl.validators,
+                    mdl.moduleLogic,
+                    mdl.postLogicTransformers,
+                ];
+
                 for (const functions of middleware) {
                     await runMiddleware.call(context, ...[mdl, functions, config, state, {req, res}]);
                 }
 
-                res.send(200, state);
+                res.send(200, deepCopy(state));
 
                 return next();
             });

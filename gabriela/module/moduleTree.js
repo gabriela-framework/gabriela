@@ -110,7 +110,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         return await _runConstructedModule(constructed[name], tree, config, executeFactory);
     }
 
-    async function runTree(config, executeFactory) {
+    async function runTree(executeFactory) {
         const keys = Object.keys(modules);
 
         const state = {};

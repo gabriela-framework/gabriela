@@ -191,7 +191,7 @@ describe('Gabriela server tests', function() {
                     expect(http).to.be.a('object');
                     expect(http).to.have.property('req');
                     expect(http).to.have.property('res');
-                    
+
                     state.model = userRepository.getUsers();
                 }
             }]
