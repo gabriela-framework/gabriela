@@ -58,7 +58,7 @@ function _emitImplementationFactory(mdl) {
         if (!is('boolean', propagate)) throw new Error(`Invalid mediator event. Propagation argument for event '${name}' has to be a boolean`);
 
         if (mdl.exposedMediator.has(name)) {
-            return;
+            return mdl.exposedMediator.emit(name, mdl.compiler.root, customArgs);
         }
 
         if (propagate) {

@@ -18,6 +18,10 @@ function _callFn(fn, compiler, args) {
     fn.call(null, ...resolvedArgs);
 }
 
+function _isDefinitionComplete(definition) {
+    if (!definition.fns) return false;
+}
+
 function _callEvent(fn, compiler, customArgs) {
     let args = getArgs(fn);
 
@@ -44,7 +48,44 @@ function factory() {
     function emit(name, compiler, customArgs) {
         if (!hasKey(definitions, name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' does not exist`);
 
-        _callEvent(definitions[name].init, compiler, customArgs);
+        if (!definitions[name]) {
+            definitions[name] = {
+                fns: null,
+                compiler: compiler,
+                args: customArgs,
+            }
+        }
+
+        if (!definitions[name].compiler) {
+            definitions[name].compiler = compiler;
+            definitions[name].args = customArgs;
+        }
+
+        if (definitions[name].fns) {
+            for (const fn of definitions[name].fns) {
+                _callEvent(fn, definitions[name].compiler, definitions[name].args);
+            }
+        }
+    }
+
+    function isEmitted(name) {
+        if (!definitions[name]) return false;
+
+        return _isDefinitionComplete(definitions[name]);
+    }
+
+    function preBind(name, fn) {
+        if (!definitions[name]) {
+            definitions[name] = {
+                fns: [],
+            };
+
+            definitions[name].fns.push(fn);
+
+            return;
+        }
+
+        definitions[name].fns.push(fn);
     }
 
     function add(name) {
@@ -58,6 +99,8 @@ function factory() {
     }
 
     this.emit = emit;
+    this.isEmitted = isEmitted;
+    this.preBind = preBind;
     this.add = add;
     this.has = has;
 }

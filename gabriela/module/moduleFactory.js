@@ -112,7 +112,7 @@ function _createModuleModel(mdl) {
             return !!mdl.http;
         },
         hasMediators() {
-            return (mdl.mediator) ? true : false;
+            return !!mdl.mediator;
         },
         hasEmitters() {
             return (mdl.emitter) ? true : false;
@@ -125,6 +125,18 @@ function _bindEventSystem(moduleObject, config, exposedMediator) {
     moduleObject.mediatorInstance = Mediator.create(moduleObject, config);
     moduleObject.emitterInstance = Emitter.create(moduleObject, config);
     moduleObject.exposedMediator = exposedMediator;
+
+    if (moduleObject.hasMediators()) {
+        const {mediator} = moduleObject;
+        const keys = Object.keys(mediator);
+
+        for (const event of keys) {
+            if (moduleObject.exposedMediator.has(event) && !moduleObject.exposedMediator.isEmitted(event)) {
+                console.log('pre bind');
+                moduleObject.exposedMediator.preBind(event, mediator[event]);
+            }
+        }
+    }
 }
 
 /**

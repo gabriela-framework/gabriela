@@ -18,6 +18,7 @@ function _adaptModulesToPlugin(plugin) {
             mdl.plugin = {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
+                hasExposedMediators: plugin.hasExposedMediators(),
             };
         }
     }
@@ -28,7 +29,7 @@ function _bindEventSystem(pluginObject, config, exposedMediatorInstance) {
     pluginObject.exposedMediator = exposedMediatorInstance;
 
     if (pluginObject.hasExposedMediators()) {
-        const {exposedMediators} = pluginObject.exposedMediators;
+        const {exposedMediators} = pluginObject;
 
         for (const name of exposedMediators) {
             pluginObject.exposedMediator.add(name);

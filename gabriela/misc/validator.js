@@ -180,7 +180,7 @@ factory.validatePlugin = function(plugin) {
     if (hasKey(plugin, 'exposedMediators')) {
         if (!Array.isArray(plugin.exposedMediators)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'exposedMediators' must be an array`);
 
-        const {exposedMediators} = plugin.exposedMediators;
+        const {exposedMediators} = plugin;
 
         for (const event of exposedMediators) {
             if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedMediators' must be a string`);
