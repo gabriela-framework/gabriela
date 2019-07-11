@@ -1120,7 +1120,105 @@ describe('Framework events', function() {
         });
     });
 
-    it('should run all exposed events from emitted from a http module', (done) => {
+    it('should run all exposed events from emitted from a http module as a server', (done) => {
+        const g = gabriela.asServer();
+
+        let catchedEvent1 = false;
+        let catchedEvent2 = false;
+
+        let calledEvent1 = 0;
+        let calledEvent2 = 0;
+
+        const userServiceDefinition = {
+            name: 'userService',
+            scope: 'public',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const emittingModule = {
+            name: 'emittingModule',
+            dependencies: [userServiceDefinition],
+            http: {
+                route: {
+                    name: 'emit-event',
+                    path: '/emit',
+                    method: 'get',
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onExposedEvent', {name: 'name'});
+            }],
+            postLogicTransformers: [function() {
+                this.mediator.emit('onExposedEvent', {name: 'name'});
+            }],
+        };
+
+        const catchingModule1 = {
+            name: 'catchingModule1',
+            mediator: {
+                onExposedEvent: function(name, userService) {
+                    expect(name).to.be.equal('name');
+                    expect(userService).to.be.a('object');
+
+                    calledEvent1++;
+
+                    catchedEvent1 = true;
+                }
+            }
+        };
+
+        const catchingModule2 = {
+            name: 'catchingModule2',
+            mediator: {
+                onExposedEvent: function(userService, name) {
+                    expect(name).to.be.equal('name');
+                    expect(userService).to.be.a('object');
+
+                    calledEvent2++;
+
+                    catchedEvent2 = true;
+                }
+            }
+        };
+
+        g.addPlugin({
+            name: 'emitExposedEventPlugin',
+            modules: [emittingModule],
+            exposedMediators: ['onExposedEvent'],
+        });
+
+        g.addModule(catchingModule1);
+        g.addModule(catchingModule2);
+
+        g.startApp({
+            onAppStarted() {
+
+                const promises = [];
+
+                for (let i = 0; i < 10; i++) {
+                    promises.push(requestPromise.get('http://localhost:3000/emit'));
+                }
+
+                Promise.all(promises).then(() => {
+                    expect(catchedEvent1).to.be.equal(true);
+                    expect(catchedEvent2).to.be.equal(true);
+
+                    expect(calledEvent1).to.be.equal(20);
+                    expect(calledEvent2).to.be.equal(20);
+
+                    this.server.close();
+
+                    done();
+                });
+            }
+        });
+    });
+
+    it('should run all exposed events are ran as a process', (done) => {
         const g = gabriela.asServer();
 
         let catchedEvent1 = false;
