@@ -1,3 +1,5 @@
+const {BUILT_IN_MEDIATORS} = require('../misc/types');
+
 function _assignMediatorEvents(plugin, excludes) {
     if (plugin.hasMediators()) {
         const mediators = plugin.mediator;
@@ -15,9 +17,9 @@ function _assignMediatorEvents(plugin, excludes) {
 function factory() {
     function create(plugin) {
         _assignMediatorEvents(plugin, [
-            'onPluginStarted',
-            'onPluginFinished',
-            'onError',
+            BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED,
+            BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED,
+            BUILT_IN_MEDIATORS.ON_ERROR,
         ]);
 
         async function run(config, executeFactory) {

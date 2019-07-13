@@ -3,6 +3,7 @@ const parseExpression = require('../expression/parse');
 const Mediator = require('../events/mediator');
 const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
+const {MIDDLEWARE_TYPES} = require('../misc/types');
 
 function _addDependencies(mdl) {
     const {dependencies} = mdl;
@@ -64,7 +65,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
 }
 
 function _resolveMiddleware(mdl, config) {
-    const middleware = ['security', 'preLogicTransformers', 'validators', 'postLogicTransformers', 'moduleLogic', 'validators'];
+    const middleware = MIDDLEWARE_TYPES.toArray();
 
     for (const middlewareBlockName of middleware) {
         if (mdl[middlewareBlockName]) {
@@ -98,11 +99,11 @@ function _resolveMiddleware(mdl, config) {
 function _createModuleModel(mdl) {
     return {
         name: mdl.name,
-        security: mdl.security,
-        preLogicTransformers: mdl.preLogicTransformers,
-        postLogicTransformers: mdl.postLogicTransformers,
-        moduleLogic: mdl.moduleLogic,
-        validators: mdl.validators,
+        [MIDDLEWARE_TYPES.SECURITY]: mdl[MIDDLEWARE_TYPES.SECURITY],
+        [MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS]: mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
+        [MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS]: mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
+        [MIDDLEWARE_TYPES.MODULE_LOGIC]: mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
+        [MIDDLEWARE_TYPES.VALIDATORS]: mdl[MIDDLEWARE_TYPES.VALIDATORS],
         plugin: mdl.plugin,
         dependencies: mdl.dependencies,
         mediator: mdl.mediator,

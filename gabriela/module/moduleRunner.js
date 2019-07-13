@@ -1,6 +1,7 @@
 const deepCopy = require('deepcopy');
 const callEvent = require('../events/callEvent');
 const {is} = require('../util/util');
+const {BUILT_IN_MEDIATORS} = require('../misc/types');
 
 function _assignMediatorEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -95,11 +96,11 @@ function factory() {
                 });
 
                 try {
-                    if(mdl.mediatorInstance.has('onModuleStarted')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleStarted');
+                    if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_STARTED);
 
                     await executeFactory.call(null, mdl).call(null, mdl, context, config, state);
 
-                    if(mdl.mediatorInstance.has('onModuleFinished')) callEvent.call(mdl.mediatorInstance, mdl, 'onModuleFinished');
+                    if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED);
                 } catch (err) {
                     _handleError(err, mdl);
                 }

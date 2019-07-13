@@ -1,5 +1,6 @@
 const ModuleTree = require('../module/moduleTree');
 const callEvent = require('../events/callEvent');
+const {BUILT_IN_MEDIATORS} = require('../misc/types');
 
 function factory(moduleExecuteFactory, server) {
     return async function(plugin, config) {
@@ -15,11 +16,11 @@ function factory(moduleExecuteFactory, server) {
                 moduleTree.addModule(mdl, plugin.compiler);
             }
 
-            callEvent.call(plugin.mediatorInstance, plugin, 'onPluginStarted');
+            callEvent.call(plugin.mediatorInstance, plugin, BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED);
 
             await moduleTree.runTree(moduleExecuteFactory.bind(null, server));
 
-            callEvent.call(plugin.mediatorInstance, plugin, 'onPluginFinished');
+            callEvent.call(plugin.mediatorInstance, plugin, BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED);
         } catch (err) {
             // throw error if it doesnt have any mediators
             if (!plugin.hasMediators()) throw err;
