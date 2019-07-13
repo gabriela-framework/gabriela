@@ -6,6 +6,7 @@
   "scripts": {
     "tests": "node_modules/.bin/mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc -x=tests --print=both --reporter=html npm run tests",
+    "console-coverage": "nyc -x=tests --print=both --reporter=text npm run tests",
     "lint": "./node_modules/.bin/eslint gabriela/**"
   },
   "author": "",
