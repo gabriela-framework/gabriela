@@ -8,6 +8,8 @@ const Server = require('./server/server');
 const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
 
+// TODO: make the execution factories be per module or plugin.
+
 module.exports = function _asServer(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
     options = options || {};
