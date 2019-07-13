@@ -148,7 +148,6 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.exposedMediators).to.be.a('undefined');
         expect(pluginModel.hasExposedMediators()).to.be.equal(false);
         expect(pluginModel.exposedMediator).to.be.a('object');
-
     });
 
     it('should determine that mediator interface has not changed', () => {
