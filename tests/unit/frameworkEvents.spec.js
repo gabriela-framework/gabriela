@@ -1121,7 +1121,30 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events from emitted from a http module as a server', (done) => {
-        const g = gabriela.asServer();
+        const g = gabriela.asServer(null, {
+            events: {
+                onAppStarted() {
+
+                    const promises = [];
+
+                    for (let i = 0; i < 10; i++) {
+                        promises.push(requestPromise.get('http://localhost:3000/emit'));
+                    }
+
+                    Promise.all(promises).then(() => {
+                        expect(catchedEvent1).to.be.equal(true);
+                        expect(catchedEvent2).to.be.equal(true);
+
+                        expect(calledEvent1).to.be.equal(20);
+                        expect(calledEvent2).to.be.equal(20);
+
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
 
         let catchedEvent1 = false;
         let catchedEvent2 = false;
@@ -1132,8 +1155,9 @@ describe('Framework events', function() {
         const userServiceDefinition = {
             name: 'userService',
             scope: 'public',
-            init: function() {
-                function UserService() {}
+            init: function () {
+                function UserService() {
+                }
 
                 return new UserService();
             }
@@ -1149,10 +1173,10 @@ describe('Framework events', function() {
                     method: 'get',
                 }
             },
-            moduleLogic: [function() {
+            moduleLogic: [function () {
                 this.mediator.emit('onExposedEvent', {name: 'name'});
             }],
-            postLogicTransformers: [function() {
+            postLogicTransformers: [function () {
                 this.mediator.emit('onExposedEvent', {name: 'name'});
             }],
         };
@@ -1160,7 +1184,7 @@ describe('Framework events', function() {
         const catchingModule1 = {
             name: 'catchingModule1',
             mediator: {
-                onExposedEvent: function(name, userService) {
+                onExposedEvent: function (name, userService) {
                     expect(name).to.be.equal('name');
                     expect(userService).to.be.a('object');
 
@@ -1174,7 +1198,7 @@ describe('Framework events', function() {
         const catchingModule2 = {
             name: 'catchingModule2',
             mediator: {
-                onExposedEvent: function(userService, name) {
+                onExposedEvent: function (userService, name) {
                     expect(name).to.be.equal('name');
                     expect(userService).to.be.a('object');
 
@@ -1194,32 +1218,34 @@ describe('Framework events', function() {
         g.addModule(catchingModule1);
         g.addModule(catchingModule2);
 
-        g.startApp({
-            onAppStarted() {
-
-                const promises = [];
-
-                for (let i = 0; i < 10; i++) {
-                    promises.push(requestPromise.get('http://localhost:3000/emit'));
-                }
-
-                Promise.all(promises).then(() => {
-                    expect(catchedEvent1).to.be.equal(true);
-                    expect(catchedEvent2).to.be.equal(true);
-
-                    expect(calledEvent1).to.be.equal(20);
-                    expect(calledEvent2).to.be.equal(20);
-
-                    this.server.close();
-
-                    done();
-                });
-            }
-        });
+        g.startApp();
     });
 
     it('should run all exposed events are ran as a process', (done) => {
-        const g = gabriela.asServer();
+        const g = gabriela.asServer(null, {
+            events: {
+                onAppStarted() {
+
+                    const promises = [];
+
+                    for (let i = 0; i < 10; i++) {
+                        promises.push(requestPromise.get('http://localhost:3000/emit'));
+                    }
+
+                    Promise.all(promises).then(() => {
+                        expect(catchedEvent1).to.be.equal(true);
+                        expect(catchedEvent2).to.be.equal(true);
+
+                        expect(calledEvent1).to.be.equal(20);
+                        expect(calledEvent2).to.be.equal(20);
+
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
 
         let catchedEvent1 = false;
         let catchedEvent2 = false;
@@ -1292,32 +1318,21 @@ describe('Framework events', function() {
         g.addModule(catchingModule1);
         g.addModule(catchingModule2);
 
-        g.startApp({
-            onAppStarted() {
+        g.startApp();
+    });
 
-                const promises = [];
-
-                for (let i = 0; i < 10; i++) {
-                    promises.push(requestPromise.get('http://localhost:3000/emit'));
-                }
-
-                Promise.all(promises).then(() => {
-                    expect(catchedEvent1).to.be.equal(true);
-                    expect(catchedEvent2).to.be.equal(true);
-
-                    expect(calledEvent1).to.be.equal(20);
-                    expect(calledEvent2).to.be.equal(20);
+    it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
+        const g = gabriela.asServer(null, {
+            events: {
+                catchError() {
+                    expect(this.err.message).to.be.equal('Something went wrong in module1');
 
                     this.server.close();
 
                     done();
-                });
+                }
             }
         });
-    });
-
-    it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
-        const g = gabriela.asServer();
 
         const module1 = {
             name: 'module1',
@@ -1336,14 +1351,6 @@ describe('Framework events', function() {
         g.addModule(module1);
         g.addModule(module2);
 
-        g.startApp({
-            catchError() {
-                expect(this.err.message).to.be.equal('Something went wrong in module1');
-
-                this.server.close();
-
-                done();
-            }
-        })
+        g.startApp()
     });
 });

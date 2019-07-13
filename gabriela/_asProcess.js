@@ -7,8 +7,9 @@ const ExposedMediator = require('./events/exposedMediator');
 const moduleExecutionFactory = require('./module/executeFactory');
 const pluginExecutionFactory = require('./plugin/executeFactory');
 
-module.exports = function _asRunner(receivedConfig) {
+module.exports = function _asProcess(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
+    options = options || {};
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
@@ -83,7 +84,9 @@ module.exports = function _asRunner(receivedConfig) {
         getPlugins: pluginInterface.getAll,
         runPlugin: pluginInterface.run,
 
-        startApp(events) {
+        startApp() {
+            const events = options.events;
+
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 

@@ -8,8 +8,9 @@ const Server = require('./server/server');
 const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
 
-module.exports = function _asServer(receivedConfig) {
+module.exports = function _asServer(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
+    options = options || {};
 
     Validator.validateServerOptions(config.server);
 
@@ -68,7 +69,9 @@ module.exports = function _asServer(receivedConfig) {
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
 
-        startApp(events) {
+        startApp() {
+            const events = options.events;
+
             // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);

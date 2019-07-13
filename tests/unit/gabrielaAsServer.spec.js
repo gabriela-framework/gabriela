@@ -17,15 +17,17 @@ describe('Gabriela server tests', function() {
             server: {
                 port: 4000,
             }
-        });
+        }, {
+            events: {
+                onAppStarted: function() {
+                    this.server.close();
 
-        g.startApp({
-            onAppStarted: function() {
-                this.server.close();
-
-                done();
+                    done();
+                }
             }
         });
+
+        g.startApp();
     });
 
     it('should start the server app with plugins and modules and run them', (done) => {
@@ -63,22 +65,24 @@ describe('Gabriela server tests', function() {
             server: {
                 port: 4000,
             }
+        }, {
+            events: {
+                onAppStarted: function() {
+                    expect(pluginModule1Executed).to.be.equal(true);
+                    expect(pluginModule2Executed).to.be.equal(true);
+                    expect(standaloneModuleExecuted).to.be.equal(true);
+
+                    this.server.close();
+
+                    done();
+                }
+            }
         });
 
         g.addModule(mdl);
         g.addPlugin(plugin);
 
-        g.startApp({
-            onAppStarted: function() {
-                expect(pluginModule1Executed).to.be.equal(true);
-                expect(pluginModule2Executed).to.be.equal(true);
-                expect(standaloneModuleExecuted).to.be.equal(true);
-
-                this.server.close();
-
-                done();
-            }
-        });
+        g.startApp();
     });
 
     it('should resolve a public dependency only of either a plugin or a module in the onAppStartedEvent', (done) => {
@@ -127,24 +131,26 @@ describe('Gabriela server tests', function() {
             server: {
                 port: 4000,
             }
+        }, {
+            events: {
+                onAppStarted: function(userService) {
+                    expect(userService).to.be.a('object');
+
+                    expect(pluginModule1Executed).to.be.equal(true);
+                    expect(pluginModule2Executed).to.be.equal(true);
+                    expect(standaloneModuleExecuted).to.be.equal(true);
+
+                    this.server.close();
+
+                    done();
+                }
+            }
         });
 
         g.addModule(mdl);
         g.addPlugin(plugin);
 
-        g.startApp({
-            onAppStarted: function(userService) {
-                expect(userService).to.be.a('object');
-
-                expect(pluginModule1Executed).to.be.equal(true);
-                expect(pluginModule2Executed).to.be.equal(true);
-                expect(standaloneModuleExecuted).to.be.equal(true);
-
-                this.server.close();
-
-                done();
-            }
-        });
+        g.startApp();
     });
 
     it('should declare two routes within multiple modules within a plugin', (done) => {
@@ -215,31 +221,33 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const app = gabriela.asServer();
+        const app = gabriela.asServer({}, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/users', (err, res) => {
+                        const data = JSON.parse(res.body);
+
+                        expect(data).to.have.property('model');
+                        expect(data.model).to.be.a('array');
+
+                        expect(data.model.length).to.be.equal(2);
+
+                        expect(data.model[0]).to.be.a('object');
+                        expect(data.model[1]).to.be.a('object');
+
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
 
         app.addPlugin({
             name: 'userManagement',
             modules: [getUsersModule, findUserModule],
         });
 
-        app.startApp({
-            onAppStarted() {
-                requestPromise.get('http://localhost:3000/users', (err, res) => {
-                    const data = JSON.parse(res.body);
-
-                    expect(data).to.have.property('model');
-                    expect(data.model).to.be.a('array');
-
-                    expect(data.model.length).to.be.equal(2);
-
-                    expect(data.model[0]).to.be.a('object');
-                    expect(data.model[1]).to.be.a('object');
-
-                    this.server.close();
-
-                    done();
-                });
-            }
-        });
+        app.startApp();
     });
 });

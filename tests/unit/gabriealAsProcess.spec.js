@@ -22,14 +22,16 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should run the onAppStarted event when using gabriela as process', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(null, {
+            events: {
+                onAppStarted() {
+                    eventCalled = true;
+                }
+            }
+        });
         let eventCalled = false;
 
-        g.startApp({
-            onAppStarted: function() {
-                eventCalled = true;
-            }
-        }).then(() => {
+        g.startApp().then(() => {
             expect(eventCalled).to.be.equal(true);
 
             done();
@@ -68,16 +70,18 @@ describe('Gabriela as process tests', () => {
             modules: [mdl1, mdl2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(null, {
+            events: {
+                onAppStarted() {
+                    eventCalled = true;
+                }
+            }
+        });
 
         g.addPlugin(plugin);
         g.addModule(standaloneModule);
 
-        g.startApp({
-            onAppStarted: function() {
-                eventCalled = true;
-            }
-        }).then(() => {
+        g.startApp().then(() => {
             expect(eventCalled).to.be.equal(true);
             expect(mdl1Called).to.be.equal(true);
             expect(mdl2Called).to.be.equal(true);

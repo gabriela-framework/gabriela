@@ -31,13 +31,15 @@ describe('Failing server tests', () => {
             server: {
                 port: 4000,
             },
+        }, {
+            events: {
+                onAppStarted: null,
+            }
         });
 
         let entersException = false;
         try {
-            g.startApp({
-                onAppStarted: null,
-            });
+            g.startApp();
         } catch(e) {
             entersException = true;
 
@@ -52,13 +54,15 @@ describe('Failing server tests', () => {
             server: {
                 port: 4000,
             },
+        }, {
+            events: {
+                catchError: null,
+            }
         });
 
         let entersException = false;
         try {
-            g.startApp({
-                catchError: null,
-            });
+            g.startApp();
         } catch(e) {
             entersException = true;
 

@@ -1,11 +1,11 @@
 require('strict-mode')(function () {
     module.exports = {
-        asServer(receivedConfig) {
-            return require('./_asServer').call(null, receivedConfig);
+        asServer(receivedConfig, options) {
+            return require('./_asServer').call(null, receivedConfig, options);
         },
 
-        asProcess(receivedConfig) {
-            return require('./_asProcess').call(null, receivedConfig);
+        asProcess(receivedConfig, options) {
+            return require('./_asProcess').call(null, receivedConfig, options);
         }
     };
 });
