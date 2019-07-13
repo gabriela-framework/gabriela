@@ -12,10 +12,8 @@ class Base {
     }
 }
 
-class MiddlewareTypes extends Base{
-    SECURITY = 'security';
-    PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
-    VALIDATORS = 'validators';
-    MODULE_LOGIC = 'moduleLogic';
-    POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
-}
+
+const obj = Object.create(new Base());
+
+obj.name = 'name';
+obj.lastName = 'lastname';

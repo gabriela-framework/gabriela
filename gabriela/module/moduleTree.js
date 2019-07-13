@@ -5,32 +5,6 @@ const deepCopy = require('deepcopy');
 const { MIDDLEWARE_TYPES } = require('../misc/types');
 const {hasKey, is} = require('../util/util');
 
-/**
- * Recursive function that runs a tree of modules if 'modules' property was added with submodules of this module.
- *
- * @param tree
- * @returns {Promise<null>}
- */
-async function runTree(tree) {
-    let childState = null;
-    if (tree.length > 0) {
-        for (let a = 0; a < tree.length; a++) {
-            const gabriela = tree[a];
-            const modules = gabriela.getModules();
-
-            for (const moduleName in modules) {
-                if (!childState) childState = {};
-
-                const mdl = modules[moduleName];
-
-                childState[mdl.name] = await gabriela.runModule(mdl.name);
-            }
-        }
-    }
-
-    return childState;
-}
-
 function _overrideMiddleware(mdl, existing) {
     for (const type of MIDDLEWARE_TYPES) {
         if (mdl[type]) {

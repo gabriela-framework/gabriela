@@ -97,6 +97,10 @@ function getArgs(fn, values, specialCb) {
     return args;
 }
 
+function makeIterator() {
+
+}
+
 module.exports = {
     createGenerator,
     getArgNames,
