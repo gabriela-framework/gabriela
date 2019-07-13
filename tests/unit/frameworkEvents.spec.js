@@ -1315,4 +1315,35 @@ describe('Framework events', function() {
             }
         });
     });
+
+    it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
+        const g = gabriela.asServer();
+
+        const module1 = {
+            name: 'module1',
+            moduleLogic: [function() {
+                throw new Error('Something went wrong in module1');
+            }]
+        };
+
+        const module2 = {
+            name: 'module2',
+            moduleLogic: [function() {
+                throw new Error('Something went wrong in module2');
+            }]
+        };
+
+        g.addModule(module1);
+        g.addModule(module2);
+
+        g.startApp({
+            catchError() {
+                expect(this.err.message).to.be.equal('Something went wrong in module1');
+
+                this.server.close();
+
+                done();
+            }
+        })
+    });
 });

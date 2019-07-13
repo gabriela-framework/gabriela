@@ -6,14 +6,23 @@ const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
 const {GABRIELA_EVENTS} = require('../misc/types');
 
-async function _listenCallback(
-    opts,
-    events,
-    rootCompiler,
-) {
-    _runEvents.call(this, events, rootCompiler);
+function _validateEvents(events) {
+    if (is('object', events) && hasKey(events, 'onAppStarted')) {
+        if (!is('function', events.onAppStarted)) throw new Error(`Invalid event. 'onAppStarted' must be a function. Due to this error, the server cannot start.`);
+    }
+
+    if (is('object', events) && hasKey(events, 'catchError')) {
+        if (!is('function', events.catchError)) throw new Error(`Invalid event. 'catchError' must be a function. Due to this error, the server cannot start.`);
+    }
 }
 
+function _resolveOptions(options) {
+    const opts = options || {};
+
+    opts.port = (opts.port) ? opts.port : 3000;
+
+    return opts;
+}
 /**
  *
  * Must be run before server because of app crucial plugins, like mongo, mysql, redis etc...
@@ -26,17 +35,25 @@ async function _runComponents(pluginInterface, moduleInterface, server) {
     await moduleInterface.run(moduleExecuteFactory.bind(null, server));
 }
 
-function _runEvents(events, rootCompiler) {
+function _runEvents(events, rootCompiler, err) {
     for (const gEvent of GABRIELA_EVENTS) {
+        if (hasKey(events, gEvent)) {
+            const mediator = ServerMediator.create(rootCompiler);
 
+            mediator.callEvent(events[gEvent], {
+                server: this,
+                err: err,
+            });
+        }
     }
-    if (events && events.onAppStarted) {
-        const mediator = ServerMediator.create(rootCompiler);
+}
 
-        mediator.callEvent(events.onAppStarted, {
-            server: this,
-        });
-    }
+async function _listenCallback(
+    opts,
+    events,
+    rootCompiler,
+) {
+    _runEvents.call(this, events, rootCompiler);
 }
 
 function Server(
@@ -46,15 +63,9 @@ function Server(
         pluginInterface,
         moduleInterface,
     ) {
-    if (is('object', events) && hasKey(events, 'onAppStarted')) {
-        if (!is('function', events.onAppStarted)) {
-            throw new Error(`Invalid event. 'onAppStarted' must be a function. Due to this error, the server has closed.`);
-        }
-    }
+    _validateEvents(events);
 
-    const opts = options || {};
-
-    opts.port = (opts.port) ? opts.port : 3000;
+    const opts = _resolveOptions(options);
 
     let server = restify.createServer({
         strictNext: true,
@@ -68,6 +79,8 @@ function Server(
                 events,
                 rootCompiler,
             ));
+        }).catch((err) => {
+            _runEvents.call(this, events, rootCompiler, err);
         });
     }
 

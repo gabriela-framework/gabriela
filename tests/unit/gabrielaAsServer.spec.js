@@ -242,6 +242,4 @@ describe('Gabriela server tests', function() {
             }
         });
     });
-
-    it('should ')
 });
