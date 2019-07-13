@@ -85,6 +85,8 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     function addModule(mdl, parentCompiler) {
         Validator.moduleValidator(mdl);
 
+        if (hasKey(modules, mdl.name)) throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
+
         modules[mdl.name] = deepCopy(mdl);
 
         const buildStageArgs = {

@@ -319,4 +319,29 @@ describe('Failing module definition tests', () => {
             expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
         });
     });
+
+    it('should throw an error if an added module already exists', () => {
+        const mdl1 = {
+            name: 'name',
+        };
+
+        const mdl2 = {
+            name: 'name',
+        };
+
+        const m = gabriela.asProcess();
+
+        m.addModule(mdl1);
+
+        let entersException = false;
+        try {
+            m.addModule(mdl2);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module definition error. Module with name '${mdl1.name}' already exists`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
