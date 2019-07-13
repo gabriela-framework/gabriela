@@ -132,7 +132,6 @@ function _bindEventSystem(moduleObject, config, exposedMediator) {
 
         for (const event of keys) {
             if (moduleObject.exposedMediator.has(event) && !moduleObject.exposedMediator.isEmitted(event)) {
-                console.log('pre bind');
                 moduleObject.exposedMediator.preBind(event, mediator[event]);
             }
         }

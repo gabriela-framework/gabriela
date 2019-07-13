@@ -1,5 +1,5 @@
 const taskRunnerFactory = require('../../misc/taskRunner');
-const {asyncFlowTypes} = require('../../misc/types');
+const {ASYNC_FLOW_TYPES} = require('../../misc/types');
 const _waitCheck = require('../../util/_waitCheck');
 const resolveDependencies = require('../../dependencyInjection/resolveDependencies');
 
@@ -35,7 +35,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
     }));
 
     let task;
-    if (!inArray(asyncFlowTypes, args.map((arg) => arg.name))) {
+    if (!inArray(ASYNC_FLOW_TYPES.toArray(), args.map((arg) => arg.name))) {
         task = taskRunner.getTask();
     } else {
         task = await wait(_waitCheck.bind(null, taskRunner));

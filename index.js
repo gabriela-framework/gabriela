@@ -1,41 +1,21 @@
-const gabriela = require('./gabriela/gabriela');
-const requestPromise = require('request-promise');
+class Base {
+    *[Symbol.iterator]() {
+        const entries = Object.values(this);
 
-const mdl = {
-    http: {
-        route: {
-            name: 'users',
-            path: '/users',
-            method: 'get',
+        for (const entry of entries) {
+            yield entry;
         }
-    },
-    name: 'mdl',
-    moduleLogic: [function(state) {
-        state.model = {
-            name: 'name',
-            lastname: 'lastname',
-            age: 85,
-        }
-    }],
-};
+    };
 
-const g = gabriela.asServer();
-g.addModule(mdl);
-
-g.startApp({
-    onAppStarted() {
-        let count = 0;
-        setInterval(function() {
-            console.log('BATCH RUNNING');
-
-            let requestCount = (count <= 10) ? count * 100 : 10;
-            for (let i = 0; i < requestCount; i++) {
-                requestPromise.get('http://localhost:3000/users').then(() => {
-
-                });
-            }
-
-            count++;
-        }, 5000);
+    toArray() {
+        return Object.values(this);
     }
-});
+}
+
+class MiddlewareTypes extends Base{
+    SECURITY = 'security';
+    PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
+    VALIDATORS = 'validators';
+    MODULE_LOGIC = 'moduleLogic';
+    POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
+}

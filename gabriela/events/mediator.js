@@ -1,7 +1,7 @@
 const deasync = require('deasync');
 
 const taskRunnerFactory = require('../misc/taskRunner');
-const {asyncFlowTypes} = require('../misc/types');
+const {ASYNC_FLOW_TYPES} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 const {getArgs, inArray, hasKey, is} = require('../util/util');
 const _callFn = require('./_callFn');
@@ -28,7 +28,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
         args = [...args];
     }
 
-    if (!inArray(asyncFlowTypes, args.map(arg => arg.name))) {
+    if (!inArray(ASYNC_FLOW_TYPES, args.map(arg => arg.name))) {
         _callFn(fn, moduleOrPlugin, args, config);
 
         return;

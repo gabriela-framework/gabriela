@@ -4,6 +4,7 @@ const ServerMediator = require('../events/genericMediator');
 const {is, hasKey} = require('../util/util');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
+const {GABRIELA_EVENTS} = require('../misc/types');
 
 async function _listenCallback(
     opts,
@@ -26,6 +27,9 @@ async function _runComponents(pluginInterface, moduleInterface, server) {
 }
 
 function _runEvents(events, rootCompiler) {
+    for (const gEvent of GABRIELA_EVENTS) {
+
+    }
     if (events && events.onAppStarted) {
         const mediator = ServerMediator.create(rootCompiler);
 

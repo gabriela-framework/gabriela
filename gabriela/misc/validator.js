@@ -3,7 +3,7 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 
-const {middlewareTypes, mandatoryRouteProps, httpMethods} = require('./types');
+const {MIDDLEWARE_TYPES, MANDATORY_ROUTE_PROPS, HTTP_METHODS} = require('./types');
 
 const {is, hasKey} = require('../util/util');
 
@@ -41,7 +41,7 @@ factory.moduleValidator = function(mdl) {
      * Traverses the middleware by middleware name and validates that every middleware has to be an array
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
      */
-    for (const name of middlewareTypes) {
+    for (const name of MIDDLEWARE_TYPES) {
         if (hasKey(mdl, name)) {
             if (!Array.isArray(mdl[name]) && !is('object', mdl[name])) {
                 throw new Error(`Module definition error. '${name}' of '${mdl.name}' module has to be an array of functions or an object with a 'name' property and a 'middleware' property that has to be an array`);
@@ -111,15 +111,15 @@ factory.moduleValidator = function(mdl) {
 
         if (!is('object', http.route)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must be an object`);
 
-        for (const entry of mandatoryRouteProps) {
-            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${mandatoryRouteProps.join(', ')}'`)
+        for (const entry of MANDATORY_ROUTE_PROPS) {
+            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${MANDATORY_ROUTE_PROPS.toArray().join(', ')}'`)
         }
 
         if (!is('string', http.route.name)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.name' must be a string`);
         if (!is('string', http.route.path)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.path' must be a string`);
         if (!is('string', http.route.method)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.method' must be a string`);
 
-        if (!httpMethods.includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
+        if (!HTTP_METHODS.toArray().includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
     }
 
     validateDependencies(mdl);

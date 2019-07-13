@@ -2,7 +2,7 @@ const ModuleRunner = require('./moduleRunner');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
-const { middlewareTypes } = require('../misc/types');
+const { MIDDLEWARE_TYPES } = require('../misc/types');
 const {hasKey, is} = require('../util/util');
 
 /**
@@ -32,7 +32,7 @@ async function runTree(tree) {
 }
 
 function _overrideMiddleware(mdl, existing) {
-    for (const type of middlewareTypes) {
+    for (const type of MIDDLEWARE_TYPES) {
         if (mdl[type]) {
             const middlewareList = mdl[type];
 
