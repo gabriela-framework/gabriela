@@ -3,7 +3,7 @@ const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const { MIDDLEWARE_TYPES } = require('../misc/types');
-const {hasKey, is} = require('../util/util');
+const {hasKey, is, IIterator} = require('../util/util');
 
 function _overrideMiddleware(mdl, existing) {
     for (const type of MIDDLEWARE_TYPES) {
@@ -50,9 +50,18 @@ async function _runConstructedModule(mdl, tree, config, executeFactory) {
     return runner.getResult();
 }
 
+function _createWorkingDataStructures() {
+    class Modules extends IIterator{}
+    class ConstructedModules extends IIterator{}
+
+    return {
+        modules: new Modules(),
+        constructed: new ConstructedModules(),
+    };
+}
+
 function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
-    const modules = {};
-    const constructed = {};
+    const {modules, constructed} = _createWorkingDataStructures();
 
     const tree = [];
 

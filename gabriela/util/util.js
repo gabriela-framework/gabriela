@@ -97,8 +97,18 @@ function getArgs(fn, values, specialCb) {
     return args;
 }
 
-function makeIterator() {
+class IIterator {
+    *[Symbol.iterator]() {
+        const entries = Object.values(this);
 
+        for (const entry of entries) {
+            yield entry;
+        }
+    };
+
+    toArray() {
+        return Object.values(this);
+    }
 }
 
 module.exports = {
@@ -110,4 +120,5 @@ module.exports = {
     is,
     ucFirst,
     wait,
+    IIterator,
 };

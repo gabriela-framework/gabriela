@@ -3,7 +3,17 @@ const Validator = require('../misc/validator');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
 
-const {is, hasKey} = require('../util/util');
+const {is, hasKey, IIterator} = require('../util/util');
+
+function _createWorkingDataStructures() {
+    class Plugins extends IIterator{}
+    class ConstructedPlugins extends IIterator{}
+
+    return {
+        plugins: new Plugins(),
+        constructed: new ConstructedPlugins(),
+    };
+}
 
 async function _runConstructedPlugin(pluginModel, config, executeFactory) {
     const pluginRunner = PluginRunner.create(pluginModel);
@@ -12,9 +22,7 @@ async function _runConstructedPlugin(pluginModel, config, executeFactory) {
 }
 
 function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
-    const plugins = {};
-
-    const constructed = {};
+    const {plugins, constructed} = _createWorkingDataStructures();
 
     function addPlugin(plugin) {
         Validator.validatePlugin(plugin);

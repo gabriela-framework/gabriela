@@ -1,3 +1,5 @@
+const {IIterator} = require('../util/util');
+
 function _proxifyType(obj) {
     const handlers = {
         set(obj, prop) {
@@ -8,21 +10,7 @@ function _proxifyType(obj) {
     return new Proxy(obj, handlers);
 }
 
-class Base {
-    *[Symbol.iterator]() {
-        const entries = Object.values(this);
-
-        for (const entry of entries) {
-            yield entry;
-        }
-    };
-
-    toArray() {
-        return Object.values(this);
-    }
-}
-
-class MiddlewareTypes extends Base {
+class MiddlewareTypes extends IIterator {
     SECURITY = 'security';
     PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
     VALIDATORS = 'validators';
@@ -30,14 +18,14 @@ class MiddlewareTypes extends Base {
     POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
 }
 
-class AsyncFlowTypes extends Base {
+class AsyncFlowTypes extends IIterator {
     NEXT = 'next';
     DONE = 'done';
     SKIP = 'skip';
     THROW_EXCEPTION = 'throwException';
 }
 
-class BuiltInMediators extends Base {
+class BuiltInMediators extends IIterator {
     ON_MODULE_STARTED = 'onModuleStarted';
     ON_MODULE_FINISHED = 'onModuleFinished';
     ON_PLUGIN_STARTED = 'onPluginStarted';
@@ -45,7 +33,7 @@ class BuiltInMediators extends Base {
     ON_ERROR = 'onError';
 }
 
-class HttpMethods extends Base{
+class HttpMethods extends IIterator {
     GET = 'get';
     PUT = 'put';
     POST = 'post';
@@ -54,13 +42,13 @@ class HttpMethods extends Base{
     HEAD = 'head';
 }
 
-class MandatoryRouteProps extends Base {
+class MandatoryRouteProps extends IIterator {
     NAME = 'name';
     PATH = 'path';
     METHOD = 'method';
 }
 
-class GabrielaEvents extends Base {
+class GabrielaEvents extends IIterator {
     ON_APP_STARTED = 'onAppStarted';
     CATCH_ERROR = 'catchError';
 }
