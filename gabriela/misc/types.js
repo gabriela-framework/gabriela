@@ -1,3 +1,13 @@
+function _proxifyType(obj) {
+    const handlers = {
+        set(obj, prop) {
+            throw new Error(`Invalid constant type usage. Trying to change property '${prop}' on a constant type`);
+        }
+    };
+
+    return new Proxy(obj, handlers);
+}
+
 class Base {
     *[Symbol.iterator]() {
         const entries = Object.values(this);
@@ -12,7 +22,7 @@ class Base {
     }
 }
 
-class MiddlewareTypes extends Base{
+class MiddlewareTypes extends Base {
     SECURITY = 'security';
     PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
     VALIDATORS = 'validators';
@@ -31,7 +41,7 @@ class HttpMethods extends Base{
     GET = 'get';
     PUT = 'put';
     POST = 'post';
-    PATCH = 'path';
+    PATCH = 'patch';
     DELETE = 'del';
     HEAD = 'head';
 }
@@ -48,9 +58,9 @@ class GabrielaEvents extends Base {
 }
 
 module.exports = Object.freeze({
-    MIDDLEWARE_TYPES: Object.freeze(new MiddlewareTypes()),
-    ASYNC_FLOW_TYPES: Object.freeze(new AsyncFlowTypes()),
-    HTTP_METHODS: Object.freeze(new HttpMethods()),
-    MANDATORY_ROUTE_PROPS: Object.freeze(new MandatoryRouteProps()),
-    GABRIELA_EVENTS: Object.freeze(new GabrielaEvents()),
+    MIDDLEWARE_TYPES: Object.freeze(_proxifyType(new MiddlewareTypes())),
+    ASYNC_FLOW_TYPES: Object.freeze(_proxifyType(new AsyncFlowTypes())),
+    HTTP_METHODS: Object.freeze(_proxifyType(new HttpMethods())),
+    MANDATORY_ROUTE_PROPS: Object.freeze(_proxifyType(new MandatoryRouteProps())),
+    GABRIELA_EVENTS: Object.freeze(_proxifyType(new GabrielaEvents())),
 });

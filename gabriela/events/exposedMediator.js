@@ -51,9 +51,9 @@ function factory() {
         if (!definitions[name]) {
             definitions[name] = {
                 fns: null,
-                compiler: compiler,
+                compiler,
                 args: customArgs,
-            }
+            };
         }
 
         if (!definitions[name].compiler) {

@@ -9,7 +9,7 @@ const pluginExecutionFactory = require('./plugin/executeFactory');
 
 module.exports = function _asProcess(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
-    options = options || {};
+    const opts = options || {};
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
@@ -40,7 +40,7 @@ module.exports = function _asProcess(receivedConfig, options) {
         if (customPluginExecutionFactory && customModuleExecutionFactory) {
             executeFactory = customPluginExecutionFactory.bind(null, customModuleExecutionFactory, null);
         } else {
-            executeFactory = pluginExecutionFactory.bind(null, moduleExecutionFactory, null)
+            executeFactory = pluginExecutionFactory.bind(null, moduleExecutionFactory, null);
         }
 
         if (name) return pluginTree.runPlugin(name, executeFactory);
@@ -85,7 +85,7 @@ module.exports = function _asProcess(receivedConfig, options) {
         runPlugin: pluginInterface.run,
 
         startApp() {
-            const events = options.events;
+            const {events} = opts;
 
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);

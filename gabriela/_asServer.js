@@ -12,7 +12,7 @@ const ExposedMediator = require('./events/exposedMediator');
 
 module.exports = function _asServer(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
-    options = options || {};
+    const opts = options || {};
 
     Validator.validateServerOptions(config.server);
 
@@ -72,7 +72,7 @@ module.exports = function _asServer(receivedConfig, options) {
         getPlugins: pluginInterface.getAll,
 
         startApp() {
-            const events = options.events;
+            const {events} = opts;
 
             // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
