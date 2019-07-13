@@ -8,6 +8,7 @@ const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 const moduleExecuteFactory = require('../../gabriela/module/executeFactory');
+const pluginExecuteFactory = require('../../gabriela/plugin/executeFactory');
 
 const gabriela = require('../../gabriela/gabriela');
 
@@ -571,6 +572,30 @@ describe('Gabriela as process tests', () => {
         g.addModule(mdl);
 
         g.runModule(null, moduleExecuteFactory).then(() => {
+            expect(moduleCalled).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should execute gabriela plugin with a custom execution factory', (done) => {
+        const g = gabriela.asProcess();
+
+        let moduleCalled = false;
+
+        const mdl = {
+            name: 'mdl',
+            moduleLogic: [function() {
+                moduleCalled = true;
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin',
+            modules: [mdl],
+        });
+
+        g.runPlugin(null, pluginExecuteFactory, moduleExecuteFactory).then(() => {
             expect(moduleCalled).to.be.equal(true);
 
             done();
