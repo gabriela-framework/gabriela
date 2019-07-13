@@ -3,7 +3,12 @@
  * @type {(function(*=, *=): (*|*))|*}
  */
 
-const {MIDDLEWARE_TYPES, MANDATORY_ROUTE_PROPS, HTTP_METHODS} = require('./types');
+const {
+    MIDDLEWARE_TYPES,
+    MANDATORY_ROUTE_PROPS,
+    HTTP_METHODS,
+    BUILT_IN_MEDIATORS,
+} = require('./types');
 
 const {is, hasKey} = require('../util/util');
 
@@ -73,25 +78,21 @@ factory.moduleValidator = function(mdl) {
     if (hasKey(mdl, 'mediator')) {
         if (!is('object', mdl.mediator)) throw new Error(`Invalid module definition. 'mediator' property must be an object`);
 
-        if (hasKey(mdl.mediator, 'onModuleStarted')) {
-            if (!is('function', mdl.mediator.onModuleStarted)) throw new Error(`Invalid module definition. 'mediator.onModuleStarted' must be a function`);
+        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) {
+            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_MODULE_STARTED])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_MODULE_STARTED}' must be a function`);
         }
 
-        if (hasKey(mdl.mediator, 'onModuleFinished')) {
-            if (!is('function', mdl.mediator.onModuleFinished)) throw new Error(`Invalid module definition. 'mediator.onModuleFinished' must be a function`);
+        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) {
+            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_MODULE_FINISHED])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_MODULE_FINISHED}' must be a function`);
         }
 
-        if (hasKey(mdl.mediator, 'onError')) {
-            if (!is('function', mdl.mediator.onError)) throw new Error(`Invalid module definition. 'mediator.onError' must be a function`);
+        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_ERROR)) {
+            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_ERROR])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_ERROR}' must be a function`);
         }
 
         const mediators = mdl.mediator;
         const props = Object.keys(mediators);
-        const builtInMediators = [
-            'onModuleStarted',
-            'onModuleFinished',
-            'onError',
-        ];
+        const builtInMediators = BUILT_IN_MEDIATORS.toArray();
 
         for (const prop of props) {
             if (!builtInMediators.includes(prop)) {
@@ -145,19 +146,19 @@ factory.validatePlugin = function(plugin) {
     if (hasKey(plugin, 'mediator')) {
         if (!is('object', plugin.mediator)) throw new Error(`Invalid plugin definition. 'mediator' property must be an object`);
 
-        if (hasKey(plugin.mediator, 'onPluginStarted')) {
-            if (!is('function', plugin.mediator.onPluginStarted)) throw new Error(`Invalid plugin definition. 'mediator.onPluginStarted' must be a function`);
+        if (hasKey(plugin.mediator, BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED)) {
+            if (!is('function', plugin.mediator[BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED])) throw new Error(`Invalid plugin definition. 'mediator.${BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED}' must be a function`);
         }
 
-        if (hasKey(plugin.mediator, 'onPluginFinished')) {
-            if (!is('function', plugin.mediator.onPluginFinished)) throw new Error(`Invalid plugin definition. 'mediator.onPluginFinished' must be a function`);
+        if (hasKey(plugin.mediator, BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED)) {
+            if (!is('function', plugin.mediator[BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED])) throw new Error(`Invalid plugin definition. 'mediator.${BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED}' must be a function`);
         }
 
         const mediators = plugin.mediator;
         const props = Object.keys(mediators);
         const builtInMediators = [
-            'onPluginStarted',
-            'onPluginFinished',
+            BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED,
+            BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED,
         ];
 
         for (const prop of props) {

@@ -30,11 +30,19 @@ class MiddlewareTypes extends Base {
     POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
 }
 
-class AsyncFlowTypes extends Base{
+class AsyncFlowTypes extends Base {
     NEXT = 'next';
     DONE = 'done';
     SKIP = 'skip';
     THROW_EXCEPTION = 'throwException';
+}
+
+class BuiltInMediators extends Base {
+    ON_MODULE_STARTED = 'onModuleStarted';
+    ON_MODULE_FINISHED = 'onModuleFinished';
+    ON_PLUGIN_STARTED = 'onPluginStarted';
+    ON_PLUGIN_FINISHED = 'onPluginFinished';
+    ON_ERROR = 'onError';
 }
 
 class HttpMethods extends Base{
@@ -46,7 +54,7 @@ class HttpMethods extends Base{
     HEAD = 'head';
 }
 
-class MandatoryRouteProps extends Base{
+class MandatoryRouteProps extends Base {
     NAME = 'name';
     PATH = 'path';
     METHOD = 'method';
@@ -59,6 +67,7 @@ class GabrielaEvents extends Base {
 
 module.exports = Object.freeze({
     MIDDLEWARE_TYPES: Object.freeze(_proxifyType(new MiddlewareTypes())),
+    BUILT_IN_MEDIATORS: Object.freeze(_proxifyType(new BuiltInMediators())),
     ASYNC_FLOW_TYPES: Object.freeze(_proxifyType(new AsyncFlowTypes())),
     HTTP_METHODS: Object.freeze(_proxifyType(new HttpMethods())),
     MANDATORY_ROUTE_PROPS: Object.freeze(_proxifyType(new MandatoryRouteProps())),
