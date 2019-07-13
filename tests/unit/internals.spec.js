@@ -111,8 +111,6 @@ describe('Test gabriela internals', () => {
             'sharedCompiler',
             'hasModules',
             'hasMediators',
-            'hasPlugins',
-            'plugins',
             'mediator',
             'mediatorInstance',
             'exposedMediators',
@@ -144,10 +142,8 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.sharedCompiler).to.be.a('object');
         expect(pluginModel.hasMediators).to.be.a('function');
         expect(pluginModel.hasModules).to.be.a('function');
-        expect(pluginModel.hasPlugins).to.be.a('function');
         expect(pluginModel.mediator).to.be.a('undefined');
         expect(pluginModel.exposedMediators).to.be.a('undefined');
-        expect(pluginModel.plugins).to.be.a('array');
         expect(pluginModel.mediatorInstance).to.be.a('object');
         expect(pluginModel.exposedMediators).to.be.a('undefined');
         expect(pluginModel.hasExposedMediators()).to.be.equal(false);

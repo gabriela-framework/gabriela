@@ -53,10 +53,6 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
         hasMediators() {
             return !!plugin.mediator;
         },
-        hasPlugins() {
-            return !!plugin.plugins;
-        },
-        plugins: plugin.plugins,
         mediator: plugin.mediator,
     };
 
