@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Compiler pass tests', () => {
     it('should add a private dependency within a compiler pass, execute it and resolve the private dependency within the init function', () => {
@@ -39,7 +40,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);
 
         g.addModule({
             name: 'module',

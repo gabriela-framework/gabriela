@@ -8,6 +8,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Plugin tree execution tests', function() {
     xit('should execute a tree of plugins', () => {
@@ -53,7 +54,7 @@ describe('Plugin tree execution tests', function() {
             plugins: [logicPlugin],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin(presentationPlugin);
 

@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Immediately executing middleware with dependency injection and expressions', () => {
     it('should inject and execute the middleware as an expression', (done) => {
@@ -30,7 +31,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()']
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(middlewareModule);
 
@@ -81,7 +82,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()']
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(middlewareModule);
 
@@ -147,7 +148,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()'],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -223,7 +224,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail()', 'validateName()'],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -261,9 +262,9 @@ describe('Immediately executing middleware with dependency injection and express
 
                     expect(compiler).to.be.a('object');
                     expect(config).to.be.a('object');
-                    expect(config).to.have.property('validation');
+                    expect(config.config).to.have.property('validation');
 
-                    const validation = config.validation;
+                    const validation = config.config.validation;
 
                     expect(validation).to.have.property('minMessage');
                     expect(validation).to.have.property('maxMessage');
@@ -291,19 +292,19 @@ describe('Immediately executing middleware with dependency injection and express
         const validateNameInit = {
             name: 'validateName',
             compilerPass: {
-                init: function(config, compiler) {
+                init: function(validation, compiler) {
                     validateNameCompilerPassCalled = true;
 
                     expect(compiler).to.be.a('object');
-                    expect(config).to.be.a('object');
+                    expect(validation).to.be.a('object');
 
-                    expect(config).to.have.property('minMessage');
-                    expect(config).to.have.property('maxMessage');
-                    expect(config).to.have.property('invalidEmailMessage');
+                    expect(validation).to.have.property('minMessage');
+                    expect(validation).to.have.property('maxMessage');
+                    expect(validation).to.have.property('invalidEmailMessage');
 
-                    expect(config.minMessage).to.be.a('string');
-                    expect(config.maxMessage).to.be.a('string');
-                    expect(config.invalidEmailMessage).to.be.a('string');
+                    expect(validation.minMessage).to.be.a('string');
+                    expect(validation.maxMessage).to.be.a('string');
+                    expect(validation.invalidEmailMessage).to.be.a('string');
                 },
                 property: 'validation',
             },
@@ -327,11 +328,13 @@ describe('Immediately executing middleware with dependency injection and express
         };
 
         const g = gabriela.asProcess({
-            validation: {
-                minMessage: 'Minimum message',
-                maxMessage: 'Max message',
-                invalidEmailMessage: 'Invalid email',
-            },
+            config: {
+                validation: {
+                    minMessage: 'Minimum message',
+                    maxMessage: 'Max message',
+                    invalidEmailMessage: 'Invalid email',
+                },
+            }
         });
 
         g.addModule(module1);

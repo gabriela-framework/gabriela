@@ -14,7 +14,7 @@ module.exports = function _asServer(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
     const opts = options || {};
 
-    Validator.validateServerOptions(config.server);
+    Validator.validateServerOptions(config.config.server);
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
@@ -79,7 +79,7 @@ module.exports = function _asServer(receivedConfig, options) {
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 
             const server = new Server(
-                config.server,
+                config.config.server,
                 events,
                 rootCompiler,
                 pluginInterface,

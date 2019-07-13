@@ -12,6 +12,7 @@ const gabriela = require('../../gabriela/gabriela');
 const Mediator = require('../../gabriela/events/mediator');
 const ServerMediator = require('../../gabriela/events/genericMediator');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const config = require('../config/config');
 
 describe('Framework events', function() {
     this.timeout(10000);
@@ -86,7 +87,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -134,7 +135,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -225,7 +226,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -278,7 +279,7 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -330,7 +331,7 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -360,7 +361,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -384,7 +385,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -420,7 +421,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module);
 
@@ -460,7 +461,7 @@ describe('Framework events', function() {
             }
         }
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin(plugin);
 
@@ -489,7 +490,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -605,7 +606,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'name',
@@ -648,7 +649,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -706,7 +707,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -736,7 +737,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'errorPlugin',
@@ -780,7 +781,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -833,7 +834,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -885,7 +886,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -962,7 +963,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -1075,7 +1076,7 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -1108,7 +1109,7 @@ describe('Framework events', function() {
             modules: [mdl],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin(plugin);
 
@@ -1121,7 +1122,7 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events from emitted from a http module as a server', (done) => {
-        const g = gabriela.asServer(null, {
+        const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
 
@@ -1222,7 +1223,7 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events are ran as a process', (done) => {
-        const g = gabriela.asServer(null, {
+        const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
 
@@ -1322,7 +1323,7 @@ describe('Framework events', function() {
     });
 
     it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
-        const g = gabriela.asServer(null, {
+        const g = gabriela.asServer(config, {
             events: {
                 catchError() {
                     expect(this.err.message).to.be.equal('Something went wrong in module1');

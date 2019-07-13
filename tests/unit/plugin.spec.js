@@ -8,10 +8,11 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Plugin creation tests', () => {
     it('should have a plugin interface', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         expect(p).to.have.property('addPlugin');
         expect(p).to.have.property('hasPlugin');
@@ -21,7 +22,7 @@ describe('Plugin creation tests', () => {
     });
 
     it('should evaluate plugin interface', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         p.addPlugin({
             name: 'plugin1',
@@ -82,7 +83,7 @@ describe('Plugin creation tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin1',

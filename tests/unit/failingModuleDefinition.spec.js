@@ -8,6 +8,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Failing module definition tests', () => {
     it('should throw an error because of invalid dependencies entry type', () => {
@@ -16,7 +17,7 @@ describe('Failing module definition tests', () => {
             dependencies: null,
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -33,7 +34,7 @@ describe('Failing module definition tests', () => {
     it('should throw error when module definition name does not exist', () => {
         let userModule = {};
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -52,7 +53,7 @@ describe('Failing module definition tests', () => {
             name: 1
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -73,7 +74,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -99,7 +100,7 @@ describe('Failing module definition tests', () => {
         userModule.name = 'name';
         userModule.preLogicTransformers = [1];
 
-        const runner = gabriela.asProcess();
+        const runner = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -120,7 +121,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -148,7 +149,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -178,7 +179,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -209,7 +210,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -238,7 +239,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -263,7 +264,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        let g = gabriela.asProcess();
+        let g = gabriela.asProcess(config);;
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {
@@ -293,7 +294,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess(config);;
 
         m.addModule(userModule);
 
@@ -309,7 +310,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess(config);;
 
         m.addModule(userModule);
 
@@ -329,7 +330,7 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess(config);;
 
         m.addModule(mdl1);
 

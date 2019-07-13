@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Scope dependency injection tests', () => {
     it(`should resolve the default scope to 'module' and create two different instances`, (done) => {
@@ -51,7 +52,7 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module1);
         g.addModule(module2);
@@ -110,7 +111,7 @@ describe('Scope dependency injection tests', () => {
             modules: [module1, module2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);
@@ -186,7 +187,7 @@ describe('Scope dependency injection tests', () => {
             modules: [pluginModule1, pluginModule2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(singleModule);
         g.addPlugin(plugin1);
@@ -295,7 +296,7 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'dependencyOrderPlugin',

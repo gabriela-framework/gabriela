@@ -8,14 +8,17 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Gabriela server tests', function() {
     this.timeout(10000);
 
     it('should start listening to the server and start the app without any plugins or modules', (done) => {
         const g = gabriela.asServer({
-            server: {
-                port: 4000,
+            config: {
+                server: {
+                    port: 4000,
+                }
             }
         }, {
             events: {
@@ -62,8 +65,10 @@ describe('Gabriela server tests', function() {
         };
 
         const g = gabriela.asServer({
-            server: {
-                port: 4000,
+            config: {
+                server: {
+                    port: 4000,
+                }
             }
         }, {
             events: {
@@ -128,8 +133,10 @@ describe('Gabriela server tests', function() {
         };
 
         const g = gabriela.asServer({
-            server: {
-                port: 4000,
+            config: {
+                server: {
+                    port: 4000,
+                }
             }
         }, {
             events: {
@@ -221,7 +228,7 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const app = gabriela.asServer({}, {
+        const app = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/users', (err, res) => {

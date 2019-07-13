@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Private dependencies', () => {
     it('should resolve all private dependencies in a single tree of a single module', () => {
@@ -51,7 +52,7 @@ describe('Private dependencies', () => {
             }]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -125,7 +126,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin({
             name: 'plugin',
@@ -258,7 +259,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -392,7 +393,7 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -461,7 +462,7 @@ describe('Private dependencies', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule({
             name: 'module',

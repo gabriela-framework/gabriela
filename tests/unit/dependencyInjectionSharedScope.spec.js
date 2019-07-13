@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Shared scope dependency injection tests', () => {
     it('should create a shared dependency between multiple modules and one plugin', (done) => {
@@ -82,7 +83,7 @@ describe('Shared scope dependency injection tests', () => {
             modules: [module1, module2, module3]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(module1);
         g.addModule(module2);
@@ -182,7 +183,7 @@ describe('Shared scope dependency injection tests', () => {
             modules: [singleModule, testingModule],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);

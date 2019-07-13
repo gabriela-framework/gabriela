@@ -7,6 +7,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Module dependency injection tests', function() {
     this.timeout(10000);
@@ -68,7 +69,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -111,7 +112,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -195,7 +196,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -246,7 +247,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
@@ -330,7 +331,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
@@ -384,7 +385,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -451,7 +452,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 
@@ -499,7 +500,7 @@ describe('Module dependency injection tests', function() {
             }]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(userModule);
 

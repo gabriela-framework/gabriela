@@ -8,6 +8,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
 const {MANDATORY_ROUTE_PROPS} = require('../../gabriela/misc/types');
+const config = require('../config/config');
 
 describe('Failing tests using modules as http modules',() => {
     it('should fail if http is not of type object', () => {
@@ -16,7 +17,7 @@ describe('Failing tests using modules as http modules',() => {
             http: null,
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -36,7 +37,7 @@ describe('Failing tests using modules as http modules',() => {
             http: {},
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -58,7 +59,7 @@ describe('Failing tests using modules as http modules',() => {
             },
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -83,7 +84,7 @@ describe('Failing tests using modules as http modules',() => {
             },
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -115,7 +116,7 @@ describe('Failing tests using modules as http modules',() => {
         for (const entry of MANDATORY_ROUTE_PROPS) {
             let entersException = false;
             try {
-                app = gabriela.asProcess();
+                app = gabriela.asProcess(config);;
 
                 if (previous) previous = mdl.http.route[previous] = 'string';
 
@@ -146,7 +147,7 @@ describe('Failing tests using modules as http modules',() => {
             },
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess(config);;
 
         let entersException = false;
         try {

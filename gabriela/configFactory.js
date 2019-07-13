@@ -1,5 +1,5 @@
 const deepCopy = require('deepcopy');
-const {is} = require('./util/util');
+const {is, hasKey} = require('./util/util');
 
 function factory(config) {
     return config;
@@ -7,7 +7,11 @@ function factory(config) {
 
 function instance() {
     this.create = function(config) {
-        return factory(deepCopy((is('object', config) ? config : {})));
+        if (!is('object', config)) throw new Error(`Invalid config. Gabriela configuration must be a plain javascript object with only the mandatory 'config' property`);
+
+        if (!hasKey(config, 'config')) throw new Error(`Invalid config. Gabriela configuration must be a plain javascript object with only the mandatory 'config' property`);
+
+        return factory(deepCopy(config));
     };
 }
 

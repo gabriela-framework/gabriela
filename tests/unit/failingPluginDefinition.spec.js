@@ -7,10 +7,11 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Plugin errors', () => {
     it('should fail plugin definition because of invalid data type', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = null;
 
@@ -27,7 +28,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of non existent plugin name', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = {};
 
@@ -44,7 +45,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of invalid plugin name', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         let plugin = {
             name: 1
@@ -63,7 +64,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail because of existing plugin', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin1 = {
             name: 'plugin1',
@@ -91,7 +92,7 @@ describe('Plugin errors', () => {
     });
 
     it('should throw an error if plugin modules is not an array', () => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = {
             name: 'plugin',
@@ -111,7 +112,7 @@ describe('Plugin errors', () => {
     });
 
     it('should throw an error if any of the plugin modules are invalid', (done) => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = {
             name: 'plugin',
@@ -136,7 +137,7 @@ describe('Plugin errors', () => {
     });
 
     it('should throw an error when running a plugin with invalid type', (done) => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = {
             name: 'plugin',
@@ -154,7 +155,7 @@ describe('Plugin errors', () => {
     });
 
     it('should throw an error while executing an non existent plugin', (done) => {
-        const p = gabriela.asProcess();
+        const p = gabriela.asProcess(config);;
 
         const plugin = {
             name: 'plugin',
@@ -187,7 +188,7 @@ describe('Plugin errors', () => {
             plugins: [innerPlugin2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -217,7 +218,7 @@ describe('Plugin errors', () => {
             plugins: [innerPlugin2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {

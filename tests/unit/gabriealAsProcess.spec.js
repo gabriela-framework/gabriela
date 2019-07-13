@@ -9,12 +9,13 @@ const describe = mocha.describe;
 const expect = chai.expect;
 const moduleExecuteFactory = require('../../gabriela/module/executeFactory');
 const pluginExecuteFactory = require('../../gabriela/plugin/executeFactory');
+const config = require('../config/config');
 
 const gabriela = require('../../gabriela/gabriela');
 
 describe('Gabriela as process tests', () => {
     it('should create a gabriela process instance and run it', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.startApp().then(() => {
             done();
@@ -22,7 +23,7 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should run the onAppStarted event when using gabriela as process', (done) => {
-        const g = gabriela.asProcess(null, {
+        const g = gabriela.asProcess(config, {
             events: {
                 onAppStarted() {
                     eventCalled = true;
@@ -70,7 +71,7 @@ describe('Gabriela as process tests', () => {
             modules: [mdl1, mdl2],
         };
 
-        const g = gabriela.asProcess(null, {
+        const g = gabriela.asProcess(config, {
             events: {
                 onAppStarted() {
                     eventCalled = true;
@@ -100,7 +101,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [function() {}, function() {}, function() {}],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -149,7 +150,7 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -190,7 +191,7 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -234,7 +235,7 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -294,7 +295,7 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -350,7 +351,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -408,7 +409,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -451,7 +452,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -491,7 +492,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -527,7 +528,7 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -550,7 +551,7 @@ describe('Gabriela as process tests', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -562,7 +563,7 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should execute gabriela module with a custom execution factory', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let moduleCalled = false;
 
@@ -583,7 +584,7 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should execute gabriela plugin with a custom execution factory', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let moduleCalled = false;
 

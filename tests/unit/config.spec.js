@@ -10,11 +10,14 @@ const configFactory = require('../../gabriela/configFactory');
 
 describe('Config tests', () => {
     it('should resolve config and create it as a singleton', () => {
-        const config = require('../config/config');
+        const Config = configFactory.create({
+            config: {
+                validator: {}
+            }
+        });
 
-        const Config = configFactory.create(config);
-
-        expect(Config).to.have.property('validator');
-        expect(Config.validator).to.be.a('object');
+        expect(Config).to.have.property('config');
+        expect(Config.config).to.be.a('object');
+        expect(Config.config.validator).to.be.a('object');
     });
 });

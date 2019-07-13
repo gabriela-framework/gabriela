@@ -7,6 +7,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../gabriela/gabriela');
+const config = require('../config/config');
 
 describe('Middleware execution', () => {
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
@@ -25,7 +26,7 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -52,7 +53,7 @@ describe('Middleware execution', () => {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -102,7 +103,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -155,7 +156,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -194,7 +195,7 @@ describe('Middleware execution', () => {
             postLogicTransformers: []
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 

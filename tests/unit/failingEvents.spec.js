@@ -12,6 +12,7 @@ const Emitter = require('../../gabriela/events/emitter');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 const GenericMediator = require('../../gabriela/events/genericMediator');
 const ExposedMediator = require('../../gabriela/events/exposedMediator');
+const config = require('../config/config');
 
 describe('Failing framework events', () => {
     it('a concrete server mediator should fail to compile a dependency if it does not exist', () => {
@@ -71,7 +72,7 @@ describe('Failing framework events', () => {
             mediator: null,
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -93,7 +94,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -115,7 +116,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -137,7 +138,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -156,7 +157,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -187,7 +188,7 @@ describe('Failing framework events', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         g.addModule(mdl);
 
@@ -203,7 +204,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -228,7 +229,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
 
@@ -257,7 +258,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
         try {
@@ -276,7 +277,7 @@ describe('Failing framework events', () => {
             name: 'name',
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess(config);;
 
         let entersException = false;
 

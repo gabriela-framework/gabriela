@@ -13,9 +13,11 @@ describe('Failing server tests', () => {
         let entersException = false;
         try {
             gabriela.asServer({
-                server: {
-                    port: 'invalid'
-                },
+                config: {
+                    server: {
+                        port: 'invalid'
+                    },
+                }
             });
         } catch (err) {
             entersException = true;
@@ -26,24 +28,25 @@ describe('Failing server tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail the server because of invalid onAppStarted event', () => {
-        const g = gabriela.asServer({
-            server: {
-                port: 4000,
-            },
-        }, {
-            events: {
-                onAppStarted: null,
-            }
-        });
-
+    it('should fail the server because of invalid server options while having an invalid server events option', () => {
         let entersException = false;
         try {
-            g.startApp();
+            gabriela.asServer({
+                config: {
+                    server: {
+                        port: 'invalid'
+                    },
+                }
+            }, {
+                events: {
+                    onAppStarted: null,
+
+                }
+            });
         } catch(e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid event. 'onAppStarted' must be a function. Due to this error, the server cannot start.`);
+            expect(e.message).to.be.equal(`Invalid server configuration. 'port' has to be an integer`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -51,9 +54,7 @@ describe('Failing server tests', () => {
 
     it('should fail the server because of invalid catchError event', () => {
         const g = gabriela.asServer({
-            server: {
-                port: 4000,
-            },
+            config: {}
         }, {
             events: {
                 catchError: null,
