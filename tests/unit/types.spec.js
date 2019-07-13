@@ -12,7 +12,8 @@ const {
     ASYNC_FLOW_TYPES,
     HTTP_METHODS,
     MANDATORY_ROUTE_PROPS,
-    GABRIELA_EVENTS
+    GABRIELA_EVENTS,
+    BUILT_IN_MEDIATORS,
 } = require('../../gabriela/misc/types');
 
 describe('Types test', () => {
@@ -57,5 +58,11 @@ describe('Types test', () => {
 
        expect(GABRIELA_EVENTS.ON_APP_STARTED).to.be.equal('onAppStarted');
        expect(GABRIELA_EVENTS.CATCH_ERROR).to.be.equal('catchError');
+
+       expect(BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED).to.be.equal('onPluginFinished');
+       expect(BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED).to.be.equal('onPluginStarted');
+       expect(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED).to.be.equal('onModuleFinished');
+       expect(BUILT_IN_MEDIATORS.ON_MODULE_STARTED).to.be.equal('onModuleStarted');
+       expect(BUILT_IN_MEDIATORS.ON_ERROR).to.be.equal('onError');
    });
 });
