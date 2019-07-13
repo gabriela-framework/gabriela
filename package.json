@@ -1,5 +1,5 @@
 {
-  "name": "@marioskrlec/gabriela",
+  "name": "gabriela",
   "version": "0.1.1",
   "description": "Plugin based framework",
   "main": "src/index.js",
