@@ -14,7 +14,7 @@ describe('Middleware execution', () => {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.googleBody = body;
 
                 next();
@@ -41,7 +41,7 @@ describe('Middleware execution', () => {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.googleBody = body;
 
                 next();
@@ -68,7 +68,7 @@ describe('Middleware execution', () => {
         const name = 'googleCall';
 
         const firstRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.firstRequest = body;
 
                 next();
@@ -76,7 +76,7 @@ describe('Middleware execution', () => {
         };
 
         const secondRequest = function(state, next, skip) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.secondRequest = body;
 
                 skip();
@@ -84,7 +84,7 @@ describe('Middleware execution', () => {
         };
 
         const thirdRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.thirdRequest = body;
 
                 next();
@@ -121,7 +121,7 @@ describe('Middleware execution', () => {
         const name = 'googleCall';
 
         const firstRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.firstRequest = body;
 
                 next();
@@ -129,7 +129,7 @@ describe('Middleware execution', () => {
         };
 
         const secondRequest = function(state, next, skip, done) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.secondRequest = body;
 
                 done();
@@ -137,7 +137,7 @@ describe('Middleware execution', () => {
         };
 
         const thirdRequest = function(state, next) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.thirdRequest = body;
 
                 next();
@@ -174,7 +174,7 @@ describe('Middleware execution', () => {
         const name = 'googleCall';
 
         const firstRequest = function(state, next, skip, done, throwException) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.firstRequest = body;
 
                 throwException(new Error('my exception'));
@@ -182,7 +182,7 @@ describe('Middleware execution', () => {
         };
 
         const secondRequest = function(state, next, skip, done) {
-            requestPromise.get('https://www.google.com/').then((body) => {
+            requestPromise.get('https://www.facebook.com//').then((body) => {
                 state.secondRequest = body;
 
                 done();

@@ -225,7 +225,7 @@ describe('Failing dependency injection tests', () => {
                     this.removeUser = null;
                 }
 
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     return new constructor();
                 });
             }

@@ -114,7 +114,7 @@ describe('Framework events', function() {
             name: 'eventsModule',
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         expect(userService).to.be.a('object');
@@ -123,7 +123,7 @@ describe('Framework events', function() {
                     });
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         expect(userService).to.be.a('object');
@@ -165,7 +165,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         expect(execution).to.be.equal(0);
@@ -175,7 +175,7 @@ describe('Framework events', function() {
                     });
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         expect(execution).to.be.equal(5);
@@ -186,21 +186,21 @@ describe('Framework events', function() {
                 }
             },
             security: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             preLogicTransformers: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             validators: [function(next, userService) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
@@ -209,14 +209,14 @@ describe('Framework events', function() {
                 });
             }],
             moduleLogic: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             postLogicTransformers: [function(next, userService) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
@@ -255,14 +255,14 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
                     });
                 },
                 onModuleFinished(next) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         next();
@@ -309,14 +309,14 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
                     });
                 },
                 onModuleFinished(next) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         next();
@@ -497,7 +497,7 @@ describe('Framework events', function() {
             modules: [mdl],
             mediator: {
                 onPluginStarted: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         expect(userService).to.be.a('object');
@@ -506,7 +506,7 @@ describe('Framework events', function() {
                     });
                 },
                 onPluginFinished: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         expect(userService).to.be.a('object');
@@ -545,7 +545,7 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleStarted = true;
 
                         expect(execution).to.be.equal(0);
@@ -555,7 +555,7 @@ describe('Framework events', function() {
                     });
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         onModuleFinished = true;
 
                         expect(execution).to.be.equal(5);
@@ -566,21 +566,21 @@ describe('Framework events', function() {
                 }
             },
             security: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             preLogicTransformers: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             validators: [function(next, userService) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
@@ -589,14 +589,14 @@ describe('Framework events', function() {
                 });
             }],
             moduleLogic: [function(next) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     next();
                 });
             }],
             postLogicTransformers: [function(next, userService) {
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');

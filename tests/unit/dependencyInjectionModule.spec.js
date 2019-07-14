@@ -89,7 +89,7 @@ describe('Module dependency injection tests', function() {
                     this.removeUser = null;
                 }
 
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     next(() => {
                         return new UserService();
                     });
@@ -130,7 +130,7 @@ describe('Module dependency injection tests', function() {
                     this.addFriend = null;
                 }
 
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
 
                 next(() => {
                         return new FriendsRepository();
@@ -149,7 +149,7 @@ describe('Module dependency injection tests', function() {
                     this.userFriendsRepository = userFriendsRepository;
                 }
 
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     next(() => {
                         return new UserRepository();
                     });
@@ -169,7 +169,7 @@ describe('Module dependency injection tests', function() {
                     this.userRepository = userRepository;
                 }
 
-                requestPromise.get('https://www.google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     next(() => {
                         return new UserService();
                     });
@@ -294,7 +294,7 @@ describe('Module dependency injection tests', function() {
         const userModule = {
             name: userModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     userModuleExecuted = true;
 
                     state.name = userModuleName;
@@ -307,7 +307,7 @@ describe('Module dependency injection tests', function() {
         const appSearchModule = {
             name: appSearchModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
                     appSearchModuleExecuted = true;
 
                     state.name = appSearchModuleName;
@@ -320,7 +320,7 @@ describe('Module dependency injection tests', function() {
         const pdfConvertModule = {
             name: pdfConvertModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://google.com').then(() => {
+                requestPromise.get('https://www.facebook.com/').then(() => {
 
                     pdfConvertModuleExecuted = true;
 
@@ -376,7 +376,7 @@ describe('Module dependency injection tests', function() {
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {
-                    requestPromise.get('https://google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         entersOriginalLogic1 = true;
 
                         next();
@@ -394,7 +394,7 @@ describe('Module dependency injection tests', function() {
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {
-                    requestPromise.get('https://google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         entersOverridenLogic1 = true;
 
                         next();
@@ -403,7 +403,7 @@ describe('Module dependency injection tests', function() {
             }, {
                 name: 'logic2',
                 middleware: function(next) {
-                    requestPromise.get('https://google.com').then(() => {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
                         entersLogic2 = true;
 
                         next();

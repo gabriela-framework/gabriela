@@ -257,4 +257,49 @@ describe('Gabriela server tests', function() {
 
         app.startApp();
     });
+
+    it('should inject http (req, res) into the module on runtime', (done) => {
+        let entersMiddleware = false;
+        const mdl = {
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                }
+            },
+            name: 'module',
+            moduleLogic: [function(http) {
+                entersMiddleware = true;
+
+                console.log('ulazak');
+
+                expect(http).to.be.a('object');
+                expect(http).to.have.property('req');
+                expect(http).to.have.property('res');
+                expect(http.req).to.be.a('object');
+                expect(http.res).to.be.a('object');
+            }],
+        };
+
+        const g = gabriela.asServer({
+            config: {},
+        }, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(entersMiddleware).to.be.equal(true);
+
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        g.addModule(mdl);
+
+        g.startApp();
+    });
 });
