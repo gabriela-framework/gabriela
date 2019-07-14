@@ -4,7 +4,7 @@ const taskRunnerFactory = require('../misc/taskRunner');
 const {ASYNC_FLOW_TYPES} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 const {getArgs, inArray, hasKey, is} = require('../util/util');
-const _callFn = require('./_callFn');
+const _callFn = require('./util/_callFn');
 
 function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     const taskRunner = taskRunnerFactory.create();

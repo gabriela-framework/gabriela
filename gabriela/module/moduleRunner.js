@@ -1,5 +1,5 @@
 const deepCopy = require('deepcopy');
-const callEvent = require('../events/callEvent');
+const callEvent = require('../events/util/callEvent');
 const {is} = require('../util/util');
 const {BUILT_IN_MEDIATORS} = require('../misc/types');
 

@@ -1,5 +1,5 @@
 const ModuleTree = require('../module/moduleTree');
-const callEvent = require('../events/callEvent');
+const callEvent = require('../events/util/callEvent');
 const {BUILT_IN_MEDIATORS} = require('../misc/types');
 
 function factory(moduleExecuteFactory, server) {

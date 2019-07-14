@@ -1,5 +1,5 @@
-const {hasKey} = require('../util/util');
-const resolveDependencies = require('../dependencyInjection/resolveDependencies');
+const {hasKey} = require('../../util/util');
+const resolveDependencies = require('../../dependencyInjection/resolveDependencies');
 
 module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {

@@ -50,6 +50,7 @@ function factory(server, mdl) {
             const path = http.route.path;
 
             server[method](path, async function(req, res, next) {
+
                 const middleware = [
                     mdl[MIDDLEWARE_TYPES.SECURITY],
                     mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],

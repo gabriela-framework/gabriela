@@ -1,5 +1,5 @@
 const {getArgs, hasKey, is} = require('../util/util');
-const _callFn = require('./_callFn');
+const _callFn = require('./util/_callFn');
 
 function _sendEvent(fn, moduleOrPlugin, config, customArgs) {
     new Promise((resolve) => {
