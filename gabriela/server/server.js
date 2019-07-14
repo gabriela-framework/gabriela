@@ -4,15 +4,23 @@ const ServerMediator = require('../events/genericMediator');
 const {is, hasKey} = require('../util/util');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
-const {GABRIELA_EVENTS} = require('../misc/types');
+const {GABRIELA_EVENTS, HTTP_EVENTS} = require('../misc/types');
 
 function _validateEvents(events) {
-    if (is('object', events) && hasKey(events, 'onAppStarted')) {
-        if (!is('function', events.onAppStarted)) throw new Error(`Invalid event. 'onAppStarted' must be a function. Due to this error, the server cannot start.`);
+    if (is('object', events) && hasKey(events, GABRIELA_EVENTS.ON_APP_STARTED)) {
+        if (!is('function', events[GABRIELA_EVENTS.ON_APP_STARTED])) throw new Error(`Invalid event. '${GABRIELA_EVENTS.ON_APP_STARTED}' must be a function. Due to this error, the server cannot start.`);
     }
 
-    if (is('object', events) && hasKey(events, 'catchError')) {
-        if (!is('function', events.catchError)) throw new Error(`Invalid event. 'catchError' must be a function. Due to this error, the server cannot start.`);
+    if (is('object', events) && hasKey(events, GABRIELA_EVENTS.ON_CATCH_ERROR)) {
+        if (!is('function', events[GABRIELA_EVENTS.ON_CATCH_ERROR])) throw new Error(`Invalid event. '${GABRIELA_EVENTS.ON_CATCH_ERROR}' must be a function. Due to this error, the server cannot start.`);
+    }
+
+    if (is('object', events) && hasKey(events, HTTP_EVENTS.ON_PRE_RESPONSE)) {
+        if (!is('function', events[HTTP_EVENTS.ON_PRE_RESPONSE])) throw new Error(`Invalid event. '${HTTP_EVENTS.ON_PRE_RESPONSE}' must be a function. Due to this error, the server cannot start.`);
+    }
+
+    if (is('object', events) && hasKey(events, HTTP_EVENTS.ON_POST_RESPONSE)) {
+        if (!is('function', events[HTTP_EVENTS.ON_POST_RESPONSE])) throw new Error(`Invalid event. '${HTTP_EVENTS.ON_POST_RESPONSE}' must be a function. Due to this error, the server cannot start.`);
     }
 }
 

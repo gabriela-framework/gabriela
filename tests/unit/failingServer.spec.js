@@ -72,4 +72,46 @@ describe('Failing server tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail the server because of invalid onPreResponse event', () => {
+        const g = gabriela.asServer({
+            config: {}
+        }, {
+            events: {
+                onPreResponse: null,
+            }
+        });
+
+        let entersException = false;
+        try {
+            g.startApp();
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid event. 'onPreResponse' must be a function. Due to this error, the server cannot start.`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail the server because of invalid onPostResponse event', () => {
+        const g = gabriela.asServer({
+            config: {}
+        }, {
+            events: {
+                onPostResponse: null,
+            }
+        });
+
+        let entersException = false;
+        try {
+            g.startApp();
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid event. 'onPostResponse' must be a function. Due to this error, the server cannot start.`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

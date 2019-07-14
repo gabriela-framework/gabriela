@@ -57,7 +57,7 @@ describe('Types test', () => {
        expect(MANDATORY_ROUTE_PROPS.PATH).to.be.equal('path');
 
        expect(GABRIELA_EVENTS.ON_APP_STARTED).to.be.equal('onAppStarted');
-       expect(GABRIELA_EVENTS.CATCH_ERROR).to.be.equal('catchError');
+       expect(GABRIELA_EVENTS.ON_CATCH_ERROR).to.be.equal('catchError');
 
        expect(BUILT_IN_MEDIATORS.ON_PLUGIN_FINISHED).to.be.equal('onPluginFinished');
        expect(BUILT_IN_MEDIATORS.ON_PLUGIN_STARTED).to.be.equal('onPluginStarted');

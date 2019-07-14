@@ -272,8 +272,6 @@ describe('Gabriela server tests', function() {
             moduleLogic: [function(http) {
                 entersMiddleware = true;
 
-                console.log('ulazak');
-
                 expect(http).to.be.a('object');
                 expect(http).to.have.property('req');
                 expect(http).to.have.property('res');

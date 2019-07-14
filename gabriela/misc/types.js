@@ -50,7 +50,12 @@ class MandatoryRouteProps extends IIterator {
 
 class GabrielaEvents extends IIterator {
     ON_APP_STARTED = 'onAppStarted';
-    CATCH_ERROR = 'catchError';
+    ON_CATCH_ERROR = 'catchError';
+}
+
+class HttpEvents extends IIterator {
+    ON_PRE_RESPONSE = 'onPreResponse';
+    ON_POST_RESPONSE = 'onPostResponse';
 }
 
 module.exports = Object.freeze({
@@ -60,4 +65,5 @@ module.exports = Object.freeze({
     HTTP_METHODS: Object.freeze(_proxifyType(new HttpMethods())),
     MANDATORY_ROUTE_PROPS: Object.freeze(_proxifyType(new MandatoryRouteProps())),
     GABRIELA_EVENTS: Object.freeze(_proxifyType(new GabrielaEvents())),
+    HTTP_EVENTS: Object.freeze(_proxifyType(new HttpEvents())),
 });
