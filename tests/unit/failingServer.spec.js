@@ -114,4 +114,51 @@ describe('Failing server tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
+        const g = gabriela.asServer({
+            config: {}
+        }, {
+            events: {
+                onAppStarted() {
+                    throw new Error('Something went wrong');
+                },
+                catchError() {
+                    expect(this.err).to.be.instanceof(Error);
+                    expect(this.err.message).to.be.equal(`An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed`);
+
+                    done();
+                }
+            }
+        });
+
+        g.startApp();
+    });
+
+    it('error thrown inside middleware processing should take precendence over an error thrown inside onAppStarted event', (done) => {
+        const g = gabriela.asServer({
+            config: {}
+        }, {
+            events: {
+                onAppStarted() {
+                    throw new Error('Something went wrong in onAppStarted');
+                },
+                catchError() {
+                    expect(this.err).to.be.instanceof(Error);
+                    expect(this.err.message).to.be.equal(`Something went wrong`);
+
+                    done();
+                }
+            }
+        });
+
+        g.addModule({
+            name: 'module',
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Something went wrong'));
+            }],
+        });
+
+        g.startApp();
+    });
 });

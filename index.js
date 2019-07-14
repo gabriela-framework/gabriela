@@ -1,19 +1,16 @@
-class Base {
-    *[Symbol.iterator]() {
-        const entries = Object.values(this);
+const gabriela = require('./gabriela/gabriela');
 
-        for (const entry of entries) {
-            yield entry;
+const g = gabriela.asServer({
+    config: {}
+}, {
+    events: {
+        onAppStarted() {
+            throw new Error('Something went wrong');
+        },
+        catchError() {
+            this.server.close();
         }
-    };
-
-    toArray() {
-        return Object.values(this);
     }
-}
+});
 
-
-const obj = Object.create(new Base());
-
-obj.name = 'name';
-obj.lastName = 'lastname';
+g.startApp();
