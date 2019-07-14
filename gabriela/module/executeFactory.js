@@ -42,6 +42,29 @@ function _createResponseProxy(res) {
     };
 }
 
+function _createWorkingDataStructures(mdl, req, res) {
+    const responseProxy = _createResponseProxy(res);
+
+    const http = {
+        req,
+        res: responseProxy,
+    };
+
+    const middleware = [
+        mdl[MIDDLEWARE_TYPES.SECURITY],
+        mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
+        mdl[MIDDLEWARE_TYPES.VALIDATORS],
+        mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
+        mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
+    ];
+
+    return {
+        responseProxy,
+        http,
+        middleware
+    };
+}
+
 function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config, state) {
@@ -50,21 +73,7 @@ function factory(server, mdl) {
             const path = http.route.path;
 
             server[method](path, async function(req, res, next) {
-
-                const middleware = [
-                    mdl[MIDDLEWARE_TYPES.SECURITY],
-                    mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
-                    mdl[MIDDLEWARE_TYPES.VALIDATORS],
-                    mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
-                    mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
-                ];
-
-                const responseProxy = _createResponseProxy(res);
-
-                const http = {
-                    req,
-                    res: responseProxy,
-                };
+                const {responseProxy, http, middleware} = _createWorkingDataStructures(mdl, req, res);
 
                 for (const functions of middleware) {
                     await runMiddleware.call(context, ...[mdl, functions, config, state, http]);
