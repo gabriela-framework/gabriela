@@ -43,6 +43,9 @@ function _createResponseProxy(res) {
     };
 }
 
+function _getResponseEvents(mdl) {
+}
+
 function _createWorkingDataStructures(mdl, req, res) {
     const responseProxy = _createResponseProxy(res);
 
@@ -79,7 +82,6 @@ function factory(server, mdl) {
                 for (const functions of middleware) {
                     await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
                 }
-
 
                 responseProxy.send(200, deepCopy(state));
 

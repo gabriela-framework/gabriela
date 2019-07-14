@@ -152,6 +152,50 @@ describe('Failing framework events', () => {
         expect(entersException).to.be.equal(true);
     });
 
+    it('should fail if mediator has invalid onPreResponse event data type', () => {
+        const mdl = {
+            name: 'name',
+            mediator: {
+                onPreResponse: null,
+            },
+        };
+
+        const g = gabriela.asProcess(config);;
+
+        let entersException = false;
+        try {
+            g.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onPreResponse' must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail if mediator has invalid onPostResponse event data type', () => {
+        const mdl = {
+            name: 'name',
+            mediator: {
+                onPostResponse: null,
+            },
+        };
+
+        const g = gabriela.asProcess(config);;
+
+        let entersException = false;
+        try {
+            g.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onPostResponse' must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail if mediator in plugin is not a valid data type', () => {
         const mdl = {
             name: 'name',

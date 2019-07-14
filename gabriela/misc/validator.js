@@ -8,6 +8,7 @@ const {
     MANDATORY_ROUTE_PROPS,
     HTTP_METHODS,
     BUILT_IN_MEDIATORS,
+    HTTP_EVENTS,
 } = require('./types');
 
 const {is, hasKey} = require('../util/util');
@@ -78,28 +79,13 @@ factory.moduleValidator = function(mdl) {
     if (hasKey(mdl, 'mediator')) {
         if (!is('object', mdl.mediator)) throw new Error(`Invalid module definition. 'mediator' property must be an object`);
 
-        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) {
-            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_MODULE_STARTED])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_MODULE_STARTED}' must be a function`);
-        }
-
-        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) {
-            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_MODULE_FINISHED])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_MODULE_FINISHED}' must be a function`);
-        }
-
-        if (hasKey(mdl.mediator, BUILT_IN_MEDIATORS.ON_ERROR)) {
-            if (!is('function', mdl.mediator[BUILT_IN_MEDIATORS.ON_ERROR])) throw new Error(`Invalid module definition. 'mediator.${BUILT_IN_MEDIATORS.ON_ERROR}' must be a function`);
-        }
-
         const mediators = mdl.mediator;
         const props = Object.keys(mediators);
-        const builtInMediators = BUILT_IN_MEDIATORS.toArray();
 
         for (const prop of props) {
-            if (!builtInMediators.includes(prop)) {
-                const fn = mediators[prop];
+            const fn = mediators[prop];
 
-                if (!is('function', fn)) throw new Error(`Invalid module definition. 'mediator.${prop}' must be a function`);
-            }
+            if (!is('function', fn)) throw new Error(`Invalid module definition. 'mediator.${prop}' must be a function`);
         }
     }
 
