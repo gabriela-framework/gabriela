@@ -1,16 +1,29 @@
 const gabriela = require('./gabriela/gabriela');
+const requestPromise = require('request-promise');
 
+let onPreResponseCalled = false;
 const g = gabriela.asServer({
     config: {}
 }, {
     events: {
         onAppStarted() {
-            throw new Error('Something went wrong');
-        },
-        catchError() {
-            this.server.close();
+
         }
     }
+});
+
+g.addModule({
+    name: 'module',
+    http: {
+        route: {
+            name: 'route',
+            path: 'path',
+            method: 'get',
+        },
+    },
+    moduleLogic: [function() {
+
+    }],
 });
 
 g.startApp();

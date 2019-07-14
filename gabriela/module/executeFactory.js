@@ -1,6 +1,7 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
+const {_callSingleHttpEvent} = require('../events/util/gabrielaEventUtils');
 
 function _createResponseProxy(res) {
     return {
@@ -45,7 +46,7 @@ function _createResponseProxy(res) {
 function _createWorkingDataStructures(mdl, req, res) {
     const responseProxy = _createResponseProxy(res);
 
-    const http = {
+    const httpContext = {
         req,
         res: responseProxy,
     };
@@ -60,7 +61,7 @@ function _createWorkingDataStructures(mdl, req, res) {
 
     return {
         responseProxy,
-        http,
+        httpContext,
         middleware
     };
 }
@@ -73,11 +74,12 @@ function factory(server, mdl) {
             const path = http.route.path;
 
             server[method](path, async function(req, res, next) {
-                const {responseProxy, http, middleware} = _createWorkingDataStructures(mdl, req, res);
+                const {responseProxy, httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
 
                 for (const functions of middleware) {
-                    await runMiddleware.call(context, ...[mdl, functions, config, state, http]);
+                    await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
                 }
+
 
                 responseProxy.send(200, deepCopy(state));
 

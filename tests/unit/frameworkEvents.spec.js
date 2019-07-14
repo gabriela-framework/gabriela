@@ -2,9 +2,9 @@ const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
 const requestPromise = require('request-promise');
-const deasync = require('deasync');
 
 const it = mocha.it;
+const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -48,7 +48,7 @@ describe('Framework events', function() {
     it('should validate that the mediator interface is working as expected', () => {
         const mediator = Mediator.create(null, null);
 
-        // only the has() method is tested because the mediator has to have a 
+        // only the has() method is tested because the mediator has to have a
         // module or plugin that has all the neccessary compilers with them
         mediator.add('event1', function() {});
         mediator.add('event2', function() {});
@@ -56,7 +56,7 @@ describe('Framework events', function() {
         expect(mediator.has('event1')).to.be.equal(true);
         expect(mediator.has('event2')).to.be.equal(true);
     });
-    
+
     it('should execute a named module start and finished event', () => {
         let onModuleStarted = false;
         let onModuleFinished = false;
@@ -1116,7 +1116,7 @@ describe('Framework events', function() {
         g.runPlugin().then(() => {
             expect(mdlEventCalled).to.be.equal(true);
             expect(pluginEventCalled).to.be.equal(true);
-            
+
             done();
         });
     });
@@ -1353,5 +1353,38 @@ describe('Framework events', function() {
         g.addModule(module2);
 
         g.startApp()
+    });
+
+    xit('should call the onPreResponse event with all the required arguments', (done) => {
+        let onPreResponseCalled = false;
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onPreResponseCalled).to.be.equal(true);
+
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        g.addModule({
+            name: 'module',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function() {
+
+            }],
+        });
+
+        g.startApp();
     });
 });

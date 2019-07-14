@@ -1,9 +1,10 @@
 const {GABRIELA_EVENTS} = require('../../misc/types');
-const ServerMediator = require('../genericMediator');
+const GenericMediator = require('../genericMediator');
 const {hasKey} = require('../../util/util');
+const {HTTP_EVENTS} = require('../../misc/types');
 
 function _callSingleGabrielaEvent(event, rootCompiler, err) {
-    const mediator = ServerMediator.create(rootCompiler);
+    const mediator = GenericMediator.create(rootCompiler);
 
     mediator.callEvent(event, {
         server: this,
@@ -27,7 +28,11 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
                         resolvedError.message = `An error has been thrown in 'onAppStarted' gabriela event with message: '${onAppStartedError.message}'. This is regarded as an unrecoverable error and the server has closed`;
                     }
 
-                    _callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, resolvedError);
+                    if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) {
+                        _callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, resolvedError);
+                    } else {
+                        throw resolvedError;
+                    }
 
                     this.close();
                 }
@@ -40,7 +45,25 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
     }
 }
 
+function _callSingleHttpEvent(event, http, rootCompiler) {
+    const mediator = GenericMediator.create(rootCompiler, {enableAsyncHandling: true});
+
+    mediator.callEvent(event);
+}
+
+function _callHttpEvents(events, http, rootCompiler) {
+    for (const httpEvent of HTTP_EVENTS) {
+        if (hasKey(events, httpEvent)) {
+            const event = events[httpEvent];
+
+            _callSingleHttpEvent(event, http, rootCompiler);
+        }
+    }
+}
+
 module.exports = {
     _callSingleGabrielaEvent,
     _runGabrielaEvents,
+    _callHttpEvents,
+    _callSingleHttpEvent,
 };

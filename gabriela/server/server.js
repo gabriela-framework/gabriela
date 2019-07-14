@@ -49,6 +49,8 @@ async function _listenCallback(
     rootCompiler,
 ) {
     await _runGabrielaEvents.call(this, events, rootCompiler);
+
+    console.log('Gabriela app started');
 }
 
 function Server(
@@ -75,7 +77,9 @@ function Server(
                 rootCompiler,
             ));
         }).catch((err) => {
-            _runGabrielaEvents.call(this, events, rootCompiler, err);
+            if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return _runGabrielaEvents.call(this, events, rootCompiler, err);
+
+            throw err;
         });
     }
 
