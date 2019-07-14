@@ -1,9 +1,9 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const {MIDDLEWARE_TYPES} = require('../misc/types');
-const {_callSingleHttpEvent} = require('../events/util/gabrielaEventUtils');
+const {MIDDLEWARE_TYPES, HTTP_EVENTS} = require('../misc/types');
+const callEvent = require('../events/util/callEvent');
 
-function _createResponseProxy(res) {
+function _createResponseProxy(mdl, req, res, onPreResponse, onPostResponse) {
     return {
         cache(type, options) {
             return res.cache(type, options);
@@ -24,9 +24,17 @@ function _createResponseProxy(res) {
             return res.link(key, value);
         },
         send(code, body, headers) {
+            if (onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
+                http: {req, res: this},
+            });
 
-            return res.send(code, body, headers);
+            const result = res.send(code, body, headers);
 
+            if (onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
+                http: {req, res: this}
+            });
+
+            return result;
         },
         sendRaw(code, body, headers) {
             return res.sendRaw(code, body, headers);
@@ -44,10 +52,26 @@ function _createResponseProxy(res) {
 }
 
 function _getResponseEvents(mdl) {
+    if (mdl.hasMediators()) {
+        return {
+            onPreResponse: mdl.mediator.onPreResponse,
+            onPostResponse: mdl.mediator.onPostResponse,
+        };
+    }
+
+    return {};
 }
 
 function _createWorkingDataStructures(mdl, req, res) {
-    const responseProxy = _createResponseProxy(res);
+    const responseEvents = _getResponseEvents(mdl);
+
+    const responseProxy = _createResponseProxy(
+        mdl,
+        req,
+        res,
+        responseEvents.onPreResponse,
+        responseEvents.onPostResponse,
+    );
 
     const httpContext = {
         req,
