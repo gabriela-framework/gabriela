@@ -1412,4 +1412,63 @@ describe('Framework events', function() {
 
         g.startApp();
     });
+
+    it('should call the onPostResponse event with all the required arguments before the response is sent', (done) => {
+        let onPreResponseCalled = false;
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        this.server.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        const userServiceDefinition = {
+            name: 'userService',
+            scope: 'module',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        g.addModule({
+            name: 'module',
+            dependencies: [userServiceDefinition],
+            mediator: {
+                onPostResponse(http, userService, next) {
+                    requestPromise.get('https://www.facebook.com').then(() => {
+                        onPreResponseCalled = true;
+
+                        expect(http).to.be.a('object');
+                        expect(http).to.have.property('req');
+                        expect(http).to.have.property('res');
+                        expect(http.req).to.be.a('object');
+                        expect(http.res).to.be.a('object');
+
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                }
+            },
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function() {
+
+            }],
+        });
+
+        g.startApp();
+    });
 });
