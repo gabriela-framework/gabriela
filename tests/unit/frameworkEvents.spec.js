@@ -1122,10 +1122,15 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events from emitted from a http module as a server', (done) => {
+        let catchedEvent1 = false;
+        let catchedEvent2 = false;
+
+        let calledEvent1 = 0;
+        let calledEvent2 = 0;
+
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
-
                     const promises = [];
 
                     for (let i = 0; i < 10; i++) {
@@ -1146,12 +1151,6 @@ describe('Framework events', function() {
                 }
             }
         });
-
-        let catchedEvent1 = false;
-        let catchedEvent2 = false;
-
-        let calledEvent1 = 0;
-        let calledEvent2 = 0;
 
         const userServiceDefinition = {
             name: 'userService',
@@ -1223,6 +1222,12 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events are ran as a process', (done) => {
+        let catchedEvent1 = false;
+        let catchedEvent2 = false;
+
+        let calledEvent1 = 0;
+        let calledEvent2 = 0;
+
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
@@ -1247,12 +1252,6 @@ describe('Framework events', function() {
                 }
             }
         });
-
-        let catchedEvent1 = false;
-        let catchedEvent2 = false;
-
-        let calledEvent1 = 0;
-        let calledEvent2 = 0;
 
         const userServiceDefinition = {
             name: 'userService',

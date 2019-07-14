@@ -11,7 +11,7 @@ const ExposedMediator = require('../../gabriela/events/exposedMediator');
 const Compiler = require('../../gabriela/dependencyInjection/compiler');
 
 describe('Exposed (third party) events tests', () => {
-    xit('a concrete exposed events instance should run all common methods of its interface', () => {
+    it('a concrete exposed event should be pre bound before its emitted in a server route environment', () => {
         const rootCompiler = Compiler.create();
 
         rootCompiler.add({
@@ -23,58 +23,20 @@ describe('Exposed (third party) events tests', () => {
             }
         });
 
-        const exposedMediator = new ExposedMediator(rootCompiler);
+        const exposedMediator = new ExposedMediator();
 
-        const onEmailInvalidEvent = {
-            name: 'onEmailInvalid',
-            init: function() {
+        let event1Called = false;
+        let event2Called = false;
 
-            },
-        };
-
-        const onNameInvalidEvent = {
-            name: 'onNameInvalid',
-            init: function(userService) {
-
-            }
-        };
-
-        exposedMediator.add(onEmailInvalidEvent);
-        exposedMediator.add(onNameInvalidEvent);
-
-        expect(exposedMediator.has(onEmailInvalidEvent.name)).to.be.equal(true);
-        expect(exposedMediator.has(onNameInvalidEvent.name)).to.be.equal(true);
-
-        const compiler = Compiler.create();
-
-        const userServiceDefinition = {
-            name: 'userService',
-            init: function() {
-                function UserService() {}
-
-                return new UserService();
-            }
-        };
-
-        compiler.add(userServiceDefinition);
-
-        let eventCalled = false;
-        const eventDefinition = {
-            name: 'event',
-            init: function(userService, num, aString) {
-                eventCalled = true;
-
-                expect(userService).to.be.a('object');
-                expect(num).to.be.equal(5);
-                expect(aString).to.be.equal('string');
-            }
-        };
-
-        exposedMediator.add(eventDefinition);
-
-        exposedMediator.emit('event', compiler, {
-            num: 5,
-            aString: 'string',
+        exposedMediator.preBind('event1', function() {
+            event1Called = true;
         });
+
+        exposedMediator.preBind('event2', function() {
+            event2Called = true;
+        });
+
+        expect(exposedMediator.isEmitted('event1')).to.be.equal(false);
+        expect(exposedMediator.isEmitted('event2')).to.be.equal(false);
     });
 });

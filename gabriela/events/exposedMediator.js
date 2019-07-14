@@ -20,6 +20,10 @@ function _callFn(fn, compiler, args) {
 
 function _isDefinitionComplete(definition) {
     if (!definition.fns) return false;
+
+    if (definition.fns.length === 0) return false;
+
+    return true;
 }
 
 function _callEvent(fn, compiler, customArgs) {
@@ -53,6 +57,7 @@ function factory() {
                 fns: null,
                 compiler,
                 args: customArgs,
+                emitted: false,
             };
         }
 
@@ -65,19 +70,22 @@ function factory() {
             for (const fn of definitions[name].fns) {
                 _callEvent(fn, definitions[name].compiler, definitions[name].args);
             }
+
+            if (!definitions[name].emitted) definitions[name].emitted = true;
         }
     }
 
     function isEmitted(name) {
         if (!definitions[name]) return false;
 
-        return _isDefinitionComplete(definitions[name]);
+        return definitions[name].emitted;
     }
 
     function preBind(name, fn) {
         if (!definitions[name]) {
             definitions[name] = {
                 fns: [],
+                emitted: false,
             };
 
             definitions[name].fns.push(fn);
