@@ -1360,6 +1360,8 @@ describe('Framework events', function() {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onPreResponseCalled).to.be.equal(true);
+
                         this.server.close();
 
                         done();
@@ -1414,14 +1416,21 @@ describe('Framework events', function() {
     });
 
     it('should call the onPostResponse event with all the required arguments before the response is sent', (done) => {
-        let onPreResponseCalled = false;
+        let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
-                        this.server.close();
+                        // this is neccessary the onPostResponse is fired after the response has been sent,
+                        // so this response handler gets executed before onPostResponse therefor, i have to wait
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
 
-                        done();
+                            this.server.close();
+
+                            done();
+
+                        }, 500);
                     });
                 }
             }
@@ -1443,7 +1452,7 @@ describe('Framework events', function() {
             mediator: {
                 onPostResponse(http, userService, next) {
                     requestPromise.get('https://www.facebook.com').then(() => {
-                        onPreResponseCalled = true;
+                        onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');
                         expect(http).to.have.property('req');
