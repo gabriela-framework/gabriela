@@ -4,7 +4,7 @@
   "description": "Plugin based framework",
   "main": "src/index.js",
   "scripts": {
-    "tests": "mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
+    "test": "mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc -x=tests --print=both --reporter=html npm run tests",
     "console-coverage": "nyc -x=tests --print=both --reporter=text npm run tests",
     "lint": "eslint gabriela/**"
