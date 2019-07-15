@@ -136,12 +136,10 @@ function factory(server, mdl) {
                  */
                 responseProxy.send(200, deepCopy(state));
 
-                if (responseEvents.onPostResponse) {
-                    callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
-                        http: httpContext,
-                        state: state,
-                    });
-                }
+                if (responseEvents.onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
+                    http: httpContext,
+                    state: state,
+                });
 
                 return next();
             });

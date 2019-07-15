@@ -1480,4 +1480,77 @@ describe('Framework events', function() {
 
         g.startApp();
     });
+
+    it('should call onPostResponse if the response has been sent in onPreResponse', (done) => {
+        let onPostResponseCalled = false;
+        let onPreResponseCalled = false;
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onPreResponseCalled).to.be.equal(true);
+                        // this is neccessary the onPostResponse is fired after the response has been sent,
+                        // so this response handler gets executed before onPostResponse therefor, i have to wait
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
+
+                            this.server.close();
+
+                            done();
+
+                        }, 500);
+                    });
+                }
+            }
+        });
+
+        const userServiceDefinition = {
+            name: 'userService',
+            scope: 'module',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        g.addModule({
+            name: 'module',
+            dependencies: [userServiceDefinition],
+            mediator: {
+                onPreResponse(http) {
+                    onPreResponseCalled = true;
+
+                    http.res.send('Response');
+                },
+                onPostResponse(http, userService, next) {
+                    requestPromise.get('https://www.facebook.com').then(() => {
+                        onPostResponseCalled = true;
+
+                        expect(http).to.be.a('object');
+                        expect(http).to.have.property('req');
+                        expect(http).to.have.property('res');
+                        expect(http.req).to.be.a('object');
+                        expect(http.res).to.be.a('object');
+
+                        expect(userService).to.be.a('object');
+
+                        next();
+                    });
+                }
+            },
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function() {
+
+            }],
+        });
+
+        g.startApp();
+    })
 });
