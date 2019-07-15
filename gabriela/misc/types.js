@@ -11,51 +11,79 @@ function _proxifyType(obj) {
 }
 
 class MiddlewareTypes extends IIterator {
-    SECURITY = 'security';
-    PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
-    VALIDATORS = 'validators';
-    MODULE_LOGIC = 'moduleLogic';
-    POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
+    constructor() {
+        super();
+
+        this.SECURITY = 'security';
+        this.PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
+        this.VALIDATORS = 'validators';
+        this.MODULE_LOGIC = 'moduleLogic';
+        this.POST_LOGIC_TRANSFORMERS = 'postLogicTransformers';
+    }
 }
 
 class AsyncFlowTypes extends IIterator {
-    NEXT = 'next';
-    DONE = 'done';
-    SKIP = 'skip';
-    THROW_EXCEPTION = 'throwException';
+    constructor() {
+        super();
+
+        this.NEXT = 'next';
+        this.DONE = 'done';
+        this.SKIP = 'skip';
+        this.THROW_EXCEPTION = 'throwException';
+    }
 }
 
 class BuiltInMediators extends IIterator {
-    ON_MODULE_STARTED = 'onModuleStarted';
-    ON_MODULE_FINISHED = 'onModuleFinished';
-    ON_PLUGIN_STARTED = 'onPluginStarted';
-    ON_PLUGIN_FINISHED = 'onPluginFinished';
-    ON_ERROR = 'onError';
+    constructor() {
+        super();
+
+        this.ON_MODULE_STARTED = 'onModuleStarted';
+        this.ON_MODULE_FINISHED = 'onModuleFinished';
+        this.ON_PLUGIN_STARTED = 'onPluginStarted';
+        this.ON_PLUGIN_FINISHED = 'onPluginFinished';
+        this.ON_ERROR = 'onError';
+    }
 }
 
 class HttpMethods extends IIterator {
-    GET = 'get';
-    PUT = 'put';
-    POST = 'post';
-    PATCH = 'patch';
-    DELETE = 'del';
-    HEAD = 'head';
+    constructor() {
+        super();
+
+        this.GET = 'get';
+        this.PUT = 'put';
+        this.POST = 'post';
+        this.PATCH = 'patch';
+        this.DELETE = 'del';
+        this.HEAD = 'head';
+    }
 }
 
 class MandatoryRouteProps extends IIterator {
-    NAME = 'name';
-    PATH = 'path';
-    METHOD = 'method';
+    constructor() {
+        super();
+
+        this.NAME = 'name';
+        this.PATH = 'path';
+        this.METHOD = 'method';
+    }
 }
 
 class GabrielaEvents extends IIterator {
-    ON_APP_STARTED = 'onAppStarted';
-    ON_CATCH_ERROR = 'catchError';
+    constructor() {
+        super();
+
+        this.ON_APP_STARTED = 'onAppStarted';
+        this.ON_CATCH_ERROR = 'catchError';
+    }
 }
 
 class HttpEvents extends IIterator {
-    ON_PRE_RESPONSE = 'onPreResponse';
-    ON_POST_RESPONSE = 'onPostResponse';
+    constructor() {
+        super();
+
+        this.ON_PRE_RESPONSE = 'onPreResponse';
+        this.ON_POST_RESPONSE = 'onPostResponse';
+    }
 }
 
 module.exports = Object.freeze({
