@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
-    "coverage": "nyc -x=tests --print=both --reporter=html npm run tests",
-    "console-coverage": "nyc -x=tests --print=both --reporter=text npm run tests",
+    "coverage": "nyc -x=test --print=both --reporter=lcov npm run test",
+    "console-coverage": "nyc -x=test --print=both --reporter=text npm run test",
     "lint": "eslint gabriela/**"
   },
   "author": "Mario Skrlec",
