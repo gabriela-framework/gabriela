@@ -10,10 +10,14 @@ function _createResponseProxy(res) {
             return res.cache(type, options);
         },
         noCache() {
-            return res.noCache();
+            res.noCache();
+
+            return this;
         },
         charSet(type) {
-            return res.charSet(type);
+            res.charSet(type);
+
+            return this;
         },
         header(key, value) {
             return res.header(key, value);
@@ -25,17 +29,21 @@ function _createResponseProxy(res) {
             return res.link(key, value);
         },
         send(code, body, headers) {
-            const result = res.send(code, body, headers);
+            res.send(code, body, headers);
 
             this.__responseSent = true;
 
-            return result;
+            return this;
         },
         sendRaw(code, body, headers) {
-            return res.sendRaw(code, body, headers);
+            res.sendRaw(code, body, headers);
+
+            return this;
         },
         set(name, value) {
-            return res.set(name, value);
+            res.set(name, value);
+
+            return this;
         },
         status(code) {
             return res.status(code);
