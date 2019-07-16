@@ -1415,7 +1415,7 @@ describe('Framework events', function() {
         g.startApp();
     });
 
-    it('should call the onPostResponse event with all the required arguments before the response is sent', (done) => {
+    it('should call the onPostResponse event with all the required arguments after the response is sent', (done) => {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
@@ -1552,5 +1552,53 @@ describe('Framework events', function() {
         });
 
         g.startApp();
-    })
+    });
+
+    it('should properly call onPre/PostResponse events if the response is sent from inside middleware execution', (done) => {
+        let onPostResponseCalled = false;
+        let onPreResponseCalled = false;
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onPreResponseCalled).to.be.equal(true);
+                        // this is neccessary the onPostResponse is fired after the response has been sent,
+                        // so this response handler gets executed before onPostResponse therefor, i have to wait
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
+
+                            this.server.close();
+
+                            done();
+
+                        }, 500);
+                    });
+                }
+            }
+        });
+
+        g.addModule({
+            name: 'module',
+            mediator: {
+                onPreResponse() {
+                    onPreResponseCalled = true;
+                },
+                onPostResponse() {
+                    onPostResponseCalled = true;
+                }
+            },
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function(http) {
+                http.res.send('Response');
+            }],
+        });
+
+        g.startApp();
+    });
 });

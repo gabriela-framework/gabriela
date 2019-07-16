@@ -1,6 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -373,5 +374,52 @@ describe('Failing framework events', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail to send a response inside onPostResponse event when the response is already sent', (done) => {
+        let onPostResponseCalled = false;
+
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
+
+                            this.server.close();
+
+                            done();
+
+                        }, 500);
+                    });
+                },
+            }
+        });
+
+        g.addModule({
+            name: 'module',
+            mediator: {
+                onError(e) {
+                    expect(e).to.be.instanceof(Error);
+                },
+                onPostResponse(http) {
+                    onPostResponseCalled = true;
+
+                    http.res.send('Will not be sent');
+                }
+            },
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function(http) {
+                http.res.send('Response');
+            }],
+        });
+
+        g.startApp();
     });
 });

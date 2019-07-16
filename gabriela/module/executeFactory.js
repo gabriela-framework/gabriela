@@ -3,9 +3,11 @@ const deepCopy = require('deepcopy');
 const {MIDDLEWARE_TYPES, HTTP_EVENTS} = require('../misc/types');
 const callEvent = require('../events/util/callEvent');
 
-function _createResponseProxy(res) {
+function _createResponseProxy(req, res, state, mdl, onPreResponse, onPostResponse) {
     return {
         __responseSent: false,
+        __insideSend: false,
+
         cache(type, options) {
             return res.cache(type, options);
         },
@@ -29,11 +31,47 @@ function _createResponseProxy(res) {
             return res.link(key, value);
         },
         send(code, body, headers) {
-            res.send(code, body, headers);
+            try {
+                if (this.__responseSent) throw new Error(`Cannot send response. Response has already been sent`);
 
-            this.__responseSent = true;
+                // handling the use case if the response is sent from onPreResponse. if this was not here
+                // there would be a recursion in calling onPreResponse inifinitely. This code only handles that use case and
+                // this lines of code are called only if the response is sent inside onPreResponse
+                if (this.__insideSend) {
+                    this.__responseSent = true;
 
-            return this;
+                    res.send(code, body, headers);
+
+                    return this;
+                }
+
+                this.__insideSend = true;
+
+                if (onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
+                    http: {req, res: this},
+                    state: state,
+                });
+
+                this.__insideSend = false;
+
+                if (!this.__responseSent) res.send(code, body, headers);
+
+                this.__responseSent = true;
+
+                if (onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
+                    http: {req, res: this},
+                    state: state,
+                });
+
+                return this;
+            } catch (e) {
+                // any error can be caught with onError event
+                if (mdl.hasMediators() && mdl.mediator.onError) {
+                    mdl.mediatorInstance.runOnError(mdl.mediator.onError, e);
+                } else {
+                    throw e;
+                }
+            }
         },
         sendRaw(code, body, headers) {
             res.sendRaw(code, body, headers);
@@ -66,11 +104,8 @@ function _getResponseEvents(mdl) {
 }
 
 function _createWorkingDataStructures(mdl, req, res) {
-    const responseProxy = _createResponseProxy(res);
-
     const httpContext = {
         req,
-        res: responseProxy,
     };
 
     const middleware = [
@@ -82,7 +117,6 @@ function _createWorkingDataStructures(mdl, req, res) {
     ];
 
     return {
-        responseProxy,
         httpContext,
         middleware
     };
@@ -96,58 +130,27 @@ function factory(server, mdl) {
             const path = http.route.path;
 
             server[method](path, async function(req, res, next) {
-                const {responseProxy, httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
+                const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
+                const responseEvent = _getResponseEvents(mdl);
+
+                const responseProxy = _createResponseProxy(
+                    req,
+                    res,
+                    state,
+                    mdl,
+                    responseEvent.onPreResponse,
+                    responseEvent.onPostResponse,
+                );
+
+                httpContext.res = responseProxy;
 
                 for (const functions of middleware) {
                     await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
                 }
 
-                const responseEvents = _getResponseEvents(mdl);
-
-                /**
-                 * If the response is sent within the middleware handling, then only emit onPostResponse event
-                 * and from this request
-                 */
-                if (responseProxy.__responseSent) {
-                    if (responseEvents.onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
-                        http: httpContext,
-                        state: state,
-                    });
-
-                    return next();
+                if (!responseProxy.__responseSent) {
+                    responseProxy.send(200, deepCopy(state));
                 }
-
-                /**
-                 * If the response is not sent from the middleware handling, call the onPreResponse event
-                 */
-                if (responseEvents.onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
-                    http: httpContext,
-                    state: state,
-                });
-
-                /**
-                 * If the response is sent from inside onPreResponse event, call the onPostResponse event
-                 * and exit from this request
-                 */
-                if (responseProxy.__responseSent) {
-                    if (responseEvents.onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
-                        http: httpContext,
-                        state: state,
-                    });
-
-                    return next();
-                }
-
-                /**
-                 * If the response is not sent either from the middleware handling or from the onPreResponse event,
-                 * automatically send the response and fire onPostResponse event. Then, exit this request
-                 */
-                responseProxy.send(200, deepCopy(state));
-
-                if (responseEvents.onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
-                    http: httpContext,
-                    state: state,
-                });
 
                 return next();
             });
