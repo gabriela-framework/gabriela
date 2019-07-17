@@ -172,13 +172,9 @@ function factory() {
         if (definition.hasDependencies()) {
             if (hasKey(resolved, name)) return resolved[name];
 
-            if (hasKey(selfTree, definition.name)) {
-                resolved[definition.name] = new PrivateCompiler().compile(definition, config);
+            resolved[definition.name] = new PrivateCompiler().compile(definition, config);
 
-                return resolved[definition.name];
-            }
-
-            return new PrivateCompiler().compile(definition);
+            return resolved[definition.name];
         }
 
         const taskRunner = TaskRunner.create();
