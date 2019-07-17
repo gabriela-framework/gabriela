@@ -431,4 +431,27 @@ describe('Compiler instance tests', () => {
         expect(compiler.has('friendsRepository')).to.be.equal(false);
         expect(compiler.has('userRepository')).to.be.equal(false);
     });
+
+    it('should get all definitions declared on every node of compiler tree', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                return () => {};
+            },
+        };
+
+        const compiler = Compiler.create();
+        compiler.add(definition);
+        expect(compiler.getDefinition('definition')).to.be.a('object');
+
+        const parent = Compiler.create();
+        parent.parent = Compiler.create();
+        parent.parent.add(definition);
+        expect(parent.getDefinition('definition')).to.be.a('object');
+
+        const root = Compiler.create();
+        root.root = Compiler.create();
+        root.root.add(definition);
+        expect(root.getDefinition('definition')).to.be.a('object');
+    });
 });
