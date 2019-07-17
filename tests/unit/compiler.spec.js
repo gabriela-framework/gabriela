@@ -126,7 +126,7 @@ describe('Compiler instance tests', () => {
             }
         };
 
-        child1.root.add(userServiceInit);
+        root.add(userServiceInit);
 
         const definition = child2.getDefinition('userService');
 

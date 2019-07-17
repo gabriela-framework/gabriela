@@ -162,4 +162,30 @@ describe('Failing concrete compiler tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail to get a non existent definition object from within the getDefinition() method', () => {
+        const userServiceDefinition = {
+            name: 'userService',
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const compiler = Compiler.create();
+        compiler.parent = Compiler.create();
+        compiler.root = Compiler.create();
+
+        compiler.add(userServiceDefinition);
+
+        let entersException = false;
+        try {
+            compiler.getDefinition('nonExistent');
+        } catch(e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Dependency injection error. Definition object with name 'nonExistent' not found`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

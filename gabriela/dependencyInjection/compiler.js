@@ -98,7 +98,7 @@ function factory() {
      * @returns {*}
      */
     function getOwnDefinition(name) {
-        if (!this.has(name)) throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
+        if (!this.hasOwn(name)) throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
 
         return selfTree[name];
     }
@@ -111,27 +111,17 @@ function factory() {
      * the 'if' checks are redundant but need to be done in order to return the first found definition.
      */
     function getDefinition(name) {
-        try {
-            let definition = this.getOwnDefinition(name);
-            if (definition) return definition;
+        if (this.hasOwn(name)) return this.getOwnDefinition(name);
 
-            if (this.parent) {
-                definition = this.parent.getOwnDefinition(name);
-
-                if (definition) return definition;
-            }
-
-            if (this.root) {
-                definition = this.root.getOwnDefinition(name);
-
-                if (definition) return definition;
-            }
-
-            throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
-
-        } catch (e) {
-            throw new Error(e.message);
+        if (this.parent) {
+            if (this.parent.hasOwn(name)) return this.parent.getOwnDefinition(name);
         }
+
+        if (this.root) {
+            if (this.root.hasOwn(name)) return this.root.getOwnDefinition(name);
+        }
+
+        throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
     }
 
     function hasOwn(name) {
