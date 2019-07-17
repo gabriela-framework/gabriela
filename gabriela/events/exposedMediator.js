@@ -18,14 +18,6 @@ function _callFn(fn, compiler, args) {
     fn.call(null, ...resolvedArgs);
 }
 
-function _isDefinitionComplete(definition) {
-    if (!definition.fns) return false;
-
-    if (definition.fns.length === 0) return false;
-
-    return true;
-}
-
 function _callEvent(fn, compiler, customArgs) {
     let args = getArgs(fn);
 
