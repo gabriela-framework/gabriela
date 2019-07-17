@@ -37,7 +37,9 @@ describe('Failing config factory tests', () => {
     it('should fail if config.config is not an object', () => {
         let entersException = false;
         try {
-            configFactory.create({});
+            configFactory.create({
+                config: null
+            });
         } catch (e) {
             entersException = true;
 

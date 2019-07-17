@@ -13,6 +13,7 @@ function instance() {
 
         if (!is('object', config.config)) throw new Error(`Invalid config. Gabriela configuration must be a plain javascript object with only the mandatory 'config' property that also must be a plan object (even if empty)`);
 
+
         return factory(deepCopy(config));
     };
 }
