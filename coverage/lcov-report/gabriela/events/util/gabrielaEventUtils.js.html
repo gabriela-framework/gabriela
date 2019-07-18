@@ -20,31 +20,31 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75.86% </span>
+        <span class="strong">95.45% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>22/29</span>
+        <span class='fraction'>21/22</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">66.67% </span>
+        <span class="strong">80% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>8/12</span>
+        <span class='fraction'>8/10</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">50% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>2/4</span>
+        <span class='fraction'>2/2</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75.86% </span>
+        <span class="strong">95.45% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>22/29</span>
+        <span class='fraction'>21/22</span>
       </div>
     </div>
     <p class="quiet">
       Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
     </p>
   </div>
-  <div class='status-line medium'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -95,27 +95,7 @@
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
 <a name='L49'></a><a href='#L49'>49</a>
-<a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a>
-<a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L50'></a><a href='#L50'>50</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -161,31 +141,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const {GABRIELA_EVENTS} = require('../../misc/types');
 const GenericMediator = require('../genericMediator');
 const {hasKey} = require('../../util/util');
-const {HTTP_EVENTS} = require('../../misc/types');
 &nbsp;
 function _callSingleGabrielaEvent(event, rootCompiler, err) {
     const mediator = GenericMediator.create(rootCompiler);
@@ -203,7 +164,7 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
                 try {
                     _callSingleGabrielaEvent.call(this, events[gEvent], rootCompiler, err);
                 } catch (onAppStartedError) {
-                    // error thrown inside middleware processing takes precendence over and error thrown inside onAppStarted
+                    // error thrown inside middleware processing takes precendence over an error thrown inside onAppStarted
                     let resolvedError;
                     if (err) {
                         resolvedError = err;
@@ -229,34 +190,16 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
     }
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >_callSingleHttpEvent(</span>event, http, rootCompiler) {
-    const mediator = <span class="cstat-no" title="statement not covered" >GenericMediator.create(rootCompiler, {enableAsyncHandling: true});</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    mediator.callEvent(event);</span>
-}
-&nbsp;
-function <span class="fstat-no" title="function not covered" >_callHttpEvents(</span>events, http, rootCompiler) {
-<span class="cstat-no" title="statement not covered" >    for (const httpEvent of HTTP_EVENTS) {</span>
-<span class="cstat-no" title="statement not covered" >        if (hasKey(events, httpEvent)) {</span>
-            const event = <span class="cstat-no" title="statement not covered" >events[httpEvent];</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >            _callSingleHttpEvent(event, http, rootCompiler);</span>
-        }
-    }
-}
-&nbsp;
 module.exports = {
     _callSingleGabrielaEvent,
     _runGabrielaEvents,
-    _callHttpEvents,
-    _callSingleHttpEvent,
 };</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Jul 17 2019 20:12:29 GMT+0000 (Coordinated Universal Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Jul 18 2019 20:26:06 GMT+0000 (Coordinated Universal Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>

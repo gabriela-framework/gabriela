@@ -1,7 +1,6 @@
 const {GABRIELA_EVENTS} = require('../../misc/types');
 const GenericMediator = require('../genericMediator');
 const {hasKey} = require('../../util/util');
-const {HTTP_EVENTS} = require('../../misc/types');
 
 function _callSingleGabrielaEvent(event, rootCompiler, err) {
     const mediator = GenericMediator.create(rootCompiler);
@@ -19,7 +18,7 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
                 try {
                     _callSingleGabrielaEvent.call(this, events[gEvent], rootCompiler, err);
                 } catch (onAppStartedError) {
-                    // error thrown inside middleware processing takes precendence over and error thrown inside onAppStarted
+                    // error thrown inside middleware processing takes precendence over an error thrown inside onAppStarted
                     let resolvedError;
                     if (err) {
                         resolvedError = err;
@@ -45,25 +44,7 @@ async function _runGabrielaEvents(events, rootCompiler, err) {
     }
 }
 
-function _callSingleHttpEvent(event, http, rootCompiler) {
-    const mediator = GenericMediator.create(rootCompiler, {enableAsyncHandling: true});
-
-    mediator.callEvent(event);
-}
-
-function _callHttpEvents(events, http, rootCompiler) {
-    for (const httpEvent of HTTP_EVENTS) {
-        if (hasKey(events, httpEvent)) {
-            const event = events[httpEvent];
-
-            _callSingleHttpEvent(event, http, rootCompiler);
-        }
-    }
-}
-
 module.exports = {
     _callSingleGabrielaEvent,
     _runGabrielaEvents,
-    _callHttpEvents,
-    _callSingleHttpEvent,
 };
