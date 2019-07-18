@@ -469,4 +469,52 @@ describe('Failing framework events', () => {
             expect(e.message).to.be.equal(`Invalid exposed event. 'onExposedEvent' event has tried to pre bind something that is not a function`);
         }
     });
+
+    it('should fail if onModuleStarted do not have an onError event attached', (done) => {
+        const g = gabriela.asProcess({
+            config: {},
+        });
+
+        g.addModule({
+            name: 'name',
+            mediator: {
+                onModuleStarted() {
+                    throw new Error('Something went wrong');
+                }
+            }
+        });
+
+        g.runModule().then(() => {
+            assert.fail('This test should not be a success');
+        }).catch((e) => {
+            expect(e).to.be.instanceof(Error);
+            expect(e.message).to.be.equal('Something went wrong');
+
+            done();
+        });
+    });
+
+    it('should fail if onModuleFinished do not have an onError event attached', (done) => {
+        const g = gabriela.asProcess({
+            config: {},
+        });
+
+        g.addModule({
+            name: 'name',
+            mediator: {
+                onModuleFinished() {
+                    throw new Error('Something went wrong');
+                }
+            }
+        });
+
+        g.runModule().then(() => {
+            assert.fail('This test should not be a success');
+        }).catch((e) => {
+            expect(e).to.be.instanceof(Error);
+            expect(e.message).to.be.equal('Something went wrong');
+
+            done();
+        });
+    });
 });
