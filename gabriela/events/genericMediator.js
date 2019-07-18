@@ -1,12 +1,14 @@
 const deasync = require('deasync');
 
-const {getArgs, inArray} = require('../util/util');
+const {getArgs, inArray, hasKey} = require('../util/util');
 const taskRunnerFactory = require('../misc/taskRunner');
 const {ASYNC_FLOW_TYPES} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
 
 function _callFn(fn, rootCompiler, args, context) {
     const resolvedArgs = args.map((arg) => {
+        if (arg.value) return arg.value;
+
         const dep = rootCompiler.compile(arg.name, rootCompiler);
 
         if (!dep) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
@@ -17,11 +19,11 @@ function _callFn(fn, rootCompiler, args, context) {
     fn.call((context) ? context : null, ...resolvedArgs);
 }
 
-function instance(rootCompiler, options = {}) {
+function instance(rootCompiler) {
     const taskRunner = taskRunnerFactory.create();
 
-    function callEvent(fn, context) {
-        if (!options.enableAsyncHandling) {
+    function callEvent(fn, context, options) {
+        if (hasKey(options, 'enableAsyncHandling') && !options.enableAsyncHandling) {
             const args = getArgs(fn);
 
             return _callFn(fn, rootCompiler, args, context);
@@ -32,8 +34,9 @@ function instance(rootCompiler, options = {}) {
             throwException: taskRunner.throwException,
         });
 
+
         if (!inArray(ASYNC_FLOW_TYPES, args.map(arg => arg.name))) {
-            _callFn(fn, rootCompiler, context);
+            _callFn(fn, rootCompiler, args, context);
 
             return;
         }
