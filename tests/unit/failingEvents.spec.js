@@ -422,4 +422,51 @@ describe('Failing framework events', () => {
 
         g.startApp();
     });
+
+    it('should fail if the exposed events concrete instance is not used as it should be', () => {
+        const rootCompiler = Compiler.create();
+
+        rootCompiler.add({
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        });
+
+        const exposedMediator = new ExposedMediator();
+
+        exposedMediator.add('onExposedEvent');
+        exposedMediator.emit('onExposedEvent', rootCompiler);
+
+        try {
+            exposedMediator.preBind('onExposedEvent', function() {});
+        } catch (e) {
+            expect(e.message).to.be.equal(`Internal Gabriela error. Invalid usage of exposed mediator instance. Exposed events must be first pre bound then emitted. It seems that event 'onExposedEvent' has been emitted first and then bound. This should not happen`);
+        }
+    });
+
+    it('should fail if preBound() event is not a function', () => {
+        const rootCompiler = Compiler.create();
+
+        rootCompiler.add({
+            name: 'userService',
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        });
+
+        const exposedMediator = new ExposedMediator();
+
+        exposedMediator.add('onExposedEvent');
+
+        try {
+            exposedMediator.preBind('onExposedEvent', {});
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid exposed event. 'onExposedEvent' event has tried to pre bind something that is not a function`);
+        }
+    });
 });

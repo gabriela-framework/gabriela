@@ -21,7 +21,7 @@ function _callFn(fn, compiler, args) {
 function _callEvent(fn, compiler, customArgs) {
     let args = getArgs(fn);
 
-    // if an error occurres, it must be the first argument of customArgs
+    // if an error occurrences, it must be the first argument of customArgs
     // in client code, the error has to be the first argument
     if (customArgs && is('object', customArgs)) {
         for (const name in customArgs) {
@@ -38,25 +38,39 @@ function _callEvent(fn, compiler, customArgs) {
     _callFn(fn, compiler, args);
 }
 
+/**
+ * Using exposed mediator
+ *
+ * Exposed mediator creates its own definitions. Client code has no influence on it.
+ *
+ * This mediator has to be used as a deferred emitter. It cannot emit anything if definition to emit an event is not
+ * pre bound to this mediator. Client code has to call preBind() method before emitting any event. It can optionally
+ * call add() method first to declare a definition, and the preBind() to bind the actual event to that definition.
+ */
+
 function factory() {
     const definitions = {};
 
     function emit(name, compiler, customArgs) {
         if (!hasKey(definitions, name)) throw new Error(`Invalid exposed event. Exposed event with name '${name}' does not exist`);
 
+        // ran only when using with add()
         if (!definitions[name]) {
             definitions[name] = {
-                fns: null,
+                fns: [],
                 compiler,
                 args: customArgs,
-                emitted: false,
+                emitted: null,
             };
         }
 
+        // ran only when preBind() is called without add()
         if (!definitions[name].compiler) {
             definitions[name].compiler = compiler;
             definitions[name].args = customArgs;
         }
+
+        definitions[name].emitted = true;
 
         if (definitions[name].fns) {
             for (const fn of definitions[name].fns) {
@@ -74,9 +88,14 @@ function factory() {
     }
 
     function preBind(name, fn) {
+        if (definitions[name] && definitions[name].emitted === true) throw new Error(`Internal Gabriela error. Invalid usage of exposed mediator instance. Exposed events must be first pre bound then emitted. It seems that event '${name}' has been emitted first and then bound. This should not happen`);
+
+        if (!is('function', fn)) throw new Error(`Invalid exposed event. '${name}' event has tried to pre bind something that is not a function`);
+
         if (!definitions[name]) {
             definitions[name] = {
                 fns: [],
+                preBound: true,
                 emitted: false,
             };
 
