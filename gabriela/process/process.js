@@ -38,6 +38,11 @@ function factory(
         );
     }
 
+    function close() {
+        process.exit(0);
+    }
+
+    this.close = close;
     this.run = run;
 }
 

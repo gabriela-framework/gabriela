@@ -3,8 +3,8 @@ const restify = require('restify');
 const {is, hasKey} = require('../util/util');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
-const {GABRIELA_EVENTS, HTTP_EVENTS} = require('../misc/types');
-const {_runGabrielaEvents, _callSingleGabrielaEvent} = require('../events/util/gabrielaEventUtils');
+const {GABRIELA_EVENTS} = require('../misc/types');
+const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 const validateHttpEvents = require('../misc/validateHttpEvents');
 
@@ -32,7 +32,7 @@ async function _listenCallback(
     events,
     rootCompiler,
 ) {
-    await _runGabrielaEvents.call(this, events, rootCompiler);
+    await runOnAppStarted.call(this, events, rootCompiler);
 
     console.log('Gabriela app started');
 }
@@ -62,7 +62,7 @@ function Server(
                 rootCompiler,
             ));
         }).catch((err) => {
-            if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return _callSingleGabrielaEvent.call(
+            if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
                 this,
                 events[GABRIELA_EVENTS.ON_CATCH_ERROR],
                 rootCompiler,
