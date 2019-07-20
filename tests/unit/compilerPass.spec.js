@@ -102,4 +102,267 @@ describe('Compiler pass tests', () => {
             expect(entersCompilerPass).to.be.equal(true);
         });
     });
+
+    it('should create a module dependency within a compiler pass', (done) => {
+        let entersCompilerPass = false;
+        let entersMiddleware = false;
+
+        const userService = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    entersCompilerPass = true;
+
+                    compiler.add({
+                        name: 'userRepository',
+                        scope: 'module',
+                        init: function() {
+                            function UserRepository() {
+                                this.name = 'userRepository';
+                            }
+
+                            return new UserRepository();
+                        }
+                    })
+                },
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const g = gabriela.asProcess(config);
+
+        g.addModule({
+            name: 'module',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMiddleware = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        });
+
+        g.runModule().then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+            expect(entersCompilerPass).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should create a plugin dependency within a compiler pass', (done) => {
+        let entersCompilerPass = false;
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const userService = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    entersCompilerPass = true;
+
+                    compiler.add({
+                        name: 'userRepository',
+                        scope: 'plugin',
+                        init: function() {
+                            function UserRepository() {
+                                this.name = 'userRepository';
+                            }
+
+                            return new UserRepository();
+                        }
+                    })
+                },
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const g = gabriela.asProcess(config);
+
+        const mdl1 = {
+            name: 'mdl1',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl1 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl2 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin',
+            modules: [mdl1, mdl2],
+        });
+
+        g.runPlugin().then(() => {
+            expect(entersMdl1).to.be.equal(true);
+            expect(entersMdl2).to.be.equal(true);
+            expect(entersCompilerPass).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should create a public dependency within a compiler pass', (done) => {
+        let entersCompilerPass = false;
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const userService = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    entersCompilerPass = true;
+
+                    compiler.add({
+                        name: 'userRepository',
+                        scope: 'public',
+                        init: function() {
+                            function UserRepository() {
+                                this.name = 'userRepository';
+                            }
+
+                            return new UserRepository();
+                        }
+                    })
+                },
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const g = gabriela.asProcess(config);
+
+        const mdl1 = {
+            name: 'mdl1',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl1 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl2 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        g.addModule(mdl1);
+        g.addModule(mdl2);
+
+        g.runModule().then(() => {
+            expect(entersMdl1).to.be.equal(true);
+            expect(entersMdl2).to.be.equal(true);
+            expect(entersCompilerPass).to.be.equal(true);
+
+            done();
+        });
+    });
+
+    it('should create a shared dependency within a compiler pass', (done) => {
+        let entersCompilerPass = false;
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const userService = {
+            name: 'userService',
+            compilerPass: {
+                init: function(config, compiler) {
+                    entersCompilerPass = true;
+
+                    compiler.add({
+                        name: 'userRepository',
+                        shared: {
+                            modules: ['mdl1', 'mdl2'],
+                        },
+                        init: function() {
+                            function UserRepository() {
+                                this.name = 'userRepository';
+                            }
+
+                            return new UserRepository();
+                        }
+                    })
+                },
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const g = gabriela.asProcess(config);
+
+        const mdl1 = {
+            name: 'mdl1',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl1 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            dependencies:[userService],
+            moduleLogic: [function(userRepository) {
+                entersMdl2 = true;
+
+                expect(userRepository).to.be.a('object');
+                expect(userRepository.name).to.be.equal('userRepository');
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [mdl1],
+        });
+
+        g.addPlugin({
+            name: 'plugin2',
+            modules: [mdl2],
+        });
+
+        g.runPlugin().then(() => {
+            expect(entersMdl1).to.be.equal(true);
+            expect(entersMdl2).to.be.equal(true);
+            expect(entersCompilerPass).to.be.equal(true);
+
+            done();
+        });
+    });
 });
