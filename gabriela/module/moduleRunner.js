@@ -62,7 +62,7 @@ function _emitImplementationFactory(mdl) {
             if (mdl.mediatorInstance.has(name)) mdl.mediatorInstance.emit(name, customArgs);
             if (mdl.isInPlugin() && mdl.plugin.mediatorInstance.has(name)) return mdl.plugin.mediatorInstance.emit(name, customArgs);
 
-            return;
+            throw new Error(`Invalid mediator event. Mediator with name '${name}' does not exist in module '${mdl.name}'`);
         }
 
         if (mdl.mediatorInstance.has(name)) return mdl.mediatorInstance.emit(name, customArgs);
@@ -86,7 +86,7 @@ function factory() {
 
                 const context = _createContext({
                     mediator: {
-                        emit: _emitImplementationFactory(mdl)
+                        emit: _emitImplementationFactory(mdl),
                     },
                     emitter: mdl.emitterInstance,
                 });
