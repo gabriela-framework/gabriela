@@ -584,7 +584,7 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should execute gabriela plugin with a custom execution factory', (done) => {
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess(config);
 
         let moduleCalled = false;
 
@@ -605,5 +605,35 @@ describe('Gabriela as process tests', () => {
 
             done();
         });
+    });
+
+    xit('should catch an error when error is thrown inside onAppStarted event', (done) => {
+        let onAppStartedCalled = false;
+        const g = gabriela.asProcess(config, {
+            events: {
+                onAppStarted() {
+                    throw new Error('Something went wrong');
+                },
+                catchError() {
+                    done();
+                }
+            }
+        });
+
+        let moduleCalled = false;
+
+        const mdl = {
+            name: 'mdl',
+            moduleLogic: [function() {
+                moduleCalled = true;
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin',
+            modules: [mdl],
+        });
+
+        g.startApp();
     });
 });

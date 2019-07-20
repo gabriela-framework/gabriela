@@ -1,6 +1,7 @@
 const GenericMediator = require('../events/genericMediator');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
+const {runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 
 async function runApp(
     config,
@@ -12,11 +13,7 @@ async function runApp(
     await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
     await moduleInterface.run(moduleExecuteFactory.bind(null, null));
 
-    if (events && events.onAppStarted) {
-        const mediator = GenericMediator.create(rootCompiler);
-
-        mediator.callEvent(events.onAppStarted);
-    }
+    await runOnAppStarted.call(this, events, rootCompiler);
 
     console.log(`Process app started`);
 }
@@ -29,7 +26,8 @@ function factory(
     moduleInterface,
 ) {
     function run() {
-        return runApp(
+        return runApp.call(
+            this,
             config,
             events,
             rootCompiler,
@@ -39,6 +37,8 @@ function factory(
     }
 
     function close() {
+        console.log(`Process has exited`);
+
         process.exit(0);
     }
 
