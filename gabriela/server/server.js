@@ -62,7 +62,7 @@ function Server(
                 rootCompiler,
             ));
         }).catch((err) => {
-            if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
+            if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
                 this,
                 events[GABRIELA_EVENTS.ON_CATCH_ERROR],
                 rootCompiler,
