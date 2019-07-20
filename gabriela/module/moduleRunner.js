@@ -39,10 +39,6 @@ function _handleError(err, mdl) {
         if (err.message === 'done') {
             return;
         }
-
-        if (err.message === 'task') {
-            throw new Error(`Invalid ${mdl.name} middleware implementation. Either 'next', 'skip' or 'done' must be called in each middleware to continue to the next one`);
-        }
     }
 
     // throw error if it doesnt have any mediators

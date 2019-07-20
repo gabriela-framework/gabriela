@@ -20,7 +20,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
             val.name,
             config,
             mdl.name,
-            mdl.plugin
+            mdl.plugin,
         );
 
         if (dep) return dep;
