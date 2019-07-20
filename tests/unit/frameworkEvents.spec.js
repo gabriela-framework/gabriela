@@ -1144,7 +1144,7 @@ describe('Framework events', function() {
                         expect(calledEvent1).to.be.equal(20);
                         expect(calledEvent2).to.be.equal(20);
 
-                        this.server.close();
+                        this.gabriela.close();
 
                         done();
                     });
@@ -1245,7 +1245,7 @@ describe('Framework events', function() {
                         expect(calledEvent1).to.be.equal(20);
                         expect(calledEvent2).to.be.equal(20);
 
-                        this.server.close();
+                        this.gabriela.close();
 
                         done();
                     });
@@ -1327,7 +1327,7 @@ describe('Framework events', function() {
                 catchError() {
                     expect(this.err.message).to.be.equal('Something went wrong in module1');
 
-                    this.server.close();
+                    this.gabriela.close();
 
                     done();
                 }
@@ -1362,7 +1362,7 @@ describe('Framework events', function() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
-                        this.server.close();
+                        this.gabriela.close();
 
                         done();
                     });
@@ -1426,7 +1426,7 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.server.close();
+                            this.gabriela.close();
 
                             done();
 
@@ -1494,7 +1494,7 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.server.close();
+                            this.gabriela.close();
 
                             done();
 
@@ -1567,7 +1567,7 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.server.close();
+                            this.gabriela.close();
 
                             done();
 

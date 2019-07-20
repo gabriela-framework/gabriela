@@ -13,7 +13,12 @@ async function runApp(
     await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
     await moduleInterface.run(moduleExecuteFactory.bind(null, null));
 
-    await runOnAppStarted.call(this, events, rootCompiler);
+    const context = {
+        gabriela: this,
+        err: null
+    };
+
+    await runOnAppStarted.call(context, events, rootCompiler);
 
     console.log(`Process app started`);
 }
