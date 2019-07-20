@@ -70,7 +70,7 @@ function getArgNames(func) {
     return result;
 }
 
-function getArgs(fn, values, specialCb) {
+function getArgs(fn, values) {
     const argNames = getArgNames(fn);
 
     const args = [];
