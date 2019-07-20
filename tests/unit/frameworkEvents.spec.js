@@ -1601,4 +1601,29 @@ describe('Framework events', function() {
 
         g.startApp();
     });
+
+    it('should resolve an error thrown inside middleware before an error thrown in onAppStarted', (done) => {
+        const app = gabriela.asProcess(config, {
+            events: {
+                onAppStarted(throwException) {
+                    throwException(new Error('Thrown in onAppStarted'));
+                }
+            }
+        });
+
+        app.addModule({
+            name: 'module',
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Thrown in middleware'));
+            }]
+        });
+
+        app.runModule().then(() => {
+            assert.fail('This test should not pass');
+        }).catch((e) => {
+            expect(e.message).to.be.equal('Thrown in middleware');
+
+            done();
+        });
+    });
 });
