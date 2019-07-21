@@ -386,7 +386,7 @@ describe('Failing framework events', () => {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.server.close();
+                            this.gabriela.close();
 
                             done();
 

@@ -5,10 +5,9 @@ const {hasKey} = require('../../util/util');
 function callSingleGabrielaEvent(event, rootCompiler, err) {
     const mediator = GenericMediator.create(rootCompiler);
 
-    mediator.callEvent(event, {
-        server: this,
-        err: err,
-    });
+    if (err) this.err = err;
+
+    mediator.callEvent(event, this);
 }
 
 async function runOnAppStarted(events, rootCompiler, err) {
@@ -32,7 +31,7 @@ async function runOnAppStarted(events, rootCompiler, err) {
             throw resolvedError;
         }
 
-        this.close();
+        this.gabriela.close();
     }
 }
 

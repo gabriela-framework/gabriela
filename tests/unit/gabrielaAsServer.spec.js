@@ -23,7 +23,7 @@ describe('Gabriela server tests', function() {
         }, {
             events: {
                 onAppStarted: function() {
-                    this.server.close();
+                    this.gabriela.close();
 
                     done();
                 }
@@ -77,7 +77,7 @@ describe('Gabriela server tests', function() {
                     expect(pluginModule2Executed).to.be.equal(true);
                     expect(standaloneModuleExecuted).to.be.equal(true);
 
-                    this.server.close();
+                    this.gabriela.close();
 
                     done();
                 }
@@ -147,7 +147,7 @@ describe('Gabriela server tests', function() {
                     expect(pluginModule2Executed).to.be.equal(true);
                     expect(standaloneModuleExecuted).to.be.equal(true);
 
-                    this.server.close();
+                    this.gabriela.close();
 
                     done();
                 }
@@ -242,7 +242,7 @@ describe('Gabriela server tests', function() {
                         expect(data.model[0]).to.be.a('object');
                         expect(data.model[1]).to.be.a('object');
 
-                        this.server.close();
+                        this.gabriela.close();
 
                         done();
                     });
@@ -288,7 +288,7 @@ describe('Gabriela server tests', function() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(entersMiddleware).to.be.equal(true);
 
-                        this.server.close();
+                        this.gabriela.close();
 
                         done();
                     });

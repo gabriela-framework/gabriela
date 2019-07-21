@@ -32,7 +32,12 @@ async function _listenCallback(
     events,
     rootCompiler,
 ) {
-    await runOnAppStarted.call(this, events, rootCompiler);
+    const context = {
+        gabriela: this,
+        err: null,
+    };
+
+    await runOnAppStarted.call(context, events, rootCompiler);
 
     console.log('Gabriela app started');
 }
@@ -62,8 +67,13 @@ function Server(
                 rootCompiler,
             ));
         }).catch((err) => {
-            if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
-                this,
+            const context = {
+                gabriela: this,
+                err: null,
+            };
+
+            if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
+                context,
                 events[GABRIELA_EVENTS.ON_CATCH_ERROR],
                 rootCompiler,
                 err

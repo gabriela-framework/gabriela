@@ -4,52 +4,96 @@ const Mediator = require('../events/mediator');
 const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
+const deepCopy = require('deepcopy');
+const Validator = require('../misc/validator');
 
-function _addDependencies(mdl) {
-    const {dependencies} = mdl;
+function _compileAddProxy(mdl, config) {
+    return function(definition) {
+        Validator.validateDefinitionObject(definition);
 
-    for (const depInit of dependencies) {
-        if (!depInit.scope && !depInit.shared) depInit.scope = 'module';
+        _addDependency(mdl, definition, config);
+    }
+}
 
-        if (depInit.scope) {
-            if (depInit.scope === 'module') {
-                if (!mdl.compiler.hasOwn(depInit.name)) {
-                    mdl.compiler.add(depInit);
-                }
-            } else if (depInit.scope === 'plugin') {
-                if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${depInit.name}' that has a 'plugin' scope but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+function _execCompilerPass(mdl, definition, config, addProxy) {
+    const {compilerPass} = definition;
 
-                if (!mdl.compiler.parent.hasOwn(depInit.name)) {
-                    mdl.compiler.parent.add(depInit);
-                }
-            } else if (depInit.scope === 'public') {
-                if (!mdl.compiler.root.hasOwn(depInit.name)) {
-                    mdl.compiler.root.add(depInit);
-                }
+    const handlers = {
+        set() { return undefined; },
+
+        get(target, prop) {
+            if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
+
+            if (prop === 'add') return addProxy;
+            return target[prop];
+        }
+    };
+
+    let possibleConfig = config;
+    if (compilerPass.property) {
+        if (!hasKey(config.config, compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+
+        possibleConfig = config.config[compilerPass.property];
+    }
+
+    compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
+}
+
+function _addDependency(mdl, definition, config) {
+    if (!definition.scope && !definition.shared) definition.scope = 'module';
+
+    if (definition.scope) {
+        if (definition.scope === 'module') {
+            if (!mdl.compiler.hasOwn(definition.name)) {
+                mdl.compiler.add(definition);
+            }
+        } else if (definition.scope === 'plugin') {
+            if (!mdl.compiler.parent) throw new Error(`Dependency injection error. Module '${mdl.name}' has a dependency with name '${definition.name}' that has a 'plugin' scope but this module is not run within a plugin. Change the visibility of this dependency to 'module' or 'public' or add this module to a plugin`);
+
+            if (!mdl.compiler.parent.hasOwn(definition.name)) {
+                mdl.compiler.parent.add(definition);
+            }
+        } else if (definition.scope === 'public') {
+            if (!mdl.compiler.root.hasOwn(definition.name)) {
+                mdl.compiler.root.add(definition);
             }
         }
 
-        if (depInit.shared) {
-            const {modules, plugins} = depInit.shared;
+        const definitionObject = mdl.compiler.getDefinition(definition.name);
 
-            if (modules) {
-                for (const mdlName of modules) {
-                    if (mdlName === mdl.name) mdl.sharedCompiler.add(depInit);
-                }
+        if (definitionObject.hasCompilerPass()) {
+            _execCompilerPass.call(mdl.compiler, mdl, definitionObject, config, _compileAddProxy(mdl, config));
+        }
+    }
+
+    if (definition.shared) {
+        const {modules, plugins} = definition.shared;
+
+        if (modules) {
+            for (const mdlName of modules) {
+                if (mdlName === mdl.name) mdl.sharedCompiler.add(definition);
             }
+        }
 
-            if (plugins && mdl.isInPlugin()) {
-                for (const pluginName of plugins) {
-                    if (pluginName === mdl.plugin.name) {
-                        mdl.sharedCompiler.add(depInit);
-                    }
+        if (plugins && mdl.isInPlugin()) {
+            for (const pluginName of plugins) {
+                if (pluginName === mdl.plugin.name) {
+                    mdl.sharedCompiler.add(definition);
                 }
             }
         }
     }
 }
 
-function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
+function _addDependencies(mdl, config) {
+    const {dependencies} = mdl;
+
+    for (const definition of dependencies) {
+        _addDependency(mdl, definition, config);
+    }
+}
+
+function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();
     c.name = 'module';
     c.root = rootCompiler;
@@ -60,7 +104,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler) {
     mdl.sharedCompiler = sharedCompiler;
 
     if (mdl.dependencies && mdl.dependencies.length > 0) {
-        _addDependencies(mdl);
+        _addDependencies(mdl, config);
     }
 }
 
@@ -148,7 +192,7 @@ function factory({mdl, config, rootCompiler, parentCompiler, sharedCompiler, exp
 
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
-    _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler);
+    _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler, config);
     _resolveMiddleware(moduleObject, config);
 
     _bindEventSystem(moduleObject, config, exposedMediator);
