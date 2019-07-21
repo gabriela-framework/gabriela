@@ -51,6 +51,7 @@ function factory(server, mdl) {
                     mdl,
                     responseEvent.onPreResponse,
                     responseEvent.onPostResponse,
+                    next,
                 );
 
                 httpContext.res = responseProxy;
@@ -63,7 +64,7 @@ function factory(server, mdl) {
                     responseProxy.send(200, deepCopy(state));
                 }
 
-                return next();
+                if (!responseProxy.__isRedirect) return next();
             });
         }
     }

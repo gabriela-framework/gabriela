@@ -10,7 +10,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
 const config = require('../config/config');
-const {is} = require('../../src/gabriela/util/util');
+const {is, getArgNames} = require('../../src/gabriela/util/util');
 const _responseProxy = require('../../src/gabriela/module/_responseProxy');
 
 describe('Concrete and functional http response tests', function() {
@@ -20,8 +20,9 @@ describe('Concrete and functional http response tests', function() {
         const currentProperties = ['cache', 'noCache', 'charSet', 'header', 'json', 'link', 'send', 'sendRaw', 'set', 'status', 'redirect'];
 
         const responseProxy = _responseProxy();
+        const proxyFunctionsOnly = Object.keys(responseProxy).filter((prop) => is('function', responseProxy[prop]));
 
-        expect(currentProperties).to.have.members(Object.keys(responseProxy).filter((prop) => is('function', responseProxy[prop])));
+        expect(currentProperties).to.have.members(proxyFunctionsOnly);
     });
 
     it('should set the Cache-Control header', (done) => {
@@ -337,6 +338,112 @@ describe('Concrete and functional http response tests', function() {
         });
 
         app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should redirect to another route using the response proxy if supplied two params', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.redirect(302, 'http://localhost:3000/redirect');
+            }],
+        };
+
+        const redirectModule = {
+            name: 'redirectModule',
+            http: {
+                route: {
+                    name: 'redirectRoute',
+                    method: 'get',
+                    path: '/redirect',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.send('Redirect');
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise({
+                        method: 'get',
+                        uri: 'http://localhost:3000/route',
+                        resolveWithFullResponse: true,
+                    }).then((response) => {
+                        expect(JSON.parse(response.body)).to.be.equal('Redirect');
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        app.addModule(mdl);
+        app.addModule(redirectModule);
+
+        app.startApp();
+    });
+
+    it('should redirect to another route using the response proxy if supplied one param', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.redirect('http://localhost:3000/redirect');
+            }],
+        };
+
+        const redirectModule = {
+            name: 'redirectModule',
+            http: {
+                route: {
+                    name: 'redirectRoute',
+                    method: 'get',
+                    path: '/redirect',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.send('Redirect');
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise({
+                        method: 'get',
+                        uri: 'http://localhost:3000/route',
+                        resolveWithFullResponse: true,
+                    }).then((response) => {
+                        expect(JSON.parse(response.body)).to.be.equal('Redirect');
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        app.addModule(mdl);
+        app.addModule(redirectModule);
 
         app.startApp();
     });

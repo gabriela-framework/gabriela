@@ -49,10 +49,11 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
     }
 }
 
-function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
+function factory(req, res, state, mdl, onPreResponse, onPostResponse, next) {
     return {
         __responseSent: false,
         __insideSend: false,
+        __isRedirect: false,
 
         cache(type, options) {
             return res.cache(type, options);
@@ -123,8 +124,15 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
         status(code) {
             return res.status(code);
         },
-        redirect(param1, param2, param3) {
-            return res.redirect(param1, param2, param3);
+        redirect(param1, param2) {
+            this.__responseSent = true;
+            // so that the handling executeFactory does not return next()
+            this.__isRedirect = true;
+
+            if (param1 && !param2) return res.redirect(param1, next);
+            if (param1 && param2) return res.redirect(param1, param2, next);
+
+            return res.redirect(param1, param2, next);
         },
     };
 }
