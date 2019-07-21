@@ -78,11 +78,9 @@ function _addDependency(mdl, definition, config) {
             }
         }
 
-        if (plugins && mdl.isInPlugin()) {
+        if (plugins) {
             for (const pluginName of plugins) {
-                if (pluginName === mdl.plugin.name) {
-                    mdl.sharedCompiler.add(definition);
-                }
+                mdl.sharedCompiler.add(definition);
             }
         }
     }

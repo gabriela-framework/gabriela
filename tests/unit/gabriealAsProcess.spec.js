@@ -636,4 +636,105 @@ describe('Gabriela as process tests', () => {
 
         g.startApp();
     });
+
+    it('should explore the possibility of a true and proper layered architecture (or onion architecture)', (done) => {
+        const presentationLayerDefinition = {
+            name: 'presentationLayerService',
+            shared: {
+                plugins: ['presentationLayer', 'logicLayer']
+            },
+            init: function() {
+                function PresentationLayer() {}
+
+                return new PresentationLayer();
+            }
+        };
+
+        const logicLayerDefinition = {
+            name: 'logicLayerService',
+            shared: {
+                plugins: ['logicLayer']
+            },
+            init: function() {
+                function LogicLayer() {}
+
+                return new LogicLayer();
+            }
+        };
+
+        const dataSourceLayer = {
+            name: 'dataSourceLayerService',
+            shared: {
+                plugins: ['dataSourceLayer', 'logicLayer'],
+            },
+            init: function() {
+                function DataSourceLayer() {}
+
+                return new DataSourceLayer();
+            }
+        };
+
+        const dependencyInitModule = {
+            name: 'dependencyInitModule',
+            dependencies: [presentationLayerDefinition, logicLayerDefinition, dataSourceLayer],
+            // only for it to be executed
+            moduleLogic: [function() {
+
+            }],
+        };
+
+        const presentationModule1 = {
+            name: 'presentationModule1',
+            moduleLogic: [function(presentationLayerService) {
+
+            }],
+        };
+
+        const logicModule1 = {
+            name: 'logicModule1',
+            moduleLogic: [function(logicLayerService, dataSourceLayerService, presentationLayerService) {
+
+            }],
+        };
+
+        const dataSourceModule1 = {
+            name: 'dataSourceModule1',
+            moduleLogic: [function(dataSourceLayerService /** logicLayerService will not resolve */) {
+
+            }],
+        };
+
+        const app = gabriela.asProcess({
+            config: {},
+        }, {
+            events: {
+                onAppStarted() {
+                    done();
+                }
+            }
+        });
+
+        const presentationLayerPlugin = {
+            name: 'presentationLayer',
+            modules: [presentationModule1],
+        };
+
+        const logicLayerPlugin = {
+            name: 'logicLayer',
+            modules: [logicModule1],
+        };
+
+        const dataSourcePlugin = {
+            name: 'dataSourceLayer',
+            modules: [dataSourceModule1],
+        };
+
+        app.addModule(dependencyInitModule);
+
+        app.addPlugin(presentationLayerPlugin);
+        app.addPlugin(logicLayerPlugin);
+        app.addPlugin(dataSourcePlugin);
+
+        app.startApp();
+    });
 });
