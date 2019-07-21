@@ -182,4 +182,162 @@ describe('Concrete and functional http response tests', function() {
 
         app.startApp();
     });
+
+    it('should set the response via json() method', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.json(200, 'Response', {'X-CUSTOM-HEADER': 'customheader'});
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+
+                        expect(JSON.parse(response.body)).to.be.equal('Response');
+
+                        expect(response.headers).to.have.property('x-custom-header');
+                        expect(response.headers['x-custom-header']).to.be.equal('customheader');
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should set the response via json() method', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.link('key', 'value');
+                http.res.send('Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+
+                        expect(JSON.parse(response.body)).to.be.equal('Response');
+                        expect(response.headers.link).to.be.equal(`<key>; rel="value"`);
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should set multiple headers with the set() method', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.set({
+                    'X-CUSTOM-HEADER-ONE': 'customheaderone',
+                    'X-CUSTOM-HEADER-TWO': 'customheadertwo',
+                });
+
+                http.res.send('Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+
+                        expect(JSON.parse(response.body)).to.be.equal('Response');
+                        expect(response.headers['x-custom-header-one']).to.be.equal(`customheaderone`);
+                        expect(response.headers['x-custom-header-two']).to.be.equal(`customheadertwo`);
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should set the correct status code with the status() method', (done) => {
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    method: 'get',
+                    path: '/route',
+                }
+            },
+            moduleLogic: [function(http) {
+                http.res.status(203);
+
+                http.res.send('Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise({
+                        method: 'get',
+                        uri: 'http://localhost:3000/route',
+                        resolveWithFullResponse: true,
+                    }).then((response) => {
+                        expect(response.statusCode).to.be.equal(203);
+                        expect(JSON.parse(response.body)).to.be.equal('Response');
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
 });

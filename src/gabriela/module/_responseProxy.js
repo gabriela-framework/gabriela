@@ -115,8 +115,8 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
 
             return this;
         },
-        set(name, value) {
-            res.set(name, value);
+        set(headers) {
+            res.set(headers);
 
             return this;
         },
