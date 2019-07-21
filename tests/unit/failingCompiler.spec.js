@@ -100,67 +100,6 @@ describe('Failing concrete compiler tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail the compiler pass if the client code tries to use the compile() method inside a compiler pass init function', () => {
-        const userServiceInit = {
-            name: 'userService',
-            compilerPass: {
-                init: function(config, compiler) {
-                    compiler.compile('userRepository')
-                },
-                property: null,
-            },
-            init: function() {
-                return () => {};
-            }
-        };
-
-        const compiler = Compiler.create();
-
-        compiler.add(userServiceInit);
-
-        let entersException = false;
-        try {
-            compiler.compile('userService');
-        } catch(e) {
-            entersException = true;
-
-            expect(e.message).to.be.equal(`Dependency injection error in service '${userServiceInit.name}'. Compiling inside a compiler pass is forbidden`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
-
-    it('should fail to compile if a property is not found in the config for usage in a compiler pass', () => {
-        const userServiceInit = {
-            name: 'userService',
-            compilerPass: {
-                init: function(config, compiler) {
-                },
-                property: 'nonExistent',
-            },
-            init: function() {
-                return () => {};
-            }
-        };
-
-        const compiler = Compiler.create();
-
-        compiler.add(userServiceInit);
-
-        let entersException = false;
-        try {
-            compiler.compile('userService', compiler, {
-                validation: {}
-            });
-        } catch(e) {
-            entersException = true;
-
-            expect(e.message).to.be.equal(`Dependency injection error in a compiler pass in service '${userServiceInit.name}'. Property 'nonExistent' does not exist in config`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
-
     it('should fail to get a non existent definition object from within the getDefinition() method', () => {
         const userServiceDefinition = {
             name: 'userService',

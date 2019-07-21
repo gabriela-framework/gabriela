@@ -1,5 +1,3 @@
-const deepCopy = require('deepcopy');
-
 const {getArgNames, is, hasKey} = require('../util/util');
 
 const TaskRunner = require('../misc/taskRunner');
@@ -25,29 +23,6 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
     }
 
     return deps;
-}
-
-function _execCompilerPass(definition, config) {
-    const {compilerPass} = definition;
-
-    const handlers = {
-        set() { return undefined; },
-
-        get(target, prop) {
-            if (prop === 'compile') throw new Error(`Dependency injection error in service '${definition.name}'. Compiling inside a compiler pass is forbidden`);
-
-            return target[prop];
-        }
-    };
-
-    let possibleConfig = config;
-    if (compilerPass.property) {
-        if (!hasKey(config.config, compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
-
-        possibleConfig = config.config[compilerPass.property];
-    }
-
-    compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
 }
 
 /**
@@ -164,10 +139,6 @@ function factory() {
         }
 
         if (!definition) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
-
-        if (definition.hasCompilerPass()) {
-            _execCompilerPass.call(this, definition, config);
-        }
 
         if (definition.hasDependencies()) {
             if (hasKey(resolved, name)) return resolved[name];
