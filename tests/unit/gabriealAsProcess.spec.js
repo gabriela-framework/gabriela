@@ -685,7 +685,7 @@ describe('Gabriela as process tests', () => {
 
         const presentationModule1 = {
             name: 'presentationModule1',
-            moduleLogic: [function(presentationLayerService) {
+            moduleLogic: [function(presentationLayerService /** logicLayerService and dataSourceLayerService will not resolve */) {
 
             }],
         };
@@ -699,7 +699,7 @@ describe('Gabriela as process tests', () => {
 
         const dataSourceModule1 = {
             name: 'dataSourceModule1',
-            moduleLogic: [function(dataSourceLayerService /** logicLayerService will not resolve */) {
+            moduleLogic: [function(dataSourceLayerService /** logicLayerService and presentationLayerService will not resolve */) {
 
             }],
         };
@@ -729,11 +729,11 @@ describe('Gabriela as process tests', () => {
             modules: [dataSourceModule1],
         };
 
-        app.addModule(dependencyInitModule);
-
         app.addPlugin(presentationLayerPlugin);
         app.addPlugin(logicLayerPlugin);
         app.addPlugin(dataSourcePlugin);
+
+        app.addModule(dependencyInitModule);
 
         app.startApp();
     });
