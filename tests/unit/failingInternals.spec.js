@@ -5,8 +5,8 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const moduleFactory = require('../../gabriela/module/moduleFactory');
-const pluginFactory = require('../../gabriela/plugin/pluginFactory');
+const moduleFactory = require('../../src/gabriela/module/moduleFactory');
+const pluginFactory = require('../../src/gabriela/plugin/pluginFactory');
 
 describe('Failing internal components tests', () => {
     it('should fail to get non existent properties from a created module with a thrown exception', () => {

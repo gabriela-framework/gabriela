@@ -1,1 +1,1 @@
-module.exports = require('../gabriela/gabriela');
+module.exports = require('./gabriela/gabriela');

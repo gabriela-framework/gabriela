@@ -7,11 +7,11 @@ const it = mocha.it;
 const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
-const moduleExecuteFactory = require('../../gabriela/module/executeFactory');
-const pluginExecuteFactory = require('../../gabriela/plugin/executeFactory');
+const moduleExecuteFactory = require('../../src/gabriela/module/executeFactory');
+const pluginExecuteFactory = require('../../src/gabriela/plugin/executeFactory');
 const config = require('../config/config');
 
-const gabriela = require('../../gabriela/gabriela');
+const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Gabriela as process tests', () => {
     it('should create a gabriela process instance and run it', (done) => {

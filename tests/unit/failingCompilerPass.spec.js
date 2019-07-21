@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
+const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Compiler pass failing tests', () => {
     it('should fail to compile a module dependency created in a compiler pass and used in another module', (done) => {

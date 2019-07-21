@@ -5,8 +5,8 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
-const configFactory = require('../../gabriela/configFactory');
+const gabriela = require('../../src/gabriela/gabriela');
+const configFactory = require('../../src/gabriela/configFactory');
 
 describe('Config tests', () => {
     it('should resolve config and create it as a singleton', () => {

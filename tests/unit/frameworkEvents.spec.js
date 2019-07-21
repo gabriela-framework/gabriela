@@ -8,10 +8,10 @@ const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
-const Mediator = require('../../gabriela/events/mediator');
-const ServerMediator = require('../../gabriela/events/genericMediator');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const gabriela = require('../../src/gabriela/gabriela');
+const Mediator = require('../../src/gabriela/events/mediator');
+const ServerMediator = require('../../src/gabriela/events/genericMediator');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 const config = require('../config/config');
 
 describe('Framework events', function() {

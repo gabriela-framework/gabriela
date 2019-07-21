@@ -1,4 +1,4 @@
-const {HTTP_EVENTS} = require('../misc/types');
+const {HTTP_EVENTS} = require('./types');
 const {is, hasKey} = require('../util/util');
 
 module.exports = function validateHttpEvents(events) {

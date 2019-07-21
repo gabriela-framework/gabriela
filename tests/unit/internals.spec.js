@@ -5,11 +5,11 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const moduleFactory = require('../../gabriela/module/moduleFactory');
-const pluginFactory = require('../../gabriela/plugin/pluginFactory');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
-const Mediator = require('../../gabriela/events/mediator');
-const ExposedMediator = require('../../gabriela/events/exposedMediator');
+const moduleFactory = require('../../src/gabriela/module/moduleFactory');
+const pluginFactory = require('../../src/gabriela/plugin/pluginFactory');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
+const Mediator = require('../../src/gabriela/events/mediator');
+const ExposedMediator = require('../../src/gabriela/events/exposedMediator');
 
 describe('Test gabriela internals', () => {
     it('should properly call properties on a module object created by moduleFactory', () => {

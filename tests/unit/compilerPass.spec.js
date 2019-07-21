@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
+const gabriela = require('../../src/gabriela/gabriela');
 const config = require('../config/config');
 
 describe('Compiler pass tests', () => {

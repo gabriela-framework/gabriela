@@ -6,8 +6,8 @@ const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const ExposedMediator = require('../../gabriela/events/exposedMediator');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const ExposedMediator = require('../../src/gabriela/events/exposedMediator');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Exposed (third party) events tests', () => {
     it('should call all events in an replica of the environment that gabriela uses internally', () => {

@@ -7,12 +7,12 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
-const Mediator = require('../../gabriela/events/mediator');
-const Emitter = require('../../gabriela/events/emitter');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
-const GenericMediator = require('../../gabriela/events/genericMediator');
-const ExposedMediator = require('../../gabriela/events/exposedMediator');
+const gabriela = require('../../src/gabriela/gabriela');
+const Mediator = require('../../src/gabriela/events/mediator');
+const Emitter = require('../../src/gabriela/events/emitter');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
+const GenericMediator = require('../../src/gabriela/events/genericMediator');
+const ExposedMediator = require('../../src/gabriela/events/exposedMediator');
 const config = require('../config/config');
 
 describe('Failing framework events', () => {

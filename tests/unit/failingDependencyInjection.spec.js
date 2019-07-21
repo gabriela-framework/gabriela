@@ -7,8 +7,8 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const gabriela = require('../../src/gabriela/gabriela');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 const config = require('../config/config');
 
 describe('Failing dependency injection tests', () => {

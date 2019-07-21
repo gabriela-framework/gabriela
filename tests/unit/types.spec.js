@@ -14,7 +14,7 @@ const {
     MANDATORY_ROUTE_PROPS,
     GABRIELA_EVENTS,
     BUILT_IN_MEDIATORS,
-} = require('../../gabriela/misc/types');
+} = require('../../src/gabriela/misc/types');
 
 describe('Types test', () => {
     it('should assert that constant types cannot be changed', () => {
