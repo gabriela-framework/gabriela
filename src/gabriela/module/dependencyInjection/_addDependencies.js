@@ -1,6 +1,7 @@
 const deepCopy = require('deepcopy');
 const Validator = require('../../misc/validator');
 const {hasKey} = require('../../util/util');
+const _definitionBuilder = require('./_definitionBuilder');
 
 function _addDependencies(mdl, config) {
     const {dependencies} = mdl;
@@ -39,7 +40,11 @@ function _execCompilerPass(mdl, definition, config, addProxy) {
         possibleConfig = config.config[compilerPass.property];
     }
 
-    compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
+    const context = {
+        definitionBuilder: _definitionBuilder.create(),
+    };
+
+    compilerPass.init.call(context, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);
 }
 
 function _addDependency(mdl, definition, config) {

@@ -365,4 +365,43 @@ describe('Compiler pass tests', () => {
             done();
         });
     });
+
+    it('should assert that the proper context has been to this in compiler pass', () => {
+        let entersCompilerPass = false;
+        let entersMiddleware = false;
+
+        const userService = {
+            name: 'userService',
+            compilerPass: {
+                init: function() {
+                    entersCompilerPass = true;
+
+                    expect(this).to.be.a('object');
+                    expect(this.definitionBuilder).to.be.a('object');
+                },
+            },
+            init: function() {
+                function UserService() {}
+
+                return new UserService();
+            }
+        };
+
+        const g = gabriela.asProcess(config);
+
+        g.addModule({
+            name: 'module',
+            dependencies: [userService],
+            moduleLogic: [function(userService) {
+                entersMiddleware = true;
+
+                expect(userService).to.be.a('object');
+            }],
+        });
+
+        return g.runModule().then(() => {
+            expect(entersMiddleware).to.be.equal(true);
+            expect(entersCompilerPass).to.be.equal(true);
+        });
+    });
 });
