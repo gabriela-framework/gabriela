@@ -1,6 +1,53 @@
 const callEvent = require('../events/util/callEvent');
 const {HTTP_EVENTS} = require('../misc/types');
 
+function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse, responseArgs) {
+    try {
+        if (this.__responseSent) throw new Error(`Cannot send response. Response has already been sent`);
+
+        // handling the use case if the response is sent from onPreResponse. if this was not here
+        // there would be a recursion in calling onPreResponse inifinitely. This code only handles that use case and
+        // this lines of code are called only if the response is sent inside onPreResponse
+        if (this.__insideSend) {
+            this.__responseSent = true;
+
+            const {code, body, headers} = responseArgs;
+
+            res[method](code, body, headers);
+
+            return this;
+        }
+
+        this.__insideSend = true;
+
+        if (onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
+            http: {req, res: this},
+            state: state,
+        });
+
+        this.__insideSend = false;
+
+        if (!this.__responseSent) {
+            const {code, body, headers} = responseArgs;
+
+            res[method](code, body, headers);
+        }
+
+        this.__responseSent = true;
+
+        if (onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
+            http: {req, res: this},
+            state: state,
+        });
+    } catch (e) {
+        // any error can be caught with onError event
+        if (mdl.hasMediators() && mdl.mediator.onError) {
+            mdl.mediatorInstance.runOnError(mdl.mediator.onError, e);
+        } else {
+            throw e;
+        }
+    }
+}
 
 function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
     return {
@@ -30,47 +77,18 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             return res.link(key, value);
         },
         send(code, body, headers) {
-            try {
-                if (this.__responseSent) throw new Error(`Cannot send response. Response has already been sent`);
+            _sendMethod.call(this,
+                'send',
+                mdl,
+                req,
+                res,
+                state,
+                onPreResponse,
+                onPostResponse,
+                {code, body, headers}
+            );
 
-                // handling the use case if the response is sent from onPreResponse. if this was not here
-                // there would be a recursion in calling onPreResponse inifinitely. This code only handles that use case and
-                // this lines of code are called only if the response is sent inside onPreResponse
-                if (this.__insideSend) {
-                    this.__responseSent = true;
-
-                    res.send(code, body, headers);
-
-                    return this;
-                }
-
-                this.__insideSend = true;
-
-                if (onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
-                    http: {req, res: this},
-                    state: state,
-                });
-
-                this.__insideSend = false;
-
-                if (!this.__responseSent) res.send(code, body, headers);
-
-                this.__responseSent = true;
-
-                if (onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
-                    http: {req, res: this},
-                    state: state,
-                });
-
-                return this;
-            } catch (e) {
-                // any error can be caught with onError event
-                if (mdl.hasMediators() && mdl.mediator.onError) {
-                    mdl.mediatorInstance.runOnError(mdl.mediator.onError, e);
-                } else {
-                    throw e;
-                }
-            }
+            return this;
         },
         sendRaw(code, body, headers) {
             res.sendRaw(code, body, headers);
