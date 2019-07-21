@@ -71,7 +71,18 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             return res.header(key, value);
         },
         json(code, body, headers) {
-            return res.json(code, body, headers);
+            _sendMethod.call(this,
+                'json',
+                mdl,
+                req,
+                res,
+                state,
+                onPreResponse,
+                onPostResponse,
+                {code, body, headers}
+            );
+
+            return this;
         },
         link(key, value) {
             return res.link(key, value);
