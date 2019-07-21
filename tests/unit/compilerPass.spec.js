@@ -378,6 +378,15 @@ describe('Compiler pass tests', () => {
 
                     expect(this).to.be.a('object');
                     expect(this.definitionBuilder).to.be.a('object');
+
+                    const definitionBuilder = this.definitionBuilder;
+
+                    expect(definitionBuilder).to.have.property('addName');
+                    expect(definitionBuilder).to.have.property('addScope');
+                    expect(definitionBuilder).to.have.property('addShared');
+                    expect(definitionBuilder).to.have.property('addInit');
+                    expect(definitionBuilder).to.have.property('addCompilerPass');
+                    expect(definitionBuilder).to.have.property('build');
                 },
             },
             init: function() {
