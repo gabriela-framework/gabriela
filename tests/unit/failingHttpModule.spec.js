@@ -6,8 +6,8 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
-const {MANDATORY_ROUTE_PROPS} = require('../../gabriela/misc/types');
+const gabriela = require('../../src/gabriela/gabriela');
+const {MANDATORY_ROUTE_PROPS} = require('../../src/gabriela/misc/types');
 const config = require('../config/config');
 
 describe('Failing tests using modules as http modules',() => {

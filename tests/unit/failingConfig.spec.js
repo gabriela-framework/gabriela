@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const configFactory = require('../../gabriela/configFactory');
+const configFactory = require('../../src/gabriela/configFactory');
 
 describe('Failing config factory tests', () => {
     it('should fail if config is not an object', () => {

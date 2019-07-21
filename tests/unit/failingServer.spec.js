@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../gabriela/gabriela');
+const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {

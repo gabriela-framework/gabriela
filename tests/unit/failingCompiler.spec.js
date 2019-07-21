@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Failing concrete compiler tests', () => {
     it('should fail to compile a dependency because init.init does not return a function', () => {

@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const parseExpression = require('../../gabriela/expression/parse');
+const parseExpression = require('../../src/gabriela/expression/parse');
 
 describe('Failing expression parsing tests', () => {
     it('should fail to parse an invalid function expression', () => {

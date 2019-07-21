@@ -6,8 +6,8 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const GenericMediator = require('../../gabriela/events/genericMediator');
-const Compiler = require('../../gabriela/dependencyInjection/compiler');
+const GenericMediator = require('../../src/gabriela/events/genericMediator');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Generic mediator concrete tests', () => {
     it('should call a synchronous event', () => {

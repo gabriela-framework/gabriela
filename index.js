@@ -1,4 +1,4 @@
-const gabriela = require('./gabriela/gabriela');
+const gabriela = require('./src/gabriela/gabriela');
 const requestPromise = require('request-promise');
 
 let onPreResponseCalled = false;

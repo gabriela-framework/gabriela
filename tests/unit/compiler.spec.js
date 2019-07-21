@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const Compiler = require('./../../gabriela/dependencyInjection/compiler');
+const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Compiler instance tests', () => {
     it('create() should create two different instances of the compiler', () => {

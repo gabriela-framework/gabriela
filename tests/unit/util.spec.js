@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const {is, inArray} = require('../../gabriela/util/util');
+const {is, inArray} = require('../../src/gabriela/util/util');
 
 describe('Utility functions and services tests', () => {
     it('should assert that is() evaluates all data types correctly', () => {

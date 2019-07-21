@@ -7,7 +7,7 @@
     "test": "mocha -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc -x=test --print=both --exclude=**/tests/* --reporter=lcov npm run test",
     "console-coverage": "nyc -x=test --print=both --exclude=**/tests/* --reporter=text npm run test",
-    "lint": "eslint gabriela/**"
+    "lint": "eslint src/gabriela/**"
   },
   "author": "Mario Skrlec",
   "license": "MIT",

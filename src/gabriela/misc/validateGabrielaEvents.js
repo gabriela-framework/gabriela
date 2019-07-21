@@ -1,4 +1,4 @@
-const {GABRIELA_EVENTS} = require('../misc/types');
+const {GABRIELA_EVENTS} = require('./types');
 const {is, hasKey} = require('../util/util');
 
 module.exports = function validateGabrielaEvents(events) {

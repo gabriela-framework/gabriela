@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const parseExpression = require('../../gabriela/expression/parse');
+const parseExpression = require('../../src/gabriela/expression/parse');
 
 describe('Expressions tests', () => {
     it('should return function name and function arguments', () => {
