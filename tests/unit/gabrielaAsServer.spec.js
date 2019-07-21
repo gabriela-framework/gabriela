@@ -309,7 +309,7 @@ describe('Gabriela server tests', function() {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then((response) => {
                         expect(response).to.be.equal('Response');
-                        
+
                         expect(onPreResponseCalled).to.be.equal(true);
                         // this is neccessary the onPostResponse is fired after the response has been sent,
                         // so this response handler gets executed before onPostResponse therefor, i have to wait
