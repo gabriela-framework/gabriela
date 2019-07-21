@@ -300,4 +300,54 @@ describe('Gabriela server tests', function() {
 
         g.startApp();
     });
+
+    it('should send the response with sendRaw method in the same way as send() in regarding http events', (done) => {
+        let onPostResponseCalled = false;
+        let onPreResponseCalled = false;
+        const g = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then((response) => {
+                        expect(response).to.be.equal('Response');
+                        
+                        expect(onPreResponseCalled).to.be.equal(true);
+                        // this is neccessary the onPostResponse is fired after the response has been sent,
+                        // so this response handler gets executed before onPostResponse therefor, i have to wait
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+
+                        }, 500);
+                    });
+                }
+            }
+        });
+
+        g.addModule({
+            name: 'module',
+            mediator: {
+                onPreResponse() {
+                    onPreResponseCalled = true;
+                },
+                onPostResponse() {
+                    onPostResponseCalled = true;
+                }
+            },
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                },
+            },
+            moduleLogic: [function(http) {
+                http.res.sendRaw('Response');
+            }],
+        });
+
+        g.startApp();
+    });
 });

@@ -91,7 +91,16 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             return this;
         },
         sendRaw(code, body, headers) {
-            res.sendRaw(code, body, headers);
+            _sendMethod.call(this,
+                'sendRaw',
+                mdl,
+                req,
+                res,
+                state,
+                onPreResponse,
+                onPostResponse,
+                {code, body, headers}
+            );
 
             return this;
         },
