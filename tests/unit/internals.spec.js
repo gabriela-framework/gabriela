@@ -10,6 +10,7 @@ const pluginFactory = require('../../src/gabriela/plugin/pluginFactory');
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 const Mediator = require('../../src/gabriela/events/mediator');
 const ExposedMediator = require('../../src/gabriela/events/exposedMediator');
+const DefinitionBuilder = require('../../src/gabriela/module/dependencyInjection/_definitionBuilder');
 
 describe('Test gabriela internals', () => {
     it('should properly call properties on a module object created by moduleFactory', () => {
@@ -166,5 +167,26 @@ describe('Test gabriela internals', () => {
         expect(mediator.has).to.be.a('function');
         expect(mediator.once).to.be.a('function');
         expect(mediator.runOnError).to.be.a('function');
+    });
+
+    it('should assert that the definition builder is building the appropriate DI definition', () => {
+        const definitionBuilder = DefinitionBuilder.create();
+
+        const name = 'name';
+        const scope = 'public';
+
+        const definition = definitionBuilder
+            .addName(name)
+            .addScope(scope)
+            .addShared({})
+            .addCompilerPass({})
+            .addInit(function() {})
+            .build();
+
+        expect(definition.name).to.be.equal(name);
+        expect(definition.scope).to.be.equal(scope);
+        expect(definition.shared).to.be.a('object');
+        expect(definition.compilerPass).to.be.a('object');
+        expect(definition.init).to.be.a('function');
     });
 });
