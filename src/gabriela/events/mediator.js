@@ -75,7 +75,8 @@ function instance(moduleOrPlugin, config) {
 
     function runOnError(fn, e) {
         const args = getArgs(fn);
-        args[0].value = e;
+        if (args.length > 0) args[0].value = e;
+
 
         _callFn(fn, moduleOrPlugin, args, config);
     }

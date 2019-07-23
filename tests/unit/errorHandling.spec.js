@@ -31,4 +31,24 @@ describe('Complete error handling tests', () => {
 
         app.startApp();
     });
+
+    it('should call the onError event without the error argument within a module', (done) => {
+        const mdl = {
+            name: 'errorModule',
+            mediator: {
+                onError() {
+                    done();
+                },
+            },
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Something went wrong'));
+            }],
+        };
+
+        const app = gabriela.asProcess(config);
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
 });
