@@ -75,7 +75,34 @@ describe('Complete error handling tests', () => {
             modules: [mdl],
             mediator: {
                 onError() {
+                }
+            }
+        });
 
+        app.startApp();
+    });
+
+    it('should propagate the onError event to plugin onError in module onError is not declared', (done) => {
+        const mdl = {
+            name: 'errorModule',
+            mediator: {
+            },
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Something went wrong'));
+            }],
+        };
+
+        const app = gabriela.asProcess(config);
+
+        app.addPlugin({
+            name: 'errorPlugin',
+            modules: [mdl],
+            mediator: {
+                onError(e) {
+                    expect(e).to.be.instanceof(Error);
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    done();
                 }
             }
         });
