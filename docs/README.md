@@ -7,7 +7,7 @@ in a way that is natural for any type of application. Depending on what you are 
 your can run it as a Node process, as an HTTP server or both. Your choice.
 
 Gabriela also strives to be platform independent. She does not know (or cares) if she is executed
-as a simple Node process, an HTTP route or a RabbitMQ consumer (or anything else for that matter). 
+as a simple Node process, an HTTP server or a RabbitMQ consumer (or anything else for that matter). 
 This unique feature is still in development (Gabriela is still in alpha development) 
 but in the future, you will be able to concentrate on the business logic of your application 
 first and then decide whether you want to implement it as an HTTP server or something else.
