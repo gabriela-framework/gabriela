@@ -5,7 +5,7 @@ const {hasKey} = require('../../util/util');
 function callSingleGabrielaEvent(event, rootCompiler, err) {
     const mediator = GenericMediator.create(rootCompiler);
 
-    if (err) this.err = err;
+    if (err) return mediator.runOnError(event, this, err);
 
     mediator.callEvent(event, this);
 }

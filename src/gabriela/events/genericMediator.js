@@ -1,6 +1,6 @@
 const deasync = require('deasync');
 
-const {getArgs, inArray, hasKey} = require('../util/util');
+const {getArgs, inArray, hasKey, is} = require('../util/util');
 const taskRunnerFactory = require('../misc/taskRunner');
 const {ASYNC_FLOW_TYPES} = require('../misc/types');
 const _waitCheck = require('../util/_waitCheck');
@@ -29,7 +29,7 @@ function instance(rootCompiler) {
             return _callFn(fn, rootCompiler, args, context);
         }
 
-        const args = getArgs(fn, {
+        let args = getArgs(fn, {
             next: taskRunner.next,
             throwException: taskRunner.throwException,
         });
@@ -59,6 +59,14 @@ function instance(rootCompiler) {
         taskRunner.resolve();
     }
 
+    function runOnError(fn, context, err) {
+        const args = getArgs(fn);
+        if (args.length > 0) args[0].value = err;
+
+        _callFn(fn, rootCompiler, args, context);
+    }
+
+    this.runOnError = runOnError;
     this.callEvent = callEvent;
 }
 

@@ -123,9 +123,9 @@ describe('Failing server tests', () => {
                 onAppStarted() {
                     throw new Error('Something went wrong');
                 },
-                catchError() {
-                    expect(this.err).to.be.instanceof(Error);
-                    expect(this.err.message).to.be.equal(`An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed`);
+                catchError(err) {
+                    expect(err).to.be.instanceof(Error);
+                    expect(err.message).to.be.equal(`An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed`);
 
                     done();
                 }
@@ -143,9 +143,9 @@ describe('Failing server tests', () => {
                 onAppStarted() {
                     throw new Error('Something went wrong in onAppStarted');
                 },
-                catchError() {
-                    expect(this.err).to.be.instanceof(Error);
-                    expect(this.err.message).to.be.equal(`Something went wrong`);
+                catchError(err) {
+                    expect(err).to.be.instanceof(Error);
+                    expect(err.message).to.be.equal(`Something went wrong`);
 
                     done();
                 }

@@ -1324,8 +1324,8 @@ describe('Framework events', function() {
     it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
         const g = gabriela.asServer(config, {
             events: {
-                catchError() {
-                    expect(this.err.message).to.be.equal('Something went wrong in module1');
+                catchError(err) {
+                    expect(err.message).to.be.equal('Something went wrong in module1');
 
                     this.gabriela.close();
 

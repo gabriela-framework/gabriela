@@ -69,7 +69,6 @@ function Server(
         }).catch((err) => {
             const context = {
                 gabriela: this,
-                err: null,
             };
 
             if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(

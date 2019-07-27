@@ -109,4 +109,57 @@ describe('Complete error handling tests', () => {
 
         app.startApp();
     });
+
+    it('catchError should catch the native javascript error from within a module', (done) => {
+        const mdl = {
+            name: 'catchErrorModule',
+            moduleLogic: [function() {
+                throw new Error('Something went wrong');
+            }],
+        };
+
+        const app = gabriela.asProcess(config, {
+            events: {
+                catchError(e) {
+                    expect(e).to.be.instanceof(Error);
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should catchError event when its thrown inside a mediator event', (done) => {
+        const mdl = {
+            name: 'catchErrorModule',
+            mediator: {
+                onSomeEvent: function() {
+                    throw new Error('Something went wrong');
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onSomeEvent');
+            }],
+        };
+
+        const app = gabriela.asProcess(config, {
+            events: {
+                catchError(e) {
+                    expect(e).to.be.instanceof(Error);
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
 });
