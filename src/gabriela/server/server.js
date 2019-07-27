@@ -34,7 +34,6 @@ async function _listenCallback(
 ) {
     const context = {
         gabriela: this,
-        err: null,
     };
 
     await runOnAppStarted.call(context, events, rootCompiler);
@@ -77,6 +76,10 @@ function Server(
                 rootCompiler,
                 err
             );
+
+            console.log(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
+
+            this.gabriela.close();
 
             throw err;
         });
