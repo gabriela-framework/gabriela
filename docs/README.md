@@ -2,13 +2,13 @@
 
 ## What is Gabriela?<br/>
 
-Gabriela is framework that allows you to structure your application logic
+Gabriela is a framework that allows you to structure your application logic
 in a way that is natural for any type of application. Depending on what you are creating,
 your can run it as a Node process, as an HTTP server or both. Your choice.
 
 Gabriela also strives to be platform independent. She does not know (or cares) if she is executed
 as a simple Node process, an HTTP server or a RabbitMQ consumer (or anything else for that matter). 
-This unique feature is still in development (Gabriela is still in alpha development) 
+This unique feature is still in development (Gabriela is still in alpha stage) 
 but in the future, you will be able to concentrate on the business logic of your application 
 first and then decide whether you want to implement it as an HTTP server or something else.
 
@@ -25,10 +25,11 @@ for production. The next stage is beta and, once it gets there, you can be confi
 It will also stay in beta until it is absolutely proven in production by creating multiple applications. And yes, I know
 this is counter intuitive but, as I said, building a framework is a responsible business and I cannot make a decision to 
 put that number 1 in front of the version number based solely on my subjective opinion. That is a decision that must
-be made by all of us together. 
+be made by a proven track record by building and running applications in production environment. It is also a decision
+that we, as a community (if you choose to adopt it) have to decide, together. 
 
 Since testing is, for me, a huge part of making Gabriela production ready, there will also be an accompanying testing
-framework designed to write tests for Gabriela. This testing framework will make it possible for you to isolate
+framework designed to write tests solely for Gabriela. This testing framework will make it possible for you to isolate
 parts of you applications modules, plugins or DI services and test them separately. It will also have special tools for testing
 Gabriela in an HTTP server environment but also using Gabriela with some messaging system like RabbitMQ or with a cache
 server like Memcached or Redis. 
@@ -44,7 +45,7 @@ like validation, security, data transformation, dependency injection and the app
 There is only the Model, Controller and the View (and the usual best practice is to put very little logic
 in the controller). Sure, most of the MVC frameworks ship with some kind of validation or security component,
 but each framework implements it in its own way. In that regard, Gabriela introduces a different way
-of thinking about creating applications.
+of thinking about creating and structuring applications.
 
 Central pattern in Gabriela is the middleware pattern which allows you to structure your code
 based on what the code actually does. Security handling has its own middleware, validation, data transformation
@@ -55,7 +56,7 @@ think about requiring your CommonJS modules but how to wire up your dependencies
 that makes sense for your application logic. 
 
 Gabriela is also completely reusable. Basic building block in Gabriela is a module (not to be confused with a CommonJS module) which you can make
-completely independent from the rest of your application and reuse it in another application. Another building
+completely independent from the rest of your application and reuse it in another Gabriela application. Another building
 block of Gabriela is a plugin which is basically a collection of modules. A plugin can be anything; from a simple utility that
 creates a public dependency or an entire application which you can initialize with just one line of code.
 
@@ -142,10 +143,10 @@ middleware objects. This is called a **middleware block**. There are 5 middlewar
 - postLogicTransformers
 
 Every middleware block does the same thing; executes all the functions that you have given to it in the above order.
-First, `security` block is executed, then `validators` and all the way to `postLogicTransformers`. It is important
+First, `security` block is executed, then `validators` and then all the way to `postLogicTransformers`. It is important
 to note that every middleware block does the same thing: it executes given functions in order. `security` block does not
 handle security for you automatically and validators block does not handle validation for you automatically. These blocks
-are only logical structures in which you can put functions that do a certain thing. For example, if you have a function that checks
+are only logical structures in which you put functions that do a certain thing. For example, if you have a function that checks
 if the user has the correct role for a certain resource, you will put it in the `security` block. If the user has access to 
 the resource, you will then check if he has the correct data for that resource in the `validators` block. Then, you will process
 the request in the `moduleLogic` block and return the response. If you need to do something after you handled modules logic, you can
@@ -155,10 +156,10 @@ to that in the `postLogicTransformers` block.
 Node process, an HTTP route or a RabbitMQ consumer*
 
 Next thing you will notice is the `state` argument that every middleware function has. `state` is just a plain
-javascript object that is passed into every declared middleware function. You can attach any value to this object and use 
+javascript object literal that is passed into every declared middleware function. You can attach any value to this object and use 
 it to communicate between your middleware functions. 
 
-In our example above, we putted the `state.hello` and `state.world` property on it and used it our final middleware function to 
+In our example above, we putted the `state.hello` and `state.world` property on it and used it in our final middleware function to 
 print out Hello world to the console. 
 
 ## Plugins<br/>
