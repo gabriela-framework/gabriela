@@ -94,7 +94,7 @@ this can be a single HTTP route but it can be much much more.
 
 The best thing to do is to do some code so let's create a Hello World by creating a Gabriela module and running it.
 
-````
+````javascript
 const gabriela = require('gabriela');
 
 const helloWorldModule = {
@@ -167,7 +167,7 @@ print out Hello world to the console.
 You can also write middleware functions with a short syntax by supplying them as just plain
 functions. 
 
-````
+````javascript
 const helloWorldModule = {
     name: 'helloWorld',
     moduleLogic: [
@@ -193,7 +193,7 @@ example.
 
 Next piece of code that we see is
 
-````
+````javascript
 const app = gabriela.asProcess({
     config: {}
 });
@@ -205,7 +205,7 @@ configuration object is mandatory and we will talk about it later on.
 
 If you wanted to create Gabriela app as a server, you would create it like this 
 
-````
+````javascript
 const app = gabriela.asServer({
     config: {}
 });
@@ -214,7 +214,7 @@ const app = gabriela.asServer({
 
 Next, we start the app with 
 
-````
+````javascript
 app.startApp();
 
 ````
@@ -243,7 +243,7 @@ As we previously said, there are 5 middleware blocks:
 
 In our previous example, we could have putted the code into any one of them and it would be the same result.
 
-````
+````javascript
 const gabriela = require('gabriela');
 
 const helloWorldModule = {
@@ -291,7 +291,7 @@ of logic that is not really important for what we will try to explain in this ch
 *For the sake of brevity, we will use the middleware function shorthand syntax but the best practice is
 to always declare middleware functions as object literals.*
 
-````
+````javascript
 const gabriela = require('gabriela');
 
 const handlingMiddlewareBlockModule = {
@@ -340,7 +340,7 @@ skip all blocks and exit from executing all the blocks.
 If you wish to proceed to the next middleware function, simply place `return` somewhere in your function
 and execution will continue in the next middleware block function.
 
-````
+````javascript
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
     security: [function() {
@@ -387,7 +387,7 @@ the first middleware function in `preLogicTransormers`.
 In case you want to skip the entire middleware block and proceed to the next one, you can use the
 `skip` function. 
 
-````
+````javascript
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
     security: [function() {
@@ -448,7 +448,7 @@ The last function that we will examine here is `done()`. `done()` simply skips a
 all the middleware blocks after it is called. The most clearer example (but also the most useless) is to
 put `return done()` in the first function of the `security` middleware block.
 
-````
+````javascript
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
     security: [function(done) {
