@@ -20,6 +20,13 @@ for me personally, bears a big responsibility. A part of that responsibility is 
 is well tested in different scenarios. Gabriela has over 200 different tests and code coverage is at 98%. The goal
 of these tests will always be 100% so you can be sure that what is described in the documentation will work.
 
+If you cloned Gabriela, you can run all tests with `npm run test` command. There are also two command for checking out
+code coverage. The first one is `npm run console-coverage`. This will output the console coverage of Gabriela in the terminal.
+The second one is `npm run coverage`. This will create an html output that you can run in your browser and is more
+better for the eye. You can find it in the `coverage/index.html` file. Just open it in your browser and it will work.
+I am using [Istanbul](https://istanbul.js.org/) for test coverage, more precisely, [nyc](https://github.com/istanbuljs/nyc) 
+for running them.
+
 The second part is using it in production. Gabriela is currently in alpha stage and is not yet ready
 for production. The next stage is beta and, once it gets there, you can be confident enough to use it in production. 
 It will also stay in beta until it is absolutely proven in production by creating multiple applications. And yes, I know
