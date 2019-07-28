@@ -222,6 +222,15 @@ app.startApp();
 This code actually starts to run our app. After all middleware functions execute, since Gabriela is created
 as a process, the app exists after writing *Hello world* to the console. 
 
+#### Side note: Middleware functions
+___
+
+As you can see in the previous examples, we haven't declared any middleware as arrow functions. Do not declare middleware functions
+with the arrow `=>` syntax. As we will see in the rest of this documentation, `this` is bound to an object that contains
+the `mediator` and `emitter` which are part of the Gabriela event system (probably more in the future). Always
+declare middleware functions with the `function()` syntax and not arrow `=>` syntax.
+___
+
 ### 2.1.2 Handling middleware blocks
 
 As we previously said, there are 5 middleware blocks:  
@@ -425,10 +434,15 @@ Do not forget to `return skip()`. Skipping middleware blocks is not some javascr
 return statement, it will execute the first function but also skip the rest of the middleware block. Use it without
 returning `skip()` only if you want to execute the first function and skip the rest of the middleware block.
 
-*The order of __state__ and __skip__ (or any other injected argument) is irrelevant. You can invert the argument
+#### Side note: Argument order
+___
+
+The order of __state__ and __skip__ (or any other injected argument) is irrelevant. You can invert the argument
 order and all the arguments will be injected correctly. This feature is part of the dependency injection
 system that we will be talking about more in the section __2.3 Dependency injection__ and again in section
-__Dependency injection in depth__.*
+__Dependency injection in depth__.
+
+___
 
 The last function that we will examine here is `done()`. `done()` simply skips and does not execute
 all the middleware blocks after it is called. The most clearer example (but also the most useless) is to
