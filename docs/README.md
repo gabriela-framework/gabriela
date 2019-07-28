@@ -1,6 +1,6 @@
-# Introduction<br/><br/>
+# Introduction
 
-## What is Gabriela?<br/>
+## What is Gabriela?
 
 Gabriela is a framework that allows you to structure your application logic
 in a way that is natural for any type of application. Depending on what you are creating,
@@ -65,21 +65,17 @@ you can transfer the logic of communicating with different components in one pla
 
 If you find these concepts interesting, read on. It is going to get a lot more interesting.
 
-<br/><br/>
-
-# Installation<br/><br/>
+# Installation
 
 Gabriela is still in alpha stage and you can install it with
 
 `npm install gabriela@alpha`
 
-<br/><br/>
-
-# Architecture<br/><br/>
+# Architecture
 
 _**Note: This chapter is not a tutorial. It is only an overview of Gabriela's basic concepts**_
 
-## Modules<br/>
+## Modules
 
 Gabriela's main building block is called a **module**. A module is an isolated piece of 
 functionality that is specific for your application. In an HTTP context, 
@@ -87,7 +83,7 @@ this can be a single HTTP route but it can be much much more.
 
 `Don't confuse Gabriela modules with CommonJS modules because they don't have anything in common.`
 
-#### An introduction example
+### An introduction example
 
 The best thing to do is to do some code so let's create a Hello World by creating a Gabriela module and running it.
 
@@ -162,13 +158,79 @@ it to communicate between your middleware functions.
 In our example above, we putted the `state.hello` and `state.world` property on it and used it in our final middleware function to 
 print out Hello world to the console. 
 
-## Plugins<br/>
+You can also write middleware functions with a short syntax by supplying them as just plain
+functions. 
 
-## Dependency injection<br/>
+````
 
-## Events<br/>
+const helloWorldModule = {
+    name: 'helloWorld',
+    moduleLogic: [
+        function(state) {
+            state.hello = 'Hello',
+        },
+        function(state) {
+            state.world = 'World',
+        },
+        function(state) {
+            console.log(`${state.hello} ${state.world}`);
+        },
+    ],
+};
 
-## Configuration<br/>
+````
+
+The above example will execute in the same way as our first one but the object syntax is more descriptive.
+Gabriela modules can also be overriden but only if you are using the object syntax so it is best practice
+to always create middleware functions with the object syntax. We will talk more about overriding 
+modules middleware blocks later on in the chapter *Modules in depth*. So, lets get back to our previous
+example. 
+
+Next piece of code that we see is
+
+````
+
+const app = gabriela.asProcess({
+    config: {}
+});
+
+````
+
+This will create a Gabriela app as a NodeJS process. We also supply it with a default configuration. The default
+configuration object is mandatory and we will talk about it later on. 
+
+If you wanted to create Gabriela app as a server, you would create it like this 
+
+````
+
+const app = gabriela.asServer({
+    config: {}
+});
+
+````
+
+Next, we start the app with 
+
+````
+
+app.startApp();
+
+````
+
+This code actually starts to run our app. After all middleware functions execute, since Gabriela is created
+as a process, the app exists after writing *Hello world* to the console. 
+
+### Handling asynchronous code
+
+
+
+## Plugins
+
+## Dependency injection
+
+## Events
+
+## Configuration
 
 # Tutorial 1 - Implementing Spotify API
 
@@ -178,7 +240,7 @@ Not yet done, but coming soon
 
 Not yet done, but coming soon
 
-# Modules
+# Modules in depth
 
 ## Your first module
 ## The middleware pattern
