@@ -65,17 +65,17 @@ you can transfer the logic of communicating with different components in one pla
 
 If you find these concepts interesting, read on. It is going to get a lot more interesting.
 
-# Installation
+# 1. Installation
 
 Gabriela is still in alpha stage and you can install it with
 
 `npm install gabriela@alpha`
 
-# Architecture
+# 2. Architecture
 
 _**Note: This chapter is not a tutorial. It is only an overview of Gabriela's basic concepts**_
 
-## Modules
+## 2.1 Modules
 
 Gabriela's main building block is called a **module**. A module is an isolated piece of 
 functionality that is specific for your application. In an HTTP context, 
@@ -83,7 +83,7 @@ this can be a single HTTP route but it can be much much more.
 
 `Don't confuse Gabriela modules with CommonJS modules because they don't have anything in common.`
 
-### An introduction example
+### 2.1.1 An introduction example
 
 The best thing to do is to do some code so let's create a Hello World by creating a Gabriela module and running it.
 
@@ -220,17 +220,126 @@ app.startApp();
 This code actually starts to run our app. After all middleware functions execute, since Gabriela is created
 as a process, the app exists after writing *Hello world* to the console. 
 
-### Handling asynchronous code
+### 2.1.2 Handling middleware blocks
+
+As we previously said, there are 5 middleware blocks:  
+
+- security
+- validators
+- preLogicTransformers
+- moduleLogic
+- postLogicTransformers
+
+In our previous example, we could have putted the code into any one of them and it would be the same result.
+
+````
+
+const gabriela = require('gabriela');
+
+const helloWorldModule = {
+    name: 'helloWorld',
+    validators: [
+        {
+            name: 'helloModuleLogic',
+            middleware: function(state) {
+                state.hello = 'Hello',
+            },
+        },
+        {
+            name: 'worldModuleLogic,
+            middleware: function(state) {
+                state.world = 'World',
+            },
+        },
+        {
+            name: 'finalMiddleware',
+            middleware: function(state) {
+                console.log(`${state.hello} ${state.world}`);
+            },
+        }
+    ],
+};
+
+const app = gabriela.asProcess({
+    config: {}
+});
+
+app.addModule(helloWorldModule);
+
+app.startApp();
+
+````
+
+In this copy/paste of the previous example, we only changed the `moduleLogic` to `validators`. If you
+run this code, it would yield the same result. All middleware blocks have the same functionality; execute
+the given functions in the middleware block order. It is only best practice to put your modules logic into
+the most appropriate middleware block.
+
+Lets for the sake of this chapter, create a module with all the middleware blocks in it with a little bit
+of logic that is not really important for what we will try to explain in this chapter.
+
+*For the sake of brevity, we will use the middleware function shorthand syntax but the best practice is
+to always declare middleware functions as object literals.*
+
+````
+
+const gabriela = require('gabriela');
+
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    security: [function() {
+        console.log(`'security' block is executed`)
+    }],
+    validators: [function() {
+        console.log(`'validators' block is executed`)
+    }],
+    preLogicTransformers: [function() {
+        console.log(`'preLogicTransformers' block is executed`)
+    }],
+    moduleLogic: [function() {
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
+    }],
+};
+
+const app = gabriela.asProcess({
+    config: {}
+});
+
+app.addModule(handlingMiddlewareBlocksModule);
+
+app.startApp();
+
+````
+
+In this example, all the middleware blocks are executed one after the other. After you run this code, you will
+get this output.
+
+````
+'security' block is executed
+'validators' block is executed
+'preLogicTransformers' block is executed
+'moduleLogic' block is executed
+'postLogicTransformers' block is executed
+````
 
 
 
-## Plugins
+### 2.1.3 Asynchronous code
 
-## Dependency injection
+### 2.1.4 Handling asynchronous code
 
-## Events
 
-## Configuration
+
+## 2.2 Plugins
+
+## 2.3 Dependency injection
+
+## 2.4 Events
+
+## 2.5 Configuration
 
 # Tutorial 1 - Implementing Spotify API
 
