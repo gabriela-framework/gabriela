@@ -1,29 +1,35 @@
 const gabriela = require('./src/gabriela/gabriela');
-const requestPromise = require('request-promise');
 
-let onPreResponseCalled = false;
-const g = gabriela.asServer({
-    config: {}
-}, {
-    events: {
-        onAppStarted() {
-
-        }
-    }
-});
-
-g.addModule({
-    name: 'module',
-    http: {
-        route: {
-            name: 'route',
-            path: 'path',
-            method: 'get',
-        },
-    },
-    moduleLogic: [function() {
-
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    security: [function(done) {
+        return done();
+        console.log(`'security' block is executed`)
     }],
+    validators: [function() {
+        console.log(`'validators' block is executed`)
+    }],
+    preLogicTransformers: [function(state, skip) {
+        if (true) {
+            return skip();
+        }
+
+        console.log(`'preLogicTransformers' first function is executed`)
+    }, function() {
+        console.log(`'preLogicTransformers' second function is executed`)
+    }],
+    moduleLogic: [function() {
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
+    }],
+};
+
+const app = gabriela.asProcess({
+    config: {},
 });
 
-g.startApp();
+app.addModule(handlingMiddlewareBlockModule);
+
+app.startApp();

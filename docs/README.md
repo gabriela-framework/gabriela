@@ -95,7 +95,6 @@ this can be a single HTTP route but it can be much much more.
 The best thing to do is to do some code so let's create a Hello World by creating a Gabriela module and running it.
 
 ````
-
 const gabriela = require('gabriela');
 
 const helloWorldModule = {
@@ -169,7 +168,6 @@ You can also write middleware functions with a short syntax by supplying them as
 functions. 
 
 ````
-
 const helloWorldModule = {
     name: 'helloWorld',
     moduleLogic: [
@@ -196,7 +194,6 @@ example.
 Next piece of code that we see is
 
 ````
-
 const app = gabriela.asProcess({
     config: {}
 });
@@ -209,7 +206,6 @@ configuration object is mandatory and we will talk about it later on.
 If you wanted to create Gabriela app as a server, you would create it like this 
 
 ````
-
 const app = gabriela.asServer({
     config: {}
 });
@@ -219,7 +215,6 @@ const app = gabriela.asServer({
 Next, we start the app with 
 
 ````
-
 app.startApp();
 
 ````
@@ -240,7 +235,6 @@ As we previously said, there are 5 middleware blocks:
 In our previous example, we could have putted the code into any one of them and it would be the same result.
 
 ````
-
 const gabriela = require('gabriela');
 
 const helloWorldModule = {
@@ -282,14 +276,13 @@ run this code, it would yield the same result. All middleware blocks have the sa
 the given functions in the middleware block order. It is only best practice to put your modules logic into
 the most appropriate middleware block.
 
-Lets for the sake of this chapter, create a module with all the middleware blocks in it with a little bit
+Lets for the sake of this chapter, create a module with all the middleware blocks in it, with a little bit
 of logic that is not really important for what we will try to explain in this chapter.
 
 *For the sake of brevity, we will use the middleware function shorthand syntax but the best practice is
 to always declare middleware functions as object literals.*
 
 ````
-
 const gabriela = require('gabriela');
 
 const handlingMiddlewareBlockModule = {
@@ -332,11 +325,155 @@ get this output.
 'postLogicTransformers' block is executed
 ````
 
+In some cases, you will want to go to the next middleware block function, skip an entire block or 
+skip all blocks and exit from executing all the blocks. 
 
+If you wish to proceed to the next middleware function, simply place `return` somewhere in your function
+and execution will continue in the next middleware block function.
 
-### 2.1.3 Asynchronous code
+````
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    security: [function() {
+        console.log(`'security' block is executed`)
+    }],
+    validators: [function(state) {
+        state.someCondition = true;
+        
+        console.log(`'validators' block is executed`)
+    }],
+    preLogicTransformers: [function(state) {
+        if (state.someCondition) {
+            return;
+        }
+        
+        console.log(`'preLogicTransformers' first function is executed`)
+    }, function() {
+        console.log(`'preLogicTransformers' second function is executed`)
+    }],
+    moduleLogic: [function() {
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
+    }],
+};
 
-### 2.1.4 Handling asynchronous code
+````
+
+When you try to run this code, the output will be 
+
+````
+'security' block is executed
+'validators' block is executed
+'preLogicTransformers' second function is executed
+'moduleLogic' block is executed
+'postLogicTransformers' block is executed
+
+````
+
+As you can see, we created the `state.someCondition` in the `validators` block and simply returned from
+the first middleware function in `preLogicTransormers`. 
+
+In case you want to skip the entire middleware block and proceed to the next one, you can use the
+`skip` function. 
+
+````
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    security: [function() {
+        console.log(`'security' block is executed`)
+    }],
+    validators: [function(state) {
+        state.someCondition = true;
+        
+        console.log(`'validators' block is executed`)
+    }],
+    preLogicTransformers: [function(state, skip) {
+        if (state.someCondition) {
+            return skip();
+        }
+        
+        console.log(`'preLogicTransformers' first function is executed`)
+    }, function() {
+        console.log(`'preLogicTransformers' second function is executed`)
+    }],
+    moduleLogic: [function() {
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
+    }],
+};
+
+````
+
+We have added the `skip` function to be injected into our first function in the `preLogicTransormers` middleware
+block and used it to skip the entire `preLogicTransformers` middleware block. The output of our module will then be
+
+````
+'security' block is executed
+'validators' block is executed
+'moduleLogic' block is executed
+'postLogicTransformers' block is executed
+
+````
+
+As you can see, `preLogicTransformers` middleware block was completely skipped.
+
+Do not forget to `return skip()`. Skipping middleware blocks is not some javascript magic and if you omit the 
+return statement, it will execute the first function but also skip the rest of the middleware block. Use it without
+returning `skip()` only if you want to execute the first function and skip the rest of the middleware block.
+
+*The order of __state__ and __skip__ (or any other injected argument) is irrelevant. You can invert the argument
+order and all the arguments will be injected correctly. This feature is part of the dependency injection
+system that we will be talking about more in the section __2.3 Dependency injection__ and again in section
+__Dependency injection in depth__.*
+
+The last function that we will examine here is `done()`. `done()` simply skips and does not execute
+all the middleware blocks after it is called. The most clearer example (but also the most useless) is to
+put `return done()` in the first function of the `security` middleware block.
+
+````
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    security: [function(done) {
+        return done();
+        
+        console.log(`'security' block is executed`)
+    }],
+    validators: [function(state) {
+        state.someCondition = true;
+        
+        console.log(`'validators' block is executed`)
+    }],
+    preLogicTransformers: [function(state, skip) {
+        if (state.someCondition) {
+            return skip();
+        }
+        
+        console.log(`'preLogicTransformers' first function is executed`)
+    }, function() {
+        console.log(`'preLogicTransformers' second function is executed`)
+    }],
+    moduleLogic: [function() {
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
+    }],
+};
+
+````
+
+Notice that we injected the `done()` function in our `security` middleware block and returned it immediately. If you execute
+this code, you will see that none of the functions in all the middleware block will be executed. 
+
+There is also one more middleware handling function called `next()` and we use it to 
+control asynchronous code within our middleware functions to ensure that async code is executed
+before we proceed to our next middleware function so lets start our next section, `Handling asynchronous code`.
+
+### 2.1.3 Handling asynchronous code
 
 
 
