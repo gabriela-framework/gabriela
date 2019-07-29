@@ -519,21 +519,49 @@ Google request finished
 ````
 
 Both of the functions executed one after the other but the second function did not wait for the request
-in the first function to finish. 
+in the first function to finish. In order to fix this, lets introduce `next()`.
 
-## 1.2 Plugins
+````javascript
+const requestPromise = require('request-promise');
 
-## 1.3 Dependency injection
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    moduleLogic: [
+        function(next) {
+           requestPromise.get('https://www.google.com').then(function() {
+               console.log('Google request finished');
+               
+               next();
+           });
+        }, function() {
+           console.log(`'moduleLogic' second function is executed`)
+        }
+    ],
+};
 
-## 1.4 Events
+````
+
+As you can see, we injected the `next` function into our middleware and called it after the request has finished.
+Now, the output would be correct.
+
+````
+Google request finished
+`'moduleLogic' second function is executed`
+````
+
+## 1.2 Dependency injection
+
+## 1.3 Events
+
+## 1.4 Plugins
 
 ## 1.5 Configuration
 
-# Tutorial 1 - Implementing Spotify API
+# Tutorial 1 - Implementing MySQL plugin
+
+# Tutorial 2 - Implementing Spotify API
 
 Not yet done, but coming soon
-
-# Tutorial 2 - Simple user management
 
 Not yet done, but coming soon
 
