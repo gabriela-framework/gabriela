@@ -232,7 +232,7 @@ the `mediator` and `emitter` which are part of the Gabriela event system (probab
 declare middleware functions with the `function()` syntax and not arrow `=>` syntax.
 ___
 
-### 1.1.2 Handling middleware blocks
+### 1.1.2 Middleware blocks
 
 As we previously said, there are 5 middleware blocks:  
 
@@ -550,6 +550,8 @@ Google request finished
 ````
 
 ## 1.2 Dependency injection
+
+
 
 ## 1.3 Events
 
