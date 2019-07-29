@@ -511,7 +511,7 @@ const asyncCodeModule = {
 
 ````
 
-If you try to run this example, you will this printing in your terminal
+If you try to run this example, you will see this printing in your terminal
 
 ````
 `'moduleLogic' second function is executed`
@@ -542,7 +542,7 @@ const asyncCodeModule = {
 ````
 
 As you can see, we injected the `next` function into our middleware and called it after the request has finished.
-Now, the output would be correct.
+Now, the output will be correct.
 
 ````
 Google request finished
