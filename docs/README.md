@@ -72,25 +72,25 @@ you can transfer the logic of communicating with different components in one pla
 
 If you find these concepts interesting, read on. It is going to get a lot more interesting.
 
-# 1. Installation
+# Installation
 
 Gabriela is still in alpha stage and you can install it with
 
 `npm install gabriela@alpha`
 
-# 2. Architecture
+# 1. Architecture
 
 _**Note: This chapter is not a tutorial. It is only an overview of Gabriela's basic concepts**_
 
-## 2.1 Modules
+## 1.1 Modules
 
 Gabriela's main building block is called a **module**. A module is an isolated piece of 
 functionality that is specific for your application. In an HTTP context, 
 this can be a single HTTP route but it can be much much more. 
 
-`Don't confuse Gabriela modules with CommonJS modules because they don't have anything in common.`
+**Don't confuse Gabriela modules with CommonJS modules because they don't have anything in common.**
 
-### 2.1.1 An introduction example
+### 1.1.1 An introduction example
 
 The best thing to do is to do some code so let's create a Hello World by creating a Gabriela module and running it.
 
@@ -130,6 +130,9 @@ app.addModule(helloWorldModule);
 app.startApp();
 
 ````
+
+*For readability, in the next examples, I will only use the module declaration object literal. Running it and starting Gabriela
+is assumed in all examples*
 
 The first thing you will notice is that a module is just a simple javascript object literal that
 has some properties. This is called a module declaration. In a module declaration, only the `name` is
@@ -221,17 +224,15 @@ app.startApp();
 
 This code actually starts to run our app. After all middleware functions execute, since Gabriela is created
 as a process, the app exists after writing *Hello world* to the console. 
-
-#### Side note: Middleware functions
 ___
-
-As you can see in the previous examples, we haven't declared any middleware as arrow functions. Do not declare middleware functions
+#### Side note: Middleware functions<br/>
+>As you can see in the previous examples, we haven't declared any middleware as arrow functions. Do not declare middleware functions
 with the arrow `=>` syntax. As we will see in the rest of this documentation, `this` is bound to an object that contains
 the `mediator` and `emitter` which are part of the Gabriela event system (probably more in the future). Always
 declare middleware functions with the `function()` syntax and not arrow `=>` syntax.
 ___
 
-### 2.1.2 Handling middleware blocks
+### 1.1.2 Handling middleware blocks
 
 As we previously said, there are 5 middleware blocks:  
 
@@ -434,14 +435,12 @@ Do not forget to `return skip()`. Skipping middleware blocks is not some javascr
 return statement, it will execute the first function but also skip the rest of the middleware block. Use it without
 returning `skip()` only if you want to execute the first function and skip the rest of the middleware block.
 
-#### Side note: Argument order
 ___
-
-The order of __state__ and __skip__ (or any other injected argument) is irrelevant. You can invert the argument
+#### Side note: Argument order<br/>
+>The order of __state__ and __skip__ (or any other injected argument) is irrelevant. You can invert the argument
 order and all the arguments will be injected correctly. This feature is part of the dependency injection
 system that we will be talking about more in the section __2.3 Dependency injection__ and again in section
 __Dependency injection in depth__.
-
 ___
 
 The last function that we will examine here is `done()`. `done()` simply skips and does not execute
@@ -487,17 +486,48 @@ There is also one more middleware handling function called `next()` and we use i
 control asynchronous code within our middleware functions to ensure that async code is executed
 before we proceed to our next middleware function so lets start our next section, `Handling asynchronous code`.
 
-### 2.1.3 Handling asynchronous code
+### 1.1.3 Handling asynchronous code
 
+What happens if we try to execute asynchronous code inside one of our middleware functions?
 
+*In our examples, I will use the __request-promise__ package. If you want to use these examples with some other
+tool, it will work the same.*
 
-## 2.2 Plugins
+````javascript
+const requestPromise = require('request-promise');
 
-## 2.3 Dependency injection
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    moduleLogic: [
+        function() {
+           requestPromise.get('https://www.google.com').then(function() {
+               console.log('Google request finished');
+           });
+        }, function() {
+           console.log(`'moduleLogic' second function is executed`)
+        }
+    ],
+};
 
-## 2.4 Events
+````
 
-## 2.5 Configuration
+If you try to run this example, you will this printing in your terminal
+
+````
+`'moduleLogic' second function is executed`
+Google request finished
+````
+
+Both of the functions executed one after the other but the second function did not wait for the request
+in the first function to finish. 
+
+## 1.2 Plugins
+
+## 1.3 Dependency injection
+
+## 1.4 Events
+
+## 1.5 Configuration
 
 # Tutorial 1 - Implementing Spotify API
 
@@ -507,18 +537,10 @@ Not yet done, but coming soon
 
 Not yet done, but coming soon
 
-# Modules in depth
+# 2. Modules in depth
 
-## Your first module
-## The middleware pattern
-## Structuring your middleware
+# 3. Dependency injection in depth
 
-# Dependency injection
+# 4. Events in depth
 
-# Events
-
-# Plugins
-
-# Error handling
-
-# API reference
+# 5. API reference
