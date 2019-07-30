@@ -78,9 +78,39 @@ Gabriela is still in alpha stage and you can install it with
 
 `npm install gabriela@alpha`
 
-# 1. Architecture
+# Primer
 
-_**Note: This chapter is not a tutorial. It is only an overview of Gabriela's basic concepts**_
+This primer is not a quick start, as most libraries and frameworks tend to have. It is more of a shallow overview
+of Gabriela features. Kind of like the `Introduction` chapter in the immortal `The C programming language` by Dennis Ritchie and 
+Brian Kernighan. It won't teach you Gabriela but you will have a good feel how Gabriela works and what are her features. 
+
+Main component of Gabriela are modules, plugins, events and dependency injected services.
+
+___
+**Important note**
+>Through out this documentation, I mention that Gabriela modules are not the same as CommonJS modules.
+I do this because it is very important to differentiate them.
+
+Gabriela can be created as a process app and a server app. 
+
+````javascript
+const gabriela = require('gabriela');
+
+const processApp = gabriela.asProcess({
+    config: {},
+});
+
+// or
+
+const serverApp = gabriela.asServer({
+    config: {},
+});
+````
+
+
+
+
+# 1. Architecture
 
 ## 1.1 Modules
 
@@ -550,6 +580,23 @@ Google request finished
 ````
 
 ## 1.2 Dependency injection
+
+Dependency injection is the central component of Gabriela and it makes her a closed system. In order
+to create a dependency injection service, you first have to create a DI `definition`. With that definition,
+Gabriela will create your service and inject it where ever you need.
+
+For example, lets create our first definition for a `UserService`.
+
+````javascript
+const userServiceDefinition = {
+    name: 'userService',
+    init: function() {
+        function UserService() {}
+        
+        return new UserService();
+    }
+}
+````
 
 
 
