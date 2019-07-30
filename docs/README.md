@@ -82,14 +82,16 @@ Gabriela is still in alpha stage and you can install it with
 
 This primer is not a quick start, as most libraries and frameworks tend to have. It is more of a shallow overview
 of Gabriela features. Kind of like the `Introduction` chapter in the immortal `The C programming language` by Dennis Ritchie and 
-Brian Kernighan. It won't teach you Gabriela but you will have a good feel how Gabriela works and what are her features. 
+Brian Kernighan. It won't teach you Gabriela but you will have a good feel how Gabriela works and what are her features, and 
+have a good base point in deciding to create something with Gabriela.
 
-Main component of Gabriela are modules, plugins, events and dependency injected services.
+Main components of Gabriela are **modules**, **plugins**, **events** and **dependency injected services**.
 
 ___
 **Important note**
 >Through out this documentation, I mention that Gabriela modules are not the same as CommonJS modules.
 I do this because it is very important to differentiate them.
+___
 
 Gabriela can be created as a process app and a server app. 
 
