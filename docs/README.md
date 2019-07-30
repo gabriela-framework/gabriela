@@ -89,7 +89,7 @@ Main components of Gabriela are **modules**, **plugins**, **events** and **depen
 
 ___
 **Important note**
->Through out this documentation, I mention that Gabriela modules are not the same as CommonJS modules.
+>Throughout this documentation, I mention that Gabriela modules are not the same as CommonJS modules.
 I do this because it is very important to differentiate them.
 ___
 
@@ -108,6 +108,20 @@ const serverApp = gabriela.asServer({
     config: {},
 });
 ````
+
+You might notice the empty `config` property. This is mandatory for every Gabriela app. Later on,
+you will read about *compiler passes* and will learn that anything you put into this configuration, 
+will be passed to every *compiler pass* with which you can configure your services based on what your app
+does. 
+
+___
+**Side note**
+>Since Gabriela is still in alpha stage, you will have to create the empty *config* property every
+time you create a Gabriela app. In the future, there will be a command line utility that will do that for
+you. There will also be support for multiple environments like *dev*, *test* and *prod* but you will also
+be able to create your own, custom environments. For now, please inject this object every time you create an 
+app since it will throw an error if you don't.
+___
 
 
 
