@@ -294,8 +294,56 @@ declared it with the *dependencies* module property and it is the default scope 
 as the word says, public to the entire application. You can read more on dependency injection in the section
 *1.2 Dependency injection*.
 
+## Events
 
+Gabriela implements the [Mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) as its event system.
+You can transfer control of communicating with different services to the mediator event system and call it
+multiple times within your middleware block.
 
+The simplest example is creating an event and calling the event from a middleware block.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    dependencies: [userServiceDefinition, commentServiceDefinition, rmqServiceDefinition],
+    mediator: {
+        /**
+        *  This example assumes that you already has a UserService, CommentService
+        *  and an RmqService defined. 
+        *  
+        *  As you can see, we have transferred the logic of sending events 
+        *  when a logged in user creates a comment to an external event. 
+        *  
+        *  This event can be used multiple times within this module
+        */
+        onCommentCreated(userService, commentService, rmqService) {
+            const loggedInUser = userService.getLoggedInUser();
+            
+            const comments = commentService.getCommentsForUser(loggedInUser);
+            
+            for (const comment of comments) {
+                rmqService.sendCommentCreatedEvent(comment);
+            }
+        }
+    },
+    moduleLogic: [function() {
+        this.mediator.emit('onCommentCreated');
+    }],
+}
+````
+
+This is just a taste of the event system that Gabriela has. You can also create **emitted events** that are 
+asynchronous and **exposed events**. Exposed events are used when creating third party plugins
+which the plugin can declare and modules can call. More on this in a dedicated *Events* chapter
+
+## Conclusion
+
+As you can see, Gabriela has features that help you create maintainable and reusable components and I hope
+this primer persuaded you to continue looking into Gabriela. Next step is to take a deeper look at the architecture 
+of the framework in depth to have a better understanding of all the features of Gabriela. You can also skip the 
+chapter about architecture and go right into `Tutorial 1 - Implementing MySQL plugin` or any other tutorial but
+my advice would be to read the next part about architecture first, try to create some modules or plugins
+and then take a look at different tutorials in this documentation.
 
 # 1. Architecture
 
