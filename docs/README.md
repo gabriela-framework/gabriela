@@ -129,7 +129,170 @@ be able to create your own, custom environments. For now, please inject this obj
 app since it will throw an error if you don't.
 ___
 
+## Your first module
 
+````javascript
+const gabriela = require('gabriela');
+
+const processApp = gabriela.asProcess({
+    config: {},
+});
+
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        console.log('Hello world');
+    }],
+};
+
+processApp.addModule(myModule);
+
+processApp.startApp();
+````
+
+If you copy/paste this and run it, you will see `Hello world` written in your terminal. Since this a a NodeJS process
+app, the program will terminate after printing. You can learn more about modules in the 
+[Modules](https://gabriela-framework.github.io/gabriela/#/?id=_11-modules), a dedicated chapter on modules.
+
+## A module within a plugin
+
+A plugin is a reusable component which you can use to group multiple modules in. If, for example, you have
+a common functionality for handling users, like registration and logging in, you can create a registration module
+and a login module, and then group then both into a user managment plugin.
+
+````javascript
+const gabriela = require('gabriela');
+
+const registrationModule = {
+    name: 'registrationModule',
+    http: {
+        route: {
+            name: 'registration',
+            path: '/register',
+            method: 'POST',
+        },
+    },
+    moduleLogic: [function() {
+        console.log('Handle user registration');
+    }],
+};
+
+const loginModule = {
+    name: 'logicModule',
+    http: {
+        route: {
+            name: 'login',
+            path: '/logic',
+            method: 'POST',
+        }
+    },
+    moduleLogic: [function() {
+        console.log('Handle user login');
+    }],
+};
+
+const userManagmentPlugin =  {
+    name: 'userManagementPlugin',
+    modules: [registrationModule, loginModule],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addPlugin(userManagmentPlugin);
+
+app.startApp();
+````
+
+As you can see, you don't have to add modules to `app` if they are part of a plugin.
+
+## Dependency injection
+
+So far, we have just made `console.log` whenever a user tries to login or register. Now, lets 
+try to simulate a "real" registration. We will only create the services to do it but not the actual registration.
+
+In order for our code to be more maintainable and reusable, it is better to put the logic into a service and not in the
+middleware block. It our case, we can create a `UserService` and a `UserRepository`, where `UserRepository` 
+will be used by `UserService`. We do this with Gabrielas dependency injection system. 
+
+In order to create a service, we need to create the **definition** for that service. 
+
+````javascript
+const gabriela = require('gabriela');
+
+/**
+* This is the UserService definition. The actual UserService is the return value
+* of the definitions 'init' function. We inject the UserRepository into our
+* UserService and instantiate the UserService with UserRepository. 
+* 
+* The name property is what we use to inject as an argument into another service
+* or a middleware block. In the case of UserService, a userRepository variable is injected
+* since this is the 'name' property in our UserRepository definition. In the same way, we inject
+* userService as an argument where ever we need it. 
+*/
+const userServiceDefinition = {
+    name: 'userService',
+    init: function(userRepository) {
+        function UserService(userRepository) {
+            this.registerUser = function(userModel) {
+                userRepository.saveUser(userModel);
+            }
+        }
+        
+        return new UserService(userRepository);
+    }
+};
+
+const userRepositoryDefinition = {
+    name: 'userRepository',
+    init: function() {
+        function UserRepository() {
+            this.saveUser = function(userModel) {
+                console.log(`Model ${JSON.stringify(userModel)} saved`);
+            }
+        }
+        
+        return new UserRepository();
+    }
+}
+
+const registrationModule = {
+    name: 'registrationModule',
+    
+    // this is where we bind these dependencies to our module. Both definitions are required
+    // for this to work. The UserService will be injected in the moduleLogic middleware block
+    // with UserRepository as its dependency.
+    dependencies: [userServiceDefinition, userRepositoryDefinition],
+    http: {
+        route: {
+            name: 'registration',
+            path: '/register',
+            method: 'POST',
+        },
+    },
+    // we use the 'name' property of the UserService definition to 
+    // inject the actual UserService into this middleware block
+    moduleLogic: [function(userService) {
+        userService.saveUser({
+            name: 'Rolling',
+            lastName: 'Stone',
+        })
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(registrationModule);
+
+app.startApp();
+````
+
+This is just a simple example of using dependency injection. Dependency injection actually has something 
+called **scopes** and we can use them to limit the scope of our dependencies. There are 3 main scopes in
+Gabriela: **module**, **plugin** and **public**. **module** scope is scoped only to the module that 
+declared it with the *dependencies* module property and it is the default scope if you don't explicitly declare it. 
+**plugin** is scoped only to the plugin and **public** is,
+as the word says, public to the entire application. You can read more on dependency injection in the section
+*1.2 Dependency injection*.
 
 
 # 1. Architecture
@@ -155,13 +318,13 @@ const helloWorldModule = {
         {
             name: 'helloModuleLogic',
             middleware: function(state) {
-                state.hello = 'Hello',
+                state.hello = 'Hello';
             },
         },
         {
             name: 'worldModuleLogic,
             middleware: function(state) {
-                state.world = 'World',
+                state.world = 'World';
             },
         },
         {
