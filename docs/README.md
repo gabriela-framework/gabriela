@@ -295,6 +295,8 @@ as the word says, public to the entire application. You can read more on depende
 *1.2 Dependency injection*.
 
 
+
+
 # 1. Architecture
 
 ## 1.1 Modules
