@@ -93,7 +93,7 @@ ___
 I do this because it is very important to differentiate them.
 ___
 
-Gabriela can be created as a process app and a server app. 
+Gabriela can be created as a NodeJS process or as a server app. 
 
 ````javascript
 const gabriela = require('gabriela');
@@ -107,6 +107,12 @@ const processApp = gabriela.asProcess({
 const serverApp = gabriela.asServer({
     config: {},
 });
+````
+
+You start your app with 
+
+````javascript
+app.startApp();
 ````
 
 You might notice the empty `config` property. This is mandatory for every Gabriela app. Later on,
