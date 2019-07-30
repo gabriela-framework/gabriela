@@ -845,14 +845,9 @@ const userServiceDefinition = {
 
 # Tutorial 2 - Implementing Spotify API
 
-Not yet done, but coming soon
+# 2. Best practices
 
-Not yet done, but coming soon
-
-# 2. Modules in depth
-
-# 3. Dependency injection in depth
-
-# 4. Events in depth
-
-# 5. API reference
+# 3. Case studies
+## 3.1 Implementing layered architecture
+## 3.2 Creating third party plugins
+## 3.3
