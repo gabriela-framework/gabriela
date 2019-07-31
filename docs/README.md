@@ -861,6 +861,9 @@ const myModule = {
 }
 ````
 
+Assigning a service to a module via *dependencies* array is called a **service declaration**. Every service declaration
+will go into this place including services with *shared scope* and *private scope*. More on those scopes later in this chapter.
+
 Since scopes are an important part of every DI service, lets examine scopes in detail; **visiblity scope**
 first.
 
