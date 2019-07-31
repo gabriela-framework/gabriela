@@ -1041,7 +1041,52 @@ a *module* scope dependency in *declaringModule* would have no effect since it w
 
 #### *public* scope
 
+Plain and simple, *public* scope is available everywhere. 
 
+````javascript
+const gabriela = require('gabriela');
+
+const publicService = {
+    name: 'pluginService',
+    scope: 'public',
+    init: function() {
+        return {};
+    }
+};
+
+
+const declaringModule = {
+    name: 'declaringModule',
+    declarations: [publicService],
+};
+
+const moduleOne = {
+    name: 'moduleOne',
+    moduleLogic: [function(publicService) {
+        // use the publicService here
+    }, function(publicService) {
+        // publicService is the same reference as in the first function of this middleware function
+    }]
+};
+
+const moduleTwo = {
+    name: 'moduleTwo',
+    moduleLogic: [function(publicService) {
+        // publicService is the same reference as in moduleOne
+    }],
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addModule(declaringModule);
+app.addModule(moduleOne);
+app.addModule(moduleTwo);
+
+app.startApp();
+````
+
+As you can see, *publicService* is available in every module as the same reference to an object.
+If we created multiple plugins and modules, they would all share the same reference to *publicService*.
 
 ## 1.4 Events
 
