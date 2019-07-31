@@ -207,7 +207,7 @@ As you can see, you don't have to add modules to `app` if they are part of a plu
 
 ## Dependency injection
 
-So far, we have just made `console.log` whenever a user tries to login or register. Now, lets 
+So far, we have just made `console.log` whenever a user trid to login or register. Now, lets 
 try to simulate a "real" registration. We will only create the services to do it but not the actual registration.
 
 In order for our code to be more maintainable and reusable, it is better to put the logic into a service and not in the
@@ -222,12 +222,12 @@ const gabriela = require('gabriela');
 /**
 * This is the UserService definition. The actual UserService is the return value
 * of the definitions 'init' function. We inject the UserRepository into our
-* UserService and instantiate the UserService with UserRepository. 
+* UserService and instantiate the UserService with UserRepository as its dependency. 
 * 
 * The name property is what we use to inject as an argument into another service
 * or a middleware block. In the case of UserService, a userRepository variable is injected
 * since this is the 'name' property in our UserRepository definition. In the same way, we inject
-* userService as an argument where ever we need it. 
+* userService as an argument whereever we need it. 
 */
 const userServiceDefinition = {
     name: 'userService',
@@ -286,8 +286,8 @@ app.addModule(registrationModule);
 app.startApp();
 ````
 
-This is just a simple example of using dependency injection. Dependency injection actually has something 
-called **scopes** and we can use them to limit the scope of our dependencies. There are 3 main scopes in
+This is just a simple example of using dependency injection. Dependency injection can also be scoped by visibility i.e. **visibility scope**
+and we can use that feature to limit the scope of our dependencies. There are 3 main visibility scopes in
 Gabriela: **module**, **plugin** and **public**. **module** scope is scoped only to the module that 
 declared it with the *dependencies* module property and it is the default scope if you don't explicitly declare it. 
 **plugin** is scoped only to the plugin and **public** is,
@@ -308,7 +308,7 @@ const myModule = {
     dependencies: [userServiceDefinition, commentServiceDefinition, rmqServiceDefinition],
     mediator: {
         /**
-        *  This example assumes that you already has a UserService, CommentService
+        *  This example assumes that you already have a UserService, CommentService
         *  and an RmqService defined. 
         *  
         *  As you can see, we have transferred the logic of sending events 
