@@ -1039,6 +1039,11 @@ dependency (or multiple dependencies). You can use this trick to declare your *p
 in one place and then declare dependencies with *module* scope only in modules where you actually need them. Declaring
 a *module* scope dependency in *declaringModule* would have no effect since it would not be used anywhere.
 
+It is also important to note that if we created another plugin, a new instance of *pluginService* would be created
+and would not be the same reference as in other plugins. Keep that in mind when created services that are shared within a plugin.
+If you need to create a service that is shared only between certain plugins, use **shared** scope. We will talk about
+shared scope shortly. 
+
 #### *public* scope
 
 Plain and simple, *public* scope is available everywhere. 
