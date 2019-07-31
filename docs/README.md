@@ -925,6 +925,16 @@ in that module. If the service will be used in more that one module, declare it 
 *plugin*, if your module is part of a plugin.
 ___
 
+___
+**About state in service**
+>Do not store state in your services. Your services should be a reusable stateless 'things'. For example,
+in a UserRepository service, you would have a UserRepository::getUserByName(name: string) method. 
+If, for some reason, you cache the user within this service and use the cached user in subsequent calls, the same reference of this service
+will be used. Always create pure functions in your services (functions that, when given some input, always
+return the same output) and don't store any state in them. If you need to store state, use the 'state' object
+in any of the middleware blocks.
+___
+
 ````javascript
 const gabriela = require('gabriela');
 
