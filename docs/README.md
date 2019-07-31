@@ -870,6 +870,9 @@ There are 3 types of visibility scopes in Gabriela:
 - plugin scope
 - and public scope
 
+#### *module* scope
+___
+
 **module** scope is the default scope for every service, so in our example from above we have actually
 created a definition for a service with the module scope. A scope is declared with a *scope* property 
 on the definition object.
@@ -973,6 +976,9 @@ const myModule = {
 >When declaring services as *module* scope, service is instantiated only once. After that, the same reference
 is used in all subsequent injections, but only within the module they are declared in. For every other module,
 a new reference is created
+
+#### *plugin* scope
+#### *public* scope
 
 
 
