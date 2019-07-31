@@ -828,11 +828,11 @@ Dependency injection is **scoped**. There are 3 scopes:
 
 We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
-### DI definition
+### 1.2.1 DI definition
 
 A *definition*, in its basic form, consists of a *name* and an *init* function that is a factory
 for our service. This function has to return an object of some kind, be it a function object
-or an object literal.
+or an object literal. If you don't return either of those values, an error will be thrown.
 
 ````javascript
 const basicDefinition = {
@@ -858,6 +858,103 @@ const myModule = {
     }],
 }
 ````
+
+Since scopes are an important part of every DI service, lets examine scopes in detail; **visiblity scope**
+first.
+
+### 1.2.2 Visibility scopes
+
+There are 3 types of visibility scopes in Gabriela:
+
+- module scope
+- plugin scope
+- and public scope
+
+**module** scope is the default scope for every service, so in our example from above we have actually
+created a definition for a service with the module scope. A scope is declared with a *scope* property 
+on the definition object.
+
+````javascript
+const basicDefinition = {
+    name: 'basicDefinition',
+    // 'module' scope is the default scope so this is redundant if 
+    // you know that this service will be in 'module' scope only.
+    scope: 'module',
+    init: function() {
+        return {};
+    }
+};
+````
+
+With the *module* scope, the service can only be used within a module in which it is declared in 
+(with the *dependencies* property).
+
+So in our *myModule* module, *basicDefinition* could only be used within that *myModule* module. If you would
+create another module, but you do not place its definition into that module, an error will be thrown that a dependency
+cannot be found. 
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    dependencies: [basicDefinition],
+    /**
+    * As you can see, the value of the 'name' property in the DI definition is
+    * the name of the argument that will hold the return value of the 'init' function
+    */
+    moduleLogic: [function(basicDefinition) {
+        // do something with basicDefinition here
+    }],
+}
+````
+
+It is also very important to note that if you declare the same dependency in multiple modules,
+resolved services will be two different references.
+
+___
+**Best practice**
+>Only declare a dependency with a *module* visibility scope if that service will only be used
+in that module. If the service will be used in more that one module, declare it as *public* or
+*plugin* if your module is part of a plugin.
+___
+
+````javascript
+const gabriela = require('gabriela');
+
+const basicDefinition = {
+    name: 'basicDefinition',
+    scope: 'module',
+    init: function() {
+        return {};
+    }
+};
+
+const myModuleOne = {
+    name: 'myModuleOne',
+    dependencies: [basicDefinition],
+    moduleLogic: [function(basicDefinition) {
+    }],
+};
+
+const myModuleTwo = {
+    name: 'myModuleTwo',
+    dependencies: [basicDefinition],
+    moduleLogic: [function(basicDefinition) {
+    }],
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addModule(myModuleOne);
+app.addModule(myModuleTwo);
+
+app.startApp();
+````
+
+If we run these modules one after another, you will have two different references for `basicDefinition` variable. 
+One reference in *myModuleOne* and one for *myModuleTwo*. That means that the *init* function is executed 
+once for every module in which the definition is used. 
+ 
+But if you used *basicDefinition* in any other place within the same module
 
 ## 1.3 Events
 
