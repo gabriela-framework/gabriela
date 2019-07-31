@@ -820,20 +820,44 @@ Dependency injection is the central component of Gabriela and it makes her a clo
 to create a dependency injection service, you first have to create a DI `definition`. With that definition,
 Gabriela will create your service and inject it where ever you need.
 
-For example, lets create our first definition for a `UserService`.
+Dependency injection is **scoped**. There are 3 scopes: 
+
+- **visibility scope**
+- **shared scope**
+- and **private scope**
+
+We will first examine the anatomy of a *definition* and then dwelve into scopes.
+
+## DI definition
+
+A *definition*, in its basic form, consists of a *name* and a *init* function that is a factory
+for our service. This function has to return an object of some kind, be it a function object
+or a object literal.
 
 ````javascript
-const userServiceDefinition = {
-    name: 'userService',
+const basicDefinition = {
+    name: 'basicDefinition',
     init: function() {
-        function UserService() {}
-        
-        return new UserService();
+        return {};
     }
-}
+};
 ````
 
+The `name` property determines the argument name when this service is injected. 
 
+````javascript
+const myModule = {
+    name: 'myModule',
+    dependencies: [basicDefinition],
+    /**
+    * As you can see, the value of the 'name' property in the DI definition is
+    * the name of the argument that will hold the return value of the 'init' function
+    */
+    moduleLogic: [function(basicDefinition) {
+        
+    }],
+}
+````
 
 ## 1.3 Events
 
@@ -850,4 +874,3 @@ const userServiceDefinition = {
 # 3. Case studies
 ## 3.1 Implementing layered architecture
 ## 3.2 Creating third party plugins
-## 3.3
