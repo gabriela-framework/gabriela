@@ -983,6 +983,62 @@ is used in all subsequent injections, but only within the module they are declar
 a new reference is created.
 
 #### *plugin* scope
+
+*plugin* scope works in the same way as *module* scope but in regards to plugins. If a module declares a service
+with the *plugin* visibility scope, every module in that plugin has access to that service. The service is always
+created only once so the same reference is shared between all modules within a plugin.
+
+````javascript
+const gabriela = require('gabriela');
+
+const pluginService = {
+    name: 'pluginService',
+    scope: 'plugin',
+    init: function() {
+        return {};
+    }
+};
+
+
+const declaringModule = {
+    name: 'declaringModule',
+    declarations: [pluginService],
+};
+
+const moduleOne = {
+    name: 'moduleOne',
+    moduleLogic: [function(pluginService) {
+        // use the pluginService here
+    }, function(pluginService) {
+        // pluginService is the same reference as in the first function of this middleware function
+    }]
+};
+
+const moduleTwo = {
+    name: 'moduleTwo',
+    moduleLogic: [function(pluginService) {
+        // pluginService is the same reference as in moduleOne
+    }]
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    modules: [declaringModule, moduleOne, moduleTwo],
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addPlugin(myPlugin);
+
+app.startApp();
+````
+
+We use a little trick here with which we can declare dependencies with a blank module. Not every module 
+has to have middleware or any logic to it. In this case, we only use *declaringModule* to declare our *plugin*
+dependency (or multiple dependencies). You can use this trick to declare your *plugin* and *public* dependencies
+in one place and then declare dependencies with *module* scope only in modules where you actually need them. Declaring
+a *module* scope dependency in *declaringModule* would have no effect since it would not be used anywhere.
+
 #### *public* scope
 
 
