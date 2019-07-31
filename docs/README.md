@@ -830,7 +830,7 @@ We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
 ### 1.2.1 DI definition
 
-A *definition*, in its basic form, consists of a *name* and an *init* function that is a factory
+A *definition*, in its basic form, consists of a **name** and an **init** function that is a factory
 for our service. This function has to return an object of some kind, be it a function object
 or an object literal. If you don't return either of those values, an error will be thrown.
 
@@ -843,7 +843,7 @@ const basicDefinition = {
 };
 ````
 
-The `name` property determines the argument name when this service is injected. 
+The *name* property determines the argument name when this service is injected. 
 
 ````javascript
 const myModule = {
@@ -914,7 +914,7 @@ ___
 **Best practice**
 >Only declare a dependency with a *module* visibility scope if that service will only be used
 in that module. If the service will be used in more that one module, declare it as *public* or
-*plugin* if your module is part of a plugin.
+*plugin*, if your module is part of a plugin.
 ___
 
 ````javascript
@@ -951,7 +951,7 @@ app.startApp();
 ````
 
 Since these modules will run one after the other, each module would receive a new reference to `basicDefinition`.
-One reference in *myModuleOne* and one for *myModuleTwo*. That means that the *init* function is executed 
+One reference for *myModuleOne* and one for *myModuleTwo*. That means that the *init* function is executed 
 once for every module in which the definition is used. 
  
 But if you used *basicDefinition* in any other place within the same module, you would get the same reference.
