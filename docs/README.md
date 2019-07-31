@@ -814,7 +814,9 @@ Google request finished
 `'moduleLogic' second function is executed`
 ````
 
-## 1.2 Dependency injection
+## 1.2 Plugins
+
+## 1.3 Dependency injection
 
 Dependency injection is the central component of Gabriela and it makes her a closed system. In order
 to create a dependency injection service, you first have to create a DI `definition`. With that definition,
@@ -973,18 +975,16 @@ const myModule = {
 ````
 
 #### **Important note: module scope references**
->When declaring services as *module* scope, service is instantiated only once. After that, the same reference
+>When declaring services with *module* scope, service is instantiated only once. After that, the same reference
 is used in all subsequent injections, but only within the module they are declared in. For every other module,
-a new reference is created
+a new reference is created.
 
 #### *plugin* scope
 #### *public* scope
 
 
 
-## 1.3 Events
-
-## 1.4 Plugins
+## 1.4 Events
 
 ## 1.5 Configuration
 
@@ -996,4 +996,5 @@ a new reference is created
 
 # 3. Case studies
 ## 3.1 Implementing layered architecture
-## 3.2 Creating third party plugins
+## 3.2 Dynamically creating configurable DI services
+## 3.3 Creating third party plugins
