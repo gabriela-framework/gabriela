@@ -828,11 +828,11 @@ Dependency injection is **scoped**. There are 3 scopes:
 
 We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
-## DI definition
+### DI definition
 
-A *definition*, in its basic form, consists of a *name* and a *init* function that is a factory
+A *definition*, in its basic form, consists of a *name* and an *init* function that is a factory
 for our service. This function has to return an object of some kind, be it a function object
-or a object literal.
+or an object literal.
 
 ````javascript
 const basicDefinition = {
@@ -854,7 +854,7 @@ const myModule = {
     * the name of the argument that will hold the return value of the 'init' function
     */
     moduleLogic: [function(basicDefinition) {
-        
+        // do something with basicDefinition here
     }],
 }
 ````
