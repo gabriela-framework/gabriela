@@ -950,11 +950,31 @@ app.addModule(myModuleTwo);
 app.startApp();
 ````
 
-If we run these modules one after another, you will have two different references for `basicDefinition` variable. 
+Since these modules will run one after the other, each module would receive a new reference to `basicDefinition`.
 One reference in *myModuleOne* and one for *myModuleTwo*. That means that the *init* function is executed 
 once for every module in which the definition is used. 
  
-But if you used *basicDefinition* in any other place within the same module
+But if you used *basicDefinition* in any other place within the same module, you would get the same reference.
+That means definition with *module* scope are a single instance trough out the liftime of that module. 
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    dependencies: [basicDefinition],
+    moduleLogic: [function(basicDefinition) {
+        // for this middleware functions, basic definition is created one
+    }, function(basicDefinition) {
+        // basicDefinition here is the same reference as in the first middleware function
+    }],
+};
+````
+
+#### **Important note: module scope references**
+>When declaring services as *module* scope, service is instantiated only once. After that, the same reference
+is used in all subsequent injections, but only within the module they are declared in. For every other module,
+a new reference is created
+
+
 
 ## 1.3 Events
 
