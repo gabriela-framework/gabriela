@@ -834,7 +834,7 @@ We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
 A *definition*, in its basic form, consists of a **name** and an **init** function that is a factory
 for our service. This function has to return an object of some kind, be it a function object
-or an object literal. If you don't return either of those values, an error will be thrown.
+or an object literal. If you don't return either of these values, an error will be thrown.
 
 ````javascript
 const basicDefinition = {
@@ -871,9 +871,9 @@ first.
 
 There are 3 types of visibility scopes in Gabriela:
 
-- module scope
-- plugin scope
-- and public scope
+- **module** scope
+- **plugin** scope
+- and **public** scope
 
 #### *module* scope
 ___
@@ -916,7 +916,7 @@ const myModule = {
 ````
 
 It is also very important to note that if you declare the same dependency in multiple modules,
-resolved services will be two different references.
+resolved services will be different references.
 
 ___
 **Best practice**
@@ -973,7 +973,7 @@ One reference for *myModuleOne* and one for *myModuleTwo*. That means that the *
 once for every module in which the definition is used. 
  
 But if you used *basicDefinition* in any other place within the same module, you would get the same reference.
-That means definition with *module* scope are a single instance trough out the liftime of that module. 
+That means that definitions with *module* scope are a single instance troughout the lifetime of that module. 
 
 ````javascript
 const myModule = {
@@ -1046,10 +1046,10 @@ app.startApp();
 We use a little trick here with which we can declare dependencies with a blank module. Not every module 
 has to have middleware or any logic to it. In this case, we only use *declaringModule* to declare our *plugin*
 dependency (or multiple dependencies). You can use this trick to declare your *plugin* and *public* dependencies
-in one place and then declare dependencies with *module* scope only in modules where you actually need them. Declaring
+in one place and then declare dependencies with *module* scope, only in modules where you actually need them. Declaring
 a *module* scope dependency in *declaringModule* would have no effect since it would not be used anywhere.
 
-It is also important to note that if we created another plugin, a new instance of *pluginService* would be created
+It is also important to note that if we had created another plugin, a new instance of *pluginService* would be created
 and would not be the same reference as in other plugins. Keep that in mind when created services that are shared within a plugin.
 If you need to create a service that is shared only between certain plugins, use **shared** scope. We will talk about
 shared scope shortly. 
@@ -1111,7 +1111,7 @@ the details of connecting to the database are handled by this third party plugin
 ### 1.2.3 Shared scope
 
 **shared** scope is somewhat similar to public scope but in shared scope, you choose the modules and
-plugins that will be able to inject the dependency by name; explicitly. 
+plugins that will be able to inject the service.
 
 The best thing to do is see it by example.
 
@@ -1150,6 +1150,9 @@ const moduleTwo = {
     }]
 };
 
+/**
+* Please, take note that this plugin uses moduleOne
+*/
 const sharedPlugin = {
     name: 'sharedPlugin',
     modules: [moduleOne]
@@ -1158,6 +1161,7 @@ const sharedPlugin = {
 const app = gabriela.asProcess({config: {}});
 
 app.addModule(declaringModule);
+// this module is added here but is also part of a plugin
 app.addModule(moduleOne);
 app.addModule(moduleTwo);
 app.addPlugin(sharedPlugin);
@@ -1167,17 +1171,17 @@ app.startApp();
 
 There are a couple of things to explain here.
 
-First, two modules share the *sharedService*, *moduleOne* and *moduleTwo*. They share the same reference
+First, two modules share the *sharedService*; *moduleOne* and *moduleTwo*. They share the same reference
 to this service. Also, *sharedPlugin* is also using *sharedService* with the same reference as 
 *moduleOne* and *moduleTwo*.
 
 Lets explore this concept more in depth. Gabriela executes modules and plugins in the order in which they are added.
 First, *declaringModule* is executed, then *moduleOne*, all the way to *sharedPlugin*. When *moduleOne*
 is executed, the service is created for the first time. After that, *moduleTwo* uses the same service reference as 
-*moduleTwo*.
+*moduleOne*.
 
 Our *sharedPlugin* has *moduleOne* as its module and *sharedService* is also the same reference as in *moduleOne* and
-*moduleTwo. If we had added a third module, *moduleThree* and declared *sharedService* as its dependency, Gabriela
+*moduleTwo*. If we had added a third module, *moduleThree* and declared *sharedService* as its dependency, Gabriela
 would throw an error saying that it cannot find this dependency. 
 
 ````javascript
