@@ -1102,6 +1102,99 @@ app.startApp();
 
 As you can see, *publicService* is available in every module as the same reference to an object.
 If we created multiple plugins and modules, they would all share the same reference to *publicService*.
+Use public services when you need a shared functionality troughout your project. 
+
+Public services are also a great way for third party plugins to expose a service to the client code. 
+For example, for a MySQL plugin, there could be a public *mysqlConnection* service that our client code can use while
+the details of connecting to the database are handled by this third party plugin.
+
+### 1.2.3 Shared scope
+
+**shared** scope is somewhat similar to public scope but in shared scope, you choose the modules and
+plugins that will be able to inject the dependency by name; explicitly. 
+
+The best thing to do is see it by example.
+
+````javascript
+
+const gabriela = require('gabriela');
+
+const sharedService = {
+    name: 'sharedService',
+    shared: {
+        modules: ['moduleOne', 'moduleTwo'],
+        plugins: ['sharedPlugin'],
+    },
+    init: function() {
+        return {};
+    }
+};
+
+const declaringModule = {
+    name: 'declaringModule',
+    dependencies: [sharedService]
+};
+
+const moduleOne = {
+    name: 'moduleOne',
+    moduleLogic: [function(sharedService) {
+        // use the sharedService here
+    }],
+};
+
+const moduleTwo = {
+    name: 'moduleTwo',
+    moduleLogic: [function(sharedService) {
+        // sharedService is the same instance, the same reference to an object from
+        // the first moduleTwo
+    }]
+};
+
+const sharedPlugin = {
+    name: 'sharedPlugin',
+    modules: [moduleOne]
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addModule(declaringModule);
+app.addModule(moduleOne);
+app.addModule(moduleTwo);
+app.addPlugin(sharedPlugin);
+
+app.startApp();
+````
+
+There are a couple of things to explain here.
+
+First, two modules share the *sharedService*, *moduleOne* and *moduleTwo*. They share the same reference
+to this service. Also, *sharedPlugin* is also using *sharedService* with the same reference as 
+*moduleOne* and *moduleTwo*.
+
+Lets explore this concept more in depth. Gabriela executes modules and plugins in the order in which they are added.
+First, *declaringModule* is executed, then *moduleOne*, all the way to *sharedPlugin*. When *moduleOne*
+is executed, the service is created for the first time. After that, *moduleTwo* uses the same service reference as 
+*moduleTwo*.
+
+Our *sharedPlugin* has *moduleOne* as its module and *sharedService* is also the same reference as in *moduleOne* and
+*moduleTwo. If we had added a third module, *moduleThree* and declared *sharedService* as its dependency, Gabriela
+would throw an error saying that it cannot find this dependency. 
+
+````javascript
+// This module would throw an error
+const moduleThree = {
+    name: 'moduleThree',
+    dependencies: [sharedService],
+    moduleLogic: [function(sharedService) {
+        
+    }],
+};
+````
+
+As said previously, *shared scope* is similar to *public* visibility scope but it allows you to 
+explicitly name your modules and plugins with which you want to share your services.
+
+
 
 ## 1.4 Events
 
