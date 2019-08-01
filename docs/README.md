@@ -830,7 +830,7 @@ Dependency injection is **scoped**. There are 3 scopes:
 
 We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
-### 1.2.1 DI definition
+### 1.3.1 DI definition
 
 A *definition*, in its basic form, consists of a **name** and an **init** function that is a factory
 for our service. This function has to return an object of some kind, be it a function object
@@ -867,7 +867,7 @@ will go into this place including services with *shared scope* and *private scop
 Since scopes are an important part of every DI service, lets examine scopes in detail; **visiblity scope**
 first.
 
-### 1.2.2 Visibility scopes
+### 1.3.2 Visibility scopes
 
 There are 3 types of visibility scopes in Gabriela:
 
@@ -1108,7 +1108,7 @@ Public services are also a great way for third party plugins to expose a service
 For example, for a MySQL plugin, there could be a public *mysqlConnection* service that our client code can use while
 the details of connecting to the database are handled by this third party plugin.
 
-### 1.2.3 Shared scope
+### 1.3.3 Shared scope
 
 **shared** scope is somewhat similar to public scope but in shared scope, you choose the modules and
 plugins that will be able to inject the service.
