@@ -875,6 +875,9 @@ There are 3 types of visibility scopes in Gabriela:
 - **plugin** scope
 - and **public** scope
 
+We will also talk about how to resolve services asynchronously and how to create services
+dynamically with **compiler passes**.
+
 #### *module* scope
 ___
 
