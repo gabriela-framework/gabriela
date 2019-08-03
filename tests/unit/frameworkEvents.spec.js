@@ -1571,7 +1571,7 @@ describe('Framework events', function() {
                             this.gabriela.close();
 
                             done();
-                        }, 50);
+                        }, 500);
                     });
                 }
             }
