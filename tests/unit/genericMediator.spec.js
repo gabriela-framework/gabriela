@@ -23,7 +23,7 @@ describe('Generic mediator concrete tests', function() {
         expect(eventCalled).to.be.equal(true);
     });
 
-    it('should call a asynchronous event', () => {
+    it('should call a asynchronous event', (done) => {
         const compiler = Compiler.create();
 
         const genericMediator = GenericMediator.create(compiler);
@@ -34,13 +34,15 @@ describe('Generic mediator concrete tests', function() {
                 eventCalled = true;
 
                 next();
+
+                done();
             });
         });
 
         expect(eventCalled).to.be.equal(true);
     });
 
-    it('should catch a thrown exception from within the event', () => {
+    it('should catch a thrown exception from within the event', (done) => {
         const compiler = Compiler.create();
 
         const genericMediator = GenericMediator.create(compiler);
@@ -61,9 +63,11 @@ describe('Generic mediator concrete tests', function() {
 
         expect(eventCalled).to.be.equal(true);
         expect(exceptionEntered).to.be.equal(true);
+
+        done();
     });
 
-    it('should call an event when async handling is explicitly disabled', () => {
+    it('should call an event when async handling is explicitly disabled', (done) => {
         const compiler = Compiler.create();
 
         const genericMediator = GenericMediator.create(compiler);
@@ -74,6 +78,8 @@ describe('Generic mediator concrete tests', function() {
         }, null, {enableAsyncHandling: false});
 
         expect(eventCalled).to.be.equal(true);
+
+        done();
     });
 
     it('should bind a proper context to an event', () => {
