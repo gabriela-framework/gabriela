@@ -1768,6 +1768,8 @@ Every other scope will work in events declared on a plugin. Of course, if you us
 the plugin has to be declared to be within that shared scope.
 ___
 
+### 1.4.3 Global events
+
 ## 1.5 Error handling
 
 Gabrielas error handling mechanism is controlled in two ways: by using the **throwException**
@@ -1869,7 +1871,9 @@ const myPlugin = {
 of *myPlugin* can use this plugins *onError* event to catch all errors within that plugin. Note again that
 this only works if you use *throwException* function. 
 
-### Process error handling
+### 1.5.3 Global errors processing
+
+#### Handling global error: asProcess()
 
 When using Gabriela as a NodeJS process, a critical error that is not caught terminates the process.
 You can override this behaviour by using the *catchError* event that is raised if *onError* does not exist
@@ -1902,7 +1906,7 @@ catchError(e) {
 }
 `````
 
-### Server error handling
+#### Handling global errors: asServer()
 
 ## 1.6 Configuration
 
