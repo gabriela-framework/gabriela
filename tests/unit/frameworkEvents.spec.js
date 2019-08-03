@@ -1419,14 +1419,20 @@ describe('Framework events', function() {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         // this is neccessary the onPostResponse is fired after the response has been sent,
                         // so this response handler gets executed before onPostResponse therefor, i have to wait
 
-                        this.gabriela.close();
+                        setTimeout(() => {
+                            expect(onPostResponseCalled).to.be.equal(true);
 
-                        done();
+                            next();
+
+                            this.gabriela.close();
+
+                            done();
+                        });
                     });
                 }
             }
