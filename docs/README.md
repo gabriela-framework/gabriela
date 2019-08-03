@@ -1629,6 +1629,47 @@ This example is the same as the previous one but we injected the *UserService* i
 They work in the same way. The order of arguments is not important. You can switch them however
 you like and it will still work.
 
+*emitting* an event is the same as emitting with a mediator, only you don't use the *mediator* object
+but the *emitter* object. The same rules apply for *emitter* as for the *mediator*.
+
+````javascript
+const userServiceDefinition = {
+    name: 'userService',
+    init: function() {
+        function UserService() {
+            this.saveUser = function(user) {
+                // your own logic for saving users
+            }
+        }
+        
+        return new UserService();
+    }
+};
+
+const userRegistrationModule = {
+    name: 'userRegistration',
+    dependencies: [userServiceDefinition],
+    mediator: {
+        onUserCreated: function(user, userService) {
+            // you can do something when the user is created
+        }
+    },
+    moduleLogic: [function(state, userService) {
+        const user = state.user;
+        
+        userService.saveUser(user);
+        
+        this.emitter.emit('onUserCreated', {
+            user: user
+        });
+    }]
+};
+````
+
+Notice that we only changed *mediator* to *emitter* and it works. The only difference is that
+*emitter* emits events asynchronously and the code after *emit* is executed right after. In other words,
+*emitted* events are sent to the event queue whiled *mediator* events are not and are executed
+synchronously.
 
 ## 1.5 Error handling
 
