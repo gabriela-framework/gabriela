@@ -46,10 +46,6 @@ function instance(rootCompiler) {
             return !(_waitCheck(taskRunner)).success;
         });
 
-/*        while(!(_waitCheck(taskRunner)).success) {
-            deasync.sleep(0);
-        }*/
-
         const task = taskRunner.getTask();
 
         if (task === 'error') {

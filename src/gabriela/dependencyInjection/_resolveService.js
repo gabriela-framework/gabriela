@@ -9,9 +9,6 @@ module.exports = function _resolveService(definition, deps, taskRunner) {
         deasync.loopWhile(function() {
             return !(_waitCheck(taskRunner)).success;
         });
-/*        while (!(_waitCheck(taskRunner)).success) {
-            deasync.sleep(0);
-        }*/
 
         service = taskRunner.getValue().call(null);
 
