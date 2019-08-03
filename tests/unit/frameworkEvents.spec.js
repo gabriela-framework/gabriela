@@ -1426,9 +1426,9 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.gabriela.close();
-
                             next();
+
+                            this.gabriela.close();
 
                             done();
 
@@ -1496,9 +1496,9 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.gabriela.close();
-
                             next();
+
+                            this.gabriela.close();
 
                             done();
 
@@ -1571,9 +1571,9 @@ describe('Framework events', function() {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
-                            this.gabriela.close();
-
                             next();
+
+                            this.gabriela.close();
 
                             done();
 
