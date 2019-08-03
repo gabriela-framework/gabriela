@@ -1420,10 +1420,12 @@ describe('Framework events', function() {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
+
+                            next();
 
                             this.gabriela.close();
 
@@ -1484,12 +1486,14 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
+
+                            next();
 
                             this.gabriela.close();
 
@@ -1555,13 +1559,14 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
+                            next();
 
                             this.gabriela.close();
 
