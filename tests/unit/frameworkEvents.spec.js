@@ -1420,17 +1420,15 @@ describe('Framework events', function() {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted(next) {
-                    next();
-
+                onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-                        }, 5000);
 
-                        this.gabriela.close();
+                            this.gabriela.close();
 
-                        done();
+                            done();
+                        }, 500);
                     });
                 }
             }
@@ -1486,19 +1484,17 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted(next) {
-                    next();
-
+                onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-                        }, 5000);
 
-                        this.gabriela.close();
+                            this.gabriela.close();
 
-                        done();
+                            done();
+                        }, 500);
                     });
                 }
             }
@@ -1565,11 +1561,12 @@ describe('Framework events', function() {
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-                        }, 5000);
 
-                        this.gabriela.close();
 
-                        done();
+                            this.gabriela.close();
+
+                            done();
+                        }, 50);
                     });
                 }
             }
