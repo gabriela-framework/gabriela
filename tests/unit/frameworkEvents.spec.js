@@ -1575,7 +1575,9 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
+                    next();
+                    
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
                         // this line should be commented when pushing to master
