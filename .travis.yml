@@ -1,3 +1,6 @@
+before_install:
+  - npm i -g npm@latest
+
 env:
   global:
     - CC_TEST_REPORTER_ID=46a1a68240d4dfbad17c616265ab33a938d4d12c420e2a2e2f0f7a4427f5187c
