@@ -10,8 +10,6 @@ const GenericMediator = require('../../src/gabriela/events/genericMediator');
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Generic mediator concrete tests', function() {
-    this.timeout(10000);
-
     it('should call a synchronous event', () => {
         const compiler = Compiler.create();
 
@@ -32,7 +30,7 @@ describe('Generic mediator concrete tests', function() {
 
         let eventCalled = false;
         genericMediator.callEvent(function(next) {
-            requestPromise.get('http://facebook.com').then(() => {
+            requestPromise.get('https://www.facebook.com').then(() => {
                 eventCalled = true;
 
                 next();
@@ -51,7 +49,7 @@ describe('Generic mediator concrete tests', function() {
         let eventCalled = false;
         try {
             genericMediator.callEvent(function(throwException) {
-                requestPromise.get('http://facebook.com').then(() => {
+                requestPromise.get('https://www.facebook.com').then(() => {
                     eventCalled = true;
 
                     throwException(new Error('Something went wrong'));
