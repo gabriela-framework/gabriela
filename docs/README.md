@@ -1360,7 +1360,41 @@ a service. In our example above, when *thirdPartyApiService* has finished fetchi
 our *ApiService* with *next* and return it. *apiModule* does not know or cares how the service
 is created. Only that it is there.
 
-### 1.3.6 Compiler passes
+### 1.3.6 Function expressions
+
+Function expressions are a way to execute functions created as service with the dependency injection
+system. It's a little hard to explain it with words, so lets see an example.
+
+````javascript
+const gabriela = require('gabriela');
+
+const functionExpressionDefinition = {
+    name: 'functionExpression',
+    init: function() {
+        return function() {
+            console.log('This is a function expression');
+        }
+    }
+};
+
+const myModule = {
+    name: 'myModule',
+    dependencies: [functionExpressionDefinition],
+    // functionExpression is executed here
+    moduleLogic: ['functionExpression()']
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addModule(myModule);
+
+app.startApp();
+````
+
+Function expressions are executed as strings in a middleware block. They are a way the way middleware
+block functions. Use them to make your module middleware functions less verbose and more readable. 
+
+### 1.3.7 Compiler passes
 
 Compiler passes are a feature of the dependency injection system that lets you create your services
 dynamically depending on your configuration or some other factors. They are also a perfect way to create
