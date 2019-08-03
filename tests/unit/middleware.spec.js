@@ -16,7 +16,7 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('https://www.facebook.com//').then((body) => {
+            requestPromise.get('http://goiwouldlike.com').then((body) => {
                 state.googleBody = body;
 
                 next();
