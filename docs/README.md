@@ -1509,7 +1509,130 @@ configuration.
 
 ## 1.4 Events
 
-## 1.5 Configuration
+As we said in the Primer, event system implements the [Mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern).
+The mediator pattern defines how a set of objects should interact and that is true for Gabriela but it is also used
+to send out events that are important to your application so you can react to them.
+
+There are two types of events: **mediator** event and **emitter** event. The only difference between the two
+is that **emitter** events are asynchronous. In that regard, they are kind of an asynchronous job
+queue with which you can send events that you don't want to wait for.
+
+Lets take a look at a basic example.
+
+````javascript
+const userServiceDefinition = {
+    name: 'userService',
+    init: function() {
+        function UserService() {
+            this.saveUser = function(user) {
+                // your own logic for saving users
+            }
+        }
+        
+        return new UserService();
+    }
+};
+
+const userRegistrationModule = {
+    name: 'userRegistration',
+    dependencies: [userServiceDefinition],
+    mediator: {
+        onUserCreated: function(user) {
+            // you can do something when the user is created
+        }
+    },
+    moduleLogic: [function(state, userService) {
+        const user = state.user;
+        
+        userService.saveUser(user);
+       
+        this.mediator.emit('onUserCreated', {
+            user: user
+        });
+    }]
+};
+````
+
+The event is registered with the *mediator* property on the module definition. Every property on the
+*mediator* object is the name of the event you emit. In our example above, that event is *onUserCreated*.
+After emit is sent, *mediator.onUserCreated* function is executed. *onUserCreated* receives a custom *user* argument
+from the *emit* function. You can use this mechanism to pass your custom arguments to the event function.
+
+___
+**On custom arguments**
+>Custom arguments are resolved as a key/value pair where the key is the name of the argument and the value is its value
+. In our example, the key value pair is *user* -> *user*. You can also inject anything you want in it
+
+````javascript
+this.mediator.emit('onSomeEvent', {
+    value1: 'value1',
+    value2: 'value2',
+});
+````
+
+>In an event function, this would resolve like this
+
+````javascript
+onSomeEvent: function(value1, value2) {
+    
+}
+````
+
+>The order of the arguments is not important and you can mix it with already declared services
+
+````javascript
+onSomeEvent: function(value2, userService, value1) {
+    
+}
+````
+___
+
+You can also inject your services that you declared with the dependency injection system just like you would
+with modules.
+
+````javascript
+const userServiceDefinition = {
+    name: 'userService',
+    init: function() {
+        function UserService() {
+            this.saveUser = function(user) {
+                // your own logic for saving users
+            }
+        }
+        
+        return new UserService();
+    }
+};
+
+const userRegistrationModule = {
+    name: 'userRegistration',
+    dependencies: [userServiceDefinition],
+    mediator: {
+        onUserCreated: function(user, userService) {
+            // you can do something when the user is created
+        }
+    },
+    moduleLogic: [function(state, userService) {
+        const user = state.user;
+        
+        userService.saveUser(user);
+       
+        this.mediator.emit('onUserCreated', {
+            user: user
+        });
+    }]
+};
+````
+
+This example is the same as the previous one but we injected the *UserService* into 
+*onUserCreated* mediator event as we did in the *moduleLogic* middleware block function.
+They work in the same way. The order of arguments is not important. You can switch them however
+you like and it will still work.
+
+
+## 1.5 Error handling
+
+## 1.6 Configuration
 
 # Tutorial 1 - Implementing MySQL plugin
 
