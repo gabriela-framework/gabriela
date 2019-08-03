@@ -9,7 +9,9 @@ const expect = chai.expect;
 const gabriela = require('../../src/gabriela/gabriela');
 const config = require('../config/config');
 
-describe('Middleware execution', () => {
+describe('Middleware execution', function() {
+    this.timeout(10000);
+    
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
         const name = 'googleCall';
 
