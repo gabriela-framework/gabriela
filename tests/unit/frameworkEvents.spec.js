@@ -1497,10 +1497,12 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
+                        next();
+                        
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
 
