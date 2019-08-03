@@ -1673,6 +1673,109 @@ synchronously.
 
 ## 1.5 Error handling
 
+Gabrielas error handling mechanism is controlled in two ways: by using the **throwException**
+function and reacting to them by using mediator events, and by using the global **catchError** event that catches all native javascript errors.
+Errors handled by Gabriela can be caught on the module level or plugin level or both.
+
+
+### 1.5.1 Using events in modules
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onError: function(err) {
+            // err.message === 'Something bad happened'
+        }
+    },
+    moduleLogic: [function(throwException) {
+        throwException(new Error('Something bad happened'));
+    }],
+};
+````
+
+___
+**Important note: The error object**
+>When using *onError* event, *Error* object that is thrown must always be the first argument
+to *onError*. You can call it whatever you like but it must the the first argument in this function.
+___
+
+*throwException* is the same as *next*, *skip* or *done* functions and can be injected almost anywhere. 
+After you *throwException*, the *onError* event is called with the first argument being the error itself.
+
+Notice that this is not the native javascript error handling since you do not throw an error but just create the
+*Error* instance itself. If you used `throw new Error()`, *onError* would not be called. 
+
+___
+**Important note: On error handling**
+>Try to use *throwException* instead of the native javascript, `throw new Error`. It allows you
+to have fine grained control over how you handle your errors and is more flexible, both on the module
+and plugin level
+___
+
+You can use the dependency injection mechanism in the *onError* event in the same way you use it anywhere else
+with the sole exception that the error instance must be the first argument in this function. You can also use the
+*next* function to control asynchronous code. 
+
+````javascript
+const service = {
+    name: 'service',
+    init: function() {
+        return {};
+    }
+};
+
+const myModule = {
+    name: 'myModule',
+    dependencies: [service],
+    mediator: {
+        onError: function(err, service, next) {
+            service.asyncFn().then(() => {
+                next();
+            });
+        }
+    },
+    moduleLogic: [function(throwException) {
+        throwException(new Error('Something bad happened'));
+    }],
+};
+````
+
+### Process error handling
+
+When using Gabriela as a NodeJS process, a critical error that is not caught terminates the process.
+You can override this behaviour by using the *catchError* event that is raised if *onError* does not exist
+either on the module or plugin level, or when an error is thrown with native javascript error handling i.e.
+`throw new Error()` instead of using `throwException` function.
+
+````javascript
+const gabriela = require('gabriela');
+
+gabriela.asProcess({
+    config: {},
+    events: {
+        catchError(e) {
+            
+        }
+    }
+})
+````
+
+*catchError* event will catch every error that is not handled by Gabrielas event system whether you used
+*throwException* function or not. 
+
+*catchError* has a *gabriela* instance that is bound to *this* so you can use it to terminate the process if neccessary,
+or continue execution.
+
+`````javascript
+catchError(e) {
+    // this function terminates the process
+    this.gabriela.close();
+}
+`````
+
+### Server error handling
+
 ## 1.6 Configuration
 
 # Tutorial 1 - Implementing MySQL plugin
