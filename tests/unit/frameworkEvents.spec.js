@@ -1455,7 +1455,6 @@ describe('Framework events', function() {
             mediator: {
                 onPostResponse(http, userService, next) {
                     requestPromise.get('http://goiwouldlike.com').then(() => {
-                        console.log('request finished');
                         onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');
@@ -1490,15 +1489,18 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
-                        expect(onPreResponseCalled).to.be.equal(true);
-                        // this is neccessary the onPostResponse is fired after the response has been sent,
-                        // so this response handler gets executed before onPostResponse therefor, i have to wait
+                        setTimeout(() => {
+                            expect(onPreResponseCalled).to.be.equal(true);
+                            // this is neccessary the onPostResponse is fired after the response has been sent,
+                            // so this response handler gets executed before onPostResponse therefor, i have to wait
+                            next();
 
-                        this.gabriela.close();
+                            this.gabriela.close();
 
-                        done();
+                            done();
+                        }, 500);
                     });
                 }
             }
@@ -1559,7 +1561,7 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
                         // this is neccessary the onPostResponse is fired after the response has been sent,
@@ -1567,6 +1569,8 @@ describe('Framework events', function() {
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
+
+                            next();
 
                             this.gabriela.close();
 
