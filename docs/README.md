@@ -918,9 +918,6 @@ const myModule = {
 }
 ````
 
-It is also very important to note that if you declare the same dependency in multiple modules,
-resolved services will be different references.
-
 ___
 **Best practice**
 >Only declare a dependency with a *module* visibility scope if that service will only be used
@@ -929,7 +926,7 @@ in that module. If the service will be used in more that one module, declare it 
 ___
 
 ___
-**About state in service**
+**About state in services**
 >Do not store state in your services. Your services should be a reusable stateless 'things'. For example,
 in a UserRepository service, you would have a UserRepository::getUserByName(name: string) method. 
 If, for some reason, you cache the user within this service and use the cached user in subsequent calls, the same reference of this service
@@ -937,6 +934,9 @@ will be used. Always create pure functions in your services (functions that, whe
 return the same output) and don't store any state in them. If you need to store state, use the 'state' object
 in any of the middleware blocks.
 ___
+
+It is also very important to note that if you declare the same dependency in multiple modules,
+resolved services will be different references.
 
 ````javascript
 const gabriela = require('gabriela');
@@ -1053,7 +1053,7 @@ in one place and then declare dependencies with *module* scope, only in modules 
 a *module* scope dependency in *declaringModule* would have no effect since it would not be used anywhere.
 
 It is also important to note that if we had created another plugin, a new instance of *pluginService* would be created
-and would not be the same reference as in other plugins. Keep that in mind when created services that are shared within a plugin.
+and would not be the same reference as in other plugins. Keep that in mind when creating services that are shared within a plugin.
 If you need to create a service that is shared only between certain plugins, use **shared** scope. We will talk about
 shared scope shortly. 
 
@@ -1268,6 +1268,7 @@ private but if you declare the same private service on a module, you can use it 
 ````javascript
 const userRepositoryDefinition = {
     name: 'userRepository',
+    // notice the 'public' scope
     scope: 'public',
     init: function() {
         function UserRepository() {}
@@ -1285,6 +1286,8 @@ const basicDefinition = {
 
 const userModule = {
     name: 'userModule',
+    // notice that both 'basicDefinition' and 'userRepositoryDefinition' are declared
+    // on this module
     dependencies: [basicDefinition, userRepositoryDefinition],
     moduleLogic: [function(basicDefinition, userRepository) {
         
@@ -1319,7 +1322,7 @@ const apiService = {
         });
         
         // the code exits here and an error is raised saying 
-        // that you have to return an object from an 'init' function
+        // that you have to return an object from the 'init' function
     }
 };
 ````
@@ -1391,8 +1394,8 @@ app.addModule(myModule);
 app.startApp();
 ````
 
-Function expressions are executed as strings in a middleware block. They are a way the way middleware
-block functions. Use them to make your module middleware functions less verbose and more readable. 
+Function expressions are executed as strings in a middleware block. They work in the same way as if you
+declared a regular function within a middleware block. Use them to make your modules middleware functions less verbose and more readable. 
 
 ### 1.3.7 Compiler passes
 
@@ -1416,7 +1419,7 @@ const basicDefinition = {
 
 Compiler passes are declared on the *definition* and they too have an *init* function. This function
 **is called before the service is instantiated; before the service _init_ function is called**. 
-Compiler pass *init* function accepts the *compiler*. This compiler is the same compiler that Gabriela
+Compiler pass *init* function accepts the *compiler* instance. This compiler is the same compiler that Gabriela
 uses in its internals to create and resolve services but you **cannot** resolve (compile) services in a compiler
 pass, only add them to the compiler. 
 
@@ -1502,7 +1505,7 @@ const declaringDefinition = {
 ````
 
 Here, we create an *EmailValidator* only if config has an email validation constraint. If it doesn't,
-there is not need to create it. *emailValidator*s visibility scope is *public* so you can use it anywhere in
+there is no need to create it. *emailValidator*s visibility scope is *public* so you can use it anywhere in
 your application. To recap, declaring services with compiler passes is the same as declaring within a module with
 *dependencies* array but compiler passes offer us a way of declaring services on the fly based on our 
 configuration. 
@@ -1510,7 +1513,7 @@ configuration.
 ## 1.4 Events
 
 As we said in the Primer, event system implements the [Mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern).
-The mediator pattern defines how a set of objects should interact and that is true for Gabriela but it is also used
+The mediator pattern defines how a set of objects should interact, and that is also how Gabriela implements it, but it is also used
 to send out events that are important to your application so you can react to them.
 
 There are two types of events: **mediator** event and **emitter** event. The only difference between the two
@@ -1561,8 +1564,8 @@ from the *emit* function. You can use this mechanism to pass your custom argumen
 
 ___
 **On custom arguments**
->Custom arguments are resolved as a key/value pair where the key is the name of the argument and the value is its value
-. In our example, the key value pair is *user* -> *user*. You can also inject anything you want in it
+>Custom arguments are resolved as a key/value pair where the key is the name of the argument and the value is its value. 
+In our example, the key value pair is *user* -> *user*. You can also inject anything you want in it
 
 ````javascript
 this.mediator.emit('onSomeEvent', {
@@ -1674,7 +1677,7 @@ synchronously.
 
 ### 1.4.2 Using events in plugins
 
-Plugins use the same syntax as modules. You use the *mediator* property to declare event and catch them
+Plugins use the same syntax as modules. You use the *mediator* property to declare events and catch them
 when they are emitted in modules.
 
 ````javascript
@@ -1737,8 +1740,8 @@ const myModule = {
     moduleLogic: [function() {
         // we put 'null' as the second argument since that argument 
         // is what we use when we want to inject custom arguments into
-        // the event function. The thrid argument is what tells the 
-        // mediators whether to propagate the event to module and plugin
+        // the event function. The third argument is what tells the 
+        // mediator whether to propagate the event to the module and the plugin
         this.mediator.emit('onEvent', null, true);
     }],
 };
@@ -1754,13 +1757,15 @@ const myPlugin = {
 ````
 
 If you use event propagation, both module and plugin events are called. First the event declared on the
-module level and then the event on the plugin level.
+module level and then the event on the plugin level. Please note that for event propagation to work, the ony
+thing you have to do is supply the *emit* functions third argument to *true*.
 
 ___
-#### **Important note: on dependency injection**
+#### **Important note: On dependency injection...**
 >Dependency injection in events works differently on the plugin level. On the plugin
 level, you can only inject dependencies that are not defined with *module* visibility scope.
-Every other scope will work in events declared on a plugin.
+Every other scope will work in events declared on a plugin. Of course, if you use *shared* scope,
+the plugin has to be declared to be within that shared scope.
 ___
 
 ## 1.5 Error handling
@@ -1789,7 +1794,7 @@ const myModule = {
 ___
 **Important note: The error object**
 >When using *onError* event, *Error* object that is thrown must always be the first argument
-to *onError*. You can call it whatever you like but it must the the first argument in this function.
+to *onError*. You can call it whatever you like but it must be the first argument in this function.
 ___
 
 *throwException* is the same as *next*, *skip* or *done* functions and can be injected almost anywhere. 
