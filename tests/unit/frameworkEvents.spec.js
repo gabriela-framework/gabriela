@@ -1430,7 +1430,7 @@ describe('Framework events', function() {
 
                             done();
 
-                        }, 500);
+                        }, 2000);
                     });
                 }
             }
@@ -1498,7 +1498,7 @@ describe('Framework events', function() {
 
                             done();
 
-                        }, 500);
+                        }, 2000);
                     });
                 }
             }
@@ -1571,7 +1571,7 @@ describe('Framework events', function() {
 
                             done();
 
-                        }, 500);
+                        }, 2000);
                     });
                 }
             }
