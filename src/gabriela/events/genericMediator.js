@@ -42,9 +42,13 @@ function instance(rootCompiler) {
 
         _callFn(fn, rootCompiler, args, context);
 
-        while(!(_waitCheck(taskRunner)).success) {
+        deasync.loopWhile(function() {
+            return !(_waitCheck(taskRunner)).success;
+        });
+
+/*        while(!(_waitCheck(taskRunner)).success) {
             deasync.sleep(0);
-        }
+        }*/
 
         const task = taskRunner.getTask();
 

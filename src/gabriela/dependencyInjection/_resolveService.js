@@ -6,9 +6,12 @@ module.exports = function _resolveService(definition, deps, taskRunner) {
     if (definition.isAsync) {
         definition.init(...deps);
 
-        while(!(_waitCheck(taskRunner)).success) {
+        deasync.loopWhile(function() {
+            return !(_waitCheck(taskRunner)).success;
+        });
+/*        while (!(_waitCheck(taskRunner)).success) {
             deasync.sleep(0);
-        }
+        }*/
 
         service = taskRunner.getValue().call(null);
 

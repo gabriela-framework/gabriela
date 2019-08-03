@@ -1422,7 +1422,7 @@ describe('Framework events', function() {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         // this is neccessary the onPostResponse is fired after the response has been sent,
                         // so this response handler gets executed before onPostResponse therefor, i have to wait
@@ -1430,6 +1430,8 @@ describe('Framework events', function() {
                         // for Travis CI, this only works in this test. For all other tests, it fails
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
+
+                            next();
 
                             this.gabriela.close();
 

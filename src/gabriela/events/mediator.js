@@ -36,9 +36,12 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 
     _callFn(fn, moduleOrPlugin, args, config);
 
-    while(!(_waitCheck(taskRunner)).success) {
+    deasync.loopWhile(function() {
+        return !(_waitCheck(taskRunner)).success;
+    });
+/*    while(!(_waitCheck(taskRunner)).success) {
         deasync.sleep(0);
-    }
+    }*/
 
     const task = taskRunner.getTask();
 
