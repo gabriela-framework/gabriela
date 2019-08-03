@@ -2,10 +2,6 @@ os:
   - linux
   - osx
 
-matrix:
-  allow_failures:
-    - os: linux
-
 before_install:
   - npm i -g npm@latest
 
