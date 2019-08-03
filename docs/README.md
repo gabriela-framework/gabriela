@@ -1741,6 +1741,37 @@ const myModule = {
 };
 ````
 
+### 1.5.2 Plugin error handling
+
+Catching errors on the plugin level uses the same *onError* event but works a little differently.
+
+If your module is within a plugin and you don't declare an *onError* event on a module but declare it
+on the plugin, the plugin *onError* event will be called. You can understand it as a catch all mechanism
+if you put your module within a plugin.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function(throwException) {
+        throwException(new Error('Something wrong happened'));
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    mediator: {
+        onError(err) {
+            // err::Error is thrown from 'myModule' module but caught here
+        }
+    },
+    modules: [myModule],
+};
+````
+
+*onError* is called within the plugins mediator but thrown on the module level. Any module that is part
+of *myPlugin* can use this plugins *onError* event to catch all errors within that plugin. Note again that
+this only works if you use *throwException* function. 
+
 ### Process error handling
 
 When using Gabriela as a NodeJS process, a critical error that is not caught terminates the process.
