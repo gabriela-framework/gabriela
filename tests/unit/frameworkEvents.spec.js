@@ -1491,8 +1491,11 @@ describe('Framework events', function() {
             events: {
                 onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onPreResponseCalled).to.be.equal(true);
+
                         setTimeout(() => {
-                            expect(onPreResponseCalled).to.be.equal(true);
+                            expect(onPostResponseCalled).to.be.equal(true);
+
                             // this is neccessary the onPostResponse is fired after the response has been sent,
                             // so this response handler gets executed before onPostResponse therefor, i have to wait
                             next();
