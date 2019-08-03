@@ -1432,7 +1432,7 @@ describe('Framework events', function() {
 
                             done();
 
-                        }, 200);
+                        }, 500);
                     });
                 }
             }
