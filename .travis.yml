@@ -19,11 +19,11 @@ branches:
   only:
     - master
 
-if: os = linux
-    before_script:
-      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-macos > ./cc-test-reporter
-      - chmod +x ./cc-test-reporter
-      - ./cc-test-reporter before-build
+#before_script:
+#  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-macos > ./cc-test-reporter
+#  - chmod +x ./cc-test-reporter
+#  - ./cc-test-reporter before-build
+
 
 script:
   - npm run coverage
