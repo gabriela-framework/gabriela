@@ -1489,21 +1489,13 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted(next) {
+                onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
-                        setTimeout(() => {
-                            expect(onPostResponseCalled).to.be.equal(true);
+                        this.gabriela.close();
 
-                            // this is neccessary the onPostResponse is fired after the response has been sent,
-                            // so this response handler gets executed before onPostResponse therefor, i have to wait
-                            next();
-
-                            this.gabriela.close();
-
-                            done();
-                        }, 500);
+                        done();
                     });
                 }
             }
@@ -1570,15 +1562,9 @@ describe('Framework events', function() {
                         // this is neccessary the onPostResponse is fired after the response has been sent,
                         // so this response handler gets executed before onPostResponse therefor, i have to wait
 
-                        setTimeout(() => {
-                            expect(onPostResponseCalled).to.be.equal(true);
+                        this.gabriela.close();
 
-                            next();
-
-                            this.gabriela.close();
-
-                            done();
-                        }, 500);
+                        done();
                     });
                 }
             }
