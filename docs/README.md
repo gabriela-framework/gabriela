@@ -1198,7 +1198,106 @@ const moduleThree = {
 As said previously, *shared scope* is similar to *public* visibility scope but it allows you to 
 explicitly name your modules and plugins with which you want to share your services.
 
+### 1.3.4 Private scope
 
+Private scopes are a way of encapsulating dependencies of a service to be only visible to 
+that service. They are a great way for keeping your dependencies hidden from the application
+and used only in the service where you need them.
+
+````javascript
+const userRepositoryDefinition = {
+    name: 'userRepository',
+    init: function() {
+        function UserRepository() {}
+        
+        return new UserRepository();
+    }
+};
+
+const basicDefinition = {
+    name: 'basicDefinition',
+    dependencies: [userRepositoryDefinition],
+    init: function(userRepository) {
+        // userRepository is only visible in basicDefinition
+    }
+};
+````
+
+As you can see, private dependencies are declared within a definition, in the same way
+you would declare it in a module. 
+
+If you make *userRepository* a private dependency of another service, *userRepository* will be
+created again (*init* function on *userRepositoryDefinition* will be called again) and you will
+get a new reference to it.
+
+````javascript
+const userRepositoryDefinition = {
+    name: 'userRepository',
+    init: function() {
+        function UserRepository() {}
+        
+        return new UserRepository();
+    }
+};
+
+const basicDefinition = {
+    name: 'basicDefinition',
+    dependencies: [userRepositoryDefinition],
+    init: function(userRepository) {
+        // userRepository is only visible in basicDefinition
+    }
+};
+
+const someOtherDefinition = {
+    name: 'basicDefinition',
+    dependencies: [userRepositoryDefinition],
+    init: function(userRepository) {
+        // this is a new reference of the userRepository
+    }
+};
+````
+
+But this does not mean that *userRepository* cannot be used anywhere else. You can have any
+scope attached to a *private* scope dependency. What makes a service private is only the 
+way you declare it. If you declare it in the service *definition*, that will make the dependency
+private but if you declare the same private service on a module, you can use it there too.
+
+````javascript
+const userRepositoryDefinition = {
+    name: 'userRepository',
+    scope: 'public',
+    init: function() {
+        function UserRepository() {}
+        
+        return new UserRepository();
+    }
+};
+
+const basicDefinition = {
+    name: 'basicDefinition',
+    dependencies: [userRepositoryDefinition],
+    init: function(userRepository) {
+    }
+};
+
+const userModule = {
+    name: 'userModule',
+    dependencies: [basicDefinition, userRepositoryDefinition],
+    moduleLogic: [function(basicDefinition, userRepository) {
+        
+    }],
+}
+````
+
+Here, *userRepository* has a *public* scope (and you can use it anywhere in your application) but is also privately scoped only for *basicDefinition*. That means that for *basicDefinition*,
+a new *userRepository* is created that has a different reference than that of *userRepository* used in 
+a *userModule*. 
+
+#### **Side note: Private dependencies**
+___
+>Private dependencies are the same as any other dependency. They have the same definition as any other
+dependency. The only difference is where you declare it. If you declare a dependency on a definition, you
+declared a private dependency. 
 
 ## 1.4 Events
 
