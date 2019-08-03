@@ -1426,11 +1426,11 @@ describe('Framework events', function() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-
-                            this.gabriela.close();
-
-                            done();
                         }, 5000);
+
+                        this.gabriela.close();
+
+                        done();
                     });
                 }
             }
@@ -1494,11 +1494,11 @@ describe('Framework events', function() {
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-
-                            this.gabriela.close();
-
-                            done();
                         }, 5000);
+
+                        this.gabriela.close();
+
+                        done();
                     });
                 }
             }
@@ -1565,12 +1565,11 @@ describe('Framework events', function() {
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
-
-                            this.gabriela.close();
-
-                            done();
                         }, 5000);
 
+                        this.gabriela.close();
+
+                        done();
                     });
                 }
             }
