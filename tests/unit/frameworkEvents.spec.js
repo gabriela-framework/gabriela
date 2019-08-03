@@ -1559,9 +1559,7 @@ describe('Framework events', function() {
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted(next) {
-                    next();
-
+                onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         expect(onPreResponseCalled).to.be.equal(true);
 
