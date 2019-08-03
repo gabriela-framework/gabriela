@@ -9,7 +9,9 @@ const expect = chai.expect;
 const GenericMediator = require('../../src/gabriela/events/genericMediator');
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
-describe('Generic mediator concrete tests', () => {
+describe('Generic mediator concrete tests', function() {
+    this.timeout(10000);
+
     it('should call a synchronous event', () => {
         const compiler = Compiler.create();
 
