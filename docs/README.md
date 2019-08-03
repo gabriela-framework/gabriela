@@ -819,7 +819,7 @@ Google request finished
 ## 1.3 Dependency injection
 
 Dependency injection is the central component of Gabriela and it makes her a closed system. In order
-to create a dependency injection service, you first have to create a DI `definition`. With that definition,
+to create a dependency injection service, you first have to create a dependency injection **definition**. With that definition,
 Gabriela will create your service and inject it where ever you need.
 
 Dependency injection is **scoped**. There are 3 scopes: 
@@ -1517,6 +1517,7 @@ There are two types of events: **mediator** event and **emitter** event. The onl
 is that **emitter** events are asynchronous. In that regard, they are kind of an asynchronous job
 queue with which you can send events that you don't want to wait for.
 
+### 1.4.1 Using events in modules
 Lets take a look at a basic example.
 
 ````javascript
@@ -1670,6 +1671,97 @@ Notice that we only changed *mediator* to *emitter* and it works. The only diffe
 *emitter* emits events asynchronously and the code after *emit* is executed right after. In other words,
 *emitted* events are sent to the event queue whiled *mediator* events are not and are executed
 synchronously.
+
+### 1.4.2 Using events in plugins
+
+Plugins use the same syntax as modules. You use the *mediator* property to declare event and catch them
+when they are emitted in modules.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        this.mediator.emit('onEvent');
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    mediator: {
+        onEvent: function() {
+            
+        }
+    }
+};
+````
+
+*onEvent* is not declared on *myModule* but on *myPlugin*, therefor, *myPlugin* *onEvent* is called. You can use this
+to control events of modules that are part of a single plugin. 
+
+If you had declared *onEvent* both on the module level and plugin level, module *onEvent* would take precendence.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onEvent: function() {
+            // module 'onEvent' takes precendence
+        }
+    },
+    moduleLogic: [function() {
+        this.mediator.emit('onEvent');
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    mediator: {
+        onEvent: function() {
+            // this 'onEvent' function is never called
+        }
+    }
+};
+````
+
+You can use the third argument of *Mediator::emit()* to propagate the event to both functions.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onEvent: function() {
+            // module 'onEvent' is called and execution proceeds to plugins
+            // 'onEvent'
+        }
+    },
+    moduleLogic: [function() {
+        // we put 'null' as the second argument since that argument 
+        // is what we use when we want to inject custom arguments into
+        // the event function. The thrid argument is what tells the 
+        // mediators whether to propagate the event to module and plugin
+        this.mediator.emit('onEvent', null, true);
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    mediator: {
+        onEvent: function() {
+            // after module 'onEvent' is called, 'myPlugin' 'onEvent' is called
+        }
+    }
+};
+````
+
+If you use event propagation, both module and plugin events are called. First the event declared on the
+module level and then the event on the plugin level.
+
+___
+#### **Important note: on dependency injection**
+>Dependency injection in events works differently on the plugin level. On the plugin
+level, you can only inject dependencies that are not defined with *module* visibility scope.
+Every other scope will work in events declared on a plugin.
+___
 
 ## 1.5 Error handling
 
