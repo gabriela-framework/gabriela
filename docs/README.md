@@ -1299,6 +1299,64 @@ ___
 dependency. The only difference is where you declare it. If you declare a dependency on a definition, you
 declared a private dependency. 
 
+### 1.3.5 Asynchronous services
+
+What if you need to create a service with data from some third party API? 
+
+````javascript
+const apiService = {
+    name: 'apiService',
+    // thirdPartyApiService is just a stub for a service 
+    // that fetches data from somewhere else other 
+    // than your application. It does not have anything 
+    // to do with Gabriela
+    init: function(thirdPartyApiService) {
+        thirdPartyApiService.getData().then(() => {
+            
+        });
+        
+        // the code exits here and an error is raised saying 
+        // that you have to return an object from an 'init' function
+    }
+};
+````
+
+In the example above, we have to wait until *thirdPartyApiService* has finished fetching data
+and then resolve our service. If you remember the chapter on modules, modules have a special
+*next* function that is used to signal to Gabriela that she needs to wait until async code is finished
+so she can continue to execute other middleware block functions. The same function is available
+for dependency injection but only slightly differently. 
+
+````javascript
+const apiService = {
+    name: 'apiService',
+    init: function(thirdPartyApiService, next) {
+        thirdPartyApiService.getData().then((data) => {
+            next(() => {
+                function ApiService(data) {
+                    // use data here
+                }
+                
+                return new ApiService(data);
+            });
+        });
+    }
+};
+
+const apiModule = {
+    name: 'apiModule',
+    moduleLogic: [function(apiService) {
+        
+    }],
+}
+````
+
+The only difference between *next* when used in a *module* and *next* within a definition is
+that *next* within a definition accepts a function argument that, when called, needs to return 
+a service. In our example above, when *thirdPartyApiService* has finished fetching data, we create
+our *ApiService* with *next* and return it. *apiModule* does not know or cares how the service
+is created. Only that it is there.
+
 ## 1.4 Events
 
 ## 1.5 Configuration
