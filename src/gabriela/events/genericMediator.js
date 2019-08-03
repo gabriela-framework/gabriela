@@ -34,7 +34,6 @@ function instance(rootCompiler) {
             throwException: taskRunner.throwException,
         });
 
-
         if (!inArray(ASYNC_FLOW_TYPES, args.map(arg => arg.name))) {
             _callFn(fn, rootCompiler, args, context);
 

@@ -2,6 +2,7 @@ const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
 const requestPromise = require('request-promise');
+const deasync = require('deasync');
 
 const it = mocha.it;
 const xit = mocha.xit;
@@ -1419,13 +1420,15 @@ describe('Framework events', function() {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
-                onAppStarted() {
+                onAppStarted(next) {
                     requestPromise.get('http://localhost:3000/path').then(() => {
                         // this is neccessary the onPostResponse is fired after the response has been sent,
                         // so this response handler gets executed before onPostResponse therefor, i have to wait
 
                         setTimeout(() => {
                             expect(onPostResponseCalled).to.be.equal(true);
+
+                            next();
 
                             this.gabriela.close();
 
@@ -1451,7 +1454,8 @@ describe('Framework events', function() {
             dependencies: [userServiceDefinition],
             mediator: {
                 onPostResponse(http, userService, next) {
-                    requestPromise.get('https://www.facebook.com').then(() => {
+                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                        console.log('request finished');
                         onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');
