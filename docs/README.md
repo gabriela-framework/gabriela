@@ -830,6 +830,9 @@ Dependency injection is **scoped**. There are 3 scopes:
 
 We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
+We will also talk about how to resolve services asynchronously, how to create 
+**function expressions** and how to create services dynamically with **compiler passes**.
+
 ### 1.3.1 DI definition
 
 A *definition*, in its basic form, consists of a **name** and an **init** function that is a factory
@@ -874,9 +877,6 @@ There are 3 types of visibility scopes in Gabriela:
 - **module** scope
 - **plugin** scope
 - and **public** scope
-
-We will also talk about how to resolve services asynchronously and how to create services
-dynamically with **compiler passes**.
 
 #### *module* scope
 ___
@@ -1359,6 +1359,119 @@ that *next* within a definition accepts a function argument that, when called, n
 a service. In our example above, when *thirdPartyApiService* has finished fetching data, we create
 our *ApiService* with *next* and return it. *apiModule* does not know or cares how the service
 is created. Only that it is there.
+
+### 1.3.6 Compiler passes
+
+Compiler passes are a feature of the dependency injection system that lets you create your services
+dynamically depending on your configuration or some other factors. They are also a perfect way to create
+services when you are creating third party plugins. 
+
+````javascript
+const basicDefinition = {
+    name: 'basicDefinition',
+    compilerPass: {
+        init: function(compiler) {
+            
+        }
+    },
+    init: function() {
+        return {};
+    }
+};
+````
+
+Compiler passes are declared on the *definition* and they too have an *init* function. This function
+**is called before the service is instantiated; before the service _init_ function is called**. 
+Compiler pass *init* function accepts the *compiler*. This compiler is the same compiler that Gabriela
+uses in its internals to create and resolve services but you **cannot** resolve (compile) services in a compiler
+pass, only add them to the compiler. 
+
+This is the interface of Gabrielas compiler: 
+
+**Compiler::add(definition: object)**<br/>
+Adds a definition to the compiler. This is the same as declaring a definition on a module with 
+the *dependencies* array. 
+
+**Compiler::has(name: string): boolean**</br>
+Checks if a definition with *name* exists
+
+**Compiler::isResolved(name: string): boolean**<br/>
+Checks if a definition is already resolved into a service. 
+
+You can use these methods to add more definitions to the compiler that can be resolved later on in your modules.
+
+````javascript
+const basicDefinition = {
+    name: 'basicDefinition',
+    compilerPass: {
+        init: function(compiler) {
+            const dynamicDefinition = {
+                name: 'dynamicDefinition',
+                init: function() {
+                    return {};
+                }
+            }
+            
+            compiler.add(dynamicDefinition);
+        }
+    },
+    init: function() {
+        return {};
+    }
+};
+````
+
+Compiler passes also accept a *config* argument with which you can configure your services. If you remember,
+Gabriela *asProcess* and *asServer* methods accept a *config* object literal. That object can be passed
+to a compiler pass to create a service based on that config.
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asServer({
+    config: {
+        validation: {
+            email: {
+                type: String,
+                domains: ['com', 'org'],
+            }
+        }
+    }
+});
+
+const declaringDefinition = {
+    compilerPass: {
+        init: function(config, compiler) {
+            // this is the validation property from Gabriela::asServer() above
+            const validation = config.validation;
+            
+            // if this property exists, create an 'emailValidator' service
+            if (validation.email) {
+                const emailValidatorDefinition = {
+                    name: 'emailValidator',
+                    scope: 'public',
+                    init: function() {
+                        function EmailValidator(emailConstraints) {
+                            // use email config here
+                        }
+                        
+                        // EmailValidator receives email constraints from config
+                        return new EmailValidator(validation.email);
+                    }
+                }
+                
+                compiler.add(emailValidatorDefinition);
+            }
+        }
+    }
+}
+````
+
+Here, we create an *EmailValidator* only if config has an email validation constraint. If it doesn't,
+there is not need to create it. *emailValidator*s visibility scope is *public* so you can use it anywhere in
+your application. To recap, declaring services with compiler passes is the same as declaring within a module with
+*dependencies* array but compiler passes offer us a way of declaring services on the fly based on our 
+configuration. 
 
 ## 1.4 Events
 
