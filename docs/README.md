@@ -2454,6 +2454,100 @@ app.startApp();
 We don't actually need any other middleware block like *moduleLogic* here because the value of *state* is 
 automatically sent as the response body. Simple as that.
 
+You can, of course, use the *restify* response object to send the response which will override
+the default response sending mechanism.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'getUser',
+    http: {
+        route: {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'get',
+        }
+    },
+    // 'userService' is not part of Gabriela. It is only used here for brevity
+    validators: [function(http, state, userService, next, throwException) {
+        const id = http.req.params.id;
+        userService.getUserById(id).then((err, user) => {
+            if (err) return throwException(`User with id ${id} does not exist`);
+
+            state.user = user;
+            
+            // this will override the default mechanism of sending the 'state' object
+            http.res.send(state);
+        });
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+### 1.7.4 HTTP response events
+
+When an HTTP response is sent, it triggers two built-in events: **onPreResponse** and **onPostResponse**.
+As the name applies, *onPreResponse* is triggered before the response is sent and *onPostResponse* is 
+triggered after the response is sent; after the `http.res.send()` is called.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'getUser',
+    mediator: {
+        onPreResponse() {
+            // act here before the response is sent
+        },
+        onPostResponse() {
+            // act here after the response is sent
+        }
+    },
+    http: {
+        route: {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'get',
+        }
+    },
+    // 'userService' is not part of Gabriela. It is only used here for brevity
+    validators: [function(http, state, userService, next, throwException) {
+        const id = http.req.params.id;
+        userService.getUserById(id).then((err, user) => {
+            if (err) return throwException(`User with id ${id} does not exist`);
+
+            state.user = user;
+            
+            // this will override the default mechanism of sending the 'state' object
+            http.res.send(state);
+        });
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+You can also send the response in *onPreResponse* since it also accepts the *http* argument. If you choose to do that,
+the default mechanism will also be overriden. If you already sent a response in any middleware
+functions and try to send it in *onPreResponse*, **an error will be raised**.
+
+### 1.7.5 On dependency injection
+
+Dependency injection mechanism works the same way in an HTTP module as in a module
+executed as a process. It also work in *onPreResponse* and *onPostResponse* events.
+You also have access to *next* and *throwException* to control asynchronous code and 
+handling errors, respectively.
+
 # Tutorial 1 - Implementing MySQL plugin
 
 # Tutorial 2 - Implementing Spotify API
