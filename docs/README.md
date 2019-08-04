@@ -347,6 +347,16 @@ and then take a look at different tutorials in this documentation.
 
 # 1. Architecture
 
+Gabrielas main building blocks are **modules**, **plugins**, **events** and the **dependency injection system**.
+
+Gabriela can be created as a NodeJS process or as a NodeJS server. Both have the same interfaces and both are
+executed in the same way with the exception that Gabriela server apps have some additional features like
+*onPreResponse* or *onPostResponse* events and many others. Generally, your modules logic does not have to care
+if it receives and processes data given from an HTTP request or somewhere else. In that regard, modules and plugins
+can be reused in any type of apps. 
+
+*modules* and *plugins* are executed in the order in which you added them.
+
 ## 1.1 Modules
 
 Gabriela's main building block is called a **module**. A module is an isolated piece of 
@@ -853,8 +863,6 @@ const app = gabriela.asProcess({config: {}});
 
 app.addPlugin(myPlugin);
 ````
-
-
 
 ## 1.3 Dependency injection
 
