@@ -1874,7 +1874,32 @@ const serverApp = gabriela.asProcess({
 });
 ````
 
+For now, we will explain **onAppStarted**. **catchError** will be covered in chapter
+*1.5 Error handling*. 
 
+*onAppStarted* is fired only once, when all modules and plugins finish executing. It accepts
+only services with *public* visibility scope. 
+
+*onAppStarted* and *catchError* also have a special *gabriela* variable bound to *this*.
+The only variable bound to this is *gabriela* object and it has only one method: **close**.
+
+````javascript
+const gabriela = require('gabriela');
+
+const processApp = gabriela.asProcess({
+    config: {},
+    events: {
+        onAppStarted () {
+            this.gabriela.close();
+        },
+        catchError(e) {
+        }
+    }
+});
+````
+
+The interface for this *gabriela* object bound to *this* is the same when you create gabriela
+*asProcess* and *asServer*.
 
 ## 1.5 Error handling
 
@@ -1981,6 +2006,8 @@ this only works if you use *throwException* function.
 #### Handling global error: asProcess()
 
 When using Gabriela as a NodeJS process, a critical error that is not caught terminates the process.
+This is very important because you might not want this default behaviour.
+
 You can override this behaviour by using the *catchError* event that is raised if *onError* does not exist
 either on the module or plugin level, or when an error is thrown with native javascript error handling i.e.
 `throw new Error()` instead of using `throwException` function.
@@ -1998,20 +2025,29 @@ gabriela.asProcess({
 })
 ````
 
+The first argument you declare in this function will always be the thrown error, whatever you call it.
+
 *catchError* event will catch every error that is not handled by Gabrielas event system whether you used
 *throwException* function or not. 
 
-*catchError* has a *gabriela* instance that is bound to *this* so you can use it to terminate the process if neccessary,
+*catchError* has a *gabriela* instance that is bound to *this* so you can use it to terminate the process if necessary,
 or continue execution.
 
 `````javascript
 catchError(e) {
-    // this function terminates the process
-    this.gabriela.close();
+    if (yourCondition) {
+        // terminate the process
+        this.gabriela.close();
+    } else {
+        // otherwise, continue running the app
+    }
 }
 `````
 
 #### Handling global errors: asServer()
+
+Handling error *asServer* is the same as handling errors *asProcess* and will
+terminate the server if you don't override this default behaviour.
 
 ## 1.6 Configuration
 
