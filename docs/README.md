@@ -1770,9 +1770,65 @@ ___
 
 ### 1.4.3 Built in events
 
+Gabriela has some built in events that can help you in your development flow. Those
+include ones on the module, plugin and global events.
+
 #### Module events
 
+There are 2 module events: **onModuleStarted** and **onModuleFinished**. Both are declared
+on the *mediator* key of your module declaration.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onModuleStarted() {
+            
+        },
+        onModuleFinished() {
+            
+        }
+    }
+};
+````
+
+Both events are fired only once. The first time *myModule* has started executing, *onModuleStarted*
+will be fired. The first time *myModule* has finished executing, *onModuleFinished* will be fired
+
 #### Plugin events
+
+Plugin events work the same as module events, only they are called differently.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onModuleStarted() {
+            
+        },
+        onModuleFinished() {
+            
+        }
+    }
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    mediator: {
+        onPluginStarted() {
+            
+        },
+        onPluginFinished() {
+            
+        }
+    },
+    modules: [myModule],
+}
+````
+
+In the same way as module events, **onPluginStarted** and **onPluginFinished** are executed only once.
+The first time *myPlugin* is executed, *onPluginStarted* is fired. The first time *myPlugin* has finished
+executing, *onPluginFinished* is fired.
 
 #### Global events
 
