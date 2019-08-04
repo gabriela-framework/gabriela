@@ -2307,6 +2307,31 @@ terminate the server if you don't override this default behaviour.
 
 ## 1.6 Configuration
 
+As we said previously, Gabriela is still in alpha stage so configuration is a feature that I still don't know what to do with. 
+As I said in the Primer, you have to add the initial configuration when creating Gabriela *asProcess* and *asServer*.
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asProcess({config: {}});
+
+// or
+
+const app = gabriela.asServer({config: {}});
+````
+
+Supplying `{config: {}}` is mandatory. For now, **anything** you put into `config` will 
+be injected into compiler passes. This is the only place where config is injected and used.
+
+This feature is still under development but you can use it however you like. In the future, there will
+be multiple environments and setting up custom environments. There will also be support for the `.env` 
+file to declare environment variables that could be used inside alongside configuration.
+
+There will also be a *gabriela* command line utility that will be able to do much of the effort of
+working with configuration for you.
+
+Until then, use this feature only with compiler passes.
+
 ## 1.7 HTTP
 
 # Tutorial 1 - Implementing MySQL plugin
