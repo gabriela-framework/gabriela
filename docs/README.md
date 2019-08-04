@@ -2334,6 +2334,89 @@ Until then, use this feature only with compiler passes.
 
 ## 1.7 HTTP
 
+We haven't talked about running and using Gabriela as a server. The reason for that is that Gabriela tries to
+be decoupled from HTTP. The idea is for your modules and plugins to not know whether they are executed in a 
+HTTP request. That road is still being paved but I hope I came close.
+
+So lets explore how to use Gabriela as a server.
+
+### 1.7.1 Declaring an HTTP module
+
+Declaring an HTTP module is the same as declaring a process module with the difference of adding
+the **http** property.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'httpModule',
+    http: {
+        route: {
+            name: 'routeName',
+            path: '/route-path',
+            method: 'get',
+        }
+    },
+    moduleLogic: [function() {
+        console.log('Executed when you create a request to /route-path');
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+It's simple as that. After you start the app, you can go to */route-path* and process your route.
+
+### 1.7.2 Default response body
+
+If you remember the chapter *1.1.1 Modules*, you can inject a *state* object to every middleware function
+with which you can communicate between middleware functions.
+
+This *state* object has a special meaning within an HTTP context. Every information that *state* object
+holds is returned automatically as the response body. In our previous example, a json response (`application/json`) will
+be returned with a body of an empty object `{}` since the *state* is set by default to be an empty object.
+
+Let's try a different example from the real world where we will try to get the a user by and `id`.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'getUser',
+    http: {
+        route: {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'get',
+        }
+    },
+    // 'userService' is not part of Gabriela. It is only used here for brevity
+    validators: [function(http, state, userService, next, throwException) {
+        const id = http.req.params.id;
+        userService.getUserById(id).then((err, user) => {
+            if (err) return throwException(`User with id ${id} does not exist`);
+
+            state.user = user;
+            
+            next();
+        });
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+We don't actually need any other middleware block like *moduleLogic* here because the value of *state* is 
+automatically sent as the response body. Simple as that.
+
 # Tutorial 1 - Implementing MySQL plugin
 
 # Tutorial 2 - Implementing Spotify API
