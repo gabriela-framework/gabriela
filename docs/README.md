@@ -1793,7 +1793,9 @@ const myModule = {
 ````
 
 Both events are fired only once. The first time *myModule* has started executing, *onModuleStarted*
-will be fired. The first time *myModule* has finished executing, *onModuleFinished* will be fired
+will be fired. The first time *myModule* has finished executing, *onModuleFinished* will be fired.
+
+Both events accept injecting services with any dependency scope.
 
 #### Plugin events
 
@@ -1830,9 +1832,16 @@ In the same way as module events, **onPluginStarted** and **onPluginFinished** a
 The first time *myPlugin* is executed, *onPluginStarted* is fired. The first time *myPlugin* has finished
 executing, *onPluginFinished* is fired.
 
+Both events accept injecting services with any dependency injection scope except *module* scope since
+plugins do not have access to services with *module* visibility scope.
+
 #### **Side note: On built-in events**
 >Don't forget that *onModuleStarted*, *onModuleFinished*, *onPluginStarted* and *onPluginFinished*
 are all executed only once, when module or plugin start and finish executing for the first time.
+
+#### **Side note: On dependency injection**
+>Dependency injection works the same way for built-in events as in any other Gabriela component except
+that plugin events do not accept injecting services with *module* visibility scope.
 
 #### Global events
 
@@ -1863,8 +1872,9 @@ const serverApp = gabriela.asProcess({
         }
     }
 });
-
 ````
+
+
 
 ## 1.5 Error handling
 
