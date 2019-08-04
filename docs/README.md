@@ -2046,7 +2046,7 @@ catchError(e) {
 
 #### Handling global errors: asServer()
 
-Handling error *asServer* is the same as handling errors *asProcess* and will
+Handling errors *asServer* is the same as handling errors *asProcess* and will
 terminate the server if you don't override this default behaviour.
 
 ## 1.6 Configuration
