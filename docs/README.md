@@ -2490,6 +2490,45 @@ app.addModule(httpModule);
 app.startApp();
 ````
 
+We also only use the *validators* middleware block since we don't need any other but it would
+be structurally more accurate to use the *moduleLogic* block to actually send a response.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'getUser',
+    http: {
+        route: {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'get',
+        }
+    },
+    // 'userService' is not part of Gabriela. It is only used here for brevity
+    validators: [function(http, state, userService, next, throwException) {
+        const id = http.req.params.id;
+        userService.getUserById(id).then((err, user) => {
+            if (err) return throwException(`User with id ${id} does not exist`);
+
+            state.user = user;
+        });
+    }],
+    moduleLogic: [function(http, state) {
+        // this will override the default mechanism of sending the 'state' object
+        http.res.send(state);
+    }]
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+A good practice is to put what the code actually does in its own structural middleware block.
+
 ### 1.7.4 HTTP response events
 
 When an HTTP response is sent, it triggers two built-in events: **onPreResponse** and **onPostResponse**.
