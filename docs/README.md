@@ -915,6 +915,21 @@ const app = gabriela.asProcess({config: {}});
 app.addPlugin(myPlugin);
 ````
 
+### 1.2.2 Plugin execution
+
+Modules added to a plugin are executed in the order you added them.
+
+````javascript
+const myPlugin = {
+    name: 'myPlugin',
+    // 'module1', 'module2' etc... declarations are ommitted for brevity
+    modules: [module1, module2, module3, module4]
+}
+````
+
+In the above example, *module1* will be executed first, then *module2* all the way to 
+*module4*.
+
 ## 1.3 Dependency injection
 
 Dependency injection is the central component of Gabriela and it makes her a closed system. In order
