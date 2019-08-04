@@ -1830,7 +1830,41 @@ In the same way as module events, **onPluginStarted** and **onPluginFinished** a
 The first time *myPlugin* is executed, *onPluginStarted* is fired. The first time *myPlugin* has finished
 executing, *onPluginFinished* is fired.
 
+#### **Side note: On built-in events**
+>Don't forget that *onModuleStarted*, *onModuleFinished*, *onPluginStarted* and *onPluginFinished*
+are all executed only once, when module or plugin start and finish executing for the first time.
+
 #### Global events
+
+There are two global events in Gabriela: **onAppStarted** and **catchError**. Both are declared
+when creating an app with *asProcess* or *asServer*.
+
+````javascript
+const gabriela = require('gabriela');
+
+const processApp = gabriela.asProcess({
+    config: {},
+    events: {
+        onAppStarted () {
+        },
+        catchError(e) {
+        }
+    }
+});
+
+// or
+
+const serverApp = gabriela.asProcess({
+    config: {},
+    events: {
+        onAppStarted () {
+        },
+        catchError(e) {
+        }
+    }
+});
+
+````
 
 ## 1.5 Error handling
 
