@@ -373,7 +373,7 @@ app.add(plugin2);
 app.startApp();
 ````
 
-When you run *startApp**, Gabriela starts running every component in the order you added them.
+When you run *startApp*, Gabriela starts running every component in the order you added them.
 First, *module1* is ran, then *module2* all the way up to *plugin2*.
 
 We haven't talked about plugins yet, but for now, know that plugins are basically collections of modules
@@ -924,11 +924,153 @@ const myPlugin = {
     name: 'myPlugin',
     // 'module1', 'module2' etc... declarations are ommitted for brevity
     modules: [module1, module2, module3, module4]
-}
+};
 ````
 
 In the above example, *module1* will be executed first, then *module2* all the way to 
 *module4*.
+
+### 1.2.3 Exposed events
+
+We haven't covered events up to this point and exposed events are a part of the event system that is 
+unique to plugins and could be used to create powerful third party plugins. Exposed events give you the power
+to emit events that happen in a plugin giving your application a chance to react. For example, a MySQL plugin
+can emit an exposed event when a connection is established or even every time a query is executed.
+
+So lets take a close look at exposed events. Before this chapter, you can go and read a chapter *1.4 Events* but this chapter is composed in a way that you don't have to.
+
+#### Declaring exposed events
+
+Exposed events are declared on the plugin declaration.
+
+````javascript
+const myPlugin = {
+    name: 'myPlugin',
+    // this is where we declare an exposed event
+    exposedEvents: ['onExposedEvent'],
+    // 'myModule' is not yet created but we will create it shortly
+    modules: [myModule]
+};
+````
+
+Every exposed event is a string declared on the *exposedEvents* array. This event is
+not yet emitted and must be emitted within a module that is part of a plugin. In *myPlugin*, we
+have *myModule* but we haven't created it. So, lets create it to see how to emit events.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        this.mediator.emit('onExposedEvent', {
+            data: {}
+        });
+    }],
+}
+````
+
+*myModule* is not doing anything special except emit *onExposedEvent* with some custom data. Lets put this all
+together to see how it all comes to play.
+
+````javascript
+const gabriela = require('gabriela');
+
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        this.mediator.emit('onExposedEvent', {
+            data: {}
+        });
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    exposedEvents: ['onExposedEvent'],
+    // 'myModule' is not yet created but we will create it shortly
+    modules: [myModule]
+};
+
+const app = gabriela.asProcess({config: {}});
+
+app.addPlugin(myPlugin);
+
+app.startApp();
+````
+
+This is all great, but we still don't have any code where we react to this event. To do this, lets
+create a module that has a mediator event function attached that runs when *myModule* emits *onExposedEvent*.
+
+````javascript
+const gabriela = require('gabriela');
+
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        this.mediator.emit('onExposedEvent', {
+            data: {}
+        });
+    }],
+};
+
+const myPlugin = {
+    name: 'myPlugin',
+    exposedEvents: ['onExposedEvent'],
+    // 'myModule' is not yet created but we will create it shortly
+    modules: [myModule]
+};
+
+const reactingModule = {
+    name: 'reactingModule',
+    mediator: {
+        onExposedEvent(data) {
+            
+        }
+    }
+}
+
+const app = gabriela.asProcess({config: {}});
+
+app.addPlugin(myPlugin);
+app.addModule(reactingModule);
+
+app.startApp();
+````
+
+We have added *reactingModule* to our app. Every time *myModule*, that is part of *myPlugin*, emits 
+*onExposedEvent*, *reactingModule* will react to that event by running *onExposedEvent* function.
+
+Now, imagine that *myPlugin* is actually a third party plugin that you installed over *npm*. Lets say 
+that it is an abstraction over MongoDBs native NodeJS driver. Such a plugin could have an exposed event *onConnectionEstablished*
+are your own modules could react to it.
+
+````javascript
+const gabriela = require('gabriela');
+// this is our fictional plugin that abstracts native mongo driver for NodeJS.
+const mongoPlugin = require('gabriela-mongo-plugin');
+
+const app = gabriela.asProcess({config: {}});
+
+app.addPlugin(mongoPlugin);
+
+// this is our custom module with which we do 'something' with mongo
+const myModule = {
+    name: 'myModule',
+    mediator: {
+        onConnectionEstablished(conn) {
+            
+        }
+    }
+};
+
+app.addModule(myModule);
+
+app.startApp();
+````
+
+As you can see, integrating native mongo driver into gabriela is just one line of code.
+The connection is created for us and the only thing we have to do is react to events that 
+our plugin is creating.
+
 
 ## 1.3 Dependency injection
 
