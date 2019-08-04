@@ -1768,7 +1768,13 @@ Every other scope will work in events declared on a plugin. Of course, if you us
 the plugin has to be declared to be within that shared scope.
 ___
 
-### 1.4.3 Global events
+### 1.4.3 Built in events
+
+#### Module events
+
+#### Plugin events
+
+#### Global events
 
 ## 1.5 Error handling
 
