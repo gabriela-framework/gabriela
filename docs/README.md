@@ -355,7 +355,58 @@ executed in the same way with the exception that Gabriela server apps have some 
 if it receives and processes data given from an HTTP request or somewhere else. In that regard, modules and plugins
 can be reused in any type of apps. 
 
-*modules* and *plugins* are executed in the order in which you added them.
+As we said, *modules* and *plugins* are executed in the order in which you added them. 
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asServer({config: {}});
+
+/**
+* 'module1', 'module2' etc. are just stubs to make the example more readable
+*/
+app.add(module1);
+app.add(module2);
+app.add(plugin1);
+app.add(plugin2);
+
+app.startApp();
+````
+
+When you run *startApp**, Gabriela starts running every component in the order you added them.
+First, *module1* is ran, then *module2* all the way up to *plugin2*.
+
+We haven't talked about plugins yet, but for now, know that plugins are basically collections of modules
+in which you can group related modules. Because of that, modules that are added solely as modules
+but also as parts of a plugin are executing once as a standalone module and once in every plugin.
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asProcess({config: {}});
+
+const myModule = {
+    name: 'myModule',
+    moduleLogic: [function() {
+        console.log('myModule is executed');
+    }]
+}
+
+const myPlugin = {
+    name: 'myPlugin',
+    modules: [myModule],
+}
+
+app.addModule(myModule);
+app.addPlugin(myPlugin);
+
+app.startApp();
+````
+
+In the above example, Gabriela starts executing *myModule* first. Then, it starts executing every
+module that is part of *myPlugin*. Because of that, you will see `myModule is executed` printed twice.
+
+So, lets start exploring Gabrielas architecture one component at a time. Modules first.
 
 ## 1.1 Modules
 
