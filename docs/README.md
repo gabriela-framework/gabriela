@@ -1782,7 +1782,6 @@ Gabrielas error handling mechanism is controlled in two ways: by using the **thr
 function and reacting to them by using mediator events, and by using the global **catchError** event that catches all native javascript errors.
 Errors handled by Gabriela can be caught on the module level or plugin level or both.
 
-
 ### 1.5.1 Using events in modules
 
 ````javascript
@@ -1916,6 +1915,8 @@ catchError(e) {
 
 ## 1.6 Configuration
 
+## 1.7 HTTP
+
 # Tutorial 1 - Implementing MySQL plugin
 
 # Tutorial 2 - Implementing Spotify API
@@ -1923,6 +1924,7 @@ catchError(e) {
 # 2. Best practices
 
 # 3. Case studies
-## 3.1 Implementing layered architecture
-## 3.2 Dynamically creating configurable DI services
-## 3.3 Creating third party plugins
+## 3.1 Decoupling from HTTP
+## 3.2 Implementing layered architecture
+## 3.3 Dynamically creating configurable DI services
+## 3.4 Creating third party plugins
