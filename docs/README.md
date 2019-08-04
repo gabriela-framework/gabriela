@@ -2338,6 +2338,9 @@ We haven't talked about running and using Gabriela as a server. The reason for t
 be decoupled from HTTP. The idea is for your modules and plugins to not know whether they are executed in a 
 HTTP request. That road is still being paved but I hope I came close.
 
+Gabriela uses [restify](http://restify.com/docs/home/) so the request and response objects
+from restify are the same in Gabriela.
+
 So lets explore how to use Gabriela as a server.
 
 ### 1.7.1 Declaring an HTTP module
@@ -2371,7 +2374,41 @@ app.startApp();
 
 It's simple as that. After you start the app, you can go to */route-path* and process your route.
 
-### 1.7.2 Default response body
+### Special **http** argument
+
+The question now is, how do we get the data from the request or send a response?
+
+Just like the *state* argument, Gabriela has an **http** argument that can be injected
+when Gabriela is executed in an HTTP context.
+
+````javascript
+const gabriela = require('gabriela');
+
+const httpModule = {
+    name: 'httpModule',
+    http: {
+        route: {
+            name: 'routeName',
+            path: '/route-path',
+            method: 'get',
+        }
+    },
+    moduleLogic: [function(http) {
+        console.log(`Request arrived from ${http.req.href}`);
+    }],
+};
+
+const app = gabriela.asServer({config: {}});
+
+app.addModule(httpModule);
+
+app.startApp();
+````
+
+This object contains two properties: **req** and **res** who correspond to the current request
+and response. These are the same object that you would use with restify.
+
+### 1.7.3 Default response body
 
 If you remember the chapter *1.1.1 Modules*, you can inject a *state* object to every middleware function
 with which you can communicate between middleware functions.
@@ -2380,7 +2417,7 @@ This *state* object has a special meaning within an HTTP context. Every informat
 holds is returned automatically as the response body. In our previous example, a json response (`application/json`) will
 be returned with a body of an empty object `{}` since the *state* is set by default to be an empty object.
 
-Let's try a different example from the real world where we will try to get the a user by and `id`.
+Let's try a different example from the real world where we will try to get a user by its `id`.
 
 ````javascript
 const gabriela = require('gabriela');
