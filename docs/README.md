@@ -816,6 +816,46 @@ Google request finished
 
 ## 1.2 Plugins
 
+Plugins are a way to centralize your modules into one logical place. For example, you can group
+modules that handle user management into one place. Although you can create reusable 
+third party modules that others can use in their projects, it is better to centralize your
+solutions into a plugin since plugins provide more fine grained control over you app.
+
+Plugins also let you create **exposed events** that you can declare from your modules within a plugin
+and fire them when something important happens. We have not yet talked about events and this will be just
+a sneak peak of how the event system in Gabriela works, but you can go to chapter *1.4 Events* any time
+to take a closer look at this feature.
+
+So, lets start exploring plugins.
+
+### 1.2.1 Declaring a plugin
+
+A basic plugin has a **name** and a **modules** property. Both are required.
+
+````javascript
+const myPlugin = {
+    name: 'myPlugin',
+    modules: [/** declare your modules here */]
+}
+````
+
+You add plugins to your app with *addPlugin* method
+
+````javascript
+const gabriela = require('gabriela');
+
+const myPlugin = {
+    name: 'myPlugin',
+    modules: [/** declare your modules here */]
+}
+
+const app = gabriela.asProcess({config: {}});
+
+app.addPlugin(myPlugin);
+````
+
+
+
 ## 1.3 Dependency injection
 
 Dependency injection is the central component of Gabriela and it makes her a closed system. In order
