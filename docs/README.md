@@ -2589,7 +2589,11 @@ handling errors, respectively.
 
 # Tutorial 1 - Implementing MySQL plugin
 
+To be created.
+
 # Tutorial 2 - Implementing Spotify API
+
+To be created.
 
 # 2. Best practices
 
