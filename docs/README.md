@@ -2593,6 +2593,104 @@ handling errors, respectively.
 
 # 2. Best practices
 
+## 2.1 Declaring dependencies
+
+For readability, it is always best to declare every dependency scope except, *module*
+and *plugin*, within a single declaring module.
+
+````javascript
+const declaringModule = {
+    name: 'declaringModule',
+    dependencies: [publicDependency, sharedDependency]
+};
+````
+
+This makes your code easily readable and you can quickly know where your *public* and *shared*
+dependencies are declared.
+
+## 2.2 Dynamic dependencies with compiler passes
+
+Keep all of your compiler passes in this single module.
+
+````javascript
+const declaringModule = {
+    compilerPass: {
+        init: function(config, compiler) {
+            // all your dynamic dependencies go here
+        }
+    },
+    name: 'declaringModule',
+    dependencies: [publicDependency, sharedDependency]
+};
+````
+
+This way, all your dynamic dependencies will be created in one place where you can 
+easily find them.
+
+## 2.3 Structure
+
+Always structure your middleware blocks with what makes sense for your code.
+Put the validation logic into the *validators* block. If you need to create a model to work on
+before anything else, create it in the *preLogicTransformers* block. If you need to do some
+cleanup after you executed your modules logic, do it in *postLogicTransformers*. If you need
+to secure your module before anything else, do it in the *security* block.
+
+## 2.4 Wiring dependencies
+
+Always try to declare every dependency with the *module* visibility scope and if your logic demands it,
+upgrade it to *public* or some other scope. Kind of like in OOP where one always declares a property
+on an object private by default and protected if required. This makes your modules more
+reusable and decoupled from the rest of the application.
+
+## 2.5 Using prefixes in third party plugins
+
+If you need to create a reusable plugin, create a *prefix* config property to avoid
+naming collisions when creating dynamic dependencies.
+
+````javascript
+// config.js
+
+{
+    config: {
+        myPlugin: {
+            prefix: uniqueName,
+        }
+    }
+}
+
+// declaring module with a compiler pass
+
+const declaringModule = {
+    compilerPass: {
+        init: function(config, compiler) {
+            const prefix = config.myPlugin.prefix;
+            let name;
+            
+            if (prefix) {
+                name = `${prefix}dependencyName`;
+            } else {
+                name = 'dependencyName';
+            }
+            
+            const someDependencyDefinition = {
+                name: name,
+                init: function() {
+                    
+                }
+            }
+            
+            compiler.add(someDependencyDefinition);
+        }
+    },
+    name: 'declaringModule',
+    dependencies: [publicDependency, sharedDependency]
+};
+````
+
+`dependencyName` could be a name that you use to name one of your own service. If that is the case, this third party
+plugin gives you the possibility to name his dependencies with value of the *prefix*
+property in front of it.
+
 # 3. Case studies
 ## 3.1 Decoupling from HTTP
 ## 3.2 Implementing layered architecture
