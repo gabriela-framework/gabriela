@@ -2336,7 +2336,7 @@ Until then, use this feature only with compiler passes.
 
 We haven't talked about running and using Gabriela as a server. The reason for that is that Gabriela tries to
 be decoupled from HTTP. The idea is for your modules and plugins to not know whether they are executed in a 
-HTTP request. That road is still being paved but I hope I came close.
+HTTP request. That road is still being paved but I hope I'm coming close.
 
 Gabriela uses [restify](http://restify.com/docs/home/) so the request and response objects
 from restify are the same in Gabriela.
@@ -2406,7 +2406,7 @@ app.startApp();
 ````
 
 This object contains two properties: **req** and **res** who correspond to the current request
-and response. These are the same object that you would use with restify.
+and response. These are the same objects that you would use with restify.
 
 ### 1.7.3 Default response body
 
@@ -2583,7 +2583,7 @@ functions and try to send it in *onPreResponse*, **an error will be raised**.
 ### 1.7.5 On dependency injection
 
 Dependency injection mechanism works the same way in an HTTP module as in a module
-executed as a process. It also work in *onPreResponse* and *onPostResponse* events.
+executed as a process. It also works in *onPreResponse* and *onPostResponse* events.
 You also have access to *next* and *throwException* to control asynchronous code and 
 handling errors, respectively.
 
