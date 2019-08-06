@@ -1,6 +1,14 @@
 const {getArgs, hasKey, is} = require('../util/util');
 const _callFn = require('./util/_callFn');
 
+/**
+ * Sends an event to the event loop.
+ * @param fn
+ * @param moduleOrPlugin
+ * @param config
+ * @param customArgs
+ * @private
+ */
 function _sendEvent(fn, moduleOrPlugin, config, customArgs) {
     new Promise((resolve) => {
         let args = getArgs(fn);
@@ -44,6 +52,9 @@ function instance(moduleOrPlugin, config) {
     this.add = add;
 }
 
+/**
+ * The factory for the emitter. create() always creates a new emitter.
+ */
 function factory() {
     this.create = function(moduleOrPlugin, config) {
         return new instance(moduleOrPlugin, config);

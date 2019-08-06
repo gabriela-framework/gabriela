@@ -1,6 +1,15 @@
 const {hasKey} = require('../../util/util');
 const resolveDependencies = require('../../dependencyInjection/resolveDependencies');
 
+/**
+ * Executes the given function (fn) with supplied argument (args).
+ *
+ * resolveDependencies() recursively resolves dependencies from all compilers
+ * @param fn
+ * @param moduleOrPlugin
+ * @param args
+ * @param config
+ */
 module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {
         const dep = resolveDependencies(

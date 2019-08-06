@@ -1,5 +1,16 @@
 const {hasKey, getArgs, is} = require('../util/util');
 
+/**
+ * Using exposed mediator
+ *
+ * Exposed mediator creates its own definitions. Client code has no influence on it.
+ *
+ * This mediator has to be used as a deferred emitter. It cannot emit anything if definition to emit an event is not
+ * pre bound to this mediator. Client code has to call preBind() method before emitting any event. It can optionally
+ * call add() method first to declare a definition, and the preBind() to bind the actual event to that definition.
+ */
+
+
 function _callFn(fn, compiler, args) {
     const resolvedArgs = args.map((arg) => {
         let dep;
@@ -37,16 +48,6 @@ function _callEvent(fn, compiler, customArgs) {
 
     _callFn(fn, compiler, args);
 }
-
-/**
- * Using exposed mediator
- *
- * Exposed mediator creates its own definitions. Client code has no influence on it.
- *
- * This mediator has to be used as a deferred emitter. It cannot emit anything if definition to emit an event is not
- * pre bound to this mediator. Client code has to call preBind() method before emitting any event. It can optionally
- * call add() method first to declare a definition, and the preBind() to bind the actual event to that definition.
- */
 
 function factory() {
     const definitions = {};
