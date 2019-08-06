@@ -3,6 +3,10 @@ const TaskRunner = require('../misc/taskRunner');
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
 
+/**
+ * Compiles a dependency recursively in the same way that the Compiler does but does not save them.
+ * Private dependencies are prevalidated before adding them to the compiler
+ */
 function factory() {
     function compile(definition) {
         const {dependencies} = definition;

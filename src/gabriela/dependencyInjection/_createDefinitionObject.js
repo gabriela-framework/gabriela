@@ -1,6 +1,13 @@
 const Validator = require('../misc/validator');
 const {hasKey} = require('../util/util');
 
+/**
+ * The definition object model with which gabriela is working internally.
+ *
+ * It is derived from the user supplied DI definition
+ * @param init
+ * @returns {{init: *, shared: (*|userServiceInit.shared|{plugins, modules}|userServiceInit.shared|userServiceInit.shared|{plugins}), hasCompilerPass(): *, compilerPass: *, isAsync: (*|boolean|number), isSharedWith(*=): (boolean|*|*), sharedPlugins(): (*|undefined), addPrivateDependency(*=): void, hasScope(): boolean, dependencies: Array, scope: *, name: *, sharedModules(): (*|undefined), hasDependencies(): *, isShared(): boolean}|*|boolean|boolean|*}
+ */
 module.exports = function _createInitObject(init) {
     return {
         name: init.name,

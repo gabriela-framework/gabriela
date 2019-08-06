@@ -99,12 +99,17 @@ function factory() {
         throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
     }
 
+    /**
+     * Only works on its own tree. Does not check parent or root
+     * @param name
+     * @returns {boolean|*}
+     */
     function hasOwn(name) {
         return hasKey(selfTree, name);
     }
 
     /**
-     * Recursively tries to find a dependency in all scopes.
+     * Recursively tries to find a dependency in all scopes. Checks both parent and root
      * @param name
      * @returns {boolean}
      */
@@ -115,7 +120,11 @@ function factory() {
 
         return false;
     }
-
+    /**
+     * Checks if the service is resolved on parent, root and self
+     * @param name
+     * @returns {boolean}
+     */
     function isResolved(name) {
         if (hasKey(resolved, name)) return true;
         if (this.parent && this.parent.isResolved(name)) return true;
@@ -124,6 +133,17 @@ function factory() {
         return false;
     }
 
+    /**
+     * Compiles the service in parent, root and self scope if possible. originCompiler is the compiler that has
+     * started the compilation. This is needed because if a service has a dependency, that dependency has to go trough
+     * the process of resolving a service from the starting compiler.
+     *
+     * config argument is for the future and its use is not yet decided
+     * @param name
+     * @param originCompiler
+     * @param config
+     * @returns {*|this|*}
+     */
     function compile(name, originCompiler, config) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (hasKey(resolved, name)) return resolved[name];
@@ -140,6 +160,10 @@ function factory() {
 
         if (!definition) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
 
+        /**
+         * If the definitino has private dependencies, resolve them but do not save them. Only save the parent
+         * resolving service
+         */
         if (definition.hasDependencies()) {
             if (hasKey(resolved, name)) return resolved[name];
 
