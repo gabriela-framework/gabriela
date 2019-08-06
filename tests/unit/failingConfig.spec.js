@@ -48,4 +48,37 @@ describe('Failing config factory tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if the mandatory framework key does not exist', () => {
+        let entersException = false;
+        try {
+            configFactory.create({
+                config: {
+                }
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid config. 'framework' property must exist in configuration.`);
+       }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail if the mandatory framework key is not an object', () => {
+        let entersException = false;
+        try {
+            configFactory.create({
+                config: {
+                    framework: 'somethingTrueButNotObject',
+                }
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid config. 'framework' property must be an object.`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });
