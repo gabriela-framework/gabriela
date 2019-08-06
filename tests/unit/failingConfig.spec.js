@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const configFactory = require('../../src/gabriela/configFactory');
+const {ENV} = require('../../src/gabriela/misc/types');
 
 describe('Failing config factory tests', () => {
     it('should fail if config is not an object', () => {
@@ -77,6 +78,25 @@ describe('Failing config factory tests', () => {
             entersException = true;
 
             expect(e.message).to.be.equal(`Invalid config. 'framework' property must be an object.`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail if framework.env is not dev or prod', () => {
+        let entersException = false;
+        try {
+            configFactory.create({
+                config: {
+                    framework: {
+                        env: 'somethingElse',
+                    }
+                }
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid config. Invalid environment. Valid environments are ${ENV.toArray().join(',')}`);
         }
 
         expect(entersException).to.be.equal(true);

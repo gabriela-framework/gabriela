@@ -10,6 +10,13 @@ function validateFramework(framework) {
     if (!framework) throw new Error(`Invalid config. 'framework' property must exist in configuration.`);
 
     if (!is('object', framework)) throw new Error(`Invalid config. 'framework' property must be an object.`);
+
+    // validating environment here
+    const env = framework.env;
+
+    if (!env) framework.env = ENV.DEVELOPMENT;
+
+    if (env && !ENV.toArray().includes(env)) throw new Error(`Invalid config. Invalid environment. Valid environments are ${ENV.toArray().join(',')}`);
 }
 
 function instance() {
