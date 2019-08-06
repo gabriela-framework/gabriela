@@ -18,7 +18,8 @@ describe('Gabriela server tests', function() {
             config: {
                 server: {
                     port: 4000,
-                }
+                },
+                framework: {},
             }
         }, {
             events: {
@@ -68,8 +69,9 @@ describe('Gabriela server tests', function() {
             config: {
                 server: {
                     port: 4000,
-                }
-            }
+                },
+                framework: {},
+            },
         }, {
             events: {
                 onAppStarted: function() {
@@ -136,7 +138,8 @@ describe('Gabriela server tests', function() {
             config: {
                 server: {
                     port: 4000,
-                }
+                },
+                framework: {},
             }
         }, {
             events: {
@@ -281,7 +284,9 @@ describe('Gabriela server tests', function() {
         };
 
         const g = gabriela.asServer({
-            config: {},
+            config: {
+                framework: {},
+            },
         }, {
             events: {
                 onAppStarted() {

@@ -86,6 +86,15 @@ class HttpEvents extends IIterator {
     }
 }
 
+class EnvTypes extends IIterator{
+    constructor() {
+        super();
+
+        this.DEVELOPMENT = 'dev';
+        this.PRODUCTION = 'prod';
+    }
+}
+
 module.exports = Object.freeze({
     MIDDLEWARE_TYPES: Object.freeze(_proxifyType(new MiddlewareTypes())),
     BUILT_IN_MEDIATORS: Object.freeze(_proxifyType(new BuiltInMediators())),
@@ -94,4 +103,5 @@ module.exports = Object.freeze({
     MANDATORY_ROUTE_PROPS: Object.freeze(_proxifyType(new MandatoryRouteProps())),
     GABRIELA_EVENTS: Object.freeze(_proxifyType(new GabrielaEvents())),
     HTTP_EVENTS: Object.freeze(_proxifyType(new HttpEvents())),
+    ENV: Object.freeze(_proxifyType(new EnvTypes())),
 });

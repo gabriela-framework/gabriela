@@ -334,6 +334,7 @@ describe('Immediately executing middleware with dependency injection and express
                     maxMessage: 'Max message',
                     invalidEmailMessage: 'Invalid email',
                 },
+                framework: {},
             }
         });
 

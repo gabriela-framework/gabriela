@@ -12,7 +12,8 @@ describe('Config tests', () => {
     it('should resolve config and create it as a singleton', () => {
         const Config = configFactory.create({
             config: {
-                validator: {}
+                validator: {},
+                framework: {},
             }
         });
 

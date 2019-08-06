@@ -472,7 +472,9 @@ describe('Failing framework events', () => {
 
     it('should fail if onModuleStarted do not have an onError event attached', (done) => {
         const g = gabriela.asProcess({
-            config: {},
+            config: {
+                framework: {},
+            },
         });
 
         g.addModule({
@@ -496,7 +498,9 @@ describe('Failing framework events', () => {
 
     it('should fail if onModuleFinished do not have an onError event attached', (done) => {
         const g = gabriela.asProcess({
-            config: {},
+            config: {
+                framework: {}
+            },
         });
 
         g.addModule({

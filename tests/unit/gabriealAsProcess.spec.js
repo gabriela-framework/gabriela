@@ -705,7 +705,9 @@ describe('Gabriela as process tests', () => {
         };
 
         const app = gabriela.asProcess({
-            config: {},
+            config: {
+                framework: {},
+            },
         }, {
             events: {
                 onAppStarted() {

@@ -49,7 +49,9 @@ describe('Compiler pass failing tests', () => {
         };
 
         const app = gabriela.asProcess({
-            config: {},
+            config: {
+                framework: {},
+            },
         });
 
         app.addModule(mdl1);

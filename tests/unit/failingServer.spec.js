@@ -17,6 +17,7 @@ describe('Failing server tests', () => {
                     server: {
                         port: 'invalid'
                     },
+                    framework: {},
                 }
             });
         } catch (err) {
@@ -36,6 +37,7 @@ describe('Failing server tests', () => {
                     server: {
                         port: 'invalid'
                     },
+                    framework: {}
                 }
             }, {
                 events: {
@@ -54,7 +56,9 @@ describe('Failing server tests', () => {
 
     it('should fail the server because of invalid catchError event', () => {
         const g = gabriela.asServer({
-            config: {}
+            config: {
+                framework: {},
+            }
         }, {
             events: {
                 catchError: null,
@@ -75,7 +79,9 @@ describe('Failing server tests', () => {
 
     it('should fail the server because of invalid onPreResponse event', () => {
         const g = gabriela.asServer({
-            config: {}
+            config: {
+                framework: {}
+            }
         }, {
             events: {
                 onPreResponse: null,
@@ -96,7 +102,9 @@ describe('Failing server tests', () => {
 
     it('should fail the server because of invalid onPostResponse event', () => {
         const g = gabriela.asServer({
-            config: {}
+            config: {
+                framework: {},
+            }
         }, {
             events: {
                 onPostResponse: null,
@@ -117,7 +125,9 @@ describe('Failing server tests', () => {
 
     it('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
         const g = gabriela.asServer({
-            config: {}
+            config: {
+                framework: {},
+            }
         }, {
             events: {
                 onAppStarted() {
@@ -137,7 +147,9 @@ describe('Failing server tests', () => {
 
     it('error thrown inside middleware processing should take precendence over an error thrown inside onAppStarted event', (done) => {
         const g = gabriela.asServer({
-            config: {}
+            config: {
+                framework: {},
+            }
         }, {
             events: {
                 onAppStarted() {
