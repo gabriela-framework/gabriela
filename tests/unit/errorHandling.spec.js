@@ -162,4 +162,30 @@ describe('Complete error handling tests', () => {
 
         app.startApp();
     });
+
+    it('should call onExit() event (terminate the process)', (done) => {
+        const mdl = {
+            name: 'catchErrorModule',
+            mediator: {
+                onSomeEvent: function() {
+                    throw new Error('Something went wrong');
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onSomeEvent');
+            }],
+        };
+
+        const app = gabriela.asProcess(config, {
+            events: {
+                onExit() {
+                    done();
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
 });
