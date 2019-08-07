@@ -9,7 +9,7 @@ const _waitCheck = require('../util/_waitCheck');
  * @param taskRunner
  * @returns {*}
  */
-module.exports = function _resolveService(definition, deps, taskRunner) {
+module.exports = function _resolveService(definition, deps, taskRunner, injectionType) {
     let service;
 
     /**
@@ -26,7 +26,7 @@ module.exports = function _resolveService(definition, deps, taskRunner) {
 
         taskRunner.resolve();
     } else {
-        service = definition.init.call(null, ...deps);
+        service = definition.init.call(injectionType, ...deps);
 
         taskRunner.resolve();
     }

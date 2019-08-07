@@ -454,4 +454,28 @@ describe('Compiler instance tests', () => {
         root.root.add(definition);
         expect(root.getDefinition('definition')).to.be.a('object');
     });
+
+    it('should bind this object to the injection type object in the init function', () => {
+        let initEntered = false;
+
+        const definition = {
+            name: 'definition',
+            init: function() {
+                initEntered = true;
+
+                expect(this).to.be.a('object');
+                expect(this.withConstructorInjection).to.be.a('function');
+                expect(this.withPropertyInjection).to.be.a('function');
+                expect(this.withMethodInjection).to.be.a('function');
+                return () => {};
+            },
+        };
+
+        const compiler = Compiler.create();
+        compiler.add(definition);
+
+        compiler.compile('definition');
+
+        expect(initEntered).to.be.equal(true);
+    })
 });

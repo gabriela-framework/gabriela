@@ -2,6 +2,7 @@ const {getArgNames, is, hasKey} = require('../util/util');
 
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
+const InjectionTypeFactory = require('./injectionTypes/injectionType');
 
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
@@ -61,6 +62,8 @@ function factory() {
      * @type {{}}
      */
     const resolved = {};
+
+    const injectionType = new InjectionTypeFactory();
 
     function add(definition) {
         selfTree[definition.name] = _createDefinitionObject(definition);
@@ -175,7 +178,7 @@ function factory() {
         const taskRunner = TaskRunner.create();
 
         const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
-        const service = _resolveService(definition, deps, taskRunner);
+        const service = _resolveService(definition, deps, taskRunner, injectionType);
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 
