@@ -9,7 +9,7 @@
  * - throwException()
  *     Marks the task as an error task and saves the error as this tasks value
  *
- * The client code determines how it will handle the results from this functions. 
+ * The client code determines how it will handle the results from this functions.
  * @constructor
  */
 function TaskRunner() {

@@ -3,8 +3,9 @@ const parseExpression = require('../expression/parse');
 const Mediator = require('../events/mediator');
 const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
-const {MIDDLEWARE_TYPES} = require('../misc/types');
+const {MIDDLEWARE_TYPES, ASYNC_FLOW_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
+const TaskRunner = require('../misc/taskRunner');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();
@@ -19,6 +20,27 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, conf
     if (mdl.dependencies && mdl.dependencies.length > 0) {
         _addDependencies(mdl, config);
     }
+}
+
+function _resolveFunctionExpression(fnString, mdl, config) {
+    const parsed = parseExpression(fnString);
+
+    if (!mdl.compiler.has(parsed.fnName)) throw new Error(`Expression dependency injection error. Dependency with name '${parsed.fnName}' not found in the dependency tree`);
+
+    const deps = [];
+    for (const dep of parsed.dependencies) {
+        if (ASYNC_FLOW_TYPES.toArray().includes(dep)) {
+            const taskRunner = TaskRunner.create();
+
+            deps.push(taskRunner[dep]);
+        } else {
+            deps.push(mdl.compiler.compile(dep, mdl.compiler, config));
+        }
+    }
+
+    const dep = mdl.compiler.compile(parsed.fnName, mdl.compiler, config);
+
+    return dep.bind(null, ...deps);
 }
 
 function _resolveMiddleware(mdl, config) {
@@ -38,11 +60,8 @@ function _resolveMiddleware(mdl, config) {
 
                     newMiddlewareFns.push(n.middleware);
                 } else if (is('string', n)) {
-                    const parsed = parseExpression(n);
-
-                    if (!mdl.compiler.has(parsed.fnName)) throw new Error(`Expression dependency injection error. Dependency with name '${parsed.fnName}' not found in the dependency tree`);
-
-                    newMiddlewareFns.push(mdl.compiler.compile(parsed.fnName, mdl.compiler, config));
+                    newMiddlewareFns.push(n);
+                    //newMiddlewareFns.push(_resolveFunctionExpression(n, mdl, config));
                 } else {
                     newMiddlewareFns.push(n);
                 }

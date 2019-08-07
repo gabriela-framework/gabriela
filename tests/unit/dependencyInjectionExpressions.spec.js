@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -18,6 +19,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     middlewareCalled = true;
 
+                    expect(state).to.be.a('object');
+
                     next();
                 }
 
@@ -28,7 +31,7 @@ describe('Immediately executing middleware with dependency injection and express
         const middlewareModule = {
             name: 'middlewareModule',
             dependencies: [middlewareService],
-            moduleLogic: ['validateEmail()']
+            moduleLogic: ['validateEmail(state, next)']
         };
 
         const g = gabriela.asProcess(config);;
@@ -54,6 +57,8 @@ describe('Immediately executing middleware with dependency injection and express
 
                     emailMiddlewareCalled = true;
 
+                    expect(state).to.be.a('object');
+
                     next();
                 }
 
@@ -67,6 +72,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     state.validateName = true;
 
+                    expect(state).to.be.a('object');
+
                     nameMiddlewareCalled = true;
 
                     next();
@@ -79,7 +86,7 @@ describe('Immediately executing middleware with dependency injection and express
         const middlewareModule = {
             name: 'middlewareModule',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()', 'validateName()']
+            moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)']
         };
 
         const g = gabriela.asProcess(config);;
@@ -110,6 +117,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++emailMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     next();
                 }
 
@@ -123,6 +132,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++nameMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     next();
                 }
 
@@ -133,19 +144,19 @@ describe('Immediately executing middleware with dependency injection and express
         const module1 = {
             name: 'middlewareModule1',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()']
+            moduleLogic: ['validateEmail(state, next)']
         };
 
         const module2 = {
             name: 'middlewareModule2',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateName()'],
+            moduleLogic: ['validateName(state, next)'],
         };
 
         const module3 = {
             name: 'middlewareModule3',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()', 'validateName()'],
+            moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
         const g = gabriela.asProcess(config);;
@@ -182,6 +193,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++emailMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     expect(userRepository).to.be.a('object');
 
                     next();
@@ -197,6 +210,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++nameMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     expect(userRepository).to.be.a('object');
 
                     next();
@@ -209,19 +224,19 @@ describe('Immediately executing middleware with dependency injection and express
         const module1 = {
             name: 'module1',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()'],
+            moduleLogic: ['validateEmail(state, next)'],
         };
 
         const module2 = {
             name: 'module2',
             dependencies: [validateNameInit, userRepositoryInit],
-            moduleLogic: ['validateName()'],
+            moduleLogic: ['validateName(state, next)'],
         };
 
         const module3 = {
             name: 'module3',
             dependencies: [validateEmailInit, validateNameInit],
-            moduleLogic: ['validateEmail()', 'validateName()'],
+            moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
         const g = gabriela.asProcess(config);;
@@ -280,6 +295,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++emailMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     expect(userRepository).to.be.a('object');
 
                     next();
@@ -312,6 +329,8 @@ describe('Immediately executing middleware with dependency injection and express
                 function validate(state, next) {
                     ++nameMiddlewareCalled;
 
+                    expect(state).to.be.a('object');
+
                     expect(userRepository).to.be.a('object');
 
                     next();
@@ -324,7 +343,7 @@ describe('Immediately executing middleware with dependency injection and express
         const module1 = {
             name: 'module1',
             dependencies: [validateEmailInit, validateNameInit, userRepositoryInit],
-            moduleLogic: ['validateEmail()', 'validateName()'],
+            moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
         const g = gabriela.asProcess({
@@ -343,6 +362,56 @@ describe('Immediately executing middleware with dependency injection and express
         return g.runModule().then(() => {
             expect(validateEmailCompilerPassCalled).to.be.equal(true);
             expect(validateNameCompilerPassCalled).to.be.equal(true);
+        });
+    });
+
+    it('should resolve function expression with string dependencies',(done) => {
+        let validateEmailCalled = false;
+        const userRepositoryInit = {
+            name: 'userRepository',
+            scope: 'public',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const validateEmailDefinition = {
+            name: 'validateEmailWithDependency',
+            init: function() {
+                return function(userRepository, next, state) {
+                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                        validateEmailCalled = true;
+
+                        expect(userRepository).to.be.a('object');
+
+                        expect(state).to.be.a('object');
+
+                        next();
+                    });
+                }
+            }
+        };
+
+        const mdl = {
+            name: 'mdl',
+            dependencies: [validateEmailDefinition, userRepositoryInit],
+            moduleLogic: ['validateEmailWithDependency(userRepository, next, state)'],
+        };
+
+        const g = gabriela.asProcess({
+            config: {
+                framework: {},
+            }
+        });
+
+        g.addModule(mdl);
+
+        g.runModule().then(() => {
+            //expect(validateEmailCalled).to.be.equal(true);
+
+            done();
         });
     });
 });

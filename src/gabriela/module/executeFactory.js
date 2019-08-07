@@ -14,7 +14,7 @@ function _getResponseEvents(mdl) {
     return {};
 }
 
-function _createWorkingDataStructures(mdl, req, res) {
+function _createWorkingDataStructures(mdl, req) {
     const httpContext = {
         req,
     };
