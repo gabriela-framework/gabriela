@@ -55,8 +55,6 @@ function factory(
             if (events && events[GABRIELA_EVENTS.ON_EXIT]) {
                 return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
             }
-
-            process.exit(0);
         });
 
         console.log(`Process has exited`);
