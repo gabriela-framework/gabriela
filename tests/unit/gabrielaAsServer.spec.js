@@ -405,4 +405,23 @@ describe('Gabriela server tests', function() {
 
         g.startApp();
     });
+
+    it('should run the onExit event after the server is closed', (done) => {
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted() {
+                    this.gabriela.close();
+                },
+                onExit() {
+                    done();
+                }
+            }
+        });
+
+        g.startApp();
+    });
 });

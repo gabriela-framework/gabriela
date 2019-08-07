@@ -52,9 +52,7 @@ function factory(
 
     function close() {
         process.on('SIGTERM', () => {
-            if (events && events[GABRIELA_EVENTS.ON_EXIT]) {
-                return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
-            }
+            if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
         });
 
         console.log(`Process has exited`);

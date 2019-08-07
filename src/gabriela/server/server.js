@@ -1,6 +1,5 @@
 const restify = require('restify');
 
-const {is, hasKey} = require('../util/util');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
 const {GABRIELA_EVENTS} = require('../misc/types');
@@ -89,6 +88,8 @@ function Server(
         server.close();
 
         server = null;
+
+        if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
     }
 
     this.run = run;
