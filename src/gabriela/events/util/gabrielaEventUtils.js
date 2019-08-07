@@ -26,12 +26,10 @@ async function runOnAppStarted(events, rootCompiler, err) {
         }
 
         if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) {
-            callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, resolvedError);
-        } else {
-            throw resolvedError;
+            return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, resolvedError);
         }
 
-        this.gabriela.close();
+        throw resolvedError;
     }
 }
 

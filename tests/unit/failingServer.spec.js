@@ -137,6 +137,8 @@ describe('Failing server tests', () => {
                     expect(err).to.be.instanceof(Error);
                     expect(err.message).to.be.equal(`An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed`);
 
+                    this.gabriela.close();
+
                     done();
                 }
             }
@@ -158,6 +160,8 @@ describe('Failing server tests', () => {
                 catchError(err) {
                     expect(err).to.be.instanceof(Error);
                     expect(err.message).to.be.equal(`Something went wrong`);
+
+                    this.gabriela.close();
 
                     done();
                 }
