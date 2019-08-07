@@ -1,3 +1,17 @@
+/**
+ * A task runner for asynchronous usage. These functions are used as arguments to the client code:
+ * - next()
+ *     Used to signal that async task has finished
+ * - skip()
+ *     Same as next()
+ * - done()
+ *     Same as next()
+ * - throwException()
+ *     Marks the task as an error task and saves the error as this tasks value
+ *
+ * The client code determines how it will handle the results from this functions. 
+ * @constructor
+ */
 function TaskRunner() {
     let executingTask = null;
     let value = null;

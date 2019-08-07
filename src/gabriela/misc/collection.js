@@ -3,6 +3,8 @@ const {hasKey, is} = require('../util/util');
 
 /**
  * A generic collection of objects. Every entry in the collection has to have a 'name' property.
+ * When retreiving an entry from the collection, a copy is always returned using deepcopy utility.
+ * That ensures that the client code does not corrupt the for other parts of the framework using it.
  */
 function factory() {
     this.create = function() {
@@ -35,15 +37,12 @@ function factory() {
         }
 
         function getAll() {
-            // todo: replace this with reference safe handling because the collection cannot return
-            // the not-copied references
-            return entries;
+            return deepCopy(entries);
         }
         
         function remove(name) {
             if (!has(name)) return false;
     
-            // add code for non configurable properties or a try/catch if in strict mode
             delete entries[name];
     
             return true;
