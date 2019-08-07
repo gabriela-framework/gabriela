@@ -9,13 +9,31 @@ const _callFn = require('./util/_callFn');
 function _callEvent(fn, moduleOrPlugin, config, customArgs) {
     const taskRunner = taskRunnerFactory.create();
 
+    /**
+     * Get the argument list in the form
+     *
+     * {
+     *     name: 'argName',
+     *     value: null
+     * }
+     *
+     * arg.value is null by default and is assigned later when resolving dependencies. If arg.name is a custom
+     * dependency, it is resolved from customArgs and not from the compiler.
+     *
+     * If the values next or throwException are present, they are resolved as taskRunner.next and
+     * taskRunner.throwException functions.
+     * @type {Array|*}
+     */
     let args = getArgs(fn, {
         next: taskRunner.next,
         throwException: taskRunner.throwException,
     });
 
-    // if an error occurres, it must be the first argument of customArgs
-    // in client code, the error has to be the first argument
+    /**
+     * Custom arguments are resolved by name. If there is a custom argument with some name,
+     * that name is added to arg.value. When _callFn() resolves an argument, it will skip
+     * resolving it (calling the compiler) if the arg.value is not null.
+     */
     if (customArgs && is('object', customArgs)) {
         for (const name in customArgs) {
             if (hasKey(customArgs, name)) {
@@ -28,6 +46,7 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
         args = [...args];
     }
 
+    // called if none of the next(), throwException() etc... functions is not present in the argument list
     if (!inArray(ASYNC_FLOW_TYPES, args.map(arg => arg.name))) {
         _callFn(fn, moduleOrPlugin, args, config);
 
@@ -36,12 +55,16 @@ function _callEvent(fn, moduleOrPlugin, config, customArgs) {
 
     _callFn(fn, moduleOrPlugin, args, config);
 
+    // event loop is blocked here
     deasync.loopWhile(function() {
         return !(_waitCheck(taskRunner)).success;
     });
 
     const task = taskRunner.getTask();
 
+    /**
+     * If an error is thrown, the task runner is resolved immediately and the error is thrown
+     */
     if (task === 'error') {
         const error = taskRunner.getValue();
         taskRunner.resolve();
@@ -73,6 +96,12 @@ function instance(moduleOrPlugin, config) {
         mediations[name] = fn;
     }
 
+    /**
+     * runOnError is the same as emit except it assignes the e (Error instance) to the first
+     * argument of the function, if the number of arguments is more than 0
+     * @param fn
+     * @param e
+     */
     function runOnError(fn, e) {
         const args = getArgs(fn);
         if (args.length > 0) args[0].value = e;
@@ -81,6 +110,11 @@ function instance(moduleOrPlugin, config) {
         _callFn(fn, moduleOrPlugin, args, config);
     }
 
+    /**
+     * Simply calls the event once
+     * @param fn
+     * @param customArgs
+     */
     function once(fn, customArgs) {
         _callEvent(fn, moduleOrPlugin, config, customArgs);
     }

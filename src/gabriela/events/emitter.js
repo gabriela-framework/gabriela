@@ -2,7 +2,8 @@ const {getArgs, hasKey, is} = require('../util/util');
 const _callFn = require('./util/_callFn');
 
 /**
- * Sends an event to the event loop.
+ * Sends an event to the event loop asynchronously. That means that this event emitter does not wait for anything.
+ * It that regards, it acts as a job queue. Promises are sent to the event queue and no one waits for them to finish
  * @param fn
  * @param moduleOrPlugin
  * @param config

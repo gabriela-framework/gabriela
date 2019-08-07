@@ -12,6 +12,12 @@ const resolveDependencies = require('../../dependencyInjection/resolveDependenci
  */
 module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
     const resolvedArgs = args.map((arg) => {
+        /**
+         * If arg.value already holds a non null value, it means that it is resolved either from custom
+         * arguments or is one of async flow functions (next(), done() etc...)
+         */
+        if (arg.value) return arg.value;
+
         const dep = resolveDependencies(
             moduleOrPlugin.compiler,
             moduleOrPlugin.sharedCompiler,
@@ -23,10 +29,12 @@ module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
 
         if (dep) return dep;
 
+        // by this point, dependency has to be resolved. If it is not, throw error
         if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
 
         return arg.value;
     });
 
+    // calls the functions with the list of resolved arguments
     fn.call(null, ...resolvedArgs);
 };
