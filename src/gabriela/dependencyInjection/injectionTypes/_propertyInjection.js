@@ -1,5 +1,5 @@
-const {INJECTION_TYPE} = require('../../misc/types');
 const {is} = require('../../util/util');
+const {INJECTION_TYPES} = require('../../misc/types');
 
 function validateArgs(args) {
     if (!is('object', args)) throw new Error(`Invalid property injection. Arguments to be bound must be an object with key -> property name on the service object and value -> service name as string`);
@@ -14,7 +14,7 @@ function factory(object) {
         validateArgs(args);
 
         return {
-            type: INJECTION_TYPE.PROPERTY,
+            type: INJECTION_TYPES.PROPERTY,
             object: object,
             args: args,
         }

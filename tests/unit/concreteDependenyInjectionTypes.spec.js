@@ -26,7 +26,10 @@ describe('Dependency injection types', () => {
         const definition = {
             name: 'definition',
             init: function() {
-                return {};
+                return this.withPropertyInjection({}).bind({
+                    depOne: 'depOne',
+                    depTwo: 'depTwo',
+                });
             }
         };
 

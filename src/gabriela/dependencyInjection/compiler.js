@@ -6,6 +6,8 @@ const InjectionTypeFactory = require('./injectionTypes/injectionType');
 
 const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
+const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInterface');
+const _resolveInjectionService = require('./_resolveInjectionService');
 
 function _getDependencies(name, definition, taskRunner, originalCompiler, config) {
     const args = getArgNames(definition.init);
@@ -179,6 +181,10 @@ function factory() {
 
         const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
         const service = _resolveService(definition, deps, taskRunner, injectionType);
+
+        if (_isInjectionTypeInterface(service)) {
+            _resolveInjectionService();
+        }
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 

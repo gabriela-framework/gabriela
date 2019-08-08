@@ -1,6 +1,6 @@
 const deasync = require('deasync');
 const _waitCheck = require('../util/_waitCheck');
-
+const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInterface');
 /**
  * Resolves the service definition by calling its init function. This function should be called only once for
  * every service, depending on the situation.
@@ -28,7 +28,9 @@ module.exports = function _resolveService(definition, deps, taskRunner, injectio
     } else {
         service = definition.init.call(injectionType, ...deps);
 
-
+        if (_isInjectionTypeInterface(service)) {
+            return service;
+        }
 
         taskRunner.resolve();
     }
