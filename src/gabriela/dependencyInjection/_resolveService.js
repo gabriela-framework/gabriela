@@ -28,6 +28,8 @@ module.exports = function _resolveService(definition, deps, taskRunner, injectio
     } else {
         service = definition.init.call(injectionType, ...deps);
 
+
+
         taskRunner.resolve();
     }
 

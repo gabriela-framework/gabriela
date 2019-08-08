@@ -10,6 +10,16 @@ function _proxifyType(obj) {
     return new Proxy(obj, handlers);
 }
 
+class InjectionTypes extends IIterator {
+    constructor() {
+        super();
+
+        this.PROPERTY = 'property';
+        this.CONSTRUCTOR = 'constructor';
+        this.METHOD = 'method';
+    }
+}
+
 class MiddlewareTypes extends IIterator {
     constructor() {
         super();
@@ -106,4 +116,5 @@ module.exports = Object.freeze({
     GABRIELA_EVENTS: Object.freeze(_proxifyType(new GabrielaEvents())),
     HTTP_EVENTS: Object.freeze(_proxifyType(new HttpEvents())),
     ENV: Object.freeze(_proxifyType(new EnvTypes())),
+    INJECTION_TYPES: Object.freeze(_proxifyType(new InjectionTypes())),
 });
