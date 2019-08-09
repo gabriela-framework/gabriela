@@ -1,4 +1,5 @@
 const {hasKey, is} = require('../../util/util');
+const {INJECTION_TYPES} = require('../../misc/types');
 
 function validateArgs(object, args) {
     if (!is('object', args)) throw new Error(`Invalid method injection. Arguments to be bound must be an object with key -> method name on the service object and value -> service name as string`);
@@ -17,6 +18,12 @@ function validateArgs(object, args) {
 function _methodInjection(object) {
     function bind(args) {
         validateArgs(object, args);
+
+        return {
+            type: INJECTION_TYPES.METHOD,
+            object: object,
+            args: args,
+        }
     }
 
     this.bind = bind;

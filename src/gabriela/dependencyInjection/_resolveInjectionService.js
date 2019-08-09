@@ -11,6 +11,14 @@ module.exports = function _resolveInjectionService(compiler, injectionObject, ta
         }
     }
 
+    if (type === INJECTION_TYPES.METHOD) {
+        for (let [method, dep] of Object.entries(args)) {
+            const compilerService = compiler.compile(dep, compiler, config);
+
+            service[method](compilerService);
+        }
+    }
+
     taskRunner.resolve();
 
     return service;
