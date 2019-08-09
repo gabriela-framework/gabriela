@@ -196,4 +196,74 @@ describe('Failing dependency injection types', () => {
             expect(e.message).to.be.equal(`Invalid method injection. Arguments to be bound must be an object with key -> method name on the service object and value -> service name as string`);
         }
     });
+
+    it('should fail if the argument objects key is not a valid method', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                const obj = {
+                    depOne: null,
+                    setDepOne(depOne) {
+                        this.depOne = depOne;
+                    }
+                };
+
+                this.withMethodInjection(obj).bind({
+                    nonExistentMethod: 'depOne',
+                });
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid method injection. Method 'nonExistentMethod' does not exist`);
+        }
+    });
+
+    it('should fail if the argument objects key is not a valid method', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                const obj = {
+                    depOne: null,
+                    setDepOne: {},
+                };
+
+                this.withMethodInjection(obj).bind({
+                    setDepOne: 'depOne',
+                });
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid method injection. Method 'setDepOne' must be a function type`);
+        }
+    });
 });
