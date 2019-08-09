@@ -39,6 +39,10 @@ describe('Dependency injection types', () => {
         c.add(depTwo);
         c.add(definition);
 
-        c.compile('definition');
+        const dep = c.compile('definition');
+
+        expect(dep).to.be.a('object');
+        expect(dep.depOne).to.be.a('object');
+        expect(dep.depTwo).to.be.a('object');
     });
 });

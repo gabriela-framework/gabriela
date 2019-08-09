@@ -183,7 +183,7 @@ function factory() {
         const service = _resolveService(definition, deps, taskRunner, injectionType);
 
         if (_isInjectionTypeInterface(service)) {
-            _resolveInjectionService();
+            return _resolveInjectionService(this, service, taskRunner, config);
         }
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);

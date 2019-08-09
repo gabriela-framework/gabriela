@@ -7,6 +7,7 @@ const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInte
  * @param definition
  * @param deps
  * @param taskRunner
+ * @param injectionType
  * @returns {*}
  */
 module.exports = function _resolveService(definition, deps, taskRunner, injectionType) {
