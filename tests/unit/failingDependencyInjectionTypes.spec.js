@@ -160,4 +160,40 @@ describe('Failing dependency injection types', () => {
             expect(e.message).to.be.equal(`Invalid method injection. If you choose to use method injection, you have to provide methods and services to bind with the bind() method`);
         }
     });
+
+    it('should fail if the argument object does not have a string service value', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                const obj = {
+                    depOne: null,
+                    setDepOne(depOne) {
+                        this.depOne = depOne;
+                    }
+                };
+
+                this.withMethodInjection(obj).bind({
+                    setDepOne: {},
+                });
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid method injection. Arguments to be bound must be an object with key -> method name on the service object and value -> service name as string`);
+        }
+    });
 });
