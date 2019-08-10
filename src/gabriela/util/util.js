@@ -163,14 +163,20 @@ function mutate(value, valueKey, entry, reactTo, mutator) {
 
     // the return value in array and object type cases is ignored
     if (type === 'object' || type === 'array') {
-        if (reactTo.includes('object') || reactTo.includes('array')) mutator.call(null, entry);
+        if (reactTo.includes('object') || reactTo.includes('array')) return mutator.call(null, entry);
     }
 
     if (type !== 'object' && type !== 'array') {
-        // everything else that is not an object or an array must be assigned e.i. null, bool, string
-        const mutation = mutator.call(null, entry);
+        if (
+            reactTo.includes('string') ||
+            reactTo.includes('null') ||
+            reactTo.includes('bool')
+        ) {
+            // everything else that is not an object or an array must be assigned e.i. null, bool, string
+            const mutation = mutator.call(null, entry);
 
-        value[valueKey] = mutation;
+            value[valueKey] = mutation;
+        }
     }
 }
 

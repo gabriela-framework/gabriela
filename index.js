@@ -1,13 +1,19 @@
-const {iterate} = require('./src/gabriela/util/util');
+const {iterate, hasKey} = require('./src/gabriela/util/util');
 
-const config = {
+const iterable = {
     config: {
         deep1: 'one',
         deep2: 'two',
         array: ['one', 'two'],
+        someNull: null,
+        boolTrue: true,
+        boolFalse: false,
         object: {
             deep21: 'two',
             deep22: 'two',
+            boolTrue: true,
+            someNull: null,
+            boolFalse: false,
             array: [{
                 entry: 'array1',
                 entry1: 'array2'
@@ -16,11 +22,16 @@ const config = {
     },
 };
 
-iterate(config, {
-    reactTo: ['string'],
+iterate(iterable, {
+    reactTo: ['object'],
     reactor(value) {
-        return 'changed'
+        if (hasKey(value, 'deep21')) {
+            console.log(value);
+            value.deep21 = 'changed';
+            value.deep22 = 'changed';
+
+            value.array[0] = 'changed';
+        }
     }
 });
 
-console.log(config.config.object.array);
