@@ -266,4 +266,62 @@ describe('Failing dependency injection types', () => {
             expect(e.message).to.be.equal(`Invalid method injection. Method 'setDepOne' must be a function type`);
         }
     });
+
+    it('should fail if the constructing object is not a function or a class', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                this.withConstructorInjection({}).bind({});
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid constructor injection. Injecting argument must be a function or a class`);
+        }
+    });
+
+    it('should fail if the argument to be bound are not string services for constructor injection', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                function ConstructorInjection(depOne) {
+
+                }
+
+                this.withConstructorInjection(ConstructorInjection).bind({});
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid constructor injection. Arguments to be bound must a service as a string`);
+        }
+    });
 });

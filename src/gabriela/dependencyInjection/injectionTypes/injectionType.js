@@ -3,9 +3,12 @@ const {is} = require('../../util/util');
 function factory() {
     const propertyInjection = require('./_propertyInjection');
     const methodInjection = require('./_methodInjection');
+    const constructorInjection = require('./_constructorInjection');
 
-    function withConstructorInjection() {
+    function withConstructorInjection(fnOrClass) {
+        if (!is('function', fnOrClass)) throw new Error(`Invalid constructor injection. Injecting argument must be a function or a class`);
 
+        return new constructorInjection(fnOrClass);
     }
 
     function withPropertyInjection(object) {

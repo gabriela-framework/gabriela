@@ -1,35 +1,12 @@
-const gabriela = require('./src/gabriela/gabriela');
+const {is} = require('./src/gabriela/util/util');
 
-const handlingMiddlewareBlockModule = {
-    name: 'helloWorld',
-    security: [function(done) {
-        return done();
-        console.log(`'security' block is executed`)
-    }],
-    validators: [function() {
-        console.log(`'validators' block is executed`)
-    }],
-    preLogicTransformers: [function(state, skip) {
-        if (true) {
-            return skip();
-        }
+class MyClass {
 
-        console.log(`'preLogicTransformers' first function is executed`)
-    }, function() {
-        console.log(`'preLogicTransformers' second function is executed`)
-    }],
-    moduleLogic: [function() {
-        console.log(`'moduleLogic' block is executed`)
-    }],
-    postLogicTransformers: [function() {
-        console.log(`'postLogicTransformers' block is executed`)
-    }],
-};
+}
 
-const app = gabriela.asProcess({
-    config: {},
-});
+function SomeFn() {
 
-app.addModule(handlingMiddlewareBlockModule);
+}
 
-app.startApp();
+console.log(is('function', MyClass));
+console.log(is('function', SomeFn));
