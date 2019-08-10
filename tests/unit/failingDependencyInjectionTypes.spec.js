@@ -10,6 +10,33 @@ const expect = chai.expect;
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Failing dependency injection types', () => {
+    it('should fail if the argument is an empty object', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                this.withPropertyInjection({}).bind({});
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {};
+            }
+        };
+
+        const c = Compiler.create();
+
+        c.add(depOne);
+        c.add(definition);
+
+        try {
+            c.compile('definition');
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid property injection. You haven't supplied any arguments to be bound`);
+        }
+    });
+
     it('should fail if the object to be compiled is not an object for property dependency injection', () => {
         const definition = {
             name: 'definition',
@@ -161,7 +188,7 @@ describe('Failing dependency injection types', () => {
         }
     });
 
-    it('should fail if the argument object does not have a string service value', () => {
+    it('should fail if the argument object does not have a string service value with method injection', () => {
         const definition = {
             name: 'definition',
             init: function() {
@@ -197,7 +224,7 @@ describe('Failing dependency injection types', () => {
         }
     });
 
-    it('should fail if the argument objects key is not a valid method', () => {
+    it('should fail if the argument objects key is not a valid method with method injection', () => {
         const definition = {
             name: 'definition',
             init: function() {
@@ -233,7 +260,7 @@ describe('Failing dependency injection types', () => {
         }
     });
 
-    it('should fail if the argument objects key is not a valid method', () => {
+    it('should fail if the argument objects key is not a valid method with method injection', () => {
         const definition = {
             name: 'definition',
             init: function() {
