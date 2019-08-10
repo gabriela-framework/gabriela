@@ -25,18 +25,6 @@ module.exports = function _asServer(receivedConfig, options) {
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
-    async function runModule(name, executeFactory) {
-        if (name) return await moduleTree.runModule(name, executeFactory);
-
-        return moduleTree.runTree(executeFactory);
-    }
-
-    async function runPlugin(name, executeFactory) {
-        if (name) return pluginTree.runPlugin(name, executeFactory);
-
-        return pluginTree.runTree(executeFactory);
-    }
-
     const moduleInterface = {
         add(mdl) {
             moduleTree.addModule(mdl);
@@ -46,7 +34,6 @@ module.exports = function _asServer(receivedConfig, options) {
         has: moduleTree.hasModule,
         getAll: moduleTree.getModules,
         remove: moduleTree.removeModule,
-        run: runModule,
     };
 
     const pluginInterface = {
@@ -55,7 +42,6 @@ module.exports = function _asServer(receivedConfig, options) {
         remove: pluginTree.removePlugin,
         getAll: pluginTree.getPlugins,
         has: pluginTree.hasPlugin,
-        run: runPlugin,
     };
 
     const publicInterface = {
