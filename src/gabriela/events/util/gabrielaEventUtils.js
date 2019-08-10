@@ -33,20 +33,13 @@ async function runOnAppStarted(events, rootCompiler, err) {
     try {
         callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_APP_STARTED], rootCompiler, err);
     } catch (onAppStartedError) {
-        // error thrown inside middleware processing takes precendence over an error thrown inside onAppStarted
-        let resolvedError;
-        if (err) {
-            resolvedError = err;
-        } else if (onAppStartedError) {
-            resolvedError = onAppStartedError;
-            resolvedError.message = `An error has been thrown in 'onAppStarted' gabriela event with message: '${onAppStartedError.message}'. This is regarded as an unrecoverable error and the server has closed`;
-        }
+        onAppStartedError.message = `An error has been thrown in 'onAppStarted' gabriela event with message: '${onAppStartedError.message}'. This is regarded as an unrecoverable error and the server has closed`;
 
         if (events[GABRIELA_EVENTS.ON_CATCH_ERROR]) {
-            return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, resolvedError);
+            return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, onAppStartedError);
         }
 
-        throw resolvedError;
+        throw onAppStartedError;
     }
 }
 
