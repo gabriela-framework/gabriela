@@ -10,7 +10,8 @@ const {
     inArray,
     isEnvExpression,
     extractEnvExpression,
-    isIterable
+    isIterable,
+    iterate,
 } = require('../../src/gabriela/util/util');
 
 describe('Utility functions and services tests', () => {
@@ -80,5 +81,112 @@ describe('Utility functions and services tests', () => {
         expect(isIterable(String('string'))).to.be.equal(false);
         expect(isIterable(Infinity)).to.be.equal(false);
         expect(isIterable(5)).to.be.equal(false);
+    });
+
+    it('should iterate over the provided value', () => {
+        expect(iterate('notIterable')).to.be.equal(false);
+
+        const iterable = {
+            config: {
+                deep1: 'one',
+                deep2: 'two',
+                array: ['one', 'two'],
+                object: {
+                    deep21: 'two',
+                    deep22: 'two',
+                    array: [{
+                        entry: 'array1',
+                        entry1: 'array2'
+                    }, ['val1', 'val2'], 'val', 3]
+                }
+            },
+        };
+
+        let entersException = false;
+        try {
+            iterate(iterable, 'notObject');
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        entersException = false;
+        try {
+            iterate(iterable, {});
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        entersException = false;
+        try {
+            iterate(iterable, {
+                reactTo: {},
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        entersException = false;
+        try {
+            iterate(iterable, {
+                reactTo: 'string',
+                reactor: 'notFunction'
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        entersException = false;
+        try {
+            iterate(iterable, {
+                reactTo: 'string',
+                reactor: 'notFunction'
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        entersException = false;
+        try {
+            iterate(iterable, {
+                reactTo: ['string'],
+                reactor: 'notFunction'
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+        }
+
+        expect(entersException).to.be.equal(true);
+
+        const validReactions = ['string', 'array', 'object', 'bool', 'null'];
+        entersException = false;
+        try {
+            iterate(iterable, {
+                reactTo: ['invalid'],
+                reactor() {
+
+                }
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Invalid options type supplied to 'iterate'. options.reactTo must be one of '${validReactions.join(', ')}'`);
+        }
+
+        expect(entersException).to.be.equal(true);
     });
 });

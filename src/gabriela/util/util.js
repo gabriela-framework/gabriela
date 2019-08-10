@@ -135,6 +135,33 @@ function isIterable(value) {
     return !!is('object', value);
 }
 
+function iterate(value, reactionOptions) {
+    if (!isIterable(value)) return false;
+
+    if (!is('object', reactionOptions)) throw new Error(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+
+    if (!is('array', reactionOptions.reactTo)) throw new Error(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+
+    const validReactions = ['string', 'array', 'object', 'bool', 'null'];
+    for (let reaction of reactionOptions.reactTo) {
+        if (!validReactions.includes(reaction)) throw new Error(`Invalid options type supplied to 'iterate'. options.reactTo must be one of '${validReactions.join(', ')}'`);
+    }
+
+    if (!is('function', reactionOptions.reactor)) throw new Error(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
+
+    const realIterator = function(value, reactionOptions) {
+        if (is('object', value)) {
+            for (let entry in value) {
+                const realEntry = value[entry];
+
+
+            }
+        }
+    };
+
+    realIterator(value, reactionOptions);
+}
+
 module.exports = {
     createGenerator,
     getArgNames,
@@ -148,4 +175,5 @@ module.exports = {
     isEnvExpression,
     extractEnvExpression,
     isIterable,
+    iterate,
 };
