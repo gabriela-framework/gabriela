@@ -4,6 +4,7 @@ const chai = require('chai');
 const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
+const assert = require('assert');
 
 const gabriela = require('../../src/gabriela/gabriela');
 
