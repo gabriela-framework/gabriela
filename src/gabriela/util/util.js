@@ -155,21 +155,18 @@ function _getType(value) {
  * @returns {string}
  * @private
  */
-function mutate(value, valueKey, entry, mutator) {
+function mutate(value, valueKey, entry, reactTo, mutator) {
     const type = _getType(entry);
     // if reaction type is an object or an array, reactor function is responsible
     // for the reaction and value change since both are references are
     // i don't want to mutate (return a copy) the value
 
     // the return value in array and object type cases is ignored
-    if (type === 'object') {
-        mutator.call(null, entry);
-    } else if (type === 'array') {
-        mutator.call(null, entry);
+    if (type === 'object' || type === 'array') {
+        if (reactTo.includes('object') || reactTo.includes('array')) mutator.call(null, entry);
     }
 
     if (type !== 'object' && type !== 'array') {
-        console.log(value);
         // everything else that is not an object or an array must be assigned e.i. null, bool, string
         const mutation = mutator.call(null, entry);
 
@@ -203,7 +200,7 @@ function iterate(value, reactionOptions) {
             for (let key in value) {
                 const realEntry = value[key];
 
-                mutate(value, key, realEntry, reactionOptions.reactor);
+                mutate(value, key, realEntry, reactionOptions.reactTo, reactionOptions.reactor);
 
                 // if a value is an iterator, recurse it
                 if (isIterable(value)) realIterator(realEntry, reactionOptions);

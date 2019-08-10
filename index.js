@@ -23,4 +23,4 @@ iterate(config, {
     }
 });
 
-console.log(config);
+console.log(config.config.object.array);

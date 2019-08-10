@@ -83,7 +83,7 @@ describe('Utility functions and services tests', () => {
         expect(isIterable(5)).to.be.equal(false);
     });
 
-    it('should iterate over the provided value', () => {
+    it('should fail if iterate() receives invalid values', () => {
         expect(iterate('notIterable')).to.be.equal(false);
 
         const iterable = {
@@ -188,5 +188,124 @@ describe('Utility functions and services tests', () => {
         }
 
         expect(entersException).to.be.equal(true);
+    });
+
+    it('should iterate the provided values and change independent strings into some other string', () => {
+        const iterable = {
+            config: {
+                deep1: 'one',
+                deep2: 'two',
+                array: ['one', 'two'],
+                object: {
+                    deep21: 'two',
+                    deep22: 'two',
+                    array: [{
+                        entry: 'array1',
+                        entry1: 'array2'
+                    }, ['val1', 'val2'], 'val', 3]
+                }
+            },
+        };
+
+        iterate(iterable, {
+            reactTo: ['string'],
+            reactor(value) {
+                return 'changed';
+            }
+        });
+
+        expect(iterable.config.deep1).to.be.equal('changed');
+        expect(iterable.config.deep2).to.be.equal('changed');
+        expect(iterable.config.object.deep21).to.be.equal('changed');
+        expect(iterable.config.object.deep22).to.be.equal('changed');
+    });
+
+    it('should iterate the provided iterable and change all independent true booleans to false as well as strings from previous test', () => {
+        const iterable = {
+            config: {
+                deep1: 'one',
+                deep2: 'two',
+                array: ['one', 'two'],
+                boolTrue: true,
+                boolFalse: false,
+                object: {
+                    deep21: 'two',
+                    deep22: 'two',
+                    boolTrue: true,
+                    boolFalse: false,
+                    array: [{
+                        entry: 'array1',
+                        entry1: 'array2'
+                    }, ['val1', 'val2'], 'val', 3]
+                }
+            },
+        };
+
+        iterate(iterable, {
+            reactTo: ['bool', 'string'],
+            reactor(value) {
+                if (is('boolean', value)) {
+                    if (value) return false;
+                }
+
+                if (is('string', value)) return 'changed';
+            }
+        });
+
+        expect(iterable.config.deep1).to.be.equal('changed');
+        expect(iterable.config.deep2).to.be.equal('changed');
+        expect(iterable.config.object.deep21).to.be.equal('changed');
+        expect(iterable.config.object.deep22).to.be.equal('changed');
+
+        expect(iterable.config.boolTrue).to.be.equal(false);
+        expect(iterable.config.object.boolTrue).to.be.equal(false);
+    });
+
+    it('should iterate the provided iterable and change all independent null values to false as well as strings and booleans from previous test', () => {
+        const iterable = {
+            config: {
+                deep1: 'one',
+                deep2: 'two',
+                array: ['one', 'two'],
+                someNull: null,
+                boolTrue: true,
+                boolFalse: false,
+                object: {
+                    deep21: 'two',
+                    deep22: 'two',
+                    boolTrue: true,
+                    someNull: null,
+                    boolFalse: false,
+                    array: [{
+                        entry: 'array1',
+                        entry1: 'array2'
+                    }, ['val1', 'val2'], 'val', 3]
+                }
+            },
+        };
+
+        iterate(iterable, {
+            reactTo: ['bool', 'string', 'null'],
+            reactor(value) {
+                if (is('boolean', value)) {
+                    if (value) return false;
+                }
+
+                if (value === null) return false;
+
+                if (is('string', value)) return 'changed';
+            }
+        });
+
+        expect(iterable.config.deep1).to.be.equal('changed');
+        expect(iterable.config.deep2).to.be.equal('changed');
+        expect(iterable.config.object.deep21).to.be.equal('changed');
+        expect(iterable.config.object.deep22).to.be.equal('changed');
+
+        expect(iterable.config.boolTrue).to.be.equal(false);
+        expect(iterable.config.object.boolTrue).to.be.equal(false);
+
+        expect(iterable.config.someNull).to.be.equal(false);
+        expect(iterable.config.object.someNull).to.be.equal(false);
     });
 });
