@@ -147,7 +147,35 @@ function _getType(value) {
     if (Array.isArray(value)) return 'array';
     if (is('bool', value)) return 'bool';
     if (is('string', value)) return 'string';
-};
+}
+
+/**
+ * Private to iterate(). Only used in iterate(). Do not use anywhere else
+ * @param value
+ * @returns {string}
+ * @private
+ */
+function mutate(value, valueKey, entry, mutator) {
+    const type = _getType(entry);
+    // if reaction type is an object or an array, reactor function is responsible
+    // for the reaction and value change since both are references are
+    // i don't want to mutate (return a copy) the value
+
+    // the return value in array and object type cases is ignored
+    if (type === 'object') {
+        mutator.call(null, entry);
+    } else if (type === 'array') {
+        mutator.call(null, entry);
+    }
+
+    if (type !== 'object' && type !== 'array') {
+        console.log(value);
+        // everything else that is not an object or an array must be assigned e.i. null, bool, string
+        const mutation = mutator.call(null, entry);
+
+        value[valueKey] = mutation;
+    }
+}
 
 function iterate(value, reactionOptions) {
     if (!isIterable(value)) return false;
@@ -169,28 +197,6 @@ function iterate(value, reactionOptions) {
      * @param value
      * @returns {string}
      */
-
-    const mutate = function(value, valueKey, entry, mutator) {
-        const type = _getType(entry);
-        // if reaction type is an object or an array, reactor function is responsible
-        // for the reaction and value change since both are references are
-        // i don't want to mutate (return a copy) the value
-
-        // the return value in array and object type cases is ignored
-        if (type === 'object') {
-            mutator.call(null, entry);
-        } else if (type === 'array') {
-            mutator.call(null, entry);
-        }
-
-        if (type !== 'object' && type !== 'array') {
-            console.log(value);
-            // everything else that is not an object or an array must be assigned e.i. null, bool, string
-            const mutation = mutator.call(null, entry);
-
-            value[valueKey] = mutation;
-        }
-    };
 
     const realIterator = function(value, reactionOptions) {
         if (is('object', value)) {
