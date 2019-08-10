@@ -31,8 +31,6 @@ module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
 
         // by this point, dependency has to be resolved. If it is not, throw error
         if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
-
-        return arg.value;
     });
 
     // calls the functions with the list of resolved arguments
