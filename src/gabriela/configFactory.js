@@ -1,9 +1,26 @@
 const deepCopy = require('deepcopy');
-const {is, hasKey, isEnvExpression, extractEnvExpression} = require('./util/util');
+const {is, hasKey, isEnvExpression, extractEnvExpression, iterate} = require('./util/util');
 const {ENV} = require('./misc/types');
 
 function factory(config) {
     return config;
+}
+
+function _replaceEnvironmentVariables(config) {
+    iterate(config, {
+        reactTo: ['string'],
+        reactor(value) {
+            if (isEnvExpression(value)) {
+                const env = extractEnvExpression(value);
+
+                if (!process.env[env]) throw new Error(`Invalid config. Environment variable '${env}' does not exist`);
+
+                return process.env[env];
+            }
+
+            return value;
+        }
+    });
 }
 
 function _validateFramework(framework) {
@@ -27,6 +44,7 @@ function instance() {
 
         if (!is('object', config.config)) throw new Error(`Invalid config. Gabriela configuration must be a plain javascript object with only the mandatory 'config' property that also must be a plan object (even if empty)`);
 
+        _replaceEnvironmentVariables(config.config);
         _validateFramework(config.config.framework);
 
         return factory(deepCopy(config));
