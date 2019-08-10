@@ -12,12 +12,22 @@ module.exports = function _resolveInjectionService(compiler, injectionObject, ta
     }
 
     if (type === INJECTION_TYPES.METHOD) {
-        for (let [method, dep] of Object.entries(args)) {
+        for (let [, dep] of Object.entries(args)) {
             const compilerService = compiler.compile(dep, compiler, config);
 
             service[method](compilerService);
         }
     }
+
+    if (type === INJECTION_TYPES.CONSTRUCTOR) {
+        const dependencies = [];
+        for (let [, dep] of Object.entries(args)) {
+            dependencies.push(compiler.compile(dep, compiler, config));
+        }
+
+        return new service(...dependencies);
+    }
+
 
     taskRunner.resolve();
 
