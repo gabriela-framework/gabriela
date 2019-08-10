@@ -48,4 +48,28 @@ describe('Config tests', () => {
 
         expect(ConfigTest.config.framework.env).to.be.equal(ENV.TESTING);
     });
+
+    it('should simulate environment variables and replace them in config', () => {
+        process.env.DATABASE_HOST = 'localhost';
+        process.env.DATABASE_USER = 'root';
+        process.env.DATABASE_PASSWORD = 'root';
+
+        const Config = configFactory.create({
+            config: {
+                validator: {},
+                framework: {
+                    env: 'prod',
+                },
+                db: {
+                    host: `ENV('DATABASE_HOST')`,
+                    user: `ENV('DATABASE_USER')`,
+                    password: `ENV('DATABASE_PASSWORD')`,
+                }
+            }
+        });
+
+        expect(Config.config.db.host).to.be.equal(process.env.DATABASE_HOST);
+        expect(Config.config.db.user).to.be.equal(process.env.DATABASE_USER);
+        expect(Config.config.db.password).to.be.equal(process.env.DATABASE_PASSWORD);
+    });
 });
