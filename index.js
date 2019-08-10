@@ -1,4 +1,4 @@
-const {isIterable} = require('./src/gabriela/util/util');
+const {iterate} = require('./src/gabriela/util/util');
 
 const config = {
     config: {
@@ -16,10 +16,11 @@ const config = {
     },
 };
 
-const array = config.config.object.array;
+iterate(config, {
+    reactTo: ['string'],
+    reactor(value) {
+        return 'changed'
+    }
+});
 
-array[2] = 'changed';
-
-console.log(config.config.object.array);
-
-console.log(isIterable([]));
+console.log(config);

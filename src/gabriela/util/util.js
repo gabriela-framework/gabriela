@@ -149,12 +149,51 @@ function iterate(value, reactionOptions) {
 
     if (!is('function', reactionOptions.reactor)) throw new Error(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
 
+    /**
+     * Specialised function for getting the type of value as string only for this iterator. Not usable
+     * anywhere else
+     * @param value
+     * @returns {string}
+     */
+    const getType = function(value) {
+        if (value === null) return 'null';
+        if (is('object', value)) return 'object';
+        if (Array.isArray(value)) return 'array';
+        if (is('bool', value)) return 'bool';
+        if (is('string', value)) return 'string';
+    };
+
+    const mutate = function(value, valueKey, entry, mutator) {
+        const type = getType(entry);
+        // if reaction type is an object or an array, reactor function is responsible
+        // for the reaction and value change since both are references are
+        // i don't want to mutate (return a copy) the value
+
+        // the return value in array and object type cases is ignored
+        if (type === 'object') {
+            mutator.call(null, entry);
+        } else if (type === 'array') {
+            mutator.call(null, entry);
+        }
+
+        if (type !== 'object' && type !== 'array') {
+            console.log(value);
+            // everything else that is not an object or an array must be assigned e.i. null, bool, string
+            const mutation = mutator.call(null, entry);
+
+            value[valueKey] = mutation;
+        }
+    };
+
     const realIterator = function(value, reactionOptions) {
         if (is('object', value)) {
-            for (let entry in value) {
-                const realEntry = value[entry];
+            for (let key in value) {
+                const realEntry = value[key];
 
+                mutate(value, key, realEntry, reactionOptions.reactor);
 
+                // if a value is an iterator, recurse it
+                if (isIterable(value)) realIterator(realEntry, reactionOptions);
             }
         }
     };
