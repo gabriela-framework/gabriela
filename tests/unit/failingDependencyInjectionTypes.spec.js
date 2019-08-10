@@ -10,7 +10,7 @@ const expect = chai.expect;
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Failing dependency injection types', () => {
-    it('should fail if the argument is an empty object', () => {
+    it('should fail if the argument is an empty object for property injection', () => {
         const definition = {
             name: 'definition',
             init: function() {
@@ -33,7 +33,7 @@ describe('Failing dependency injection types', () => {
         try {
             c.compile('definition');
         } catch (e) {
-            expect(e.message).to.be.equal(`Invalid property injection. You haven't supplied any arguments to be bound`);
+            expect(e.message).to.be.equal(`Invalid property injection. If you choose to use method injection, you have to provide methods and services to bind with the bind() method`);
         }
     });
 

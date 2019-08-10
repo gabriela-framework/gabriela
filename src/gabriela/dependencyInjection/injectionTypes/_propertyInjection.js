@@ -6,7 +6,7 @@ function _validateArgs(args) {
 
     const asArray = Object.entries(args);
 
-    if (asArray.length === 0) throw new Error(`Invalid property injection. You haven't supplied any arguments to be bound`);
+    if (asArray.length === 0) throw new Error(`Invalid property injection. If you choose to use method injection, you have to provide methods and services to bind with the bind() method`);
 
     for (let [, value] of Object.entries(args)) {
         if (!is('string', value)) throw new Error(`Invalid property injection. Arguments to be bound must be an object with key -> property name on the service object and value -> service name as string`);
