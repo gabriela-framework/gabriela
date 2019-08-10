@@ -108,9 +108,18 @@ function _bindEventSystem(moduleObject, config, exposedMediator) {
         const keys = Object.keys(mediator);
 
         for (const event of keys) {
+            let isExposedEvent = false;
             if (moduleObject.exposedMediator.has(event) && !moduleObject.exposedMediator.isEmitted(event)) {
                 moduleObject.exposedMediator.preBind(event, mediator[event]);
+
+                isExposedEvent = true;
             }
+
+            /**
+             * The rule is if some event is an exposed event, that event takes precendence over regular mediator event.
+             * That means that events that have the same name as an exposed event wont be called if you name them with
+             * the same name as an exposed event
+             */
         }
     }
 }

@@ -542,4 +542,30 @@ describe('Failing framework events', () => {
             done();
         });
     });
+
+    it('should throw an error if a service does not exist when using it in an event', (done) => {
+        const g = gabriela.asProcess(config);
+
+        const mdl = {
+            name: 'module',
+            mediator: {
+                onFailingEvent(nonExistentService) {
+
+                },
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onFailingEvent');
+            }],
+        };
+
+        g.addModule(mdl);
+
+        g.runModule('module').then(() => {
+            assert.fail('This test should not pass');
+        }).catch((e) => {
+            expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'nonExistentService'`);
+
+            done();
+        });
+    });
 });
