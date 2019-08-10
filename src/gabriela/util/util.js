@@ -112,6 +112,16 @@ function isEnvExpression(expression) {
     return REGEX.test(expression);
 }
 
+function extractEnvExpression(expression) {
+    const REGEX = /env\(\'(\w+)\'\)/i;
+
+    const result = expression.match(REGEX);
+
+    if (!result) return null;
+
+    return result[1];
+}
+
 module.exports = {
     createGenerator,
     getArgNames,
@@ -123,4 +133,5 @@ module.exports = {
     wait,
     IIterator,
     isEnvExpression,
+    extractEnvExpression,
 };
