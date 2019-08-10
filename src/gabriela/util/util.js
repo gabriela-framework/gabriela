@@ -180,6 +180,27 @@ function mutate(value, valueKey, entry, reactTo, mutator) {
     }
 }
 
+/**
+ * Iterates recursively over all possible values whether it is an object or array.
+ * Does not mutate the values. If a value is an object or array, you have to change it yourself
+ * within the reactor function. Primitive values (string, null, boolean) are mutated by returning
+ * the mutation value from reactor function
+ *
+ * Usage:
+ *
+ * iterator(iterable, {
+ *     reactTo: ['string', 'null', 'bool' 'object', 'array'],
+ *     reactor: function(value) {
+ *         If value is primitive type (bool, null, string), you have to return the mutated value
+ *
+ *         If value is object or array, you have to mutate it here, returned value is ignored
+ *         in this case
+ *     }
+ * })
+ * @param value
+ * @param reactionOptions
+ * @returns {boolean}
+ */
 function iterate(value, reactionOptions) {
     if (!isIterable(value)) return false;
 
