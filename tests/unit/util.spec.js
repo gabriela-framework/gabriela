@@ -5,7 +5,13 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const {is, inArray, isEnvExpression, extractEnvExpression} = require('../../src/gabriela/util/util');
+const {
+    is,
+    inArray,
+    isEnvExpression,
+    extractEnvExpression,
+    isIterable
+} = require('../../src/gabriela/util/util');
 
 describe('Utility functions and services tests', () => {
     it('should assert that is() evaluates all data types correctly', () => {
@@ -61,5 +67,18 @@ describe('Utility functions and services tests', () => {
 
         expect(extractEnvExpression(expression)).to.be.equal('CONFIG_VALUE');
         expect(extractEnvExpression(`ENV('CONFIG_VALUE)`)).to.be.equal(null);
+    });
+
+    it('should assert that something is iterable', () => {
+        expect(isIterable([])).to.be.equal(true);
+        expect(isIterable({})).to.be.equal(true);
+        expect(isIterable('string')).to.be.equal(false);
+        expect(isIterable(null)).to.be.equal(false);
+        expect(isIterable(false)).to.be.equal(false);
+        expect(isIterable(new Boolean('true'))).to.be.equal(false);
+        expect(isIterable(new String('string'))).to.be.equal(false);
+        expect(isIterable(String('string'))).to.be.equal(false);
+        expect(isIterable(Infinity)).to.be.equal(false);
+        expect(isIterable(5)).to.be.equal(false);
     });
 });

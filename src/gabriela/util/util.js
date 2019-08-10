@@ -122,6 +122,19 @@ function extractEnvExpression(expression) {
     return result[1];
 }
 
+/**
+ * Returns true only for iterator objects and array, not string since strings can be iterated also
+ * @param value
+ * @returns {boolean}
+ */
+function isIterable(value) {
+    if (!is('object', value) && !Array.isArray(value)) return false;
+
+    if (is('function', value[Symbol.iterator])) return true;
+
+    return !!is('object', value);
+}
+
 module.exports = {
     createGenerator,
     getArgNames,
@@ -134,4 +147,5 @@ module.exports = {
     IIterator,
     isEnvExpression,
     extractEnvExpression,
+    isIterable,
 };
