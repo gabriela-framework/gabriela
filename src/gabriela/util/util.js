@@ -135,6 +135,20 @@ function isIterable(value) {
     return !!is('object', value);
 }
 
+/**
+ * Private to iterate(). Only used in iterate(). Do not use anywhere else
+ * @param value
+ * @returns {string}
+ * @private
+ */
+function _getType(value) {
+    if (value === null) return 'null';
+    if (is('object', value)) return 'object';
+    if (Array.isArray(value)) return 'array';
+    if (is('bool', value)) return 'bool';
+    if (is('string', value)) return 'string';
+};
+
 function iterate(value, reactionOptions) {
     if (!isIterable(value)) return false;
 
@@ -155,16 +169,9 @@ function iterate(value, reactionOptions) {
      * @param value
      * @returns {string}
      */
-    const getType = function(value) {
-        if (value === null) return 'null';
-        if (is('object', value)) return 'object';
-        if (Array.isArray(value)) return 'array';
-        if (is('bool', value)) return 'bool';
-        if (is('string', value)) return 'string';
-    };
 
     const mutate = function(value, valueKey, entry, mutator) {
-        const type = getType(entry);
+        const type = _getType(entry);
         // if reaction type is an object or an array, reactor function is responsible
         // for the reaction and value change since both are references are
         // i don't want to mutate (return a copy) the value
