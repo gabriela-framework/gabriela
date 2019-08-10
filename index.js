@@ -1,12 +1,6 @@
-const {is} = require('./src/gabriela/util/util');
+const REGEX = /env\(\'\w+\'\)/i;
 
-class MyClass {
+const assertion = REGEX.test(`env('CONFIG_VALUE')`);
 
-}
-
-function SomeFn() {
-
-}
-
-console.log(is('function', MyClass));
-console.log(is('function', SomeFn));
+console.log(assertion);
+console.log(`env('CONFIG_VALUE')`.match(REGEX));

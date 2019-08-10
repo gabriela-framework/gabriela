@@ -106,6 +106,12 @@ class IIterator {
     }
 }
 
+function isEnvExpression(expression) {
+    const REGEX = /env\(\'\w+\'\)/i;
+
+    return REGEX.test(expression);
+}
+
 module.exports = {
     createGenerator,
     getArgNames,
@@ -116,4 +122,5 @@ module.exports = {
     ucFirst,
     wait,
     IIterator,
+    isEnvExpression,
 };

@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const {is, inArray} = require('../../src/gabriela/util/util');
+const {is, inArray, isEnvExpression} = require('../../src/gabriela/util/util');
 
 describe('Utility functions and services tests', () => {
     it('should assert that is() evaluates all data types correctly', () => {
@@ -44,5 +44,15 @@ describe('Utility functions and services tests', () => {
         arg2 = ['1', '2', '3'];
 
         expect(inArray(arg1, arg2)).to.be.equal(false);
+    });
+
+    it('should assert that isEnvExpression() correctly recognizes an environment variable', () => {
+        expect(isEnvExpression(`ENV('CONFIG_VALUE')`)).to.be.equal(true);
+        expect(isEnvExpression(`env('CONFIG_VALUE')`)).to.be.equal(true);
+        expect(isEnvExpression(`ENV('config_value')`)).to.be.equal(true);
+        expect(isEnvExpression(`EnV('ConFiG_value')`)).to.be.equal(true);
+        expect(isEnvExpression(`En('ConFiG_value')`)).to.be.equal(false);
+        expect(isEnvExpression(`EnV('ConFiG_value)`)).to.be.equal(false);
+        expect(isEnvExpression(`EnV('ConFiG_value'`)).to.be.equal(false);
     });
 });
