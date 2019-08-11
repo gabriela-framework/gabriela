@@ -40,10 +40,19 @@ describe('Test gabriela internals', () => {
         const mdl = {
             name: 'name',
             security: [],
+            http: {
+                route: {
+                    name: 'name',
+                    method: 'get',
+                    path: '/path',
+                    protocols: ['http'],
+                }
+            },
             preLogicTransformers: [],
             postLogicTransformers: [],
             validators: [],
             moduleLogic: [],
+            protocols: ['http'],
             compiler: null,
             sharedCompiler: null,
             plugin: {name: 'plugin'},
@@ -89,6 +98,7 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.preLogicTransformers).to.be.a('array');
         expect(moduleObject.postLogicTransformers).to.be.a('array');
         expect(moduleObject.validators).to.be.a('array');
+        expect(moduleObject.http.route.protocols).to.be.a('array');
         expect(moduleObject.moduleLogic).to.be.a('array');
         expect(moduleObject.compiler).to.be.a('object');
         expect(moduleObject.sharedCompiler).to.be.a('object');
