@@ -107,6 +107,15 @@ class EnvTypes extends IIterator{
     }
 }
 
+class Protocols extends IIterator {
+    constructor() {
+        super();
+
+        this.HTTP = 'http';
+        this.HTTPS = 'https';
+    }
+}
+
 module.exports = Object.freeze({
     MIDDLEWARE_TYPES: Object.freeze(_proxifyType(new MiddlewareTypes())),
     BUILT_IN_MEDIATORS: Object.freeze(_proxifyType(new BuiltInMediators())),
@@ -117,4 +126,5 @@ module.exports = Object.freeze({
     HTTP_EVENTS: Object.freeze(_proxifyType(new HttpEvents())),
     ENV: Object.freeze(_proxifyType(new EnvTypes())),
     INJECTION_TYPES: Object.freeze(_proxifyType(new InjectionTypes())),
+    PROTOCOLS: Object.freeze(_proxifyType(new Protocols()))
 });

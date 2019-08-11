@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -177,5 +178,39 @@ describe('Failing server tests', () => {
         });
 
         g.startApp();
+    });
+
+    it('should fail to process an http module with an unpermitted https protocol', () => {
+        let middlewareCalled = false;
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        });
+
+        let exceptionEntered = false;
+        try {
+            g.addModule({
+                name: 'httpModule',
+                http: {
+                    route: {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                        protocols: null,
+                    }
+                },
+                moduleLogic: [function() {
+                    middlewareCalled = true;
+                }],
+            });
+        } catch (e) {
+            exceptionEntered = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols' must be an array'`)
+        }
+
+        expect(exceptionEntered).to.be.equal(true);
     });
 });
