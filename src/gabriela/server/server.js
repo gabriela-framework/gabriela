@@ -76,6 +76,10 @@ function Server(
                 err
             );
 
+            /**
+             * This code cannot be tested since gabriela has to exit and if it does so, node process is killed too, along
+             * with the process that tests are executed in
+             */
             console.log(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
 
             this.gabriela.close();
