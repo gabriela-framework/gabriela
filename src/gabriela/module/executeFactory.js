@@ -54,6 +54,12 @@ function factory(server, mdl) {
                     next,
                 );
 
+                /**
+                 * Protocols feature does not make any sense since I have to create http request do not go into
+                 * secure server
+                 *
+                 * TODO: Decide on the protocols feature
+                 */
                 if (http.route.protocols) {
                     const protocols = http.route.protocols;
                     const currentProtocol = (req.isSecure()) ? 'https' : 'http';
