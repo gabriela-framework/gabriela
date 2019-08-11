@@ -11,6 +11,7 @@ function _resolveOptions(options) {
     const opts = options || {};
 
     opts.port = (opts.port) ? opts.port : 3000;
+    opts.host = (opts.host) ? opts.host : 'localhost';
 
     return opts;
 }
@@ -58,7 +59,7 @@ function Server(
 
     function run() {
         _runComponents(pluginInterface, moduleInterface, server).then(() => {
-            server.listen(opts.port, _listenCallback.bind(
+            server.listen(opts.port, opts.host, _listenCallback.bind(
                 this,
                 opts,
                 events,
