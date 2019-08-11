@@ -46,7 +46,7 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
             return !!plugin.exposedMediators;
         },
         hasModules() {
-            return !!plugin.modules;
+            return plugin.modules.length !== 0;
         },
         compiler: plugin.compiler,
         sharedCompiler: plugin.sharedCompiler,
