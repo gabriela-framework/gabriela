@@ -207,5 +207,57 @@ describe('Middleware execution', function() {
 
             done();
         });
+    });
+
+    it('should override module by adding more middleware with existing ones', (done) => {
+        const g = gabriela.asProcess(config);
+
+        let firstCalled = false;
+        let secondCalled = false;
+        let thirdCalled = false;
+        let overridenCalled = false;
+
+        const firstMiddleware = {
+            name: 'first',
+            middleware: function() {
+                firstCalled = true;
+            }
+        };
+
+        const secondMiddleware = {
+            name: 'second',
+            middleware: function() {
+                secondCalled = true;
+            }
+        };
+
+        const mdl = {
+            name: 'overridingModule',
+            moduleLogic: [firstMiddleware, secondMiddleware],
+        };
+
+        g.addModule(mdl);
+
+        g.overrideModule({
+            name: 'overridingModule',
+            moduleLogic: [{
+                name: 'second',
+                middleware: function() {
+                    overridenCalled = true;
+                }
+            }],
+            postLogicTransformers: [function() {
+                thirdCalled = true;
+            }]
+        });
+
+        g.runModule('overridingModule').then(() => {
+            expect(firstCalled).to.be.equal(true);
+            expect(secondCalled).to.be.equal(false);
+            expect(overridenCalled).to.be.equal(true);
+            expect(thirdCalled).to.be.equal(true);
+
+            done();
+        });
     })
 });

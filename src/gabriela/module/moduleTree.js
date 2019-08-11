@@ -2,43 +2,8 @@ const ModuleRunner = require('./moduleRunner');
 const Validator = require('../misc/validator');
 const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
-const { MIDDLEWARE_TYPES } = require('../misc/types');
 const {hasKey, is, IIterator} = require('../util/util');
-
-function _overrideMiddleware(mdl, existing) {
-    for (const type of MIDDLEWARE_TYPES) {
-        if (mdl[type]) {
-            const middlewareList = mdl[type];
-
-            for (const newIndex in middlewareList) {
-                const newMiddleware = middlewareList[newIndex];
-
-                if (is('object', newMiddleware)) {
-                    if (!existing[type]) {
-                        existing[type] = mdl[type];
-                    }
-
-                    const existingMiddleware = existing[type];
-
-                    let found = false;
-                    for (const existingIndex in existingMiddleware) {
-                        if (newMiddleware.name === existingMiddleware[existingIndex].name) {
-                            existing[type][existingIndex] = newMiddleware;
-
-                            found = true;
-
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        existing[type].push(newMiddleware);
-                    }
-                }
-            }
-        }
-    }
-}
+const _overrideMiddleware = require('./middlewareOverriding/overrideMiddleware');
 
 async function _runConstructedModule(mdl, tree, config, executeFactory) {
     const runner = ModuleRunner.create(mdl);
