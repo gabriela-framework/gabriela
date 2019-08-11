@@ -414,4 +414,73 @@ describe('Immediately executing middleware with dependency injection and express
             done();
         });
     });
+
+    it('should inject the http arg when executed asServer along with all the others', (done) => {
+        let validateEmailCalled = false;
+
+        const userRepositoryInit = {
+            name: 'userRepository',
+            scope: 'public',
+            init: function() {
+                function UserRepository() {}
+
+                return new UserRepository();
+            }
+        };
+
+        const validateEmailDefinition = {
+            name: 'validateEmailWithDependency',
+            init: function() {
+                return function(userRepository, next, state, http) {
+                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                        validateEmailCalled = true;
+
+                        expect(userRepository).to.be.a('object');
+
+                        expect(state).to.be.a('object');
+                        expect(http).to.be.a('object');
+                        expect(http.req).to.be.a('object');
+                        expect(http.res).to.be.a('object');
+
+                        next();
+                    });
+                }
+            }
+        };
+
+        const mdl = {
+            name: 'mdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            },
+            dependencies: [validateEmailDefinition, userRepositoryInit],
+            moduleLogic: ['validateEmailWithDependency(userRepository, next, state, http)'],
+        };
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route').then(() => {
+                        expect(validateEmailCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        g.addModule(mdl);
+
+        g.startApp();
+    });
 });
