@@ -132,8 +132,6 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
         if (arg.name === 'http') return http;
 
         if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
-
-        return arg.value;
     }));
 
     let task;
