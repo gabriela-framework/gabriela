@@ -36,7 +36,7 @@ async function _listenCallback(
         gabriela: this,
     };
 
-    console.log('Gabriela app started');
+    console.log(`Gabriela app started on host '${opts.host}' and port: '${opts.port}'`);
 
     await runOnAppStarted.call(context, events, rootCompiler);
 }
