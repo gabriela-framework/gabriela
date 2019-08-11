@@ -1520,7 +1520,7 @@ describe('Framework events', function() {
                     http.res.send('Response');
                 },
                 onPostResponse(http, userService, next) {
-                    requestPromise.get('https://www.facebook.com').then(() => {
+                    requestPromise.get('http://goiwouldlike.com').then(() => {
                         onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');

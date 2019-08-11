@@ -8,6 +8,7 @@ const expect = chai.expect;
 const assert = require('assert');
 
 const gabriela = require('../../src/gabriela/gabriela');
+const {PROTOCOLS} = require('../../src/gabriela/misc/types');
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {
@@ -243,6 +244,40 @@ describe('Failing server tests', () => {
             exceptionEntered = true;
 
             expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols', if specified, cannot be an empty array`);
+        }
+
+        expect(exceptionEntered).to.be.equal(true);
+    });
+
+    it('should fail to process an http module with an unpermitted protocol', () => {
+        let middlewareCalled = false;
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        });
+
+        let exceptionEntered = false;
+        try {
+            g.addModule({
+                name: 'httpModule',
+                http: {
+                    route: {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                        protocols: ['nonExistent'],
+                    }
+                },
+                moduleLogic: [function() {
+                    middlewareCalled = true;
+                }],
+            });
+        } catch (e) {
+            exceptionEntered = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols' specifies an invalid protocol. Valid protocols are ${PROTOCOLS.toArray().join(', ')}`);
         }
 
         expect(exceptionEntered).to.be.equal(true);
