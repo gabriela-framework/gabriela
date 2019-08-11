@@ -508,4 +508,57 @@ describe('Gabriela server tests', function() {
             g.startApp();
         });
     });
+
+    it('should only accept https protocol when created without cert', (done) => {
+        let middlewareCalled = false;
+
+        const httpsMdl = {
+            name: 'httpsMdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                    protocols: ['https']
+                }
+            },
+            moduleLogic: [function() {
+                middlewareCalled = true;
+            }],
+        };
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted() {
+                    let options = {
+                        method: 'get',
+                        json: true,
+                        uri : 'http://localhost:3000/route',
+                        resolveWithFullResponse: true,
+                    };
+
+                    requestPromise(options).then((response) => {
+                        assert.fail('This request should not be successful');
+                    }).catch((err) => {
+                        expect(middlewareCalled).to.be.equal(false);
+
+                        expect(err.statusCode).to.be.equal(400);
+                        expect(err.error).to.be.equal('Invalid protocol');
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                },
+            }
+        });
+
+        g.addModule(httpsMdl);
+
+        g.startApp();
+    });
 });

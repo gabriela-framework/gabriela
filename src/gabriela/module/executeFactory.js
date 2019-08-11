@@ -1,6 +1,6 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const {MIDDLEWARE_TYPES} = require('../misc/types');
+const {MIDDLEWARE_TYPES, PROTOCOLS} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
 
 function _getResponseEvents(mdl) {
@@ -53,6 +53,15 @@ function factory(server, mdl) {
                     responseEvent.onPostResponse,
                     next,
                 );
+
+                if (http.route.protocols) {
+                    const protocols = http.route.protocols;
+                    const currentProtocol = (req.isSecure()) ? 'https' : 'http';
+
+                    if (!protocols.includes(currentProtocol)) {
+                        return responseProxy.send(400, 'Invalid protocol');
+                    }
+                }
 
                 httpContext.res = responseProxy;
 
