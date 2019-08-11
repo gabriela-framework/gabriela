@@ -22,27 +22,6 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, conf
     }
 }
 
-function _resolveFunctionExpression(fnString, mdl, config) {
-    const parsed = parseExpression(fnString);
-
-    if (!mdl.compiler.has(parsed.fnName)) throw new Error(`Expression dependency injection error. Dependency with name '${parsed.fnName}' not found in the dependency tree`);
-
-    const deps = [];
-    for (const dep of parsed.dependencies) {
-        if (ASYNC_FLOW_TYPES.toArray().includes(dep)) {
-            const taskRunner = TaskRunner.create();
-
-            deps.push(taskRunner[dep]);
-        } else {
-            deps.push(mdl.compiler.compile(dep, mdl.compiler, config));
-        }
-    }
-
-    const dep = mdl.compiler.compile(parsed.fnName, mdl.compiler, config);
-
-    return dep.bind(null, ...deps);
-}
-
 function _resolveMiddleware(mdl, config) {
     const middleware = MIDDLEWARE_TYPES.toArray();
 
