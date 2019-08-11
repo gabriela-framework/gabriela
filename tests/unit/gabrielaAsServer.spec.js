@@ -34,6 +34,28 @@ describe('Gabriela server tests', function() {
         g.startApp();
     });
 
+    it('should start listening to the server with custom host and port', (done) => {
+        const g = gabriela.asServer({
+            config: {
+                server: {
+                    port: 4000,
+                    host: '127.0.0.1'
+                },
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted: function() {
+                    this.gabriela.close();
+
+                    done();
+                }
+            }
+        });
+
+        g.startApp();
+    });
+
     it('should start the server app with plugins and modules and run them', (done) => {
         let standaloneModuleExecuted = false;
         let pluginModule1Executed = false;
