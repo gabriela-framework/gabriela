@@ -561,4 +561,52 @@ describe('Gabriela server tests', function() {
 
         g.startApp();
     });
+
+    it('should accept both https and http requests when called with http', (done) => {
+        let middlewareCalled = false;
+
+        const httpsMdl = {
+            name: 'httpsMdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                    protocols: ['https', 'http']
+                }
+            },
+            moduleLogic: [function() {
+                middlewareCalled = true;
+            }],
+        };
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted() {
+                    let options = {
+                        method: 'get',
+                        json: true,
+                        uri : 'http://localhost:3000/route',
+                        resolveWithFullResponse: true,
+                    };
+
+                    requestPromise(options).then((response) => {
+                        expect(middlewareCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                },
+            }
+        });
+
+        g.addModule(httpsMdl);
+
+        g.startApp();
+    });
 });
