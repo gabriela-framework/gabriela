@@ -4,6 +4,7 @@ const chai = require('chai');
 const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
+require('../../src/gabriela/global');
 
 const {
     is,
@@ -348,5 +349,17 @@ describe('Utility functions and services tests', () => {
         expect(iterable.config.object.deep21).to.be.equal('changed');
         expect(iterable.config.object.deep22).to.be.equal('changed');
         expect(iterable.config.object.array[0]).to.be.equal('changed');
+    });
+
+    it('should filter object with Object.filter', () => {
+        const scores = {
+            Billie: 2, Ringo: 3, John: 1
+        };
+
+        const filtered = Object.filter(scores, score => score > 1);
+
+        expect(filtered).to.not.have.property('John');
+        expect(filtered).to.have.property('Billie');
+        expect(filtered).to.have.property('Ringo');
     });
 });
