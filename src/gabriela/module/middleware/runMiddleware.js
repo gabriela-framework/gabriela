@@ -105,6 +105,8 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
             done: taskRunner.done,
             skip: taskRunner.skip,
             throwException: taskRunner.throwException,
+            state: state,
+            http: http,
         });
     }
 
@@ -126,10 +128,6 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
         );
 
         if (dep) return dep;
-
-        if (arg.name === 'state') return state;
-
-        if (arg.name === 'http') return http;
 
         if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
     }));
