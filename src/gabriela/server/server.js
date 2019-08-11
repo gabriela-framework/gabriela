@@ -35,9 +35,9 @@ async function _listenCallback(
         gabriela: this,
     };
 
-    await runOnAppStarted.call(context, events, rootCompiler);
-
     console.log('Gabriela app started');
+
+    await runOnAppStarted.call(context, events, rootCompiler);
 }
 
 function Server(
