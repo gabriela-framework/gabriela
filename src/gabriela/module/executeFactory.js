@@ -17,6 +17,11 @@ function _getResponseEvents(mdl) {
 function _createWorkingDataStructures(mdl, req) {
     const httpContext = {
         req,
+        route: {
+            name: mdl.http.route.name,
+            path: mdl.http.route.path,
+            method: mdl.http.route.method,
+        }
     };
 
     const middleware = [

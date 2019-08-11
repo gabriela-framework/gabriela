@@ -609,4 +609,56 @@ describe('Gabriela server tests', function() {
 
         g.startApp();
     });
+
+    it('http middleware parameter should have all the necessary properties', (done) => {
+        let middlewareCalled = false;
+
+        const httpsMdl = {
+            name: 'httpsMdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                    protocols: ['https', 'http']
+                }
+            },
+            moduleLogic: [function(http) {
+                middlewareCalled = true;
+
+                expect(http.route).to.be.a('object');
+                expect(http.route.name).to.be.equal('route');
+                expect(http.route.path).to.be.equal('/route');
+                expect(http.route.method).to.be.equal('get');
+            }],
+        };
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, {
+            events: {
+                onAppStarted() {
+                    let options = {
+                        method: 'get',
+                        json: true,
+                        uri : 'http://localhost:3000/route',
+                    };
+
+                    requestPromise(options).then(() => {
+                        expect(middlewareCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                },
+            }
+        });
+
+        g.addModule(httpsMdl);
+
+        g.startApp();
+    });
 });
