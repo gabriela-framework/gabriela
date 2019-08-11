@@ -180,7 +180,7 @@ describe('Failing server tests', () => {
         g.startApp();
     });
 
-    it('should fail to process an http module with an unpermitted https protocol', () => {
+    it('should fail to process an http module with an unpermitted protocols type', () => {
         let middlewareCalled = false;
 
         const g = gabriela.asServer({
@@ -208,7 +208,41 @@ describe('Failing server tests', () => {
         } catch (e) {
             exceptionEntered = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols' must be an array'`)
+            expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols' must be an array`)
+        }
+
+        expect(exceptionEntered).to.be.equal(true);
+    });
+
+    it('should fail to process an http module with an unpermitted protocols empty array', () => {
+        let middlewareCalled = false;
+
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        });
+
+        let exceptionEntered = false;
+        try {
+            g.addModule({
+                name: 'httpModule',
+                http: {
+                    route: {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                        protocols: [],
+                    }
+                },
+                moduleLogic: [function() {
+                    middlewareCalled = true;
+                }],
+            });
+        } catch (e) {
+            exceptionEntered = true;
+
+            expect(e.message).to.be.equal(`Invalid module definition in module 'httpModule'. 'http.route.protocols', if specified, cannot be an empty array`);
         }
 
         expect(exceptionEntered).to.be.equal(true);

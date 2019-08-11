@@ -110,7 +110,9 @@ factory.moduleValidator = function(mdl) {
         if (hasKey(http.route, 'protocols')) {
             const protocols = http.route.protocols;
 
-            if (!Array.isArray(protocols)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols' must be an array'`);
+            if (!Array.isArray(protocols)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols' must be an array`);
+
+            if (protocols.length === 0) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols', if specified, cannot be an empty array`);
         }
 
         if (!HTTP_METHODS.toArray().includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
