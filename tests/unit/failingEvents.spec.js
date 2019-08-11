@@ -568,4 +568,27 @@ describe('Failing framework events', () => {
             done();
         });
     });
+
+    it('should throw an error if a mediator event does not exist', (done) => {
+        const g = gabriela.asProcess(config);
+
+        const mdl = {
+            name: 'module',
+            mediator: {
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onFailingEvent');
+            }],
+        };
+
+        g.addModule(mdl);
+
+        g.runModule('module').then(() => {
+            assert.fail('This test should not pass');
+        }).catch((e) => {
+            expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'onFailingEvent' does not exist in module 'module'`);
+
+            done();
+        });
+    });
 });
