@@ -2,6 +2,8 @@ const mocha = require('mocha');
 const chai = require('chai');
 const faker = require('faker');
 const requestPromise = require('request-promise');
+const pem = require('pem');
+const url = require('url');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -445,5 +447,65 @@ describe('Gabriela server tests', function() {
         });
 
         g.startApp();
+    });
+
+    it('should create an https server', (done) => {
+        pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
+            if (err) {
+                throw err
+            }
+
+            let middlewareCalled = false;
+
+            const httpsMdl = {
+                name: 'httpsMdl',
+                http: {
+                    route: {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                    }
+                },
+                moduleLogic: [function(http) {
+                    middlewareCalled = true;
+
+                    expect(http.req.isSecure()).to.be.equal(true);
+                }],
+            };
+
+            const g = gabriela.asServer({
+                config: {
+                    framework: {},
+                    server: {
+                        key: keys.serviceKey,
+                        certificate: keys.certificate
+                    }
+                }
+            }, {
+                events: {
+                    onAppStarted() {
+                        let options = {
+                            method: 'get',
+                            json: true,
+                            uri : 'https://localhost:3000/route',
+                            insecure: true,
+                            rejectUnauthorized: false,
+                        };
+
+                        requestPromise(options).then(() => {
+                            expect(middlewareCalled).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        });
+                    },
+                }
+            });
+
+            g.addModule(httpsMdl);
+
+            g.startApp();
+        });
     });
 });
