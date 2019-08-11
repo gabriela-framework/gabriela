@@ -15,6 +15,12 @@ function _resolveOptions(options) {
 
     return opts;
 }
+
+function _startServer(opts) {
+    return restify.createServer({
+        strictNext: false,
+    });
+}
 /**
  *
  * Must be run before server because of app crucial plugins, like mongo, mysql, redis etc...
@@ -53,9 +59,7 @@ function Server(
 
     const opts = _resolveOptions(options);
 
-    let server = restify.createServer({
-        strictNext: true,
-    });
+    let server = _startServer(opts);
 
     function run() {
         _runComponents(pluginInterface, moduleInterface, server).then(() => {
