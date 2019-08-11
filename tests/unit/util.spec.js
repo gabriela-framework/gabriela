@@ -356,7 +356,7 @@ describe('Utility functions and services tests', () => {
             Billie: 2, Ringo: 3, John: 1
         };
 
-        const filtered = Object.filter(scores, score => score > 1);
+        const filtered = Object.filter(scores, (key, val) => val > 1);
 
         expect(filtered).to.not.have.property('John');
         expect(filtered).to.have.property('Billie');

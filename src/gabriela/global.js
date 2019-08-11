@@ -13,7 +13,7 @@ Object.filter = (obj, predicate) => {
     const newObj = {};
 
     keys.filter((key) => {
-        const ok = predicate.call(null, obj[key]);
+        const ok = predicate.call(null, key, obj[key]);
 
         if (ok) newObj[key] = obj[key];
     });

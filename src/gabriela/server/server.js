@@ -17,9 +17,15 @@ function _resolveOptions(options) {
 }
 
 function _startServer(opts) {
-    return restify.createServer({
+    const Default = {
         strictNext: false,
+    };
+
+    const filtered = Object.filter(opts, (key, val) => {
+        return key !== 'strictNext' && key !== 'port' && key !== 'host';
     });
+
+    return restify.createServer({...Default, ...filtered});
 }
 /**
  *
