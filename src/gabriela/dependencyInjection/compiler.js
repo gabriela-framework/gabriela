@@ -1,4 +1,5 @@
 const {getArgNames, is, hasKey} = require('../util/util');
+const {ASYNC_FLOW_TYPES} = require('../misc/types');
 
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
@@ -17,8 +18,8 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
     const deps = [];
     if (args.length > 0) {
         for (const arg of args) {
-            if (arg === 'next') {
-                deps.push(taskRunner.next);
+            if (ASYNC_FLOW_TYPES.toArray().includes(arg)) {
+                deps.push(taskRunner[arg]);
             } else {
                 deps.push(originalCompiler.compile(arg, originalCompiler, config));
             }
@@ -163,7 +164,7 @@ function factory() {
             return this.root.compile(name, originCompiler, config);
         }
 
-        if (!definition) throw new Error(`Dependency injection error. '${name}' not found in the dependency tree`);
+        if (!definition) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
 
         /**
          * If the definitino has private dependencies, resolve them but do not save them. Only save the parent

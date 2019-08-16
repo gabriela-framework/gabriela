@@ -25,7 +25,14 @@ function _startServer(opts) {
         return key !== 'strictNext' && key !== 'port' && key !== 'host';
     });
 
-    return restify.createServer({...Default, ...filtered});
+    const server = restify.createServer({...Default, ...filtered});
+
+    server.use(restify.plugins.acceptParser(server.acceptable));
+    server.use(restify.plugins.queryParser());
+    server.use(restify.plugins.fullResponse());
+    server.use(restify.plugins.bodyParser());
+
+    return server;
 }
 /**
  *
