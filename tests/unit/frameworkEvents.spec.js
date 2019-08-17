@@ -1420,6 +1420,25 @@ describe('Framework events', function() {
         }, 2000);
     });
 
+    /**
+     * This test (and the three that follow are a fix for travis build).
+     *
+     * If I put the test request to the open server into the onAppStarted event, sometimes, an
+     * async hook corrupted error occurres. There could be two explanations.
+     *
+     * The first has to do with pushing functions to the event loop and event loop blocking. When onAppStarted
+     * begins, deasync blocks the loop in sync way. Since onPostResponse is called after the request is done
+     * but not neccessarily when the response is received, in order to pass this test, I have to wait some time
+     * for the onPostResponse to execute. That means I have to use setTimeout. At this time, both deasync and mocha
+     * is blocking the event loop and it seems that setTimeout() is not pushed to the event loop the proper way
+     * so the event loop gets confused. Probably, the functions that are pushed to the event loop have unique ids
+     * that event loop assignes. Those ids are kept in a seperate stack and popped when the next one is executed. Because
+     * of the problem with deasync and mocha described above, setTimeout() is probably not pushed the right way and
+     * ids get corrupted.
+     *
+     * The second explanation has to do with this task https://rebelindustries.eu.teamwork.com/#/tasks/14267114 and
+     * also this task https://rebelindustries.eu.teamwork.com/#/tasks/14267117.
+     */
     it('should call the onPostResponse event with all the required arguments after the response is sent', (done) => {
         let onPostResponseCalled = false;
         const g = gabriela.asServer(config, {
