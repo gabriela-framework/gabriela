@@ -122,7 +122,7 @@ does.
 
 ___
 **Side note**
->Since Gabriela is still in alpha stage, you will have to create the empty *config* property every
+>Since Gabriela is still in alpha stage, you will have to create the *config* object every
 time you create a Gabriela app. In the future, there will be a command line utility that will do that for
 you. There will also be support for multiple environments like *dev*, *test* and *prod* but you will also
 be able to create your own, custom environments. For now, please inject this object every time you create an 
@@ -135,7 +135,9 @@ ___
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
 });
 
 const myModule = {
@@ -196,7 +198,11 @@ const userManagmentPlugin =  {
     modules: [registrationModule, loginModule],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(userManagmentPlugin);
 
@@ -279,7 +285,11 @@ const registrationModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(registrationModule);
 
@@ -383,7 +393,11 @@ but also as parts of a plugin are executing once as a standalone module and once
 ````javascript
 const gabriela = require('gabriela');
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 const myModule = {
     name: 'myModule',
@@ -433,7 +447,7 @@ const helloWorldModule = {
             },
         },
         {
-            name: 'worldModuleLogic,
+            name: 'worldModuleLogic',
             middleware: function(state) {
                 state.world = 'World';
             },
@@ -524,7 +538,9 @@ Next piece of code that we see is
 
 ````javascript
 const app = gabriela.asProcess({
-    config: {}
+    config: {
+        framework: {},    
+    }
 });
 
 ````
@@ -536,7 +552,9 @@ If you wanted to create Gabriela app as a server, you would create it like this
 
 ````javascript
 const app = gabriela.asServer({
-    config: {}
+    config: {
+        framework: {},
+    }
 });
 
 ````
@@ -598,7 +616,9 @@ const helloWorldModule = {
 };
 
 const app = gabriela.asProcess({
-    config: {}
+    config: {
+        framework: {},
+    }
 });
 
 app.addModule(helloWorldModule);
@@ -641,7 +661,9 @@ const handlingMiddlewareBlockModule = {
 };
 
 const app = gabriela.asProcess({
-    config: {}
+    config: {
+        framework: {},    
+    }
 });
 
 app.addModule(handlingMiddlewareBlocksModule);
@@ -910,7 +932,11 @@ const myPlugin = {
     modules: [/** declare your modules here */]
 }
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(myPlugin);
 ````
@@ -990,7 +1016,11 @@ const myPlugin = {
     modules: [myModule]
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(myPlugin);
 
@@ -1028,7 +1058,11 @@ const reactingModule = {
     }
 }
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(myPlugin);
 app.addModule(reactingModule);
@@ -1048,7 +1082,11 @@ const gabriela = require('gabriela');
 // this is our fictional plugin that abstracts native mongo driver for NodeJS.
 const mongoPlugin = require('gabriela-mongo-plugin');
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(mongoPlugin);
 
@@ -1219,7 +1257,11 @@ const myModuleTwo = {
     }],
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(myModuleOne);
 app.addModule(myModuleTwo);
@@ -1295,7 +1337,11 @@ const myPlugin = {
     modules: [declaringModule, moduleOne, moduleTwo],
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addPlugin(myPlugin);
 
@@ -1350,7 +1396,11 @@ const moduleTwo = {
     }],
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(declaringModule);
 app.addModule(moduleOne);
@@ -1417,7 +1467,11 @@ const sharedPlugin = {
     modules: [moduleOne]
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(declaringModule);
 // this module is added here but is also part of a plugin
@@ -1643,7 +1697,11 @@ const myModule = {
     moduleLogic: ['functionExpression()']
 };
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(myModule);
 
@@ -2108,7 +2166,9 @@ when creating an app with *asProcess* or *asServer*.
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
     events: {
         onAppStarted () {
         },
@@ -2120,7 +2180,9 @@ const processApp = gabriela.asProcess({
 // or
 
 const serverApp = gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
     events: {
         onAppStarted () {
         },
@@ -2143,7 +2205,9 @@ The only variable bound to this is *gabriela* object and it has only one method:
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
     events: {
         onAppStarted () {
             this.gabriela.close();
@@ -2272,7 +2336,9 @@ either on the module or plugin level, or when an error is thrown with native jav
 const gabriela = require('gabriela');
 
 gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
     events: {
         catchError(e) {
             
@@ -2313,11 +2379,19 @@ As I said in the Primer, you have to add the initial configuration when creating
 ````javascript
 const gabriela = require('gabriela');
 
-const app = gabriela.asProcess({config: {}});
+const app = gabriela.asProcess({
+    config: {
+        framework: {},
+    }
+});
 
 // or
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 ````
 
 Supplying `{config: {}}` is mandatory. For now, **anything** you put into `config` will 
@@ -2365,7 +2439,11 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2398,7 +2476,11 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2444,7 +2526,11 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2483,7 +2569,11 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2520,7 +2610,11 @@ const httpModule = {
     }]
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2569,7 +2663,11 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 app.addModule(httpModule);
 
@@ -2695,7 +2793,7 @@ const declaringModule = {
 plugin gives you the possibility to name his dependencies with value of the *prefix*
 property in front of it.
 
-# 3. Case studies
+# 3. Cookbook
 ## 3.1 Decoupling from HTTP
 ## 3.2 Implementing layered architecture
 ## 3.3 Dynamically creating configurable DI services
