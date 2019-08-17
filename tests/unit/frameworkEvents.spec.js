@@ -1425,15 +1425,13 @@ describe('Framework events', function() {
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
-                    requestPromise.get('http://localhost:3000/path').then(() => {
-                        setTimeout(() => {
-                            expect(onPostResponseCalled).to.be.equal(true);
+                    setTimeout(() => {
+                        expect(onPostResponseCalled).to.be.equal(true);
+                        
+                        this.gabriela.close();
 
-                            this.gabriela.close();
-
-                            done();
-                        }, 500);
-                    });
+                        done();
+                    }, 5000);
                 }
             }
         });
@@ -1481,6 +1479,12 @@ describe('Framework events', function() {
         });
 
         g.startApp();
+
+        setTimeout(() => {
+            requestPromise.get('http://localhost:3000/path').then(() => {
+            });
+        }, 2000);
+
     });
 
     it('should call onPostResponse if the response has been sent in onPreResponse', (done) => {
