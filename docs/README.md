@@ -2802,7 +2802,6 @@ plugin gives you the possibility to name his dependencies with value of the *pre
 property in front of it.
 
 # 3. Cookbook
-## 3.1 Decoupling from HTTP
 ## 3.2 Implementing layered architecture
 ## 3.3 Dynamically creating configurable DI services
 ## 3.4 Creating third party plugins
