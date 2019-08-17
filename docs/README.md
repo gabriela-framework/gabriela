@@ -99,13 +99,17 @@ Gabriela can be created as a NodeJS process or as a server app.
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {},
+    config: {
+        framework: {},
+    },
 });
 
 // or
 
 const serverApp = gabriela.asServer({
-    config: {},
+    config: {
+        framework: {},
+    },
 });
 ````
 
