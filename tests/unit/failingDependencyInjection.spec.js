@@ -405,7 +405,7 @@ describe('Failing dependency injection tests', () => {
         m.runModule('anotherModule').then(() => {
             assert.fail('This test should not be successful');
         }).catch((err) => {
-            expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' not found in the dependency tree`);
+            expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' definition not found in the dependency tree`);
 
             done();
         });
@@ -473,7 +473,7 @@ describe('Failing dependency injection tests', () => {
 
             done();
         }).catch((err) => {
-            expect(err.message).to.be.equal(`Dependency injection error. 'userRepository' not found in the dependency tree`);
+            expect(err.message).to.be.equal(`Dependency injection error. 'userRepository' definition not found in the dependency tree`);
 
             done();
         });
