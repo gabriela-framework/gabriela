@@ -1489,21 +1489,18 @@ describe('Framework events', function() {
 
     it('should call onPostResponse if the response has been sent in onPreResponse', (done) => {
         let onPostResponseCalled = false;
+
         let onPreResponseCalled = false;
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
-                    requestPromise.get('http://localhost:3000/path').then(() => {
-                        expect(onPreResponseCalled).to.be.equal(true);
+                    setTimeout(() => {
+                        expect(onPostResponseCalled).to.be.equal(true);
 
-                        setTimeout(() => {
-                            expect(onPostResponseCalled).to.be.equal(true);
+                        this.gabriela.close();
 
-                            this.gabriela.close();
-
-                            done();
-                        }, 500);
-                    });
+                        done();
+                    }, 5000);
                 }
             }
         });
@@ -1556,6 +1553,12 @@ describe('Framework events', function() {
         });
 
         g.startApp();
+
+        setTimeout(() => {
+            requestPromise.get('http://localhost:3000/path').then(() => {
+                expect(onPreResponseCalled).to.be.equal(true);
+            });
+        }, 2000);
     });
 
     it('should properly call onPre/PostResponse events if the response is sent from inside middleware execution', (done) => {
@@ -1564,17 +1567,13 @@ describe('Framework events', function() {
         const g = gabriela.asServer(config, {
             events: {
                 onAppStarted() {
-                    requestPromise.get('http://localhost:3000/path').then(() => {
-                        expect(onPreResponseCalled).to.be.equal(true);
+                    setTimeout(() => {
+                        expect(onPostResponseCalled).to.be.equal(true);
 
-                        setTimeout(() => {
-                            expect(onPostResponseCalled).to.be.equal(true);
+                        this.gabriela.close();
 
-                            this.gabriela.close();
-
-                            done();
-                        }, 500);
-                    });
+                        done();
+                    }, 5000);
                 }
             }
         });
@@ -1602,6 +1601,12 @@ describe('Framework events', function() {
         });
 
         g.startApp();
+
+        setTimeout(() => {
+            requestPromise.get('http://localhost:3000/path').then(() => {
+                expect(onPreResponseCalled).to.be.equal(true);
+            });
+        }, 2000);
     });
 
     it('should resolve an error thrown inside middleware before an error thrown in onAppStarted', (done) => {
