@@ -374,7 +374,11 @@ As we said, *modules* and *plugins* are executed in the order in which you added
 ````javascript
 const gabriela = require('gabriela');
 
-const app = gabriela.asServer({config: {}});
+const app = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+});
 
 /**
 * 'module1', 'module2' etc. are just stubs to make the example more readable
