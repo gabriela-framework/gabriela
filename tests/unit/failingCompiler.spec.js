@@ -66,7 +66,7 @@ describe('Failing concrete compiler tests', () => {
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Dependency injection error. 'nonExistentService' not found in the dependency tree`)
+            expect(err.message).to.be.equal(`Dependency injection error. 'nonExistentService' definition not found in the dependency tree`)
         }
 
         expect(entersException).to.be.equal(true);

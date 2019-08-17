@@ -38,6 +38,22 @@ function _createWorkingDataStructures(mdl, req) {
     };
 }
 
+function _handleError(err, mdl) {
+    if (err.internal) {
+        if (err.message === 'done') {
+            return;
+        }
+    }
+
+    // throw error if it doesnt have any mediators
+    if (!mdl.hasMediators()) throw err;
+
+    // throw error if it has mediators but it does not have onError
+    if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
+
+    mdl.mediatorInstance.runOnError(mdl.mediator.onError, err);
+}
+
 function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config, state) {
@@ -76,8 +92,12 @@ function factory(server, mdl) {
 
                 httpContext.res = responseProxy;
 
-                for (const functions of middleware) {
-                    await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
+                try {
+                    for (const functions of middleware) {
+                        await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
+                    }
+                } catch (e) {
+                    _handleError(e, mdl);
                 }
 
                 if (!responseProxy.__responseSent) {

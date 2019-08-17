@@ -32,7 +32,7 @@ describe('Failing private compiler dependency injection tests', () => {
         g.runModule().then(() => {
             assert.fail('This test should fail');
         }).catch((e) => {
-            expect(e.message).to.be.equal(`Dependency injection error. 'privateDependency' not found in the dependency tree`);
+            expect(e.message).to.be.equal(`Dependency injection error. 'privateDependency' definition not found in the dependency tree`);
         });
     });
 
