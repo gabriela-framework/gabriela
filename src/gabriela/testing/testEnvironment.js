@@ -1,8 +1,8 @@
-const LoadedDependency = require('./loadedDependency');
+const DependencyResolver = require('./dependencyResolver');
 
 function TestEnvironment(config) {
     function loadDependency(dependencyGraph) {
-        return LoadedDependency(dependencyGraph);
+        return new DependencyResolver(dependencyGraph, config);
     }
 
     function loadModule() {

@@ -1,10 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const assert = require('assert');
-const requestPromise = require('request-promise');
 
 const it = mocha.it;
-const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -18,5 +15,16 @@ describe('Testing environment interface', function() {
         expect(testApp.loadDependency).to.be.a('function');
         expect(testApp.loadModule).to.be.a('function');
         expect(testApp.loadPlugin).to.be.a('function');
+
+        const graph = [{
+            name: 'name',
+            init: function() {}
+        }];
+
+        const dependencyResolver = testApp.loadDependency(graph);
+
+        expect(dependencyResolver).to.be.a('object');
+
+        expect(dependencyResolver.resolve).to.be.a('function');
     });
 });

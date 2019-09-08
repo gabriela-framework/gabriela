@@ -1,11 +1,9 @@
 const Compiler = require('../dependencyInjection/compiler');
-const parseExpression = require('../expression/parse');
 const Mediator = require('../events/mediator');
 const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
-const {MIDDLEWARE_TYPES, ASYNC_FLOW_TYPES} = require('../misc/types');
+const {MIDDLEWARE_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
-const TaskRunner = require('../misc/taskRunner');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();

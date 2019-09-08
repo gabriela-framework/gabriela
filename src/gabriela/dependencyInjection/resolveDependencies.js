@@ -1,7 +1,7 @@
 module.exports = function resolveDependencies(
-    compiler, 
-    sharedCompiler, 
-    name, 
+    compiler,
+    sharedCompiler,
+    name,
     config,
     moduleName,
     plugin
