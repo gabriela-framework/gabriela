@@ -8,6 +8,10 @@ require('strict-mode')(function () {
 
         asProcess(receivedConfig, options) {
             return require('./_asProcess').call(null, receivedConfig, options);
+        },
+
+        asTest(receivedConfig, options) {
+            return require('./_asTest').call(null, receivedConfig, options);
         }
     };
 });
