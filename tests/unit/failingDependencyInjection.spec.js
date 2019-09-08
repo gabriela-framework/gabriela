@@ -15,7 +15,7 @@ describe('Failing dependency injection tests', () => {
     it('should fail to compile because init dependency value not being an object', () => {
         let entersException = false;
 
-        const m = gabriela.asProcess(config);;
+        const m = gabriela.asProcess(config);
 
         try {
             m.addModule({
@@ -74,31 +74,10 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail to compile because of invalid service name data type', () => {
-        let entersException = false;
-
-        const m = gabriela.asProcess(config);;
-
-        try {
-            m.addModule({
-                name: 'name',
-                dependencies: [{
-                    name: 1,
-                }],
-            });
-        } catch (err) {
-            entersException = true;
-
-            expect(err.message).to.be.equal(`Dependency injection error in module 'name'. Init object 'name' property must be a string`);
-        }
-
-        expect(entersException).to.be.equal(true);
-    });
-
     it('should fail to compile a dependency because of invalid scope value', () => {
         let entersException = false;
 
-        const m = gabriela.asProcess(config);;
+        const m = gabriela.asProcess(config);
 
         let invalidService = {
             name: 'name',
