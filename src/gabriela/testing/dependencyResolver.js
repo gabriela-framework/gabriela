@@ -3,10 +3,21 @@ const moduleFactoryContext = require('./moduleFactoryContext');
 const Compiler = require('../dependencyInjection/compiler');
 const resolveDependencies = require('../dependencyInjection/resolveDependencies');
 
+function _determineIfIsPlugin(graph) {
+    for (const def of graph) {
+        if (graph.scope === 'plugin') {
+            return {name: 'testingPlugin'}
+        }
+    }
+
+    return null;
+}
+
 function _createFakeModule(graph, config) {
     const fakeModule = {
         name: 'testing',
         dependencies: graph,
+        plugin: _determineIfIsPlugin(graph),
     };
 
     const rootCompiler = Compiler.create();
