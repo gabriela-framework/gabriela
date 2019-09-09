@@ -1,12 +1,13 @@
-const DependencyResolver = require('./dependencyResolver');
+const DependencyResolver = require('./resolver/dependencyResolver');
+const ModuleResolver = require('./resolver/moduleResolver');
 
 function TestEnvironment(config) {
     function loadDependency(dependencyGraph) {
         return new DependencyResolver(dependencyGraph, config);
     }
 
-    function loadModule() {
-
+    function loadModule(mdl) {
+        return new ModuleResolver(mdl);
     }
 
     function loadPlugin() {

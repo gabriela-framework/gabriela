@@ -22,7 +22,11 @@ describe('Testing environment interface', function() {
         }];
 
         const dependencyResolver = testApp.loadDependency(graph);
+        const moduleResolver = testApp.loadModule({
+            name: 'module',
+        });
 
+        expect(moduleResolver).to.be.a('object');
         expect(dependencyResolver).to.be.a('object');
 
         expect(dependencyResolver.resolve).to.be.a('function');

@@ -1,7 +1,7 @@
-const Validator = require('./util/Validator');
-const moduleFactoryContext = require('./moduleFactoryContext');
-const Compiler = require('../dependencyInjection/compiler');
-const resolveDependencies = require('../dependencyInjection/resolveDependencies');
+const Validator = require('../util/Validator');
+const moduleFactoryContext = require('../moduleFactoryContext');
+const Compiler = require('../../dependencyInjection/compiler');
+const resolveDependencies = require('../../dependencyInjection/resolveDependencies');
 
 function _determineIfIsPlugin(graph) {
     for (const def of graph) {
