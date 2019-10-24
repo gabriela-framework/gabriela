@@ -65,4 +65,10 @@ describe('Types test', () => {
        expect(BUILT_IN_MEDIATORS.ON_MODULE_STARTED).to.be.equal('onModuleStarted');
        expect(BUILT_IN_MEDIATORS.ON_ERROR).to.be.equal('onError');
    });
+
+    it('should be updated with the middleware types list in types.js', () => {
+        const type = ['init', 'security', 'preLogicTransformers', 'validators', 'moduleLogic', 'postLogicTransformers'];
+
+        assert.deepEqual(type, Object.values(MIDDLEWARE_TYPES));
+    });
 });

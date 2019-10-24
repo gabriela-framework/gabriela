@@ -16,6 +16,7 @@ describe('Test gabriela internals', () => {
     it('should properly call properties on a module object created by moduleFactory', () => {
         const allowedModuleProps = [
             'name',
+            'init',
             'security',
             'preLogicTransformers',
             'postLogicTransformers',
@@ -48,6 +49,7 @@ describe('Test gabriela internals', () => {
                     protocols: ['http'],
                 }
             },
+            init: [],
             preLogicTransformers: [],
             postLogicTransformers: [],
             validators: [],
@@ -95,6 +97,7 @@ describe('Test gabriela internals', () => {
 
         expect(moduleObject.name).to.be.a('string');
         expect(moduleObject.security).to.be.a('array');
+        expect(moduleObject.init).to.be.a('array');
         expect(moduleObject.preLogicTransformers).to.be.a('array');
         expect(moduleObject.postLogicTransformers).to.be.a('array');
         expect(moduleObject.validators).to.be.a('array');

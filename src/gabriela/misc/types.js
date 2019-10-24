@@ -24,6 +24,7 @@ class MiddlewareTypes extends IIterator {
     constructor() {
         super();
 
+        this.INIT = 'init';
         this.SECURITY = 'security';
         this.PRE_LOGIC_TRANSFORMERS = 'preLogicTransformers';
         this.VALIDATORS = 'validators';

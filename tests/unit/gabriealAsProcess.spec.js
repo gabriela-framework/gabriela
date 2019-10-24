@@ -39,6 +39,121 @@ describe('Gabriela as process tests', () => {
         });
     });
 
+    it('should execute all the middleware in specific order', (done) => {
+        let preLogicTransformerExecuted = false,
+            secondPreLogicExecuted = false,
+            validatorsExecuted = false,
+            moduleLogicExecuted = false,
+            init1Executed = false,
+            init2Executed = false,
+            init3Executed = false,
+            postLogicTransformersExecuted = false;
+
+        const name = 'allMiddlewareExecution';
+
+        const mdl = {
+            name: name,
+            init: [
+                {
+                    name: 'init1',
+                    middleware: function(next) {
+                        init1Executed = true;
+
+                        expect(init2Executed).to.be.equal(false);
+                        expect(init3Executed).to.be.equal(false);
+                        expect(secondPreLogicExecuted).to.be.equal(false);
+                        expect(preLogicTransformerExecuted).to.be.equal(false);
+                        expect(validatorsExecuted).to.be.equal(false);
+                        expect(moduleLogicExecuted).to.be.equal(false);
+                        expect(postLogicTransformersExecuted).to.be.equal(false);
+
+                        next();
+                    }
+                },
+                {
+                    name: 'init2',
+                    middleware: function(next) {
+                        init2Executed = true;
+
+                        expect(init1Executed).to.be.equal(true);
+                        expect(init3Executed).to.be.equal(false);
+                        expect(secondPreLogicExecuted).to.be.equal(false);
+                        expect(preLogicTransformerExecuted).to.be.equal(false);
+                        expect(validatorsExecuted).to.be.equal(false);
+                        expect(moduleLogicExecuted).to.be.equal(false);
+                        expect(postLogicTransformersExecuted).to.be.equal(false);
+
+                        next();
+                    }
+                },
+                function(next) {
+                    init3Executed = true;
+
+                    expect(init1Executed).to.be.equal(true);
+                    expect(init2Executed).to.be.equal(true);
+                    expect(secondPreLogicExecuted).to.be.equal(false);
+                    expect(preLogicTransformerExecuted).to.be.equal(false);
+                    expect(validatorsExecuted).to.be.equal(false);
+                    expect(moduleLogicExecuted).to.be.equal(false);
+                    expect(postLogicTransformersExecuted).to.be.equal(false);
+
+                    next();
+                }],
+            preLogicTransformers: [{
+                name: 'name',
+                middleware: function(next) {
+                    preLogicTransformerExecuted = true;
+
+                    next();
+                }
+            }, {
+                name: 'other',
+                middleware: function(next) {
+                    requestPromise.get('https://www.facebook.com/').then(() => {
+                        secondPreLogicExecuted = true;
+
+                        next();
+                    });
+                }
+            }],
+            validators: [{
+                name: 'name',
+                middleware: function(next) {
+                    validatorsExecuted = true;
+
+                    next();
+                },
+            }],
+            moduleLogic: [function(next) {
+                moduleLogicExecuted = true;
+
+                next();
+            }],
+            postLogicTransformers: [function(next) {
+                postLogicTransformersExecuted = true;
+
+                next();
+            }],
+        };
+
+        const g = gabriela.asProcess(config);;
+
+        g.addModule(mdl);
+
+        g.runModule(name).then(() => {
+            expect(init1Executed).to.be.equal(true);
+            expect(init2Executed).to.be.equal(true);
+            expect(init3Executed).to.be.equal(true);
+            expect(secondPreLogicExecuted).to.be.equal(true);
+            expect(preLogicTransformerExecuted).to.be.equal(true);
+            expect(validatorsExecuted).to.be.equal(true);
+            expect(moduleLogicExecuted).to.be.equal(true);
+            expect(postLogicTransformersExecuted).to.be.equal(true);
+
+            done();
+        });
+    });
+
     it('should run all middleware withing a standalone module and plugin(s) plus an onAppStarted event', (done) => {
         let eventCalled = false;
         let mdl1Called = false;
@@ -203,23 +318,35 @@ describe('Gabriela as process tests', () => {
         });
     });
 
-    it('should assert that all middleware is executed', () => {
+    it('should assert that all middleware is executed', (done) => {
         let preLogicTransformerExecuted = false,
             validatorsExecuted = false,
+            initLogicExecuted = false,
             moduleLogicExecuted = false,
+            securityLogicExecuted = false,
             postLogicTransformersExecuted = false;
 
         const name = 'allMiddlewareExecution';
 
         const mdl = {
             name: name,
-            preLogicTransformers: [function(next) {
-                preLogicTransformerExecuted = true;
+            init: [function(next) {
+                initLogicExecuted = true;
+
+                next();
+            }],
+            security: [function(next) {
+                securityLogicExecuted = true;
 
                 next();
             }],
             validators: [function(next) {
                 validatorsExecuted = true;
+
+                next();
+            }],
+            preLogicTransformers: [function(next) {
+                preLogicTransformerExecuted = true;
 
                 next();
             }],
@@ -240,24 +367,53 @@ describe('Gabriela as process tests', () => {
         g.addModule(mdl);
 
         g.runModule(name).then(() => {
+            expect(securityLogicExecuted).to.be.equal(true);
+            expect(initLogicExecuted).to.be.equal(true);
             expect(preLogicTransformerExecuted).to.be.equal(true);
             expect(validatorsExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(true);
             expect(postLogicTransformersExecuted).to.be.equal(true);
+
+            done();
         });
     });
 
-    it('should assert that all middleware created with middleware definition object is executed', () => {
+    it('should assert that all middleware created with middleware definition object is executed', (done) => {
         let preLogicTransformerExecuted = false,
             secondPreLogicExecuted = false,
             validatorsExecuted = false,
             moduleLogicExecuted = false,
+            init1Executed = false,
+            init2Executed = false,
+            init3Executed = false,
             postLogicTransformersExecuted = false;
 
         const name = 'allMiddlewareExecution';
 
         const mdl = {
             name: name,
+            init: [
+                {
+                    name: 'init1',
+                    middleware: function(next) {
+                        init1Executed = true;
+
+                        next();
+                    }
+                },
+                {
+                    name: 'init2',
+                    middleware: function(next) {
+                        init2Executed = true;
+
+                        next();
+                    }
+                },
+            function(next) {
+                init3Executed = true;
+
+                next();
+            }],
             preLogicTransformers: [{
                 name: 'name',
                 middleware: function(next) {
@@ -300,11 +456,16 @@ describe('Gabriela as process tests', () => {
         g.addModule(mdl);
 
         g.runModule(name).then(() => {
+            expect(init1Executed).to.be.equal(true);
+            expect(init2Executed).to.be.equal(true);
+            expect(init3Executed).to.be.equal(true);
             expect(secondPreLogicExecuted).to.be.equal(true);
             expect(preLogicTransformerExecuted).to.be.equal(true);
             expect(validatorsExecuted).to.be.equal(true);
             expect(moduleLogicExecuted).to.be.equal(true);
             expect(postLogicTransformersExecuted).to.be.equal(true);
+
+            done();
         });
     });
 

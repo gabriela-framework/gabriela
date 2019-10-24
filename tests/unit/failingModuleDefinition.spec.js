@@ -1,7 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
 const assert = require('assert');
+const {MIDDLEWARE_TYPES} = require('./../../src/gabriela/misc/types');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -143,13 +143,13 @@ describe('Failing module definition tests', () => {
     });
 
     it('should throw an error for invalid middleware middleware property definition object', () => {
-        const middlewareNames = ['preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
+        const middlewareNames = ['validators', 'preLogicTransformers', 'postLogicTransformers', 'moduleLogic', 'security'];
 
         let userModule = {
             name: 'name',
         };
 
-        let g = gabriela.asProcess(config);;
+        let g = gabriela.asProcess(config);
 
         let entersException = false;
         for (const middlewareName of middlewareNames) {

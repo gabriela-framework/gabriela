@@ -25,9 +25,10 @@ function _createWorkingDataStructures(mdl, req) {
     };
 
     const middleware = [
+        mdl[MIDDLEWARE_TYPES.INIT],
         mdl[MIDDLEWARE_TYPES.SECURITY],
-        mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
         mdl[MIDDLEWARE_TYPES.VALIDATORS],
+        mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
         mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
         mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
     ];
@@ -111,6 +112,7 @@ function factory(server, mdl) {
 
     return async function(mdl, context, config, state) {
         const middleware = [
+            mdl[MIDDLEWARE_TYPES.INIT],
             mdl[MIDDLEWARE_TYPES.SECURITY],
             mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
             mdl[MIDDLEWARE_TYPES.VALIDATORS],
