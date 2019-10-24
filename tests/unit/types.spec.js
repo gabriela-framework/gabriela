@@ -14,6 +14,7 @@ const {
     MANDATORY_ROUTE_PROPS,
     GABRIELA_EVENTS,
     BUILT_IN_MEDIATORS,
+    VISIBILITY_TYPES,
 } = require('../../src/gabriela/misc/types');
 
 describe('Types test', () => {
@@ -64,6 +65,14 @@ describe('Types test', () => {
        expect(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED).to.be.equal('onModuleFinished');
        expect(BUILT_IN_MEDIATORS.ON_MODULE_STARTED).to.be.equal('onModuleStarted');
        expect(BUILT_IN_MEDIATORS.ON_ERROR).to.be.equal('onError');
+
+       const visibilityType = ['public', 'module', 'plugin'];
+
+       assert.deepEqual(visibilityType, Object.values(VISIBILITY_TYPES));
+
+       expect(VISIBILITY_TYPES.PUBLIC).to.be.equal('public');
+       expect(VISIBILITY_TYPES.MODULE).to.be.equal('module');
+       expect(VISIBILITY_TYPES.PLUGIN).to.be.equal('plugin');
    });
 
     it('should be updated with the middleware types list in types.js', () => {

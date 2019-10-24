@@ -1,5 +1,8 @@
 const {getArgNames, is, hasKey} = require('../util/util');
-const {ASYNC_FLOW_TYPES} = require('../misc/types');
+const {
+    ASYNC_FLOW_TYPES,
+    VISIBILITY_TYPES,
+} = require('../misc/types');
 
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
@@ -26,7 +29,40 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
         }
     }
 
-    return deps;
+    return {
+        names: args,
+        services: deps,
+    }
+}
+
+function _createMetadata(service, serviceName, argNames, definition) {
+    const metadata = {};
+    metadata.name = serviceName;
+    metadata.args = argNames;
+
+    if (is('object', definition.shared)) {
+        metadata.scope = {
+            type: 'shared',
+            modules: (!definition.shared.modules) ? [] : definition.shared.modules,
+            plugins: (!definition.shared.plugins) ? [] : definition.shared.plugins,
+        };
+
+        return metadata;
+    }
+
+    let scope;
+    if (definition.scope) {
+        scope = definition.scope;
+    } else {
+        scope = 'module';
+    }
+
+    metadata.scope = {
+        type: 'visibility',
+        scope: scope,
+    };
+
+    return metadata;
 }
 
 /**
@@ -181,13 +217,15 @@ function factory() {
         const taskRunner = TaskRunner.create();
 
         const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
-        const service = _resolveService(definition, deps, taskRunner, injectionType);
+        const service = _resolveService(definition, deps.services, taskRunner, injectionType);
 
         if (_isInjectionTypeInterface(service)) {
             return _resolveInjectionService(this, service, taskRunner, config);
         }
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
+
+        service._$metadata = _createMetadata(service, name, deps.names, definition);
 
         resolved[definition.name] = service;
 

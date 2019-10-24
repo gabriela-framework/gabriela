@@ -477,5 +477,79 @@ describe('Compiler instance tests', () => {
         compiler.compile('definition');
 
         expect(initEntered).to.be.equal(true);
-    })
+    });
+
+    it('should have a _$mediator property for shared scope and all the necessary properties', () => {
+        const definition = {
+            name: 'definition',
+            shared: {
+                modules: ['module1', 'module2'],
+                plugins: ['plugin1', 'plugin2'],
+            },
+            init: function() {
+                return {};
+            },
+        };
+
+        const compiler = Compiler.create();
+        compiler.add(definition);
+
+        const service = compiler.compile('definition');
+
+        expect(service).to.have.property('_$metadata');
+        expect(service._$metadata).to.be.a('object');
+
+        const metadata = service._$metadata;
+
+        expect(metadata).to.have.property('scope');
+        expect(metadata).to.have.property('name');
+        expect(metadata).to.have.property('args');
+
+        expect(metadata.name).to.be.a('string');
+        expect(metadata.args).to.be.a('array');
+        expect(metadata.scope).to.be.a('object');
+
+        const scope = metadata.scope;
+
+        expect(scope).to.have.property('type');
+        expect(scope.type).to.be.equal('shared');
+
+        expect(scope).to.have.property('modules');
+        expect(scope.modules).to.be.a('array');
+
+        expect(scope).to.have.property('plugins');
+        expect(scope.modules).to.be.a('array');
+    });
+
+    it('should have a _$mediator property for a visibility scope', () => {
+        const definition = {
+            name: 'definition',
+            init: function() {
+                return {};
+            },
+        };
+
+        const compiler = Compiler.create();
+        compiler.add(definition);
+
+        const service = compiler.compile('definition');
+
+        expect(service).to.have.property('_$metadata');
+        expect(service._$metadata).to.be.a('object');
+
+        const metadata = service._$metadata;
+
+        expect(metadata).to.have.property('scope');
+        expect(metadata).to.have.property('name');
+        expect(metadata).to.have.property('args');
+
+        expect(metadata.name).to.be.a('string');
+        expect(metadata.args).to.be.a('array');
+        expect(metadata.scope).to.be.a('object');
+
+        const scope = metadata.scope;
+
+        expect(scope.type).to.be.equal('visibility');
+        expect(scope.scope).to.be.equal('module');
+    });
 });

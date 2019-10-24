@@ -10,6 +10,16 @@ function _proxifyType(obj) {
     return new Proxy(obj, handlers);
 }
 
+class VisibilityTypes extends IIterator {
+    constructor() {
+        super();
+
+        this.PUBLIC = 'public';
+        this.MODULE = 'module';
+        this.PLUGIN = 'plugin';
+    }
+}
+
 class InjectionTypes extends IIterator {
     constructor() {
         super();
@@ -127,5 +137,6 @@ module.exports = Object.freeze({
     HTTP_EVENTS: Object.freeze(_proxifyType(new HttpEvents())),
     ENV: Object.freeze(_proxifyType(new EnvTypes())),
     INJECTION_TYPES: Object.freeze(_proxifyType(new InjectionTypes())),
-    PROTOCOLS: Object.freeze(_proxifyType(new Protocols()))
+    PROTOCOLS: Object.freeze(_proxifyType(new Protocols())),
+    VISIBILITY_TYPES: Object.freeze(_proxifyType(new VisibilityTypes()))
 });
