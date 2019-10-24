@@ -10,7 +10,6 @@ env:
 
 language: node_js
 node_js:
-  - "6.17.1"
   - "8.16.2"
   - "10.17.0"
 cache:
