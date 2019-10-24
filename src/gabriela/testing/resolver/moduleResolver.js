@@ -1,3 +1,5 @@
+const moduleFactoryContext = require('../moduleFactoryContext');
+
 function ModuleResolver(mdl) {
 
 }

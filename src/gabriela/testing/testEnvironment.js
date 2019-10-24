@@ -2,21 +2,16 @@ const DependencyResolver = require('./resolver/dependencyResolver');
 const ModuleResolver = require('./resolver/moduleResolver');
 
 function TestEnvironment(config) {
-    function loadDependency(dependencyGraph) {
-        return new DependencyResolver(dependencyGraph, config);
-    }
-
-    function loadModule(mdl) {
-        return new ModuleResolver(mdl);
-    }
-
-    function loadPlugin() {
+    function fakeHttp(module) {
 
     }
 
-    this.loadDependency = loadDependency;
-    this.loadModule = loadModule;
-    this.loadPlugin = loadPlugin;
+    function fakeProcess(module) {
+
+    }
+
+    this.fakeHttp = fakeHttp;
+    this.fakeProcess = fakeProcess;
 }
 
 module.exports = TestEnvironment;

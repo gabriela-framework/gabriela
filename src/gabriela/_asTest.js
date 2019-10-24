@@ -10,7 +10,7 @@ const TestingEnvironment = require('./testing/testEnvironment');
 
 module.exports = function _asTestingEnvironment(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
-    const opts = options || {};
+    const opts = options || {}
 
     return new TestingEnvironment(config, opts);
 };
