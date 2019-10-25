@@ -1,6 +1,6 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const {MIDDLEWARE_TYPES, PROTOCOLS} = require('../misc/types');
+const {MIDDLEWARE_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
 
 function _getResponseEvents(mdl) {

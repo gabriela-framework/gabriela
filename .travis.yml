@@ -14,8 +14,9 @@ env:
 
 language: node_js
 node_js:
-  - "8.16.2"
-  - "10.17.0"
+  - "8.*"
+  - "10.*"
+  - "12.*"
 cache:
   npm: false
 

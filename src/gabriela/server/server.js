@@ -1,7 +1,5 @@
 const restify = require('restify');
 
-const pluginExecuteFactory = require('../plugin/executeFactory');
-const moduleExecuteFactory = require('../module/executeFactory');
 const {GABRIELA_EVENTS} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
@@ -41,7 +39,12 @@ function _startServer(opts) {
  * TODO: Since 'config' is injected everywhere with for future functionality (?), here is an empty object. Create the
  * TODO: functionality for config
  */
-async function _runComponents(pluginInterface, moduleInterface, server) {
+async function _runComponents({
+    moduleExecuteFactory,
+    pluginExecuteFactory,
+    pluginInterface,
+    moduleInterface,
+    server}) {
     await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
     await moduleInterface.run(moduleExecuteFactory.bind(null, server));
 }
@@ -74,8 +77,16 @@ function Server(
 
     let server = _startServer(opts);
 
-    function run() {
-        _runComponents(pluginInterface, moduleInterface, server).then(() => {
+    function run(moduleExecuteFactory, pluginExecuteFactory) {
+        const args = {
+            moduleExecuteFactory,
+            pluginExecuteFactory,
+            pluginInterface,
+            moduleInterface,
+            server
+        };
+
+        _runComponents(args).then(() => {
             server.listen(opts.port, opts.host, _listenCallback.bind(
                 this,
                 opts,
@@ -100,7 +111,7 @@ function Server(
              */
             console.log(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
 
-            this.gabriela.close();
+            this.close();
 
             throw err;
         });

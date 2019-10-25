@@ -99,7 +99,6 @@ function factory() {
                     if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED);
                 } catch (err) {
                     _handleError(err, mdl);
-                    state = {};
                 }
             }
 

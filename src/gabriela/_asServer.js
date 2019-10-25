@@ -1,5 +1,7 @@
 "use strict";
 
+const pluginExecuteFactory = require('./plugin/executeFactory');
+const moduleExecuteFactory = require('./module/executeFactory');
 const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
@@ -57,7 +59,7 @@ module.exports = function _asServer(receivedConfig, options) {
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
 
-        startApp() {
+        startApp(customMdlExecFactory = null, customPluginExecFactory = null) {
             const {events} = opts;
 
             // TODO: make the executionFactory argument be available here in the future and test it
@@ -72,7 +74,7 @@ module.exports = function _asServer(receivedConfig, options) {
                 moduleInterface,
             );
 
-            server.run();
+            server.run(moduleExecuteFactory, pluginExecuteFactory);
         }
     };
 

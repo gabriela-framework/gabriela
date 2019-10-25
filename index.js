@@ -1,6 +1,6 @@
 const gabriela = require('./src/index');
 
-const app = gabriela.asProcess({
+const app = gabriela.asServer({
     config: {
         framework: {}
     }
@@ -8,6 +8,13 @@ const app = gabriela.asProcess({
 
 app.addModule({
     name: 'module',
+    http: {
+        route: {
+            name: 'route',
+            path: '/path',
+            method: 'get',
+        }
+    },
     init: [function() {
         console.log('init');
     }],
