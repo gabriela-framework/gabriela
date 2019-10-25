@@ -6,7 +6,7 @@ const Process = require('./process/process');
 const ExposedMediator = require('./events/exposedMediator');
 const moduleExecutionFactory = require('./module/executeFactory');
 const pluginExecutionFactory = require('./plugin/executeFactory');
-const TestingEnvironment = require('./testing/testEnvironment');
+const TestingEnvironment = require('./testing/faker');
 
 module.exports = function _asTestingEnvironment(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);

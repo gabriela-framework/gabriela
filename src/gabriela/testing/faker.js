@@ -1,9 +1,10 @@
 const DependencyResolver = require('./resolver/dependencyResolver');
 const ModuleResolver = require('./resolver/moduleResolver');
+const HttpMock = require('./http');
 
-function TestEnvironment(config) {
+function Faker(config) {
     function fakeHttp(module) {
-
+        return new HttpMock();
     }
 
     function fakeProcess(module) {
@@ -14,4 +15,4 @@ function TestEnvironment(config) {
     this.fakeProcess = fakeProcess;
 }
 
-module.exports = TestEnvironment;
+module.exports = Faker;
