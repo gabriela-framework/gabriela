@@ -101,11 +101,15 @@ function instance(moduleOrPlugin, config) {
      * argument of the function, if the number of arguments is more than 0
      * @param fn
      * @param e
+     * @param httpContext
      */
-    function runOnError(fn, e) {
+    function runOnError(fn, e, httpContext = null) {
         const args = getArgs(fn);
         if (args.length > 0) args[0].value = e;
 
+        for (const arg of args) {
+            if (arg.name === 'http') arg.value = httpContext;
+        }
 
         _callFn(fn, moduleOrPlugin, args, config);
     }

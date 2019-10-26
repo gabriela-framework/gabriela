@@ -39,7 +39,7 @@ function _createWorkingDataStructures(mdl, req) {
     };
 }
 
-function _handleError(err, mdl) {
+function _handleError(err, mdl, httpContext = null) {
     if (err.internal) {
         if (err.message === 'done') {
             return;
@@ -52,7 +52,7 @@ function _handleError(err, mdl) {
     // throw error if it has mediators but it does not have onError
     if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
 
-    mdl.mediatorInstance.runOnError(mdl.mediator.onError, err);
+    mdl.mediatorInstance.runOnError(mdl.mediator.onError, err, httpContext);
 }
 
 function factory(server, mdl) {
@@ -98,7 +98,7 @@ function factory(server, mdl) {
                         await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
                     }
                 } catch (e) {
-                    _handleError(e, mdl);
+                    _handleError(e, mdl, httpContext);
                 }
 
                 if (!responseProxy.__responseSent) {

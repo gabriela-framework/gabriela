@@ -1652,4 +1652,50 @@ describe('Framework events', function() {
             done();
         });
     });
+
+    it('should inject the \'http\' argument into the onError event', (done) => {
+        let onErrorCalled = false;
+
+        const app = gabriela.asServer(config, {
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/path').then(() => {
+                        expect(onErrorCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        app.addModule({
+            name: 'module',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'get',
+                }
+            },
+            mediator: {
+                onError(err, http) {
+                    onErrorCalled = true;
+
+                    expect(http).to.be.a('object');
+                    expect(http).to.have.property('req');
+                    expect(http).to.have.property('res');
+
+                    expect(http.req).to.be.a('object');
+                    expect(http.res).to.be.a('object');
+                }
+            },
+            moduleLogic: [function(throwException) {
+                throwException(new Error('Thrown in middleware'));
+            }]
+        });
+
+        app.startApp();
+    });
 });
