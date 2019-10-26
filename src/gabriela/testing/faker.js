@@ -1,10 +1,11 @@
-const DependencyResolver = require('./resolver/dependencyResolver');
-const ModuleResolver = require('./resolver/moduleResolver');
-const HttpMock = require('./http');
+const _asServer = require('./_asServer');
+const HttpApp = require('./mock/http');
 
-function Faker(config) {
+function Faker(config, options) {
     function fakeHttp(module) {
-        return new HttpMock();
+        const app = _asServer(config, options);
+
+        return new HttpApp(app, module);
     }
 
     function fakeProcess(module) {
