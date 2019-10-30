@@ -97,19 +97,11 @@ Gabriela can be created as a NodeJS process or as a server app.
 ````javascript
 const gabriela = require('gabriela');
 
-const processApp = gabriela.asProcess({
-    config: {
-        framework: {},
-    },
-});
+const processApp = gabriela.asProcess();
 
 // or
 
-const serverApp = gabriela.asServer({
-    config: {
-        framework: {},
-    },
-});
+const serverApp = gabriela.asServer();
 ````
 
 You start your app with 
@@ -118,30 +110,12 @@ You start your app with
 app.startApp();
 ````
 
-You might notice the empty `config` property. This is mandatory for every Gabriela app. Later on,
-you will read about *compiler passes* and will learn that anything you put into this configuration, 
-will be passed to every *compiler pass* with which you can configure your services based on what your app
-does. 
-
-___
-**Side note**
->Since Gabriela is still in alpha stage, you will have to create the *config* object every
-time you create a Gabriela app. In the future, there will be a command line utility that will do that for
-you. There will also be support for multiple environments like *dev*, *test* and *prod* but you will also
-be able to create your own, custom environments. For now, please inject this object every time you create an 
-app since it will throw an error if you don't.
-___
-
 ## Your first module
 
 ````javascript
 const gabriela = require('gabriela');
 
-const processApp = gabriela.asProcess({
-    config: {
-        framework: {},
-    },
-});
+const processApp = gabriela.asProcess();
 
 const myModule = {
     name: 'myModule',
@@ -201,11 +175,7 @@ const userManagmentPlugin =  {
     modules: [registrationModule, loginModule],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addPlugin(userManagmentPlugin);
 
@@ -288,11 +258,7 @@ const registrationModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(registrationModule);
 
@@ -373,11 +339,7 @@ As we said, *modules* and *plugins* are executed in the order in which you added
 ````javascript
 const gabriela = require('gabriela');
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 /**
 * 'module1', 'module2' etc. are just stubs to make the example more readable
@@ -400,11 +362,7 @@ but also as parts of a plugin are executing once as a standalone module and once
 ````javascript
 const gabriela = require('gabriela');
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 const myModule = {
     name: 'myModule',
@@ -468,9 +426,7 @@ const helloWorldModule = {
     ],
 };
 
-const app = gabriela.asProcess({
-    config: {}
-});
+const app = gabriela.asProcess();
 
 app.addModule(helloWorldModule);
 
@@ -544,25 +500,14 @@ example.
 Next piece of code that we see is
 
 ````javascript
-const app = gabriela.asProcess({
-    config: {
-        framework: {},    
-    }
-});
+const app = gabriela.asProcess();
 
 ````
 
-This will create a Gabriela app as a NodeJS process. We also supply it with a default configuration. The default
-configuration object is mandatory and we will talk about it later on. 
-
-If you wanted to create Gabriela app as a server, you would create it like this 
+This will create a Gabriela app as a NodeJS process. If you wanted to create Gabriela app as a server, you would create it like this 
 
 ````javascript
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 ````
 
@@ -622,11 +567,7 @@ const helloWorldModule = {
     ],
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(helloWorldModule);
 
@@ -667,11 +608,7 @@ const handlingMiddlewareBlockModule = {
     }],
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},    
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(handlingMiddlewareBlocksModule);
 
@@ -939,11 +876,7 @@ const myPlugin = {
     modules: [/** declare your modules here */]
 }
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addPlugin(myPlugin);
 ````
@@ -1023,11 +956,7 @@ const myPlugin = {
     modules: [myModule]
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addPlugin(myPlugin);
 
@@ -1065,11 +994,7 @@ const reactingModule = {
     }
 }
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addPlugin(myPlugin);
 app.addModule(reactingModule);
@@ -1089,11 +1014,7 @@ const gabriela = require('gabriela');
 // this is our fictional plugin that abstracts native mongo driver for NodeJS.
 const mongoPlugin = require('gabriela-mongo-plugin');
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addPlugin(mongoPlugin);
 
@@ -1264,11 +1185,7 @@ const myModuleTwo = {
     }],
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(myModuleOne);
 app.addModule(myModuleTwo);
@@ -1344,11 +1261,7 @@ const myPlugin = {
     modules: [declaringModule, moduleOne, moduleTwo],
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addPlugin(myPlugin);
 
@@ -1403,11 +1316,7 @@ const moduleTwo = {
     }],
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(declaringModule);
 app.addModule(moduleOne);
@@ -1474,11 +1383,7 @@ const sharedPlugin = {
     modules: [moduleOne]
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(declaringModule);
 // this module is added here but is also part of a plugin
@@ -1704,11 +1609,7 @@ const myModule = {
     moduleLogic: ['functionExpression()']
 };
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asProcess();
 
 app.addModule(myModule);
 
@@ -2173,9 +2074,6 @@ when creating an app with *asProcess* or *asServer*.
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {
-        framework: {},
-    },
     events: {
         onAppStarted () {
         },
@@ -2187,9 +2085,6 @@ const processApp = gabriela.asProcess({
 // or
 
 const serverApp = gabriela.asProcess({
-    config: {
-        framework: {},
-    },
     events: {
         onAppStarted () {
         },
@@ -2212,9 +2107,6 @@ The only variable bound to this is *gabriela* object and it has only one method:
 const gabriela = require('gabriela');
 
 const processApp = gabriela.asProcess({
-    config: {
-        framework: {},
-    },
     events: {
         onAppStarted () {
             this.gabriela.close();
@@ -2343,9 +2235,6 @@ either on the module or plugin level, or when an error is thrown with native jav
 const gabriela = require('gabriela');
 
 gabriela.asProcess({
-    config: {
-        framework: {},
-    },
     events: {
         catchError(e) {
             
@@ -2446,11 +2335,7 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
@@ -2483,11 +2368,7 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
@@ -2533,11 +2414,7 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
@@ -2576,11 +2453,7 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
@@ -2617,11 +2490,7 @@ const httpModule = {
     }]
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
@@ -2670,11 +2539,7 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+const app = gabriela.asServer();
 
 app.addModule(httpModule);
 
