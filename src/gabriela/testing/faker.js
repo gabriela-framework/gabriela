@@ -8,12 +8,7 @@ function Faker(config, options) {
         return new HttpApp(app, module);
     }
 
-    function fakeProcess(module) {
-
-    }
-
     this.fakeHttp = fakeHttp;
-    this.fakeProcess = fakeProcess;
 }
 
 module.exports = Faker;
