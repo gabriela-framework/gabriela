@@ -72,4 +72,12 @@ describe('Config tests', () => {
         expect(Config.config.db.user).to.be.equal(process.env.DATABASE_USER);
         expect(Config.config.db.password).to.be.equal(process.env.DATABASE_PASSWORD);
     });
+
+    it('should run gabriela server and process with config', () => {
+        const serverApp = gabriela.asServer();
+        const processApp = gabriela.asProcess();
+
+        const serverAppWithConfig = gabriela.asServer({config: {framework: {}}});
+        const processAppWithConfig = gabriela.asProcess({config: {framework: {}}});
+    });
 });

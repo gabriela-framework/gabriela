@@ -89,8 +89,7 @@ Main components of Gabriela are **modules**, **plugins**, **events** and **depen
 
 ___
 **Important note**
->Throughout this documentation, I mention that Gabriela modules are not the same as CommonJS modules.
-I do this because it is very important to differentiate them.
+>Gabriela modules are not the same as CommonJS modules. It is really important to distinguish one from another.
 ___
 
 Gabriela can be created as a NodeJS process or as a server app. 
