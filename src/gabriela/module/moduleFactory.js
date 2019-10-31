@@ -73,6 +73,20 @@ function _createModuleModel(mdl) {
             return (mdl.emitter) ? true : false;
         },
         isInPlugin: () => !!(mdl.plugin),
+        getFullPath() {
+            if (!this.isInPlugin() && this.isHttp()) return this.http.route.path;
+
+            if (this.isInPlugin() && this.isHttp()) {
+                const moduleRoute = this.http.route.path;
+                if (this.plugin.http) {
+                    const pluginRoute = this.plugin.http.route;
+
+                    if (pluginRoute) return `${pluginRoute}${moduleRoute}`;
+                }
+
+                return `${moduleRoute}`;
+            }
+        }
     };
 }
 

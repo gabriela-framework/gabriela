@@ -19,7 +19,7 @@ function _adaptModulesToPlugin(plugin) {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
                 hasExposedMediators: plugin.hasExposedMediators(),
-                http: plugin.http
+                http: plugin.http,
             };
         }
     }

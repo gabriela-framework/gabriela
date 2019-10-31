@@ -60,7 +60,7 @@ function factory(server, mdl) {
         return async function(mdl, context, config, state) {
             const {http} = mdl;
             const method = http.route.method.toLowerCase();
-            const path = http.route.path;
+            const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
                 const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);

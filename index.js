@@ -1,33 +1,50 @@
 const gabriela = require('./src/index');
+const requestPromise = require('request-promise');
 
-const app = gabriela.asServer();
-
-const someModule = {
-    name: 'module',
-    http: {
+const mdl = {
+    name: 'httpsMdl',
+    http: {
         route: {
             name: 'route',
-            path: '/path',
+            path: '/route',
             method: 'get',
         }
     },
-    init: [function() {
-        console.log('init');
-    }],
     moduleLogic: [function() {
-        console.log('ulazak');
-    }]
+    }],
 };
 
 const plugin = {
-    name: 'httpPlugin',
-    modules: [someModule],
+    name: 'plugin',
+    modules: [mdl],
     http: {
         route: '/base-route',
-        allowedMethods: ['post', 'head', 'GET']
+        allowedMethods: ['get'],
     }
 };
 
-app.addPlugin(plugin);
+const g = gabriela.asServer({config: {framework: {}}}, {
+    events: {
+        onAppStarted() {
+            console.log('THIS APP HAS STARTED');
 
-app.startApp();
+            let options = {
+                method: 'get',
+                json: true,
+                uri : 'http://localhost:3000/base-route/route',
+            };
+
+            requestPromise(options).then(() => {
+                console.log('HTTP ROUTE SUCCESS');
+                this.gabriela.close();
+            });
+        },
+        catchError(e) {
+            console.log(e);
+        }
+    }
+});
+
+g.addPlugin(plugin);
+
+g.startApp();

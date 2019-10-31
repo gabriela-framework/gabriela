@@ -36,6 +36,7 @@ describe('Test gabriela internals', () => {
             'exposedMediator',
             'isHttp',
             'http',
+            'getFullPath',
         ];
 
         const mdl = {
@@ -46,7 +47,6 @@ describe('Test gabriela internals', () => {
                     name: 'name',
                     method: 'get',
                     path: '/path',
-                    protocols: ['http'],
                 }
             },
             init: [],
@@ -54,10 +54,14 @@ describe('Test gabriela internals', () => {
             postLogicTransformers: [],
             validators: [],
             moduleLogic: [],
-            protocols: ['http'],
             compiler: null,
             sharedCompiler: null,
-            plugin: {name: 'plugin'},
+            plugin: {
+                name: 'plugin',
+                http: {
+                    route: '/base-route',
+                }
+            },
             dependencies: [],
             mediator: {
                 onModuleStarted: () => {},
@@ -101,7 +105,6 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.preLogicTransformers).to.be.a('array');
         expect(moduleObject.postLogicTransformers).to.be.a('array');
         expect(moduleObject.validators).to.be.a('array');
-        expect(moduleObject.http.route.protocols).to.be.a('array');
         expect(moduleObject.moduleLogic).to.be.a('array');
         expect(moduleObject.compiler).to.be.a('object');
         expect(moduleObject.sharedCompiler).to.be.a('object');
@@ -115,6 +118,8 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.emitter).to.be.a('object');
         expect(moduleObject.exposedMediator).to.be.a('object');
         expect(moduleObject.isHttp).to.be.a('function');
+        expect(moduleObject.getFullPath).to.be.a('function');
+        expect(moduleObject.getFullPath()).to.be.equal('/base-route/path');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {

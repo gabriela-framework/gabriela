@@ -188,8 +188,10 @@ factory.validatePlugin = function(plugin) {
         const baseRoute = http.route;
         if (!is('string', baseRoute)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.route' entry must be a string`);
 
-        const allowedMethods = http.allowedMethods;
-        if (!is('array', allowedMethods)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' entry must be an array`);
+        let allowedMethods = http.allowedMethods;
+        if (hasKey(http, 'allowedMethods') && !is('array', allowedMethods)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' entry must be an array`);
+
+        if (!allowedMethods) allowedMethods = [];
 
         if (allowedMethods.length > 0) {
             const methods = Object.values(HTTP_METHODS);
