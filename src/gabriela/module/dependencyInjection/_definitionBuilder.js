@@ -1,5 +1,13 @@
+const {hasKey} = require('./../../util/util');
+
 function instance() {
     const definition = {};
+
+    function isAsync(isAsync) {
+        definition.isAsync = isAsync;
+
+        return this;
+    }
 
     function addName(name) {
         definition.name = name;
@@ -31,12 +39,15 @@ function instance() {
     }
 
     function build() {
+        if (hasKey(definition,'isAsync') && definition.isAsync !== true) definition.isAsync = false;
+
         return definition;
     }
 
     this.addName = addName;
     this.addScope = addScope;
     this.addShared = addShared;
+    this.isAsync = isAsync;
     this.addCompilerPass = addCompilerPass;
     this.addInit = addInit;
     this.build = build;

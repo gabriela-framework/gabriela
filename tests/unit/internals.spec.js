@@ -192,15 +192,33 @@ describe('Test gabriela internals', () => {
         const definition = definitionBuilder
             .addName(name)
             .addScope(scope)
+            .isAsync(true)
             .addShared({})
             .addCompilerPass({})
             .addInit(function() {})
             .build();
 
+        expect(definition.isAsync).to.be.equal(true);
         expect(definition.name).to.be.equal(name);
         expect(definition.scope).to.be.equal(scope);
         expect(definition.shared).to.be.a('object');
         expect(definition.compilerPass).to.be.a('object');
         expect(definition.init).to.be.a('function');
+
+        const definition2 = definitionBuilder
+            .addName(name)
+            .addScope(scope)
+            .isAsync(null)
+            .addShared({})
+            .addCompilerPass({})
+            .addInit(function() {})
+            .build();
+
+        expect(definition2.isAsync).to.be.equal(false);
+        expect(definition2.name).to.be.equal(name);
+        expect(definition2.scope).to.be.equal(scope);
+        expect(definition2.shared).to.be.a('object');
+        expect(definition2.compilerPass).to.be.a('object');
+        expect(definition2.init).to.be.a('function');
     });
 });
