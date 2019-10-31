@@ -1,12 +1,8 @@
 const gabriela = require('./src/index');
 
-const app = gabriela.asServer({
-    config: {
-        framework: {}
-    }
-});
+const app = gabriela.asServer();
 
-app.addModule({
+const someModule = {
     name: 'module',
     http: {
         route: {
@@ -21,6 +17,17 @@ app.addModule({
     moduleLogic: [function() {
         console.log('ulazak');
     }]
-});
+};
+
+const plugin = {
+    name: 'httpPlugin',
+    modules: [someModule],
+    http: {
+        route: '/base-route',
+        allowedMethods: ['post', 'head', 'GET']
+    }
+};
+
+app.addPlugin(plugin);
 
 app.startApp();

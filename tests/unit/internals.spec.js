@@ -130,12 +130,14 @@ describe('Test gabriela internals', () => {
             'exposedMediators',
             'hasExposedMediators',
             'exposedMediator',
+            'hasHttp',
+            'http',
         ];
 
         const plugin = {
             name: 'name',
             modules: [],
-            plugins: [],
+            http: {}
         };
 
         const pluginModel = pluginFactory(
@@ -150,6 +152,8 @@ describe('Test gabriela internals', () => {
 
         expect(pluginModelProps).to.have.members(pluginInterface);
 
+        expect(pluginModel).to.have.property('http');
+        expect(pluginModel.http).to.be.a('object');
         expect(pluginModel).to.have.property('name', 'name');
         expect(pluginModel.modules).to.be.a('array');
         expect(pluginModel.compiler).to.be.a('object');

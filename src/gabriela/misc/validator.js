@@ -9,7 +9,6 @@ const {
     HTTP_METHODS,
     BUILT_IN_MEDIATORS,
     PROTOCOLS,
-    HTTP_EVENTS,
 } = require('./types');
 
 const {is, hasKey} = require('../util/util');
@@ -169,14 +168,6 @@ factory.validatePlugin = function(plugin) {
         }
     }
 
-    if (hasKey(plugin, 'plugins')) {
-        if (!Array.isArray(plugin.plugins)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'plugins' property must be an array of plugin definitions`);
-
-        for (const p of plugin.plugins) {
-            factory.validatePlugin(p);
-        }
-    }
-
     if (hasKey(plugin, 'exposedMediators')) {
         if (!Array.isArray(plugin.exposedMediators)) throw new Error(`Invalid plugin definition in plugin '${plugin.name}'. 'exposedMediators' must be an array`);
 
@@ -184,6 +175,43 @@ factory.validatePlugin = function(plugin) {
 
         for (const event of exposedMediators) {
             if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedMediators' must be a string`);
+        }
+    }
+
+    if (hasKey(plugin, 'http')) {
+        const http = plugin.http;
+
+        if (!is('object', http)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http' entry must be an object`);
+
+        // TODO: throw a warning in 'dev' environment if http entry is an empty object, do not in 'prod'
+
+        const baseRoute = http.route;
+        if (!is('string', baseRoute)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.route' entry must be a string`);
+
+        const allowedMethods = http.allowedMethods;
+        if (!is('array', allowedMethods)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' entry must be an array`);
+
+        if (allowedMethods.length > 0) {
+            const methods = Object.values(HTTP_METHODS);
+            for (const method of allowedMethods) {
+                if (!methods.includes(method.toLowerCase())) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' has an invalid http method '${method.toLowerCase()}'. Valid http methods are ${methods.join(', ')}`)
+            }
+
+            allowedMethods.reduce(function(a, b) {
+                return b.toLowerCase();
+            }, []);
+
+            if (plugin.modules) {
+                const modules = plugin.modules;
+
+                for (const mdl of modules) {
+                    const http = mdl.http;
+                    if (http) {
+                        const mdlMethod = http.route.method.toLowerCase();
+                        if (!allowedMethods.includes(mdlMethod)) throw new Error(`Invalid module definition for module '${mdl.name}' in plugin '${plugin.name}'. Module '${mdl.name}' is declared to use '${mdlMethod.toUpperCase()}' http method but allowed methods in plugin are '${allowedMethods.join(', ').toUpperCase()}'`);
+                    }
+                }
+            }
         }
     }
 };
