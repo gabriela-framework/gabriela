@@ -1,50 +1,36 @@
 const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 
-const mdl = {
-    name: 'httpsMdl',
-    http: {
-        route: {
-            name: 'route',
-            path: '/route',
-            method: 'get',
+const userServiceInit = {
+    name: 'userService',
+    scope: 'module',
+    isAsync: true,
+    init: function(next) {
+        function UserService() {
+            this.addUser = null;
+            this.removeUser = null;
         }
+
+        requestPromise.get('https://www.facebook.com/').then(() => {
+            next(() => {
+                return new UserService();
+            });
+        });
     },
-    moduleLogic: [function() {
+};
+
+let entersMiddleware = false;
+const mdl = {
+    name: 'asyncModuleName',
+    dependencies: [userServiceInit],
+    preLogicTransformers: [function(userService) {
+        entersMiddleware = true;
     }],
 };
 
-const plugin = {
-    name: 'plugin',
-    modules: [mdl],
-    http: {
-        route: '/base-route',
-        allowedMethods: ['get'],
-    }
-};
+const g = gabriela.asProcess();
 
-const g = gabriela.asServer({config: {framework: {}}}, {
-    events: {
-        onAppStarted() {
-            console.log('THIS APP HAS STARTED');
+g.addModule(mdl);
 
-            let options = {
-                method: 'get',
-                json: true,
-                uri : 'http://localhost:3000/base-route/route',
-            };
-
-            requestPromise(options).then(() => {
-                console.log('HTTP ROUTE SUCCESS');
-                this.gabriela.close();
-            });
-        },
-        catchError(e) {
-            console.log(e);
-        }
-    }
+g.runModule('asyncModuleName').then(() => {
 });
-
-g.addPlugin(plugin);
-
-g.startApp();

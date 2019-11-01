@@ -700,7 +700,7 @@ describe('Gabriela server tests', function() {
 
                     requestPromise(options).then(() => {
                         expect(middlewareCalled).to.be.equal(true);
-                        
+
                         this.gabriela.close();
 
                         done();

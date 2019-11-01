@@ -18,7 +18,13 @@ function factory() {
             }
         }
 
-        return _resolveService(definition, resolvedDependencies, TaskRunner.create());
+        const serviceMetadata = _resolveService(definition, resolvedDependencies, TaskRunner.create());
+
+        if (serviceMetadata.isError) {
+            throw serviceMetadata.error;
+        }
+
+        return serviceMetadata.service;
     }
 
     this.compile = compile;

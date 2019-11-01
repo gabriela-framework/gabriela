@@ -217,11 +217,17 @@ function factory() {
         const taskRunner = TaskRunner.create();
 
         const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
-        const service = _resolveService(definition, deps.services, taskRunner, injectionType);
+        const serviceMetadata = _resolveService(definition, deps.services, taskRunner, injectionType);
 
-        if (_isInjectionTypeInterface(service)) {
-            return _resolveInjectionService(this, service, taskRunner, config);
+        if (serviceMetadata.isError) {
+            throw serviceMetadata.error;
         }
+
+        if (_isInjectionTypeInterface(serviceMetadata)) {
+            return _resolveInjectionService(this, serviceMetadata, taskRunner, config);
+        }
+
+        const service = serviceMetadata.service;
 
         if (!service) throw new Error(`Dependency injection error. Target service ${name} cannot return a falsy value`);
 

@@ -11,30 +11,66 @@ const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInte
  * @returns {*}
  */
 module.exports = function _resolveService(definition, deps, taskRunner, injectionType) {
-    let service;
-
     /**
      * If is asynchronous definition, e.i. it injected next() or throwException(), use deasync to block the event loop
      */
     if (definition.isAsync) {
-        definition.init(...deps);
+        definition.init.call(injectionType, ...deps);
 
         deasync.loopWhile(function() {
             return !(_waitCheck(taskRunner)).success;
         });
 
-        service = taskRunner.getValue().call(null);
+        const task = taskRunner.getTask();
 
-        taskRunner.resolve();
-    } else {
-        service = definition.init.call(injectionType, ...deps);
+        if (task === 'error') {
+            const error = taskRunner.getValue();
+
+            return {
+                isError: true,
+                error: error,
+                service: null
+            };
+        }
+
+        const service = taskRunner.getValue().call(null);
 
         if (_isInjectionTypeInterface(service)) {
             return service;
         }
 
         taskRunner.resolve();
-    }
 
-    return service;
+        return {
+            isError: false,
+            error: null,
+            service: service,
+        };
+    } else {
+        const service = definition.init.call(injectionType, ...deps);
+
+        const task = taskRunner.getTask();
+
+        if (task === 'error') {
+            const error = taskRunner.getValue();
+
+            return {
+                isError: true,
+                error: error,
+                service: null
+            };
+        }
+
+        if (_isInjectionTypeInterface(service)) {
+            return service;
+        }
+
+        taskRunner.resolve();
+
+        return {
+            isError: false,
+            error: null,
+            service: service,
+        };
+    }
 };
