@@ -513,4 +513,131 @@ describe('Module dependency injection tests', function() {
             done();
         });
     });
+
+    it('should throw an exception inside a service of another dependency (two levels) inside a compiler pass', (done) => {
+        let moduleLogicCalled = false;
+
+        const userService = {
+            name: 'UserService',
+            init: function(UserRepository) {
+                return {};
+            }
+        };
+
+        const initDefinition = {
+            name: 'init',
+            compilerPass: {
+                init: function(config, compiler) {
+                    const def = this.definitionBuilder
+                        .addName('UserRepository')
+                        .addScope('public')
+                        .addInit(function(throwException) {
+                            return throwException(new Error('Error in UserRepository'));
+                        })
+                        .build();
+
+                    compiler.add(def);
+                }
+            },
+            init: function() {
+                return {};
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [initDefinition]
+        };
+
+        const workingModule = {
+            name: 'workingModule',
+            dependencies: [userService],
+            moduleLogic: [function(UserService) {
+                moduleLogicCalled = true;
+
+                expect(UserService).to.be.a('object');
+            }],
+        };
+
+        const app = gabriela.asServer({config: {framework: {}}}, {
+            events: {
+                catchError(e) {
+                    this.gabriela.close();
+
+                    expect(e.message).to.be.equal('Error in UserRepository');
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(workingModule);
+
+        app.startApp();
+    });
+
+    it('should throw an exception inside an async service of another dependency (two levels) inside a compiler pass', (done) => {
+        let moduleLogicCalled = false;
+
+        const userService = {
+            name: 'UserService',
+            init: function(UserRepository) {
+                return {};
+            }
+        };
+
+        const initDefinition = {
+            name: 'init',
+            compilerPass: {
+                init: function(config, compiler) {
+                    const def = this.definitionBuilder
+                        .addName('UserRepository')
+                        .isAsync(true)
+                        .addScope('public')
+                        .addInit(function(throwException) {
+                            return throwException(new Error('Error in UserRepository'));
+                        })
+                        .build();
+
+                    compiler.add(def);
+                }
+            },
+            init: function() {
+                return {};
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [initDefinition]
+        };
+
+        const workingModule = {
+            name: 'workingModule',
+            dependencies: [userService],
+            moduleLogic: [function(UserService) {
+                moduleLogicCalled = true;
+
+                expect(UserService).to.be.a('object');
+            }],
+        };
+
+        const app = gabriela.asServer({config: {framework: {}}}, {
+            events: {
+                catchError(e) {
+                    this.gabriela.close();
+
+                    expect(e.message).to.be.equal('Error in UserRepository');
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(workingModule);
+
+        app.startApp();
+    });
 });

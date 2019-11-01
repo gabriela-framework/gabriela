@@ -1,36 +1,55 @@
 const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 
-const userServiceInit = {
-    name: 'userService',
-    scope: 'module',
-    isAsync: true,
-    init: function(next) {
-        function UserService() {
-            this.addUser = null;
-            this.removeUser = null;
-        }
-
-        requestPromise.get('https://www.facebook.com/').then(() => {
-            next(() => {
-                return new UserService();
-            });
-        });
-    },
+const userService = {
+    name: 'UserService',
+    init: function(UserRepository) {
+        return {};
+    }
 };
 
-let entersMiddleware = false;
-const mdl = {
-    name: 'asyncModuleName',
-    dependencies: [userServiceInit],
-    preLogicTransformers: [function(userService) {
-        entersMiddleware = true;
+const initDefinition = {
+    name: 'init',
+    compilerPass: {
+        init: function(config, compiler) {
+            const def = this.definitionBuilder
+                .addName('UserRepository')
+                .addScope('public')
+                .addInit(function(throwException) {
+                    return throwException(new Error('Error in UserRepository'));
+                })
+                .build();
+
+            compiler.add(def);
+        }
+    },
+    init: function() {
+        return {};
+    }
+};
+
+const initModule = {
+    name: 'initModule',
+    dependencies: [initDefinition]
+};
+
+const workingModule = {
+    name: 'workingModule',
+    dependencies: [userService],
+    moduleLogic: [function(UserService) {
     }],
 };
 
-const g = gabriela.asProcess();
+const app = gabriela.asServer({config: {framework: {}}}, {
+    events: {
+        catchError(e) {
 
-g.addModule(mdl);
-
-g.runModule('asyncModuleName').then(() => {
+            this.gabriela.close();
+        }
+    }
 });
+
+app.addModule(initModule);
+app.addModule(workingModule);
+
+app.startApp();

@@ -16,7 +16,11 @@ const _resolveInjectionService = require('./_resolveInjectionService');
 function _getDependencies(name, definition, taskRunner, originalCompiler, config) {
     const args = getArgNames(definition.init);
 
-    if (definition.isAsync && !args.includes('next')) throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+    if (definition.isAsync) {
+        if (!args.includes('next') && !args.includes('throwException')) {
+            throw new Error(`Dependency injection error. Invalid service init for dependency with name '${name}'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+        }
+    }
 
     const deps = [];
     if (args.length > 0) {
