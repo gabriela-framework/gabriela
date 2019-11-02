@@ -1,6 +1,6 @@
 {
   "name": "gabriela",
-  "version": "0.4.0-alpha.2",
+  "version": "0.4.0-alpha.3",
   "description": "Plugin based framework",
   "main": "src/index.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "deasync": "^0.1.15",
     "deepcopy": "^2.0.0",
     "dotenv": "^8.0.0",
+    "node-mocks-http": "^1.8.0",
     "restify": "^8.4.0",
     "strict-mode": "^1.1.3"
   },
@@ -24,7 +25,6 @@
     "faker": "^4.1.0",
     "mocha": "^6.2.0",
     "mocha-pretty-spec-reporter": "0.1.0-beta.2",
-    "node-mocks-http": "^1.8.0",
     "nyc": "^14.1.1",
     "pem": "^1.14.2",
     "request": "^2.88.0",

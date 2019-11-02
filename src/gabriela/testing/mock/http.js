@@ -1,6 +1,6 @@
-function factory(app, module) {
+function factory(app, mdl) {
     async function get() {
-        app.addModule(module);
+        app.addModule(mdl);
 
         const response = await app.startApp();
 
