@@ -57,7 +57,9 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        return await _runConstructedModule(constructed[name], tree, config, executeFactory);
+        const res = await _runConstructedModule(constructed[name], tree, config, executeFactory);
+
+        return deepCopy(res);
     }
 
     async function runTree(executeFactory) {

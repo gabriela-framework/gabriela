@@ -30,37 +30,6 @@ function _startServer(opts) {
 
     return server;
 }
-/**
- *
- * Must be run before server because of app crucial plugins, like mongo, mysql, redis etc...
- *
- * TODO: Since 'config' is injected everywhere with for future functionality (?), here is an empty object. Create the
- * TODO: functionality for config
- */
-async function _runComponents({
-    moduleExecuteFactory,
-    pluginExecuteFactory,
-    pluginInterface,
-    moduleInterface,
-    server
-}) {
-    await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
-    await moduleInterface.run(moduleExecuteFactory.bind(null, server));
-}
-
-async function _listenCallback(
-    opts,
-    events,
-    rootCompiler,
-) {
-    const context = {
-        gabriela: this,
-    };
-
-    console.log(`Gabriela app started on host '${opts.host}' and port: '${opts.port}'`);
-
-    await runOnAppStarted.call(context, events, rootCompiler);
-}
 
 function Server(
     options,
@@ -76,24 +45,26 @@ function Server(
 
     let server = _startServer(opts);
 
-    async function run(moduleExecuteFactory, pluginExecuteFactory) {
-        const args = {
-            moduleExecuteFactory,
-            pluginExecuteFactory,
-            pluginInterface,
-            moduleInterface,
-            server
-        };
+    const context = {
+        gabriela: this,
+    };
 
+    async function runComponent(name, moduleExecuteFactory, pluginExecuteFactory) {
         try {
-            await _runComponents(args);
+            await runOnAppStarted.call(context, events, rootCompiler);
 
-            return server.response;
+            if (pluginInterface.hasPlugin(name)) {
+                await pluginInterface.runPlugin(name, pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
+
+                return server.response;
+            } else if (moduleInterface.hasModule(name)) {
+                await moduleInterface.runModule(name, moduleExecuteFactory.bind(null, server));
+
+                return server.response;
+            }
+
+            throw new Error(`Testing component with name '${name}' not found`);
         } catch (err) {
-            const context = {
-                gabriela: this,
-            };
-
             if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
                 context,
                 events[GABRIELA_EVENTS.ON_CATCH_ERROR],
@@ -113,7 +84,7 @@ function Server(
         if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
     }
 
-    this.run = run;
+    this.run = runComponent;
     this.close = close;
 }
 

@@ -25,44 +25,62 @@ module.exports = function _asServer(receivedConfig, options) {
     sharedCompiler.name = 'shared';
     rootCompiler.name = 'root';
 
+    const runModule = async function(name, customExecutionFactory) {
+        // TODO: validate that customExecutionFactory is a function, maybe add a warning and test it
+        let executeFactory;
+        if (customExecutionFactory) {
+            executeFactory = customExecutionFactory.bind(null, null);
+        } else {
+            executeFactory = moduleExecutionFactory.bind(null, null);
+        }
+
+        if (name) return await moduleTree.runModule(name, executeFactory);
+
+        return moduleTree.runTree(executeFactory);
+    };
+
+    const runPlugin = async function(name, customPluginExecutionFactory, customModuleExecutionFactory) {
+        // TODO: validate that customPluginExecutionFactory and customModule... are functions, maybe add a warning and test it
+        let executeFactory;
+        if (customPluginExecutionFactory && customModuleExecutionFactory) {
+            executeFactory = customPluginExecutionFactory.bind(null, customModuleExecutionFactory, null);
+        } else {
+            executeFactory = pluginExecutionFactory.bind(null, moduleExecutionFactory, null);
+        }
+
+        if (name) return pluginTree.runPlugin(name, executeFactory);
+
+        return pluginTree.runTree(executeFactory);
+    };
+
     const moduleInterface = {
         add(mdl) {
             moduleTree.addModule(mdl);
         },
-        override: moduleTree.overrideModule,
-        get: moduleTree.getModule,
-        has: moduleTree.hasModule,
-        getAll: moduleTree.getModules,
-        remove: moduleTree.removeModule,
     };
 
     const pluginInterface = {
         add: pluginTree.addPlugin,
-        get: pluginTree.getPlugin,
-        remove: pluginTree.removePlugin,
-        getAll: pluginTree.getPlugins,
-        has: pluginTree.hasPlugin,
     };
 
     const publicInterface = {
         addModule: moduleInterface.add,
-        overrideModule: moduleInterface.override,
-        getModule: moduleInterface.get,
-        removeModule: moduleInterface.remove,
-        hasModule: moduleInterface.has,
-        getModules: moduleInterface.getAll,
         addPlugin: pluginInterface.add,
-        getPlugin: pluginInterface.get,
-        removePlugin: pluginInterface.remove,
-        hasPlugin: pluginInterface.has,
-        getPlugins: pluginInterface.getAll,
+        runModule: runModule,
+        runPlugin: runPlugin,
 
-        startApp(customMdlExecFactory = null, customPluginExecFactory = null) {
+        run(name, customMdlExecFactory = null, customPluginExecFactory = null) {
             const {events} = opts;
 
             // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
+
+            moduleInterface.runModule = moduleTree.runModule.bind(moduleTree);
+            moduleInterface.hasModule = moduleTree.hasModule.bind(moduleTree);
+
+            pluginInterface.runPlugin = pluginTree.runPlugin.bind(pluginTree);
+            pluginInterface.hasPlugin = pluginTree.hasPlugin.bind(pluginTree);
 
             const server = new Server(
                 config.config.server,
@@ -72,7 +90,7 @@ module.exports = function _asServer(receivedConfig, options) {
                 moduleInterface,
             );
 
-            return server.run(moduleExecuteFactory, pluginExecuteFactory);
+            return server.run(name, moduleExecuteFactory, pluginExecuteFactory);
         }
     };
 
