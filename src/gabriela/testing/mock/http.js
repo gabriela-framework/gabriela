@@ -14,40 +14,27 @@ function factory(config, options) {
     function addPlugin(plugin) {
         if (hasKey(plugins, plugin.name)) throw new Error(`Invalid testing setup. Plugin with name '${plugin.name}' has already been added`);
 
-
         plugins[plugin.name] = plugin;
     }
 
     async function get(mdlOrPluginName) {
-        let component;
-
-        if (hasKey(modules, mdlOrPluginName)) {
-            component = modules[mdlOrPluginName];
-        } else if (hasKey(plugins, mdlOrPluginName)) {
-            component = plugins[mdlOrPluginName];
-        }
+        const component = _getComponent.call(this, mdlOrPluginName);
 
         const method = component.http.route.method;
 
         if (method.toLowerCase() !== 'get') throw new Error(`Invalid testing setup. You are trying to 'get' a module but module has a '${method.toUpperCase()}' method`);
 
-        return await _runApp(mdlOrPluginName);
+        return await _runApp(component.name);
     }
 
     async function post(mdlOrPluginName) {
-        let component;
-
-        if (hasKey(modules, mdlOrPluginName)) {
-            component = modules[mdlOrPluginName];
-        } else if (hasKey(plugins, mdlOrPluginName)) {
-            component = plugins[mdlOrPluginName];
-        }
+        const component = _getComponent.call(this, mdlOrPluginName);
 
         const method = component.http.route.method;
 
         if (method.toLowerCase() !== 'post') throw new Error(`Invalid testing setup. You are trying to 'post' a module but module has a '${method.toUpperCase()}' method`);
 
-        return await _runApp(mdlOrPluginName);
+        return await _runApp(component.name);
     }
 
     async function _runApp(mdlOrPluginName) {
@@ -58,6 +45,29 @@ function factory(config, options) {
         const response = await app.run(mdlOrPluginName);
 
         return response;
+    }
+
+    function _getComponent(mdlOrPluginName) {
+        const split = mdlOrPluginName.split('#');
+        if (split.length === 2) {
+            const pluginName = split[0];
+            const moduleName = split[1];
+
+            if (!hasKey(plugins, pluginName)) throw new Error(`Invalid testing setup. Invalid pluginName#moduleName name '${mdlOrPluginName}'. Plugin with name '${pluginName}' does not exist`);
+
+            const plugin = plugins[pluginName];
+            const pluginModules = plugin.modules;
+
+            for (const mdl of pluginModules) {
+                if (mdl.name === moduleName) {
+                    this.addModule(mdl);
+
+                    return mdl;
+                }
+            }
+        } else if(hasKey(modules, mdlOrPluginName)) {
+            return modules[mdlOrPluginName];
+        }
     }
 
     function _addComponents(app) {

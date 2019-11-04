@@ -26,7 +26,15 @@ function _startServer(opts) {
         fn.call(null, request, this.response, function() {});
     }
 
+    function post(path, fn) {
+        const request = mockRequest(path, 'POST');
+        this.response = mockRestifyResponse();
+
+        fn.call(null, request, this.response, function() {});
+    }
+
     server.get = get;
+    server.post = post;
 
     return server;
 }
@@ -53,17 +61,9 @@ function Server(
         try {
             await runOnAppStarted.call(context, events, rootCompiler);
 
-            if (pluginInterface.hasPlugin(name)) {
-                await pluginInterface.runPlugin(name, pluginExecuteFactory.bind(null, moduleExecuteFactory, server));
+            await moduleInterface.runModule(name, moduleExecuteFactory.bind(null, server));
 
-                return server.response;
-            } else if (moduleInterface.hasModule(name)) {
-                await moduleInterface.runModule(name, moduleExecuteFactory.bind(null, server));
-
-                return server.response;
-            }
-
-            throw new Error(`Testing component with name '${name}' not found`);
+            return server.response;
         } catch (err) {
             if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) return callSingleGabrielaEvent.call(
                 context,
