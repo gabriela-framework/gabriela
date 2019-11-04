@@ -226,5 +226,48 @@ describe('Testing utilities', () => {
         })
     });
 
+    it('should call the onTestCleanup event after the test has executed', (done) => {
+        const testApp = gabriela.asTest({
+            config: {framework: {}}
+        }, {
+            events: {
+                onTestCleanup(someDependency) {
+                    expect(someDependency).to.be.a('object');
 
+                    done();
+                }
+            }
+        });
+
+        const dep = {
+            name: 'someDependency',
+            scope: 'public',
+            init: function() {
+                return {};
+            }
+        };
+
+        const bodyString = "This is the body";
+
+        const mdl = {
+            name: 'module',
+            dependencies: [dep],
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/path',
+                    method: 'POST',
+                }
+            },
+            init: [function(http) {
+                http.res.send(200, bodyString);
+            }],
+        };
+
+        testApp.addModule(mdl);
+
+        testApp.post('module').then((res) => {
+            expect(bodyString).to.be.equal(res.body());
+        });
+    });
 });

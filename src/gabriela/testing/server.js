@@ -1,20 +1,11 @@
 const {GABRIELA_EVENTS} = require('../misc/types');
-const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
+const {callSingleGabrielaEvent, runOnAppStarted, runOnTestCleanup} = require('../events/util/gabrielaEventUtils');
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 const validateHttpEvents = require('../misc/validateHttpEvents');
 const mockRestifyResponse = require('./mock/response');
 const mockRequest = require('./mock/request');
 
-function _resolveOptions(options) {
-    const opts = options || {};
-
-    opts.port = (opts.port) ? opts.port : 3000;
-    opts.host = (opts.host) ? opts.host : 'localhost';
-
-    return opts;
-}
-
-function _startServer(opts) {
+function _startServer() {
     const server = {
         response: null
     };
@@ -49,9 +40,7 @@ function Server(
     validateGabrielaEvents(events);
     validateHttpEvents(events);
 
-    const opts = _resolveOptions(options);
-
-    let server = _startServer(opts);
+    let server = _startServer();
 
     const context = {
         gabriela: this,
@@ -62,6 +51,8 @@ function Server(
             await runOnAppStarted.call(context, events, rootCompiler);
 
             await moduleInterface.runModule(name, moduleExecuteFactory.bind(null, server));
+
+            await runOnTestCleanup.call(context, events, rootCompiler);
 
             return server.response;
         } catch (err) {
