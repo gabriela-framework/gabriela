@@ -552,4 +552,25 @@ describe('Compiler instance tests', () => {
         expect(scope.type).to.be.equal('visibility');
         expect(scope.scope).to.be.equal('module');
     });
+
+    it('should create different references every compilation if cache option is set to false', () => {
+        const definition = {
+            name: 'definition',
+            cache: false,
+            init: function() {
+                return {};
+            },
+        };
+        
+        const compiler = Compiler.create();
+        compiler.add(definition);
+
+        const ref1 = compiler.compile('definition');
+        const ref2 = compiler.compile('definition');
+        const ref3 = compiler.compile('definition');
+
+        expect(ref1).to.not.be.equal(ref2);
+        expect(ref2).to.not.be.equal(ref3);
+        expect(ref1).to.not.be.equal(ref3);
+    });
 });

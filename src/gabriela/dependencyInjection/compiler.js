@@ -237,6 +237,10 @@ function factory() {
 
         service._$metadata = _createMetadata(service, name, deps.names, definition);
 
+        if (definition.cache === false) {
+            return service;
+        }
+
         resolved[definition.name] = service;
 
         return resolved[definition.name];

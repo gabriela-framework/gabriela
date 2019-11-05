@@ -280,6 +280,12 @@ factory.validateDefinitionObject = function(init, moduleName) {
             if (!is('string', compilerPass.property)) throw new Error(`Dependency injection error for '${init.name}' in module '${moduleName}'. 'compilerPass' option must be an object with property 'init' that is required and must be a function and 'property' that is optional and must be a string`);
         }
     }
+
+    if (hasKey(init, 'cache')) {
+        const cache = init.cache;
+
+        if (!is('bool', cache)) throw new Error(`Dependency injection error for 'init.name' in module '${moduleName}'. 'cache' option must be a boolean`);
+    }
 };
 
 module.exports = factory;

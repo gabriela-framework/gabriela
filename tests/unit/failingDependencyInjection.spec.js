@@ -587,6 +587,7 @@ describe('Failing dependency injection tests', () => {
 
         const g = gabriela.asProcess(config);;
 
+        let entersException = false;
         try {
             g.addModule({
                 name: 'module',
@@ -596,7 +597,38 @@ describe('Failing dependency injection tests', () => {
                 }],
             });
         } catch (e) {
+            entersException = true;
             expect(e.message).to.be.equal(`Dependency injection error in service 'userService'. Compiling inside a compiler pass is forbidden`);
         }
+
+        expect(entersException).to.be.equals(true);
+    });
+
+    it('should fail to create a module with a invalid cache option data type', () => {
+        const userServiceInit = {
+            name: 'userService',
+            cache: 'not boolean',
+            init: function() {
+                return () => {};
+            }
+        };
+
+        const g = gabriela.asProcess(config);;
+
+        let entersException = false;
+        try {
+            g.addModule({
+                name: 'module',
+                dependencies: [userServiceInit],
+                moduleLogic: [function(userService) {
+
+                }],
+            });
+        } catch (e) {
+            entersException = true;
+            expect(e.message).to.be.equal(`Dependency injection error for 'init.name' in module 'module'. 'cache' option must be a boolean`);
+        }
+
+        expect(entersException).to.be.equal(true);
     });
 });

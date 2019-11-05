@@ -201,6 +201,7 @@ describe('Test gabriela internals', () => {
         const definition = definitionBuilder
             .addName(name)
             .addScope(scope)
+            .isCached(true)
             .isAsync(true)
             .addShared({})
             .addCompilerPass({})
@@ -209,6 +210,8 @@ describe('Test gabriela internals', () => {
 
         expect(definition.isAsync).to.be.equal(true);
         expect(definition.name).to.be.equal(name);
+        expect(definition.cache).to.be.a('boolean');
+        expect(definition.cache).to.be.equal(true);
         expect(definition.scope).to.be.equal(scope);
         expect(definition.shared).to.be.a('object');
         expect(definition.compilerPass).to.be.a('object');
@@ -229,5 +232,7 @@ describe('Test gabriela internals', () => {
         expect(definition2.shared).to.be.a('object');
         expect(definition2.compilerPass).to.be.a('object');
         expect(definition2.init).to.be.a('function');
+
+        expect(definition).to.be.equal(definition2);
     });
 });

@@ -9,6 +9,12 @@ function instance() {
         return this;
     }
 
+    function isCached(isCached) {
+        definition.cache = isCached;
+
+        return this;
+    }
+
     function addName(name) {
         definition.name = name;
 
@@ -50,6 +56,7 @@ function instance() {
     this.isAsync = isAsync;
     this.addCompilerPass = addCompilerPass;
     this.addInit = addInit;
+    this.isCached = isCached;
     this.build = build;
 }
 
