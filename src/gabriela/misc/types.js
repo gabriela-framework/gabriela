@@ -95,7 +95,6 @@ class GabrielaEvents extends IIterator {
 
         this.ON_APP_STARTED = 'onAppStarted';
         this.ON_CATCH_ERROR = 'catchError';
-        this.ON_TEST_CLEANUP = 'onTestCleanup';
         this.ON_EXIT = 'onExit';
     }
 }
