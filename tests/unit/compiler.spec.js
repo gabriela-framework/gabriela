@@ -561,7 +561,7 @@ describe('Compiler instance tests', () => {
                 return {};
             },
         };
-        
+
         const compiler = Compiler.create();
         compiler.add(definition);
 
