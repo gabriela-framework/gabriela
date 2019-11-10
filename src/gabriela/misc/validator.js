@@ -199,8 +199,8 @@ factory.validatePlugin = function(plugin) {
                 if (!methods.includes(method.toLowerCase())) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' has an invalid http method '${method.toLowerCase()}'. Valid http methods are ${methods.join(', ')}`)
             }
 
-            allowedMethods.reduce(function(a, b) {
-                return b.toLowerCase();
+            allowedMethods = allowedMethods.map(function(a) {
+                return a.toLowerCase();
             }, []);
 
             if (plugin.modules) {
