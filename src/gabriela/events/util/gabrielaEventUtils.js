@@ -39,8 +39,7 @@ async function runOnAppStarted(events, rootCompiler, err) {
             return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, eventError);
         }
 
-        // cannot test this since the app throws an unhandled error and assert.throws() does not work
-        throw onAppStartedError;
+        throw eventError;
     }
 }
 
