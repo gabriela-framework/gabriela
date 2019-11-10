@@ -661,7 +661,7 @@ describe('Gabriela server tests', function() {
         g.startApp();
     });
 
-    it('should call the proper route path based on plugin base path', (done) => {
+    it('should call the proper route path based on plugin base path with lowercase method name', (done) => {
         let middlewareCalled = false;
 
         const mdl = {
@@ -684,6 +684,112 @@ describe('Gabriela server tests', function() {
             http: {
                 route: '/base-route',
                 allowedMethods: ['get'],
+            }
+        };
+
+        const g = gabriela.asServer({config: {framework: {}}}, {
+            events: {
+                onAppStarted() {
+                    console.log('THIS APP HAS STARTED');
+
+                    let options = {
+                        method: 'get',
+                        json: true,
+                        uri : 'http://localhost:3000/base-route/route',
+                    };
+
+                    requestPromise(options).then(() => {
+                        expect(middlewareCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        g.addPlugin(plugin);
+
+        g.startApp();
+    });
+
+    it('should call the proper route path based on plugin base path with uppercase method name', (done) => {
+        let middlewareCalled = false;
+
+        const mdl = {
+            name: 'httpsMdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            },
+            moduleLogic: [function() {
+                middlewareCalled = true;
+            }],
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl],
+            http: {
+                route: '/base-route',
+                allowedMethods: ['GET'],
+            }
+        };
+
+        const g = gabriela.asServer({config: {framework: {}}}, {
+            events: {
+                onAppStarted() {
+                    console.log('THIS APP HAS STARTED');
+
+                    let options = {
+                        method: 'get',
+                        json: true,
+                        uri : 'http://localhost:3000/base-route/route',
+                    };
+
+                    requestPromise(options).then(() => {
+                        expect(middlewareCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        g.addPlugin(plugin);
+
+        g.startApp();
+    });
+
+    it('should call the proper route path based on plugin base path with uppercase and lowercase method names', (done) => {
+        let middlewareCalled = false;
+
+        const mdl = {
+            name: 'httpsMdl',
+            http: {
+                route: {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            },
+            moduleLogic: [function() {
+                middlewareCalled = true;
+            }],
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl],
+            http: {
+                route: '/base-route',
+                allowedMethods: ['GeT', 'post', 'PuT'],
             }
         };
 

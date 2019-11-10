@@ -626,7 +626,7 @@ describe('Failing dependency injection tests', () => {
             });
         } catch (e) {
             entersException = true;
-            expect(e.message).to.be.equal(`Dependency injection error for 'init.name' in module 'module'. 'cache' option must be a boolean`);
+            expect(e.message).to.be.equal(`Dependency injection error for entry 'init.cache' in module 'module'. 'init.cache' option must be a boolean`);
         }
 
         expect(entersException).to.be.equal(true);
