@@ -282,9 +282,7 @@ factory.validateDefinitionObject = function(init, moduleName) {
     }
 
     if (hasKey(init, 'cache')) {
-        const cache = init.cache;
-
-        if (!is('bool', cache)) throw new Error(`Dependency injection error for 'init.name' in module '${moduleName}'. 'cache' option must be a boolean`);
+        if (!is('boolean', init.cache)) throw new Error(`Dependency injection error for entry 'init.cache' in module '${moduleName}'. 'init.cache' option must be a boolean`);
     }
 };
 
