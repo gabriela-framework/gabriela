@@ -79,7 +79,7 @@ function factory() {
         _assignEmitterEvents(mdl);
 
         return (function(mdl) {
-            const state = {};
+            let state = {};
 
             async function run(childState, config, executeFactory) {
                 if (childState) state.child = childState;
@@ -103,7 +103,11 @@ function factory() {
             }
 
             function getResult() {
-                return deepCopy(state);
+                const result = deepCopy(state);
+
+                state = null;
+
+                return result;
             }
 
             function instance() {
