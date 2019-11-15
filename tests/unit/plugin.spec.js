@@ -12,7 +12,7 @@ const config = require('../config/config');
 
 describe('Plugin creation tests', () => {
     it('should have a plugin interface', () => {
-        const p = gabriela.asProcess(config);;
+        const p = gabriela.asProcess(config);
 
         expect(p).to.have.property('addPlugin');
         expect(p).to.have.property('hasPlugin');

@@ -8,10 +8,9 @@ const {
     MANDATORY_ROUTE_PROPS,
     HTTP_METHODS,
     BUILT_IN_MEDIATORS,
-    PROTOCOLS,
 } = require('./types');
 
-const {is, hasKey} = require('../util/util');
+const {is, hasKey, convertToRestifyHttpMethods} = require('../util/util');
 
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
@@ -106,19 +105,7 @@ factory.moduleValidator = function(mdl) {
         if (!is('string', http.route.path)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.path' must be a string`);
         if (!is('string', http.route.method)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.method' must be a string`);
 
-        if (hasKey(http.route, 'protocols')) {
-            const protocols = http.route.protocols;
-
-            if (!Array.isArray(protocols)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols' must be an array`);
-
-            if (protocols.length === 0) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols', if specified, cannot be an empty array`);
-
-            for (const protocol of protocols) {
-                if (!PROTOCOLS.toArray().includes(protocol)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.protocols' specifies an invalid protocol. Valid protocols are ${PROTOCOLS.toArray().join(', ')}`);
-            }
-        }
-
-        if (!HTTP_METHODS.toArray().includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
+        if (!convertToRestifyHttpMethods(HTTP_METHODS.toArray()).includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
     }
 
     validateDependencies(mdl);
@@ -194,7 +181,8 @@ factory.validatePlugin = function(plugin) {
         if (!allowedMethods) allowedMethods = [];
 
         if (allowedMethods.length > 0) {
-            const methods = Object.values(HTTP_METHODS);
+            const methods = HTTP_METHODS.toArray();
+
             for (const method of allowedMethods) {
                 if (!methods.includes(method.toLowerCase())) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' has an invalid http method '${method.toLowerCase()}'. Valid http methods are ${methods.join(', ')}`)
             }

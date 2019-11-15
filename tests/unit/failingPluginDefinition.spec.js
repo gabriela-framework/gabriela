@@ -301,7 +301,7 @@ describe('Plugin errors', () => {
     it('should successfully validate all the allowed http methods', () => {
         const p = gabriela.asServer(config);
 
-        const methods = ['get', 'POST', 'put', 'HEAD', 'patch', 'DEL'];
+        const methods = ['get', 'POST', 'put', 'HEAD', 'patch', 'DELete', 'oPtioNs'];
 
         const plugin = {
             name: 'plugin',

@@ -74,8 +74,9 @@ class HttpMethods extends IIterator {
         this.PUT = 'put';
         this.POST = 'post';
         this.PATCH = 'patch';
-        this.DELETE = 'del';
+        this.DELETE = 'delete';
         this.HEAD = 'head';
+        this.OPTIONS = 'options';
     }
 }
 

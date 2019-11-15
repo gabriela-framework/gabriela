@@ -46,12 +46,13 @@ describe('Types test', () => {
        expect(ASYNC_FLOW_TYPES.THROW_EXCEPTION).to.be.equal('throwException');
        expect(ASYNC_FLOW_TYPES.SKIP).to.be.equal('skip');
 
-       expect(HTTP_METHODS.DELETE).to.be.equal('del');
+       expect(HTTP_METHODS.DELETE).to.be.equal('delete');
        expect(HTTP_METHODS.GET).to.be.equal('get');
        expect(HTTP_METHODS.POST).to.be.equal('post');
        expect(HTTP_METHODS.PUT).to.be.equal('put');
        expect(HTTP_METHODS.HEAD).to.be.equal('head');
        expect(HTTP_METHODS.PATCH).to.be.equal('patch');
+       expect(HTTP_METHODS.OPTIONS).to.be.equal('options');
 
        expect(MANDATORY_ROUTE_PROPS.METHOD).to.be.equal('method');
        expect(MANDATORY_ROUTE_PROPS.NAME).to.be.equal('name');

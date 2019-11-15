@@ -2,6 +2,7 @@ const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
+const {convertToRestifyMethod} = require('../util/util');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -59,7 +60,7 @@ function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config, state) {
             const {http} = mdl;
-            const method = http.route.method.toLowerCase();
+            const method = convertToRestifyMethod(http.route.method.toLowerCase());
             const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
