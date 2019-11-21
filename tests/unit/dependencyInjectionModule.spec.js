@@ -89,11 +89,11 @@ describe('Module dependency injection tests', function() {
                     this.removeUser = null;
                 }
 
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     next(() => {
                         return new UserService();
                     });
-                });
+                }, 200);
             },
         };
 
@@ -130,12 +130,11 @@ describe('Module dependency injection tests', function() {
                     this.addFriend = null;
                 }
 
-                requestPromise.get('https://www.facebook.com/').then(() => {
-
-                next(() => {
+                setTimeout(() => {
+                    next(() => {
                         return new FriendsRepository();
                     });
-                });
+                }, 200);
             }
         };
 
@@ -149,11 +148,11 @@ describe('Module dependency injection tests', function() {
                     this.userFriendsRepository = userFriendsRepository;
                 }
 
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     next(() => {
                         return new UserRepository();
                     });
-                });
+                }, 200);
             }
         };
 
@@ -169,11 +168,11 @@ describe('Module dependency injection tests', function() {
                     this.userRepository = userRepository;
                 }
 
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     next(() => {
                         return new UserService();
                     });
-                });
+                }, 200);
             }
         };
 
@@ -294,40 +293,39 @@ describe('Module dependency injection tests', function() {
         const userModule = {
             name: userModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     userModuleExecuted = true;
 
                     state.name = userModuleName;
 
                     next();
-                });
+                }, 200);
             }],
         };
 
         const appSearchModule = {
             name: appSearchModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     appSearchModuleExecuted = true;
 
                     state.name = appSearchModuleName;
 
                     next();
-                });
+                }, 200);
             }],
         };
 
         const pdfConvertModule = {
             name: pdfConvertModuleName,
             moduleLogic: [function(state, next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
-
+                setTimeout(() => {
                     pdfConvertModuleExecuted = true;
 
                     state.name = pdfConvertModuleName;
 
                     next();
-                });
+                }, 200);
             }],
         };
 
@@ -376,11 +374,11 @@ describe('Module dependency injection tests', function() {
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         entersOriginalLogic1 = true;
 
                         next();
-                    });
+                    }, 200);
                 }
             }],
         };
@@ -394,20 +392,20 @@ describe('Module dependency injection tests', function() {
             moduleLogic: [{
                 name: 'logic1',
                 middleware: function(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         entersOverridenLogic1 = true;
 
                         next();
-                    });
+                    }, 200);
                 }
             }, {
                 name: 'logic2',
                 middleware: function(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         entersLogic2 = true;
 
                         next();
-                    });
+                    }, 200);
                 }
             }]
         });

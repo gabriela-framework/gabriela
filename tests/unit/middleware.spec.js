@@ -16,11 +16,11 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.googleBody = body;
+            setTimeout(() => {
+                state.googleBody = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const mdl = {
@@ -43,11 +43,11 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const googleRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.googleBody = body;
+            setTimeout(() => {
+                state.googleBody = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const mdl = {
@@ -70,27 +70,27 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const firstRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.firstRequest = body;
+            setTimeout(() => {
+                state.firstRequest = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const secondRequest = function(state, next, skip) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.secondRequest = body;
+            setTimeout(() => {
+                state.secondRequest = 'value';
 
                 skip();
-            });
+            }, 200);
         };
 
         const thirdRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.thirdRequest = body;
+            setTimeout(() => {
+                state.thirdRequest = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const postLogicTransformer = function(state, next) {
@@ -123,27 +123,27 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const firstRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.firstRequest = body;
+            setTimeout(() => {
+                state.firstRequest = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const secondRequest = function(state, next, skip, done) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.secondRequest = body;
+            setTimeout(() => {
+                state.secondRequest = 'value';
 
                 done();
-            });
+            }, 200);
         };
 
         const thirdRequest = function(state, next) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.thirdRequest = body;
+            setTimeout(() => {
+                state.thirdRequest = 'value';
 
                 next();
-            });
+            }, 200);
         };
 
         const postLogicTransformer = function(state, next) {
@@ -176,19 +176,19 @@ describe('Middleware execution', function() {
         const name = 'googleCall';
 
         const firstRequest = function(state, next, skip, done, throwException) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.firstRequest = body;
+            setTimeout(() => {
+                state.firstRequest = 'value';
 
                 throwException(new Error('my exception'));
-            });
+            }, 200)
         };
 
         const secondRequest = function(state, next, skip, done) {
-            requestPromise.get('http://goiwouldlike.com').then((body) => {
-                state.secondRequest = body;
+            setTimeout(() => {
+                state.secondRequest = 'value';
 
                 done();
-            });
+            }, 200);
         };
 
         const mdl = {

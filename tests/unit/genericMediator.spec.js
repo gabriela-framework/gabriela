@@ -32,13 +32,13 @@ describe('Generic mediator concrete tests', function() {
 
         let eventCalled = false;
         genericMediator.callEvent(function(next) {
-            requestPromise.get('http://goiwouldlike.com').then(() => {
+            setTimeout(() => {
                 eventCalled = true;
 
                 next();
 
                 done();
-            });
+            }, 200);
         });
 
         expect(eventCalled).to.be.equal(true);
@@ -53,11 +53,11 @@ describe('Generic mediator concrete tests', function() {
         let eventCalled = false;
         try {
             genericMediator.callEvent(function(throwException) {
-                requestPromise.get('http://goiwouldlike.com').then(() => {
+                setTimeout(() => {
                     eventCalled = true;
 
                     throwException(new Error('Something went wrong'));
-                });
+                }, 200);
             });
         } catch (e) {
             exceptionEntered = true;

@@ -109,11 +109,11 @@ describe('Gabriela as process tests', () => {
             }, {
                 name: 'other',
                 middleware: function(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         secondPreLogicExecuted = true;
 
                         next();
-                    });
+                    }, 200);
                 }
             }],
             validators: [{
@@ -424,11 +424,11 @@ describe('Gabriela as process tests', () => {
             }, {
                 name: 'other',
                 middleware: function(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         secondPreLogicExecuted = true;
 
                         next();
-                    });
+                    }, 200);
                 }
             }],
             validators: [{

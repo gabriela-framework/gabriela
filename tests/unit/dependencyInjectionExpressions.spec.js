@@ -381,7 +381,7 @@ describe('Immediately executing middleware with dependency injection and express
             name: 'validateEmailWithDependency',
             init: function() {
                 return function(userRepository, next, state) {
-                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                    setTimeout(() => {
                         validateEmailCalled = true;
 
                         expect(userRepository).to.be.a('object');
@@ -389,7 +389,7 @@ describe('Immediately executing middleware with dependency injection and express
                         expect(state).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             }
         };
@@ -432,7 +432,7 @@ describe('Immediately executing middleware with dependency injection and express
             name: 'validateEmailWithDependency',
             init: function() {
                 return function(userRepository, next, state, http) {
-                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                    setTimeout(() => {
                         validateEmailCalled = true;
 
                         expect(userRepository).to.be.a('object');
@@ -443,7 +443,7 @@ describe('Immediately executing middleware with dependency injection and express
                         expect(http.res).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             }
         };

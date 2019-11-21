@@ -140,9 +140,10 @@ describe('Failing dependency injection tests', () => {
                     this.removeUser = null;
                 }
 
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     return new constructor();
-                });
+
+                }, 200);
             }
         };
 

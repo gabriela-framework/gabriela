@@ -115,22 +115,22 @@ describe('Framework events', function() {
             name: 'eventsModule',
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             dependencies: [userServiceInit],
@@ -166,64 +166,64 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         expect(execution).to.be.equal(0);
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         expect(execution).to.be.equal(5);
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             security: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             preLogicTransformers: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             validators: [function(next, userService) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
 
                     next();
-                });
+                }, 200);
             }],
             moduleLogic: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             postLogicTransformers: [function(next, userService) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
 
                     next();
-                });
+                }, 200);
             }],
         };
 
@@ -256,18 +256,18 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
-                    });
+                    }, 200);
                 },
                 onModuleFinished(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         next();
-                    });
+                    }, 200);
                 },
                 onError(e, userService) {
                     entersOnError = true;
@@ -310,18 +310,18 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted(next, throwException) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
-                    });
+                    }, 200);
                 },
                 onModuleFinished(next) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         next();
-                    });
+                    }, 200);
                 },
                 onError(e) {
                     entersOnError = true;
@@ -498,22 +498,22 @@ describe('Framework events', function() {
             modules: [mdl],
             mediator: {
                 onPluginStarted: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 },
                 onPluginFinished: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             }
         });
@@ -546,64 +546,64 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
             mediator: {
                 onModuleStarted: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleStarted = true;
 
                         expect(execution).to.be.equal(0);
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 },
                 onModuleFinished: function(next, userService) {
-                    requestPromise.get('https://www.facebook.com/').then(() => {
+                    setTimeout(() => {
                         onModuleFinished = true;
 
                         expect(execution).to.be.equal(5);
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             security: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             preLogicTransformers: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             validators: [function(next, userService) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
 
                     next();
-                });
+                }, 200);
             }],
             moduleLogic: [function(next) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     next();
-                });
+                }, 200);
             }],
             postLogicTransformers: [function(next, userService) {
-                requestPromise.get('https://www.facebook.com/').then(() => {
+                setTimeout(() => {
                     ++execution;
 
                     expect(userService).to.be.a('object');
 
                     next();
-                });
+                }, 200);
             }],
         };
 
@@ -1384,7 +1384,7 @@ describe('Framework events', function() {
             dependencies: [userServiceDefinition],
             mediator: {
                 onPreResponse(http, userService, next) {
-                    requestPromise.get('https://www.facebook.com').then(() => {
+                    setTimeout(() => {
                         onPreResponseCalled = true;
 
                         expect(http).to.be.a('object');
@@ -1396,7 +1396,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             http: {
@@ -1470,7 +1470,7 @@ describe('Framework events', function() {
             dependencies: [userServiceDefinition],
             mediator: {
                 onPostResponse(http, userService, next) {
-                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                    setTimeout(() => {
                         onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');
@@ -1482,7 +1482,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             http: {
@@ -1544,7 +1544,7 @@ describe('Framework events', function() {
                     http.res.send('Response');
                 },
                 onPostResponse(http, userService, next) {
-                    requestPromise.get('http://goiwouldlike.com').then(() => {
+                    setTimeout(() => {
                         onPostResponseCalled = true;
 
                         expect(http).to.be.a('object');
@@ -1556,7 +1556,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    });
+                    }, 200);
                 }
             },
             http: {
