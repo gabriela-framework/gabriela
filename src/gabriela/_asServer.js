@@ -67,7 +67,7 @@ module.exports = function _asServer(receivedConfig, options) {
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 
             const server = new Server(
-                config.config.server,
+                config.config,
                 events,
                 rootCompiler,
                 pluginInterface,

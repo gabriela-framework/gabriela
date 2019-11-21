@@ -1,3 +1,5 @@
+const {ENV} = require('./misc/types');
+
 require('strict-mode')(function () {
     require('./global');
 
@@ -5,7 +7,9 @@ require('strict-mode')(function () {
         asServer(receivedConfig, options) {
             if (!receivedConfig) {
                 receivedConfig = {
-                    config: {framework: {}}
+                    config: {framework: {
+                        env: 'dev'
+                    }}
                 };
             }
 
@@ -15,21 +19,13 @@ require('strict-mode')(function () {
         asProcess(receivedConfig, options) {
             if (!receivedConfig) {
                 receivedConfig = {
-                    config: {framework: {}}
+                    config: {framework: {
+                        env: 'dev'
+                    }}
                 };
             }
 
             return require('./_asProcess').call(null, receivedConfig, options);
         },
-
-        asTest(receivedConfig, options) {
-            if (!receivedConfig) {
-                receivedConfig = {
-                    config: {framework: {}}
-                };
-            }
-
-            return require('./_asTest').call(null, receivedConfig, options);
-        }
     };
 });

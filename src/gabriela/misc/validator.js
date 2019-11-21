@@ -11,7 +11,6 @@ const {
 } = require('./types');
 
 const {is, hasKey, convertToRestifyHttpMethods} = require('../util/util');
-
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
  */

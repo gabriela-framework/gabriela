@@ -6,20 +6,21 @@ const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 const validateHttpEvents = require('../misc/validateHttpEvents');
 
 function _resolveOptions(options) {
-    const opts = options || {};
+    if (!options.server) options.server = {};
 
-    opts.port = (opts.port) ? opts.port : 3000;
-    opts.host = (opts.host) ? opts.host : 'localhost';
-
-    return opts;
+    options.server.port = (options.server.port) ? options.server.port : 3000;
+    options.server.host = (options.server.host) ? options.server.host : 'localhost';
 }
 
 function _startServer(opts) {
+    const serverConfig = opts.server;
     const Default = {
         strictNext: false,
+        host: serverConfig.host,
+        port: serverConfig.port,
     };
 
-    const filtered = Object.filter(opts, (key, val) => {
+    const filtered = Object.filter(serverConfig, (key, val) => {
         return key !== 'strictNext' && key !== 'port' && key !== 'host';
     });
 
@@ -59,13 +60,16 @@ async function _listenCallback(
         gabriela: this,
     };
 
-    console.log(`Gabriela app started on host '${opts.host}' and port: '${opts.port}'`);
+    const serverConfig = opts.server;
+
+    console.log(`Gabriela app started on host '${serverConfig.host}' and port: '${serverConfig.port}'`);
+    console.log(`Running in '${opts.framework.env}' environment`);
 
     await runOnAppStarted.call(context, events, rootCompiler);
 }
 
 function Server(
-        options,
+        config,
         events,
         rootCompiler,
         pluginInterface,
@@ -74,9 +78,9 @@ function Server(
     validateGabrielaEvents(events);
     validateHttpEvents(events);
 
-    const opts = _resolveOptions(options);
+    _resolveOptions(config);
 
-    let server = _startServer(opts);
+    let server = _startServer(config);
 
     function run(moduleExecuteFactory, pluginExecuteFactory) {
         const args = {
@@ -88,9 +92,9 @@ function Server(
         };
 
         _runComponents(args).then(() => {
-            server.listen(opts.port, opts.host, _listenCallback.bind(
+            server.listen(config.server.port, config.server.host, _listenCallback.bind(
                 this,
-                opts,
+                config,
                 events,
                 rootCompiler,
             ));

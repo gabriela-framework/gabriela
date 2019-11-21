@@ -10,6 +10,9 @@ async function runApp(
     pluginInterface,
     moduleInterface,
 ) {
+    console.log(`Gabriela started as process`);
+    console.log(`Running in '${config.config.framework.env}' environment`);
+
     try {
         await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
         await moduleInterface.run(moduleExecuteFactory.bind(null, null));
@@ -28,8 +31,6 @@ async function runApp(
     };
 
     await runOnAppStarted.call(context, events, rootCompiler);
-
-    console.log(`Process app started`);
 }
 
 function factory(

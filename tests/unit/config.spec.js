@@ -25,7 +25,7 @@ describe('Config tests', () => {
         expect(Config.config.framework.env).to.be.equal(ENV.DEVELOPMENT);
     });
 
-    it('should create config with production and testing environment', () => {
+    it('should create config with production and development environments', () => {
         const ConfigProd = configFactory.create({
             config: {
                 validator: {},
@@ -37,16 +37,16 @@ describe('Config tests', () => {
 
         expect(ConfigProd.config.framework.env).to.be.equal(ENV.PRODUCTION);
 
-        const ConfigTest = configFactory.create({
+        const ConfigDev = configFactory.create({
             config: {
                 validator: {},
                 framework: {
-                    env: 'test',
+                    env: 'dev',
                 },
             }
         });
 
-        expect(ConfigTest.config.framework.env).to.be.equal(ENV.TESTING);
+        expect(ConfigDev.config.framework.env).to.be.equal(ENV.DEVELOPMENT);
     });
 
     it('should simulate environment variables and replace them in config', () => {

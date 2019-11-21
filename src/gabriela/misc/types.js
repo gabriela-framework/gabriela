@@ -115,7 +115,6 @@ class EnvTypes extends IIterator{
 
         this.DEVELOPMENT = 'dev';
         this.PRODUCTION = 'prod';
-        this.TESTING = 'test';
     }
 }
 
