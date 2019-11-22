@@ -1,7 +1,9 @@
-const {ENV} = require('./misc/types');
-
 require('strict-mode')(function () {
     require('./global');
+    const {ENV} = require('./misc/types');
+
+    const loggerProxy = require('./logging/loggerProxySingleton');
+    const LoggerFactory = require('./logging/loggerFactory');
 
     module.exports = {
         asServer(receivedConfig, options) {
@@ -12,6 +14,15 @@ require('strict-mode')(function () {
                     }}
                 };
             }
+
+            if (!receivedConfig.config.framework.env) {
+                receivedConfig.config.framework.env = ENV.DEVELOPMENT;
+            }
+
+            loggerProxy.injectLogger(
+                LoggerFactory.create(receivedConfig),
+                receivedConfig.config.framework.env
+            );
 
             return require('./_asServer').call(null, receivedConfig, options);
         },
@@ -24,6 +35,15 @@ require('strict-mode')(function () {
                     }}
                 };
             }
+
+            if (!receivedConfig.config.framework.env) {
+                receivedConfig.config.framework.env = ENV.DEVELOPMENT;
+            }
+
+            loggerProxy.injectLogger(
+                LoggerFactory.create(receivedConfig),
+                receivedConfig.config.framework.env
+            );
 
             return require('./_asProcess').call(null, receivedConfig, options);
         },

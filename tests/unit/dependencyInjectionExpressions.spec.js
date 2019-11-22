@@ -389,7 +389,7 @@ describe('Immediately executing middleware with dependency injection and express
                         expect(state).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }
         };
@@ -443,7 +443,7 @@ describe('Immediately executing middleware with dependency injection and express
                         expect(http.res).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }
         };

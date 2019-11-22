@@ -1,6 +1,8 @@
 function factory() {
     function log(type, message) {
-        let logMessage = `[${type.toUpperCase()}][${new Date()}]: ${message}.`;
+        const today = new Date();
+
+        let logMessage = `[${type.toUpperCase()}][${today.toUTCString()}]: ${message}.`;
 
         console.log(logMessage);
     }

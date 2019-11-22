@@ -4,6 +4,7 @@ const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
+const LoggerProxy = require('../logging/loggerProxySingleton');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();
@@ -123,6 +124,7 @@ function _bindEventSystem(moduleObject, config, exposedMediator) {
 function factory({mdl, config, rootCompiler, parentCompiler, sharedCompiler, exposedMediator}) {
     const moduleObject = _createModuleModel(mdl, config);
 
+    LoggerProxy.log('notice', `Registered module '${moduleObject.name}'`);
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
     _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler, config);

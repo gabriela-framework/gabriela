@@ -121,7 +121,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onModuleFinished: function(next, userService) {
                     setTimeout(() => {
@@ -130,7 +130,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             dependencies: [userServiceInit],
@@ -173,7 +173,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onModuleFinished: function(next, userService) {
                     setTimeout(() => {
@@ -183,7 +183,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             security: [function(next) {
@@ -191,14 +191,14 @@ describe('Framework events', function() {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             preLogicTransformers: [function(next) {
                 setTimeout(() => {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             validators: [function(next, userService) {
                 setTimeout(() => {
@@ -207,14 +207,14 @@ describe('Framework events', function() {
                     expect(userService).to.be.a('object');
 
                     next();
-                }, 200);
+                }, 50);
             }],
             moduleLogic: [function(next) {
                 setTimeout(() => {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             postLogicTransformers: [function(next, userService) {
                 setTimeout(() => {
@@ -223,7 +223,7 @@ describe('Framework events', function() {
                     expect(userService).to.be.a('object');
 
                     next();
-                }, 200);
+                }, 50);
             }],
         };
 
@@ -260,14 +260,14 @@ describe('Framework events', function() {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
-                    }, 200);
+                    }, 50);
                 },
                 onModuleFinished(next) {
                     setTimeout(() => {
                         onModuleFinished = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onError(e, userService) {
                     entersOnError = true;
@@ -314,14 +314,14 @@ describe('Framework events', function() {
                         onModuleStarted = true;
 
                         throwException(new Error(`Something went wrong`));
-                    }, 200);
+                    }, 50);
                 },
                 onModuleFinished(next) {
                     setTimeout(() => {
                         onModuleFinished = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onError(e) {
                     entersOnError = true;
@@ -504,7 +504,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onPluginFinished: function(next, userService) {
                     setTimeout(() => {
@@ -513,7 +513,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }
         });
@@ -553,7 +553,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 },
                 onModuleFinished: function(next, userService) {
                     setTimeout(() => {
@@ -563,7 +563,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             security: [function(next) {
@@ -571,14 +571,14 @@ describe('Framework events', function() {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             preLogicTransformers: [function(next) {
                 setTimeout(() => {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             validators: [function(next, userService) {
                 setTimeout(() => {
@@ -587,14 +587,14 @@ describe('Framework events', function() {
                     expect(userService).to.be.a('object');
 
                     next();
-                }, 200);
+                }, 50);
             }],
             moduleLogic: [function(next) {
                 setTimeout(() => {
                     ++execution;
 
                     next();
-                }, 200);
+                }, 50);
             }],
             postLogicTransformers: [function(next, userService) {
                 setTimeout(() => {
@@ -603,7 +603,7 @@ describe('Framework events', function() {
                     expect(userService).to.be.a('object');
 
                     next();
-                }, 200);
+                }, 50);
             }],
         };
 
@@ -1396,7 +1396,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             http: {
@@ -1417,7 +1417,7 @@ describe('Framework events', function() {
             requestPromise.get('http://localhost:3000/path').then(() => {
                 expect(onPreResponseCalled).to.be.equal(true);
             });
-        }, 2000);
+        }, 500);
     });
 
     /**
@@ -1482,7 +1482,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             http: {
@@ -1502,7 +1502,7 @@ describe('Framework events', function() {
         setTimeout(() => {
             requestPromise.get('http://localhost:3000/path').then(() => {
             });
-        }, 2000);
+        }, 500);
 
     });
 
@@ -1556,7 +1556,7 @@ describe('Framework events', function() {
                         expect(userService).to.be.a('object');
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             },
             http: {
@@ -1577,7 +1577,7 @@ describe('Framework events', function() {
             requestPromise.get('http://localhost:3000/path').then(() => {
                 expect(onPreResponseCalled).to.be.equal(true);
             });
-        }, 2000);
+        }, 500);
     });
 
     it('should properly call onPre/PostResponse events if the response is sent from inside middleware execution', (done) => {
@@ -1625,7 +1625,7 @@ describe('Framework events', function() {
             requestPromise.get('http://localhost:3000/path').then(() => {
                 expect(onPreResponseCalled).to.be.equal(true);
             });
-        }, 2000);
+        }, 500);
     });
 
     it('should resolve an error thrown inside middleware before an error thrown in onAppStarted', (done) => {

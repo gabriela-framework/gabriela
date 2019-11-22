@@ -143,7 +143,7 @@ describe('Failing dependency injection tests', () => {
                 setTimeout(() => {
                     return new constructor();
 
-                }, 200);
+                }, 50);
             }
         };
 

@@ -93,7 +93,7 @@ describe('Module dependency injection tests', function() {
                     next(() => {
                         return new UserService();
                     });
-                }, 200);
+                }, 50);
             },
         };
 
@@ -134,7 +134,7 @@ describe('Module dependency injection tests', function() {
                     next(() => {
                         return new FriendsRepository();
                     });
-                }, 200);
+                }, 50);
             }
         };
 
@@ -152,7 +152,7 @@ describe('Module dependency injection tests', function() {
                     next(() => {
                         return new UserRepository();
                     });
-                }, 200);
+                }, 50);
             }
         };
 
@@ -172,7 +172,7 @@ describe('Module dependency injection tests', function() {
                     next(() => {
                         return new UserService();
                     });
-                }, 200);
+                }, 50);
             }
         };
 
@@ -299,7 +299,7 @@ describe('Module dependency injection tests', function() {
                     state.name = userModuleName;
 
                     next();
-                }, 200);
+                }, 50);
             }],
         };
 
@@ -312,7 +312,7 @@ describe('Module dependency injection tests', function() {
                     state.name = appSearchModuleName;
 
                     next();
-                }, 200);
+                }, 50);
             }],
         };
 
@@ -325,7 +325,7 @@ describe('Module dependency injection tests', function() {
                     state.name = pdfConvertModuleName;
 
                     next();
-                }, 200);
+                }, 50);
             }],
         };
 
@@ -378,7 +378,7 @@ describe('Module dependency injection tests', function() {
                         entersOriginalLogic1 = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }],
         };
@@ -396,7 +396,7 @@ describe('Module dependency injection tests', function() {
                         entersOverridenLogic1 = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }, {
                 name: 'logic2',
@@ -405,7 +405,7 @@ describe('Module dependency injection tests', function() {
                         entersLogic2 = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }]
         });

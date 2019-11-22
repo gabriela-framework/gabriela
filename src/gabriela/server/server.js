@@ -1,9 +1,10 @@
 const restify = require('restify');
 
-const {GABRIELA_EVENTS} = require('../misc/types');
+const {GABRIELA_EVENTS, LOGGING_TYPES} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 const validateHttpEvents = require('../misc/validateHttpEvents');
+const LoggerProxy = require('../logging/loggerProxySingleton');
 
 function _resolveOptions(options) {
     if (!options.server) options.server = {};
@@ -52,7 +53,7 @@ async function _runComponents({
 }
 
 async function _listenCallback(
-    opts,
+    config,
     events,
     rootCompiler,
 ) {
@@ -60,10 +61,10 @@ async function _listenCallback(
         gabriela: this,
     };
 
-    const serverConfig = opts.server;
+    const serverConfig = config.server;
 
-    console.log(`Gabriela app started on host '${serverConfig.host}' and port: '${serverConfig.port}'`);
-    console.log(`Running in '${opts.framework.env}' environment`);
+    LoggerProxy.log(LOGGING_TYPES.NOTICE, `Gabriela app started on host '${serverConfig.host}' and port: '${serverConfig.port}'`);
+    LoggerProxy.log(LOGGING_TYPES.NOTICE, `Running in '${config.framework.env}' environment`);
 
     await runOnAppStarted.call(context, events, rootCompiler);
 }

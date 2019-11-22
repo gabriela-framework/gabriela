@@ -20,7 +20,7 @@ describe('Middleware execution', function() {
                 state.googleBody = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const mdl = {
@@ -47,7 +47,7 @@ describe('Middleware execution', function() {
                 state.googleBody = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const mdl = {
@@ -74,7 +74,7 @@ describe('Middleware execution', function() {
                 state.firstRequest = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const secondRequest = function(state, next, skip) {
@@ -82,7 +82,7 @@ describe('Middleware execution', function() {
                 state.secondRequest = 'value';
 
                 skip();
-            }, 200);
+            }, 50);
         };
 
         const thirdRequest = function(state, next) {
@@ -90,7 +90,7 @@ describe('Middleware execution', function() {
                 state.thirdRequest = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const postLogicTransformer = function(state, next) {
@@ -127,7 +127,7 @@ describe('Middleware execution', function() {
                 state.firstRequest = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const secondRequest = function(state, next, skip, done) {
@@ -135,7 +135,7 @@ describe('Middleware execution', function() {
                 state.secondRequest = 'value';
 
                 done();
-            }, 200);
+            }, 50);
         };
 
         const thirdRequest = function(state, next) {
@@ -143,7 +143,7 @@ describe('Middleware execution', function() {
                 state.thirdRequest = 'value';
 
                 next();
-            }, 200);
+            }, 50);
         };
 
         const postLogicTransformer = function(state, next) {
@@ -180,7 +180,7 @@ describe('Middleware execution', function() {
                 state.firstRequest = 'value';
 
                 throwException(new Error('my exception'));
-            }, 200)
+            }, 50)
         };
 
         const secondRequest = function(state, next, skip, done) {
@@ -188,7 +188,7 @@ describe('Middleware execution', function() {
                 state.secondRequest = 'value';
 
                 done();
-            }, 200);
+            }, 50);
         };
 
         const mdl = {

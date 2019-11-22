@@ -113,7 +113,7 @@ describe('Gabriela as process tests', () => {
                         secondPreLogicExecuted = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }],
             validators: [{
@@ -428,7 +428,7 @@ describe('Gabriela as process tests', () => {
                         secondPreLogicExecuted = true;
 
                         next();
-                    }, 200);
+                    }, 50);
                 }
             }],
             validators: [{

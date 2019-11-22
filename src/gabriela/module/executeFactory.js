@@ -1,8 +1,9 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const {MIDDLEWARE_TYPES} = require('../misc/types');
+const {MIDDLEWARE_TYPES, LOGGING_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
 const {convertToRestifyMethod} = require('../util/util');
+const LoggingProxy = require('./../logging/loggerProxySingleton');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -64,6 +65,11 @@ function factory(server, mdl) {
             const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
+                LoggingProxy.log(
+                    LOGGING_TYPES.NOTICE,
+                    `HTTP route recognized. Method: ${method.toUpperCase()}, route: ${path}, route name: ${http.route.name}`
+                );
+
                 const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
                 const responseEvent = _getResponseEvents(mdl);
 
@@ -76,21 +82,6 @@ function factory(server, mdl) {
                     responseEvent.onPostResponse,
                     next,
                 );
-
-                /**
-                 * Protocols feature does not make any sense since I have to create http request do not go into
-                 * secure server
-                 *
-                 * TODO: Decide on the protocols feature
-                 */
-                if (http.route.protocols) {
-                    const protocols = http.route.protocols;
-                    const currentProtocol = (req.isSecure()) ? 'https' : 'http';
-
-                    if (!protocols.includes(currentProtocol)) {
-                        return responseProxy.send(400, 'Invalid protocol');
-                    }
-                }
 
                 httpContext.res = responseProxy;
 

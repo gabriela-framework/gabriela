@@ -38,7 +38,7 @@ describe('Generic mediator concrete tests', function() {
                 next();
 
                 done();
-            }, 200);
+            }, 50);
         });
 
         expect(eventCalled).to.be.equal(true);
@@ -57,7 +57,7 @@ describe('Generic mediator concrete tests', function() {
                     eventCalled = true;
 
                     throwException(new Error('Something went wrong'));
-                }, 200);
+                }, 50);
             });
         } catch (e) {
             exceptionEntered = true;

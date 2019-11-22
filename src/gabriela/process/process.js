@@ -1,7 +1,8 @@
-const {GABRIELA_EVENTS} = require('../misc/types');
+const {GABRIELA_EVENTS, LOGGING_TYPES} = require('../misc/types');
 const pluginExecuteFactory = require('../plugin/executeFactory');
 const moduleExecuteFactory = require('../module/executeFactory');
 const {runOnAppStarted, callSingleGabrielaEvent} = require('../events/util/gabrielaEventUtils');
+const LoggerProxy = require('../logging/loggerProxySingleton');
 
 async function runApp(
     config,
@@ -10,8 +11,8 @@ async function runApp(
     pluginInterface,
     moduleInterface,
 ) {
-    console.log(`Gabriela started as process`);
-    console.log(`Running in '${config.config.framework.env}' environment`);
+    LoggerProxy.log(LOGGING_TYPES.NOTICE, `Gabriela started as process`);
+    LoggerProxy.log(LOGGING_TYPES.NOTICE, `Running in '${config.config.framework.env}' environment`);
 
     try {
         await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));

@@ -1,5 +1,6 @@
 const Compiler = require('../dependencyInjection/compiler');
 const Mediator = require('../events/mediator');
+const LoggerProxy = require('../logging/loggerProxySingleton');
 
 function _createCompiler(plugin, rootCompiler, sharedCompiler) {
     const c = Compiler.create();
@@ -60,6 +61,8 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
         },
         http: plugin.http,
     };
+
+    LoggerProxy.log('notice', `Registered module '${pluginObject.name}'`);
 
     _createCompiler(pluginObject, rootCompiler, sharedCompiler);
     _bindEventSystem(pluginObject, config, exposedMediatorInstance);

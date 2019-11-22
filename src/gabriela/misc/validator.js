@@ -210,6 +210,10 @@ factory.validateServerOptions = function(options) {
         if (hasKey(options, 'port')) {
             if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
         }
+
+        if (hasKey(options, 'host')) {
+            if (!is('string', options.host)) throw new Error(`Invalid server configuration. 'host' has to be a string`);
+        }
     }
 };
 
