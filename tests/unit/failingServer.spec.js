@@ -179,4 +179,69 @@ describe('Failing server tests', () => {
 
         g.startApp();
     });
+
+    it('should fail if the route does not exist', () => {
+        let entersMiddleware = false;
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'GET',
+            }
+        ];
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, routes);
+
+        try {
+            g.addModule({
+                name: 'module',
+                route: 'not exists',
+                moduleLogic: [function() {
+                    entersMiddleware = true;
+                }],
+            });
+        } catch (e) {
+            expect(e.message).to.be.equal(`Invalid module definition with name 'module'. Route 'not exists' does not exist`)
+        }
+    });
+
+    it('should fail if the plugin modules route does not exist', () => {
+        let entersMiddleware = false;
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'GET',
+            }
+        ];
+        const g = gabriela.asServer({
+            config: {
+                framework: {},
+            }
+        }, routes);
+
+        const mdl = {
+            name: 'module',
+            route: 'not exists',
+            moduleLogic: [function() {
+                entersMiddleware = true;
+            }],
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl],
+        };
+
+        try {
+            g.addPlugin(plugin);
+        } catch (e) {
+            expect(e.message).to.be.equal('Plugin definition error. Plugin with name \'plugin\' has an invalid \'modules\' entry with message: \'Invalid module definition with name \'module\' in plugin \'plugin\'. Route \'not exists\' does not exist\'');
+        }
+    });
 });

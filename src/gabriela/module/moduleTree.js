@@ -4,6 +4,7 @@ const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const {hasKey, is, IIterator} = require('../util/util');
 const _overrideMiddleware = require('./middlewareOverriding/overrideMiddleware');
+const Router = require('../router/router');
 
 async function _runConstructedModule(mdl, tree, config, executeFactory) {
     const runner = ModuleRunner.create(mdl);
@@ -31,7 +32,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const tree = [];
 
     function addModule(mdl, parentCompiler) {
-        Validator.moduleValidator(mdl);
+        Validator.moduleValidator(mdl, Router);
 
         if (hasKey(modules, mdl.name)) throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
 
