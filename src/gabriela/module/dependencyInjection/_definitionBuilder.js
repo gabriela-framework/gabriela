@@ -2,9 +2,11 @@ const {hasKey} = require('./../../util/util');
 
 function instance() {
     const definition = {};
+    let isAsyncCalled = false;
 
     function isAsync(isAsync) {
         definition.isAsync = isAsync;
+        isAsyncCalled = true;
 
         return this;
     }
@@ -45,8 +47,9 @@ function instance() {
     }
 
     function build() {
-        if (hasKey(definition,'isAsync') && definition.isAsync !== true) definition.isAsync = false;
+        if (hasKey(definition,'isAsync') && !isAsyncCalled) definition.isAsync = false;
 
+        isAsyncCalled = false;
         return definition;
     }
 
