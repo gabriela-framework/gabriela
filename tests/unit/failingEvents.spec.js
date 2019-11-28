@@ -379,7 +379,15 @@ describe('Failing framework events', () => {
     it('should fail to send a response inside onPostResponse event when the response is already sent', (done) => {
         let onPostResponseCalled = false;
 
-        const g = gabriela.asServer(config, {
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            },
+        ];
+
+        const g = gabriela.asServer(config, routes, {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -408,13 +416,7 @@ describe('Failing framework events', () => {
                     http.res.send('Will not be sent');
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.send('Response');
             }],

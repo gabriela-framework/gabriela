@@ -176,7 +176,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail if http exists but is not an object', () => {
-        const p = gabriela.asServer(config);
+        const p = gabriela.asServer(config, []);
 
         const plugin = {
             name: 'plugin',
@@ -195,7 +195,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail if http.route is not a string', () => {
-        const p = gabriela.asServer(config);
+        const p = gabriela.asServer(config, []);
 
         const plugin = {
             name: 'plugin',
@@ -216,7 +216,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail if http.allowedMethods is not an array', () => {
-        const p = gabriela.asServer(config);
+        const p = gabriela.asServer(config, []);
 
         const plugin = {
             name: 'plugin',
@@ -238,7 +238,7 @@ describe('Plugin errors', () => {
     });
 
     it('should fail if http.allowedMethods has a invalid method in list', () => {
-        const p = gabriela.asServer(config);
+        const p = gabriela.asServer(config, []);
 
         const methods = ['get', 'POST', 'put', 'HEAD', 'INVALID'];
 
@@ -263,19 +263,21 @@ describe('Plugin errors', () => {
     });
 
     it('should fail if the module has a not allowed http method', () => {
-        const p = gabriela.asServer(config);
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'put'
+            }
+        ];
+
+        const p = gabriela.asServer(config, routes);
 
         const methods = ['get', 'POST'];
 
         const mdl = {
             name: 'module',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'put'
-                }
-            }
+            route: 'route',
         };
 
         const plugin = {
@@ -299,7 +301,7 @@ describe('Plugin errors', () => {
     });
 
     it('should successfully validate all the allowed http methods', () => {
-        const p = gabriela.asServer(config);
+        const p = gabriela.asServer(config, []);
 
         const methods = ['get', 'POST', 'put', 'HEAD', 'patch', 'DELete', 'oPtioNs'];
 

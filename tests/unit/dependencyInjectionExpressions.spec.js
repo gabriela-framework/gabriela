@@ -6,7 +6,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const gabriela = require('../../src/gabriela/gabriela');
+const gabriela = require('../../src/index');
 const config = require('../config/config');
 
 describe('Immediately executing middleware with dependency injection and expressions', () => {
@@ -448,15 +448,17 @@ describe('Immediately executing middleware with dependency injection and express
             }
         };
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             dependencies: [validateEmailDefinition, userRepositoryInit],
             moduleLogic: ['validateEmailWithDependency(userRepository, next, state, http)'],
         };
@@ -465,7 +467,7 @@ describe('Immediately executing middleware with dependency injection and express
             config: {
                 framework: {},
             }
-        }, {
+        }, routes, {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route').then(() => {

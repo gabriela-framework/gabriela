@@ -20,9 +20,9 @@ function _createWorkingDataStructures(mdl, req) {
     const httpContext = {
         req,
         route: {
-            name: mdl.http.route.name,
-            path: mdl.http.route.path,
-            method: mdl.http.route.method,
+            name: mdl.http.name,
+            path: mdl.http.path,
+            method: mdl.http.method,
         }
     };
 
@@ -60,14 +60,13 @@ function _handleError(err, mdl, httpContext = null) {
 function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config, state) {
-            const {http} = mdl;
-            const method = convertToRestifyMethod(http.route.method.toLowerCase());
+            const method = convertToRestifyMethod(mdl.http.method.toLowerCase());
             const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
                 LoggingProxy.log(
                     LOGGING_TYPES.NOTICE,
-                    `HTTP route recognized. Method: ${method.toUpperCase()}, route: ${path}, route name: ${http.route.name}`
+                    `HTTP route recognized. Method: ${method.toUpperCase()}, route: ${path}, route name: ${mdl.http.name}`
                 );
 
                 const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);

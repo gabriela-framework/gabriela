@@ -23,7 +23,7 @@ describe('Gabriela server tests', function() {
                 },
                 framework: {},
             }
-        }, {
+        }, [], {
             events: {
                 onAppStarted: function() {
                     this.gabriela.close();
@@ -45,7 +45,7 @@ describe('Gabriela server tests', function() {
                 },
                 framework: {},
             }
-        }, {
+        }, [],{
             events: {
                 onAppStarted: function() {
                     this.gabriela.close();
@@ -96,7 +96,7 @@ describe('Gabriela server tests', function() {
                 },
                 framework: {},
             },
-        }, {
+        }, [],{
             events: {
                 onAppStarted: function() {
                     expect(pluginModule1Executed).to.be.equal(true);
@@ -165,7 +165,7 @@ describe('Gabriela server tests', function() {
                 },
                 framework: {},
             }
-        }, {
+        }, [], {
             events: {
                 onAppStarted: function(userService) {
                     expect(userService).to.be.a('object');
@@ -215,16 +215,23 @@ describe('Gabriela server tests', function() {
             }
         };
 
+        const routes = [
+            {
+                name: 'getUsers',
+                path: '/users',
+                method: 'GET',
+            },
+            {
+                name: 'findUser',
+                path: '/user/:id',
+                method: 'GET',
+            }
+        ];
+
         const getUsersModule = {
             name: 'getUsers',
             dependencies: [userRepositoryDefinition],
-            http: {
-                route: {
-                    name: 'getUsers',
-                    path: '/users',
-                    method: 'GET',
-                }
-            },
+            route: 'getUsers',
             moduleLogic: [{
                 name: 'getUsers',
                 middleware: function(userRepository, state, http) {
@@ -240,13 +247,7 @@ describe('Gabriela server tests', function() {
         const findUserModule = {
             name: 'findUser',
             dependencies: [userRepositoryDefinition],
-            http: {
-                route: {
-                    name: 'findUser',
-                    path: '/user/:id',
-                    method: 'GET',
-                }
-            },
+            route: 'findUser',
             moduleLogic: [{
                 name: 'getUsersLogic',
                 middleware: function(userRepository) {
@@ -255,7 +256,7 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/users', (err, res) => {
@@ -287,14 +288,17 @@ describe('Gabriela server tests', function() {
 
     it('should inject http (req, res) into the module on runtime', (done) => {
         let entersMiddleware = false;
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            }
+        ];
+
         const mdl = {
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             name: 'module',
             moduleLogic: [function(http) {
                 entersMiddleware = true;
@@ -311,7 +315,7 @@ describe('Gabriela server tests', function() {
             config: {
                 framework: {},
             },
-        }, {
+        }, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -333,7 +337,16 @@ describe('Gabriela server tests', function() {
     it('should send the response with sendRaw method in the same way as send() in regarding http events', (done) => {
         let onPostResponseCalled = false;
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, {
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            }
+        ];
+
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then((response) => {
@@ -365,13 +378,7 @@ describe('Gabriela server tests', function() {
                     onPostResponseCalled = true;
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.sendRaw('Response');
             }],
@@ -383,7 +390,16 @@ describe('Gabriela server tests', function() {
     it('should send the response with json() method in the same way as send() or sendRaw() in regarding http events', (done) => {
         let onPostResponseCalled = false;
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, {
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            }
+        ];
+
+        const g = gabriela.asServer(config, routes, {
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then((response) => {
@@ -415,13 +431,7 @@ describe('Gabriela server tests', function() {
                     onPostResponseCalled = true;
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.json('Response');
             }],
@@ -435,7 +445,7 @@ describe('Gabriela server tests', function() {
             config: {
                 framework: {},
             }
-        }, {
+        }, [], {
             events: {
                 onAppStarted() {
                     this.gabriela.close();
@@ -450,6 +460,14 @@ describe('Gabriela server tests', function() {
     });
 
     it('should create an https server', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
             if (err) {
                 throw err
@@ -459,13 +477,7 @@ describe('Gabriela server tests', function() {
 
             const httpsMdl = {
                 name: 'httpsMdl',
-                http: {
-                    route: {
-                        name: 'route',
-                        path: '/route',
-                        method: 'get',
-                    }
-                },
+                route: 'route',
                 moduleLogic: [function(http) {
                     middlewareCalled = true;
 
@@ -481,7 +493,7 @@ describe('Gabriela server tests', function() {
                         certificate: keys.certificate
                     }
                 }
-            }, {
+            }, routes,{
                 events: {
                     onAppStarted() {
                         let options = {
@@ -512,15 +524,17 @@ describe('Gabriela server tests', function() {
     it('http middleware parameter should have all the necessary properties', (done) => {
         let middlewareCalled = false;
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         const httpsMdl = {
             name: 'httpsMdl',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 middlewareCalled = true;
 
@@ -535,7 +549,7 @@ describe('Gabriela server tests', function() {
             config: {
                 framework: {},
             }
-        }, {
+        }, routes,{
             events: {
                 onAppStarted() {
                     let options = {
@@ -563,15 +577,17 @@ describe('Gabriela server tests', function() {
     it('should call the proper route path based on plugin base path with lowercase method name', (done) => {
         let middlewareCalled = false;
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         const mdl = {
             name: 'httpsMdl',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -586,7 +602,7 @@ describe('Gabriela server tests', function() {
             }
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, {
+        const g = gabriela.asServer({config: {framework: {}}}, routes,{
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');
@@ -616,15 +632,17 @@ describe('Gabriela server tests', function() {
     it('should call the proper route path based on plugin base path with uppercase method name', (done) => {
         let middlewareCalled = false;
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         const mdl = {
             name: 'httpsMdl',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -639,7 +657,7 @@ describe('Gabriela server tests', function() {
             }
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, {
+        const g = gabriela.asServer({config: {framework: {}}}, routes,{
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');
@@ -669,15 +687,17 @@ describe('Gabriela server tests', function() {
     it('should call the proper route path based on plugin base path with uppercase and lowercase method names', (done) => {
         let middlewareCalled = false;
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/route',
+                method: 'get',
+            }
+        ];
+
         const mdl = {
             name: 'httpsMdl',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/route',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -692,7 +712,7 @@ describe('Gabriela server tests', function() {
             }
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, {
+        const g = gabriela.asServer({config: {framework: {}}}, routes,{
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');

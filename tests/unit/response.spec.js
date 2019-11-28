@@ -26,24 +26,26 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set the Cache-Control header', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const type = 'public';
         const maxAge = 2000;
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.cache(type, {maxAge: maxAge});
                 http.res.send('Response');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -66,22 +68,24 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should turn off cache', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.noCache();
                 http.res.send('Response');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -110,22 +114,24 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set the correct charset', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.charSet('utf-8');
                 http.res.send('Response');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -146,22 +152,24 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set a custom header on a response', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.header('X-CUSTOM-HEADER', 'customheader');
                 http.res.send('Response');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -185,21 +193,23 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set the response via json() method', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.json(200, 'Response', {'X-CUSTOM-HEADER': 'customheader'});
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -223,22 +233,24 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set the response via json() method', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.link('key', 'value');
                 http.res.send('Response');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -260,15 +272,17 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set multiple headers with the set() method', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.set({
                     'X-CUSTOM-HEADER-ONE': 'customheaderone',
@@ -279,7 +293,7 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -302,15 +316,17 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should set the correct status code with the status() method', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.status(203);
 
@@ -318,7 +334,7 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise({
@@ -343,15 +359,22 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should redirect to another route using the response proxy if supplied two params', (done) => {
+        const routes = [
+            {
+                name: 'redirectRoute',
+                method: 'get',
+                path: '/redirect',
+            },
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.redirect(302, 'http://localhost:3000/redirect');
             }],
@@ -359,19 +382,13 @@ describe('Concrete and functional http response tests', function() {
 
         const redirectModule = {
             name: 'redirectModule',
-            http: {
-                route: {
-                    name: 'redirectRoute',
-                    method: 'get',
-                    path: '/redirect',
-                }
-            },
+            route: 'redirectRoute',
             moduleLogic: [function(http) {
                 http.res.send('Redirect');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise({
@@ -396,15 +413,22 @@ describe('Concrete and functional http response tests', function() {
     });
 
     it('should redirect to another route using the response proxy if supplied one param', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            },
+            {
+                name: 'redirectRoute',
+                method: 'get',
+                path: '/redirect',
+            }
+        ];
+
         const mdl = {
             name: 'mdl',
-            http: {
-                route: {
-                    name: 'route',
-                    method: 'get',
-                    path: '/route',
-                }
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.redirect('http://localhost:3000/redirect');
             }],
@@ -412,19 +436,13 @@ describe('Concrete and functional http response tests', function() {
 
         const redirectModule = {
             name: 'redirectModule',
-            http: {
-                route: {
-                    name: 'redirectRoute',
-                    method: 'get',
-                    path: '/redirect',
-                }
-            },
+            route: 'redirectRoute',
             moduleLogic: [function(http) {
                 http.res.send('Redirect');
             }],
         };
 
-        const app = gabriela.asServer(config, {
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise({

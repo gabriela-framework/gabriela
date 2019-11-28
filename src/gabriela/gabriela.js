@@ -4,9 +4,10 @@ require('strict-mode')(function () {
 
     const loggerProxy = require('./logging/loggerProxySingleton');
     const LoggerFactory = require('./logging/loggerFactory');
+    const Router = require('./router/router');
 
     module.exports = {
-        asServer(receivedConfig, options) {
+        asServer(receivedConfig, routes, events) {
             if (!receivedConfig) {
                 receivedConfig = {
                     config: {framework: {
@@ -24,7 +25,9 @@ require('strict-mode')(function () {
                 receivedConfig.config.framework.env
             );
 
-            return require('./_asServer').call(null, receivedConfig, options);
+            Router.injectRoutes(routes);
+
+            return require('./_asServer').call(null, receivedConfig, events);
         },
 
         asProcess(receivedConfig, options) {

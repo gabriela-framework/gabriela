@@ -12,9 +12,9 @@ const ExposedMediator = require('./events/exposedMediator');
 
 // TODO: make the execution factories be per module or plugin.
 
-module.exports = function _asServer(receivedConfig, options) {
+module.exports = function _asServer(receivedConfig, events) {
     const config = configFactory.create(receivedConfig);
-    const opts = options || {};
+    const opts = events || {};
 
     Validator.validateServerOptions(config.config.server);
 

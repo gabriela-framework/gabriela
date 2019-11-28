@@ -1123,13 +1123,21 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events from emitted from a http module as a server', (done) => {
+        const routes = [
+            {
+                name: 'emit-event',
+                path: '/emit',
+                method: 'get',
+            }
+        ];
+
         let catchedEvent1 = false;
         let catchedEvent2 = false;
 
         let calledEvent1 = 0;
         let calledEvent2 = 0;
 
-        const g = gabriela.asServer(config, {
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     const promises = [];
@@ -1167,13 +1175,7 @@ describe('Framework events', function() {
         const emittingModule = {
             name: 'emittingModule',
             dependencies: [userServiceDefinition],
-            http: {
-                route: {
-                    name: 'emit-event',
-                    path: '/emit',
-                    method: 'get',
-                }
-            },
+            route: 'emit-event',
             moduleLogic: [function () {
                 this.mediator.emit('onExposedEvent', {name: 'name'});
             }],
@@ -1223,13 +1225,21 @@ describe('Framework events', function() {
     });
 
     it('should run all exposed events are ran as a process', (done) => {
+        const routes = [
+            {
+                name: 'emit-event',
+                path: '/emit',
+                method: 'get',
+            }
+        ];
+
         let catchedEvent1 = false;
         let catchedEvent2 = false;
 
         let calledEvent1 = 0;
         let calledEvent2 = 0;
 
-        const g = gabriela.asServer(config, {
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
 
@@ -1267,13 +1277,7 @@ describe('Framework events', function() {
         const emittingModule = {
             name: 'emittingModule',
             dependencies: [userServiceDefinition],
-            http: {
-                route: {
-                    name: 'emit-event',
-                    path: '/emit',
-                    method: 'get',
-                }
-            },
+            route: 'emit-event',
             moduleLogic: [function() {
                 this.mediator.emit('onExposedEvent', {name: 'name'});
             }],
@@ -1323,7 +1327,7 @@ describe('Framework events', function() {
     });
 
     it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
-        const g = gabriela.asServer(config, {
+        const g = gabriela.asServer(config, [],{
             events: {
                 catchError(err) {
                     expect(err.message).to.be.equal('Something went wrong in module1');
@@ -1357,7 +1361,16 @@ describe('Framework events', function() {
 
     it('should call the onPreResponse event with all the required arguments before the response is sent', (done) => {
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, {
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            },
+        ];
+
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1399,13 +1412,7 @@ describe('Framework events', function() {
                     }, 50);
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function() {
 
             }],
@@ -1441,7 +1448,16 @@ describe('Framework events', function() {
      */
     it('should call the onPostResponse event with all the required arguments after the response is sent', (done) => {
         let onPostResponseCalled = false;
-        const g = gabriela.asServer(config, {
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            },
+        ];
+
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1485,13 +1501,7 @@ describe('Framework events', function() {
                     }, 50);
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function() {
 
             }],
@@ -1509,8 +1519,16 @@ describe('Framework events', function() {
     it('should call onPostResponse if the response has been sent in onPreResponse', (done) => {
         let onPostResponseCalled = false;
 
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            },
+        ];
+
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, {
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1559,13 +1577,7 @@ describe('Framework events', function() {
                     }, 50);
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function() {
 
             }],
@@ -1583,7 +1595,16 @@ describe('Framework events', function() {
     it('should properly call onPre/PostResponse events if the response is sent from inside middleware execution', (done) => {
         let onPostResponseCalled = false;
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, {
+
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            },
+        ];
+
+        const g = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1607,13 +1628,7 @@ describe('Framework events', function() {
                     onPostResponseCalled = true;
                 }
             },
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                },
-            },
+            route: 'route',
             moduleLogic: [function(http) {
                 http.res.send('Response');
             }],
@@ -1656,7 +1671,15 @@ describe('Framework events', function() {
     it('should inject the \'http\' argument into the onError event', (done) => {
         let onErrorCalled = false;
 
-        const app = gabriela.asServer(config, {
+        const routes = [
+            {
+                name: 'route',
+                path: '/path',
+                method: 'get',
+            }
+        ];
+
+        const app = gabriela.asServer(config, routes,{
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -1672,13 +1695,7 @@ describe('Framework events', function() {
 
         app.addModule({
             name: 'module',
-            http: {
-                route: {
-                    name: 'route',
-                    path: '/path',
-                    method: 'get',
-                }
-            },
+            route: 'route',
             mediator: {
                 onError(err, http) {
                     onErrorCalled = true;

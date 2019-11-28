@@ -1,6 +1,18 @@
 const gabriela = require('./src/index');
 
-const app = gabriela.asProcess();
+const g = gabriela.asServer({
+    config: {
+        framework: {},
+    }
+}, [], {
+    events: {
+        onAppStarted() {
+            this.gabriela.close();
+        },
+        onExit() {
+            done();
+        }
+    }
+});
 
-app.startApp();
-
+g.startApp();

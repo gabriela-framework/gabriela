@@ -42,13 +42,7 @@ describe('Test gabriela internals', () => {
         const mdl = {
             name: 'name',
             security: [],
-            http: {
-                route: {
-                    name: 'name',
-                    method: 'get',
-                    path: '/path',
-                }
-            },
+            route: 'name',
             init: [],
             preLogicTransformers: [],
             postLogicTransformers: [],
@@ -119,7 +113,6 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.exposedMediator).to.be.a('object');
         expect(moduleObject.isHttp).to.be.a('function');
         expect(moduleObject.getFullPath).to.be.a('function');
-        expect(moduleObject.getFullPath()).to.be.equal('/base-route/path');
     });
 
     it('should properly call properties on a plugin object created with pluginFactory', () => {

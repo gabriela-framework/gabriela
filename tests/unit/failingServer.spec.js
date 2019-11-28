@@ -8,7 +8,6 @@ const expect = chai.expect;
 const assert = require('assert');
 
 const gabriela = require('../../src/gabriela/gabriela');
-const {PROTOCOLS} = require('../../src/gabriela/misc/types');
 
 describe('Failing server tests', () => {
     it('should validate server options and throw exception', () => {
@@ -42,7 +41,7 @@ describe('Failing server tests', () => {
                     },
                     framework: {}
                 }
-            }, {
+            }, [], {
                 events: {
                     onAppStarted: null,
 
@@ -62,7 +61,7 @@ describe('Failing server tests', () => {
             config: {
                 framework: {},
             }
-        }, {
+        }, [],{
             events: {
                 catchError: null,
             }
@@ -85,7 +84,7 @@ describe('Failing server tests', () => {
             config: {
                 framework: {}
             }
-        }, {
+        }, [], {
             events: {
                 onPreResponse: null,
             }
@@ -108,7 +107,7 @@ describe('Failing server tests', () => {
             config: {
                 framework: {},
             }
-        }, {
+        }, [],{
             events: {
                 onPostResponse: null,
             }
@@ -131,7 +130,7 @@ describe('Failing server tests', () => {
             config: {
                 framework: {},
             }
-        }, {
+        }, [],{
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong');
@@ -155,7 +154,7 @@ describe('Failing server tests', () => {
             config: {
                 framework: {},
             }
-        }, {
+        }, [],{
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong in onAppStarted');

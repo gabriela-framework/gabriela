@@ -11,6 +11,7 @@ const {
 } = require('./types');
 
 const {is, hasKey, convertToRestifyHttpMethods} = require('../util/util');
+
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
  */
@@ -33,10 +34,6 @@ function validateDependencies(mdl) {
     }
 }
 
-/**
- * Validates
- * @param mdl
- */
 factory.moduleValidator = function(mdl) {
     if (!hasKey(mdl, 'name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
@@ -87,30 +84,18 @@ factory.moduleValidator = function(mdl) {
         }
     }
 
+    if (hasKey(mdl, 'route')) {
+        if (!is('string', mdl.route)) throw new Error(`Invalid module definition with name '${mdl.name}'. 'route' property must be a string`);
+    }
+
     if (hasKey(mdl, 'http')) {
-        const {http} = mdl;
-
-        if (!is('object', http)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http' property must be an object`);
-
-        if (!hasKey(http, 'route')) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' property must exist and be an object if the 'http' property exists`);
-
-        if (!is('object', http.route)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must be an object`);
-
-        for (const entry of MANDATORY_ROUTE_PROPS) {
-            if (!hasKey(http.route, entry)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route' must contain properties '${MANDATORY_ROUTE_PROPS.toArray().join(', ')}'`)
-        }
-
-        if (!is('string', http.route.name)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.name' must be a string`);
-        if (!is('string', http.route.path)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.path' must be a string`);
-        if (!is('string', http.route.method)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'http.route.method' must be a string`);
-
-        if (!convertToRestifyHttpMethods(HTTP_METHODS.toArray()).includes(http.route.method.toLowerCase())) throw new Error(`Invalid module definition in module '${mdl.name}'. ${http.route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
+        throw new Error(`http options is deprecated`);
     }
 
     validateDependencies(mdl);
 };
 
-factory.validatePlugin = function(plugin) {
+factory.validatePlugin = function(plugin, Router) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
     if (!hasKey(plugin, 'name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
     if (!is('string', plugin.name)) throw new Error(`Plugin definition error. Plugin 'name' must be a string`);
@@ -194,9 +179,9 @@ factory.validatePlugin = function(plugin) {
                 const modules = plugin.modules;
 
                 for (const mdl of modules) {
-                    const http = mdl.http;
+                    const http = Router.get(mdl.route);
                     if (http) {
-                        const mdlMethod = http.route.method.toLowerCase();
+                        const mdlMethod = http.method.toLowerCase();
                         if (!allowedMethods.includes(mdlMethod)) throw new Error(`Invalid module definition for module '${mdl.name}' in plugin '${plugin.name}'. Module '${mdl.name}' is declared to use '${mdlMethod.toUpperCase()}' http method but allowed methods in plugin are '${allowedMethods.join(', ').toUpperCase()}'`);
                     }
                 }
@@ -274,6 +259,24 @@ factory.validateDefinitionObject = function(init, moduleName) {
 
     if (hasKey(init, 'cache')) {
         if (!is('boolean', init.cache)) throw new Error(`Dependency injection error for entry 'init.cache' in module '${moduleName}'. 'init.cache' option must be a boolean`);
+    }
+};
+
+factory.validateRoutes = function(routes) {
+    if (!Array.isArray(routes)) throw new Error(`Invalid routes type. Routes must be an array`);
+
+    for (const route of routes) {
+        if (!is('object', route)) throw new Error(`Invalid routes type. Routes must be an object`);
+
+        for (const entry of MANDATORY_ROUTE_PROPS) {
+            if (!hasKey(route, entry)) throw new Error(`Invalid route. Every route must contain properties '${MANDATORY_ROUTE_PROPS.toArray().join(', ')}'`)
+        }
+
+        if (!is('string', route.name)) throw new Error(`Invalid route. 'route.name' must be a string`);
+        if (!is('string', route.path)) throw new Error(`Invalid route with name '${route.name}' 'path' property must be a string`);
+        if (!is('string', route.method)) throw new Error(`Invalid route with name '${route.name}'. 'method' property must be a string`);
+
+        if (!convertToRestifyHttpMethods(HTTP_METHODS.toArray()).includes(route.method.toLowerCase())) throw new Error(`Invalid route with name '${route.name}'. ${route.method} is not a supported HTTP method. Go to http://restify.com/docs/server-api/ for a list of supported HTTP methods`);
     }
 };
 

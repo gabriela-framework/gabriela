@@ -557,7 +557,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asServer({config: {framework: {}}}, {
+        const app = gabriela.asServer({config: {framework: {}}}, [], {
             events: {
                 catchError(e) {
                     this.gabriela.close();
@@ -621,7 +621,7 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asServer({config: {framework: {}}}, {
+        const app = gabriela.asServer({config: {framework: {}}}, [],{
             events: {
                 catchError(e) {
                     this.gabriela.close();
