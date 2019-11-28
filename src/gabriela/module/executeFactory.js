@@ -69,7 +69,7 @@ function factory(server, mdl) {
 
                 MemoryLoggerSingleton.log(
                     memory,
-                    `Memory usage before staring middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}`
+                    `Memory usage before staring middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}MB`
                 );
 
                 LoggingProxy.log(
@@ -106,7 +106,7 @@ function factory(server, mdl) {
 
                     MemoryLoggerSingleton.log(
                         memory,
-                        `Memory usage after finishing middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}`
+                        `Memory usage after finishing middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}MB`
                     );
 
                     responseProxy.send(200, deepCopy(state));

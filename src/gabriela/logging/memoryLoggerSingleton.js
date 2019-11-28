@@ -8,7 +8,6 @@ function factory() {
     }
 
     function log(memory, message) {
-
         if (memory > limit) {
             logger.warn(message);
         } else {

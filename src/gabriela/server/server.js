@@ -5,6 +5,7 @@ const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabri
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 const validateHttpEvents = require('../misc/validateHttpEvents');
 const LoggerProxy = require('../logging/loggerProxySingleton');
+const MemoryLoggerSingleton = require('../logging/memoryLoggerSingleton');
 
 function _resolveOptions(options) {
     if (!options.server) options.server = {};
@@ -65,6 +66,13 @@ async function _listenCallback(
 
     LoggerProxy.log(LOGGING_TYPES.NOTICE, `Gabriela app started on host '${serverConfig.host}' and port: '${serverConfig.port}'`);
     LoggerProxy.log(LOGGING_TYPES.NOTICE, `Running in '${config.framework.env}' environment`);
+
+    const memory = process.memoryUsage().heapUsed / 1024 / 1024;
+
+    MemoryLoggerSingleton.log(
+        memory,
+        `Start memory usage: ${Math.round(memory * 100) / 100}MB`
+    );
 
     await runOnAppStarted.call(context, events, rootCompiler);
 }
