@@ -34,7 +34,7 @@ function validateDependencies(mdl) {
     }
 }
 
-factory.moduleValidator = function(mdl, Router, plugin) {
+factory.validateModule = function(mdl, Router, plugin) {
     if (!hasKey(mdl, 'name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
     if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
 
@@ -111,7 +111,7 @@ factory.validatePlugin = function(plugin, Router) {
 
         try {
             for (const mdl of plugin.modules) {
-                factory.moduleValidator(mdl, Router, plugin);
+                factory.validateModule(mdl, Router, plugin);
             }
         } catch (e) {
             throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' has an invalid 'modules' entry with message: '${e.message}'`);

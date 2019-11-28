@@ -32,7 +32,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const tree = [];
 
     function addModule(mdl, parentCompiler) {
-        Validator.moduleValidator(mdl, Router);
+        Validator.validateModule(mdl, Router);
 
         if (hasKey(modules, mdl.name)) throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
 
@@ -78,7 +78,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     }
 
     function overrideModule(mdl, parentCompiler) {
-        Validator.moduleValidator(mdl);
+        Validator.validateModule(mdl, Router);
 
         if (!this.hasModule(mdl.name)) {
             throw new Error(`Module overriding error. Module with name '${mdl.name}' does not exist`);
