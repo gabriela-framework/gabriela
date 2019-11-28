@@ -30,10 +30,19 @@ function _validateFramework(framework) {
 
     // validating environment here
     const env = framework.env;
+    const performance = framework.performance;
 
     if (!env) framework.env = ENV.DEVELOPMENT;
 
     if (env && !ENV.toArray().includes(env)) throw new Error(`Invalid config. Invalid environment. Valid environments are ${ENV.toArray().join(',')}`);
+
+    if (!performance) {
+        framework.performance = {
+            memoryWarningLimit: 50,
+        };
+    }
+
+    if (!Number.isInteger(framework.performance.memoryWarningLimit)) throw new Error(`Invalid config. 'framework.performance.memoryWarningLimit' must be an integer`);
 }
 
 function instance() {
@@ -49,6 +58,19 @@ function instance() {
 
         return factory(deepCopy(config));
     };
+
+    this.getDefaultConfig = function() {
+        return {
+            config: {
+                framework: {
+                    env: ENV.DEVELOPMENT,
+                        performance: {
+                        memoryWarningLimit: 50,
+                    }
+                }
+            }
+        };
+    }
 }
 
 module.exports = new instance();

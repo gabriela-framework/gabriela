@@ -10,11 +10,23 @@ const Server = require('./server/server');
 const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
 
+const loggerProxy = require('./logging/loggerProxySingleton');
+const LoggerFactory = require('./logging/loggerFactory');
+const MemoryLogger = require('./logging/memoryLogger');
+const MemoryLoggerSingleton = require('./logging/memoryLoggerSingleton');
+
 // TODO: make the execution factories be per module or plugin.
 
 module.exports = function _asServer(receivedConfig, events) {
     const config = configFactory.create(receivedConfig);
     const opts = events || {};
+
+    loggerProxy.injectLogger(
+        LoggerFactory.create(config),
+        receivedConfig.config.framework.env
+    );
+
+    MemoryLoggerSingleton.injectLogger(MemoryLogger, config.config.framework.performance.memoryWarningLimit);
 
     Validator.validateServerOptions(config.config.server);
 

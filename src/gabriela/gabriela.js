@@ -1,29 +1,14 @@
 require('strict-mode')(function () {
     require('./global');
-    const {ENV} = require('./misc/types');
 
-    const loggerProxy = require('./logging/loggerProxySingleton');
-    const LoggerFactory = require('./logging/loggerFactory');
     const Router = require('./router/router');
+    const configFactory = require('./configFactory');
 
     module.exports = {
         asServer(receivedConfig, routes, events) {
             if (!receivedConfig) {
-                receivedConfig = {
-                    config: {framework: {
-                        env: 'dev'
-                    }}
-                };
+                receivedConfig = configFactory.getDefaultConfig();
             }
-
-            if (!receivedConfig.config.framework.env) {
-                receivedConfig.config.framework.env = ENV.DEVELOPMENT;
-            }
-
-            loggerProxy.injectLogger(
-                LoggerFactory.create(receivedConfig),
-                receivedConfig.config.framework.env
-            );
 
             Router.injectRoutes(routes);
 
@@ -32,21 +17,8 @@ require('strict-mode')(function () {
 
         asProcess(receivedConfig, options) {
             if (!receivedConfig) {
-                receivedConfig = {
-                    config: {framework: {
-                        env: 'dev'
-                    }}
-                };
+                receivedConfig = configFactory.getDefaultConfig();
             }
-
-            if (!receivedConfig.config.framework.env) {
-                receivedConfig.config.framework.env = ENV.DEVELOPMENT;
-            }
-
-            loggerProxy.injectLogger(
-                LoggerFactory.create(receivedConfig),
-                receivedConfig.config.framework.env
-            );
 
             return require('./_asProcess').call(null, receivedConfig, options);
         },

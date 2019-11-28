@@ -101,4 +101,26 @@ describe('Failing config factory tests', () => {
 
         expect(entersException).to.be.equal(true);
     });
+
+    it('should fail if framework.performance.memoryLimitWarning is not a number', () => {
+        let entersException = false;
+        try {
+            configFactory.create({
+                config: {
+                    framework: {
+                        env: 'dev',
+                        performance: {
+                            memoryWarningLimit: 'not integer'
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid config. 'framework.performance.memoryWarningLimit' must be an integer`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
 });

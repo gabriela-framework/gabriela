@@ -1,18 +1,36 @@
 const gabriela = require('./src/index');
+const requestPromise = require('request-promise');
 
-const g = gabriela.asServer({
-    config: {
-        framework: {},
+const routes = [
+    {
+        name: 'route',
+        path: '/path',
+        method: 'get',
     }
-}, [], {
+];
+
+const app = gabriela.asServer({
+    config: {
+        framework: {
+            env: 'dev',
+        }
+    }
+}, routes, {
     events: {
         onAppStarted() {
-            this.gabriela.close();
-        },
-        onExit() {
-            done();
+            requestPromise.get('http://localhost:3000/path').then(() => {
+
+            });
         }
     }
 });
 
-g.startApp();
+app.addModule({
+    name: 'module',
+    route: 'route',
+    moduleLogic: [function(state) {
+        state.someObject = {};
+    }]
+});
+
+app.startApp();

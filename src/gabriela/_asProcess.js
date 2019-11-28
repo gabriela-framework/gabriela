@@ -7,9 +7,21 @@ const ExposedMediator = require('./events/exposedMediator');
 const moduleExecutionFactory = require('./module/executeFactory');
 const pluginExecutionFactory = require('./plugin/executeFactory');
 
+const loggerProxy = require('./logging/loggerProxySingleton');
+const LoggerFactory = require('./logging/loggerFactory');
+const MemoryLogger = require('./logging/memoryLogger');
+const MemoryLoggerSingleton = require('./logging/memoryLoggerSingleton');
+
 module.exports = function _asProcess(receivedConfig, options) {
     const config = configFactory.create(receivedConfig);
     const opts = options || {};
+
+    loggerProxy.injectLogger(
+        LoggerFactory.create(config),
+        receivedConfig.config.framework.env
+    );
+
+    MemoryLoggerSingleton.injectLogger(MemoryLogger, config.config.framework.performance.memoryWarningLimit);
 
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();

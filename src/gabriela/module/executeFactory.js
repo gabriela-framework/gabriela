@@ -4,6 +4,7 @@ const {MIDDLEWARE_TYPES, LOGGING_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
 const {convertToRestifyMethod} = require('../util/util');
 const LoggingProxy = require('./../logging/loggerProxySingleton');
+const MemoryLoggerSingleton = require('./../logging/memoryLoggerSingleton');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -64,12 +65,20 @@ function factory(server, mdl) {
             const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
+                const memory = process.memoryUsage().heapUsed / 1024 / 1024;
+
+                MemoryLoggerSingleton.log(
+                    memory,
+                    `Memory usage before staring middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}`
+                );
+
                 LoggingProxy.log(
                     LOGGING_TYPES.NOTICE,
                     `HTTP route recognized. Method: ${method.toUpperCase()}, route: ${path}, route name: ${mdl.http.name}`
                 );
 
                 const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
+
                 const responseEvent = _getResponseEvents(mdl);
 
                 const responseProxy = createResponseProxy(
@@ -93,6 +102,13 @@ function factory(server, mdl) {
                 }
 
                 if (!responseProxy.__responseSent) {
+                    const memory = process.memoryUsage().heapUsed / 1024 / 1024;
+
+                    MemoryLoggerSingleton.log(
+                        memory,
+                        `Memory usage after finishing middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}`
+                    );
+
                     responseProxy.send(200, deepCopy(state));
                 }
 

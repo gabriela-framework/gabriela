@@ -14,7 +14,11 @@ describe('Config tests', () => {
         const Config = configFactory.create({
             config: {
                 validator: {},
-                framework: {},
+                framework: {
+                    performance: {
+                        memoryWarningLimit: 10,
+                    }
+                },
             }
         });
 
@@ -71,6 +75,31 @@ describe('Config tests', () => {
         expect(Config.config.db.host).to.be.equal(process.env.DATABASE_HOST);
         expect(Config.config.db.user).to.be.equal(process.env.DATABASE_USER);
         expect(Config.config.db.password).to.be.equal(process.env.DATABASE_PASSWORD);
+    });
+
+    it('should create a default performance config', () => {
+        process.env.DATABASE_HOST = 'localhost';
+        process.env.DATABASE_USER = 'root';
+        process.env.DATABASE_PASSWORD = 'root';
+
+        const Config = configFactory.create({
+            config: {
+                validator: {},
+                framework: {
+                    env: 'prod',
+                    performance: {
+                        memoryWarningLimit: 10,
+                    }
+                },
+                db: {
+                    host: `ENV('DATABASE_HOST')`,
+                    user: `ENV('DATABASE_USER')`,
+                    password: `ENV('DATABASE_PASSWORD')`,
+                }
+            }
+        });
+
+        expect(Config.config.framework.performance.memoryWarningLimit).to.be.equal(10);
     });
 
     it('should run gabriela server and process with config', () => {
