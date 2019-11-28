@@ -185,10 +185,12 @@ factory.validatePlugin = function(plugin, Router) {
                 const modules = plugin.modules;
 
                 for (const mdl of modules) {
-                    const http = Router.get(mdl.route);
-                    if (http) {
-                        const mdlMethod = http.method.toLowerCase();
-                        if (!allowedMethods.includes(mdlMethod)) throw new Error(`Invalid module definition for module '${mdl.name}' in plugin '${plugin.name}'. Module '${mdl.name}' is declared to use '${mdlMethod.toUpperCase()}' http method but allowed methods in plugin are '${allowedMethods.join(', ').toUpperCase()}'`);
+                    if (mdl.route) {
+                        const http = Router.get(mdl.route);
+                        if (http) {
+                            const mdlMethod = http.method.toLowerCase();
+                            if (!allowedMethods.includes(mdlMethod)) throw new Error(`Invalid module definition for module '${mdl.name}' in plugin '${plugin.name}'. Module '${mdl.name}' is declared to use '${mdlMethod.toUpperCase()}' http method but allowed methods in plugin are '${allowedMethods.join(', ').toUpperCase()}'`);
+                        }
                     }
                 }
             }
