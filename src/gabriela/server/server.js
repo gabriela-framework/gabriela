@@ -124,7 +124,6 @@ function Server(
     }
 
     function close() {
-        console.log('ulazak');
         server.close();
 
         server = null;

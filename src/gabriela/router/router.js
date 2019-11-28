@@ -35,6 +35,7 @@ function factory() {
     this.injectRoutes = injectRoutes;
     this.get = get;
     this.has = has;
+    this.reset = () => internalRoutes = null;
 }
 
 module.exports = new factory();
