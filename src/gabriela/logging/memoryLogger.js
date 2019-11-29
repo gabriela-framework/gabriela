@@ -16,6 +16,7 @@ function factory() {
     }
 
     this.log = log;
+    this.warn = warn;
     this.name = 'MemoryLogger';
 }
 

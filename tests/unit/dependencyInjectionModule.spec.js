@@ -526,15 +526,14 @@ describe('Module dependency injection tests', function() {
             name: 'init',
             compilerPass: {
                 init: function(config, compiler) {
-                    const def = this.definitionBuilder
-                        .addName('UserRepository')
-                        .addScope('public')
-                        .addInit(function(throwException) {
+                    compiler.add({
+                        name: 'UserRepository',
+                        scope: 'public',
+                        init(throwException) {
                             return throwException(new Error('Error in UserRepository'));
-                        })
-                        .build();
 
-                    compiler.add(def);
+                        }
+                    });
                 }
             },
             init: function() {
@@ -589,16 +588,14 @@ describe('Module dependency injection tests', function() {
             name: 'init',
             compilerPass: {
                 init: function(config, compiler) {
-                    const def = this.definitionBuilder
-                        .addName('UserRepository')
-                        .isAsync(true)
-                        .addScope('public')
-                        .addInit(function(throwException) {
+                    compiler.add({
+                        name: 'UserRepository',
+                        isAsync: true,
+                        scope: 'public',
+                        init(throwException) {
                             return throwException(new Error('Error in UserRepository'));
-                        })
-                        .build();
-
-                    compiler.add(def);
+                        }
+                    });
                 }
             },
             init: function() {

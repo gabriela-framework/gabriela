@@ -28,7 +28,11 @@ app.addModule({
 
 app.startApp();
 
-const tasks = [];
+for (let i = 0; i < 10000; i++) {
+    requestPromise.get('http://localhost:3000/path');
+}
+
+/*const tasks = [];
 
 for (let i = 0; i < 1000; i++) {
     tasks.push((() => requestPromise.get('http://localhost:3000/path')));
@@ -41,7 +45,7 @@ setInterval(() => {
             console.log('Queue finished');
         }
     })
-}, 3000);
+}, 3000);*/
 
 
 
