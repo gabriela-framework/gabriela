@@ -67,6 +67,7 @@ function _createModuleModel(mdl) {
         [MIDDLEWARE_TYPES.MODULE_LOGIC]: mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
         [MIDDLEWARE_TYPES.VALIDATORS]: mdl[MIDDLEWARE_TYPES.VALIDATORS],
         plugin: mdl.plugin,
+        modelName: mdl.modelName,
         dependencies: mdl.dependencies,
         mediator: mdl.mediator,
         emitter: mdl.emitter,

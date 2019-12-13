@@ -36,6 +36,7 @@ describe('Test gabriela internals', () => {
             'isHttp',
             'http',
             'getFullPath',
+            'modelName',
         ];
 
         const mdl = {
@@ -93,6 +94,7 @@ describe('Test gabriela internals', () => {
         expect(allowedModuleProps).to.have.members(moduleObjectProps);
 
         expect(moduleObject.name).to.be.a('string');
+        expect(moduleObject.modelName).to.be.a('undefined');
         expect(moduleObject.security).to.be.a('array');
         expect(moduleObject.init).to.be.a('array');
         expect(moduleObject.preLogicTransformers).to.be.a('array');

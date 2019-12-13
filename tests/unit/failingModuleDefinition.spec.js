@@ -61,7 +61,7 @@ describe('Failing module definition tests', () => {
         } catch(err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Modules definition error. Module 'name' property must to be a string`);
+            expect(err.message).to.be.equal(`Module definition error. Module 'name' property must to be a string`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -341,6 +341,46 @@ describe('Failing module definition tests', () => {
             entersException = true;
 
             expect(e.message).to.be.equal(`Module definition error. Module with name '${mdl1.name}' already exists`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail if modelName is present but is not a string', () => {
+        const mdl = {
+            name: 'name',
+            modelName: 123,
+        };
+
+        const m = gabriela.asProcess(config);;
+
+        let entersException = false;
+        try {
+            m.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module definition error in '${mdl.name}'. If present, 'modelName' must be a non empty string`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail if modelName is present but is not a non empty string', () => {
+        const mdl = {
+            name: 'name',
+            modelName: '',
+        };
+
+        const m = gabriela.asProcess(config);;
+
+        let entersException = false;
+        try {
+            m.addModule(mdl);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module definition error in '${mdl.name}'. If present, 'modelName' must be a non empty string`)
         }
 
         expect(entersException).to.be.equal(true);

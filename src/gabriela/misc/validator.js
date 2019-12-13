@@ -36,8 +36,13 @@ function validateDependencies(mdl) {
 
 factory.validateModule = function(mdl, Router, plugin) {
     if (!hasKey(mdl, 'name')) throw new Error(`Module definition error. Module has to have a 'name' property as a string that has to be unique to the project`);
-    if (!is('string', mdl.name)) throw new Error(`Modules definition error. Module 'name' property must to be a string`);
+    if (!is('string', mdl.name)) throw new Error(`Module definition error. Module 'name' property must to be a string`);
 
+    if (hasKey(mdl, 'modelName')) {
+        if (!is('string', mdl.modelName)) throw new Error(`Module definition error in '${mdl.name}'. If present, 'modelName' must be a non empty string`);
+
+        if (mdl.modelName.length <= 0) throw new Error(`Module definition error in '${mdl.name}'. If present, 'modelName' must be a non empty string`);
+    }
     /**
      * Traverses the middleware by middleware name and validates that every middleware has to be an array
      * After that, it traverses middleware values and validates that every middleware entry must be a function type
@@ -72,7 +77,7 @@ factory.validateModule = function(mdl, Router, plugin) {
     }
 
     if (hasKey(mdl, 'mediator')) {
-        if (!is('object', mdl.mediator)) throw new Error(`Invalid module definition. 'mediator' property must be an object`);
+        if (!is('object', mdl.mediator)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'mediator' property must be an object`);
 
         const mediators = mdl.mediator;
         const props = Object.keys(mediators);
@@ -80,7 +85,7 @@ factory.validateModule = function(mdl, Router, plugin) {
         for (const prop of props) {
             const fn = mediators[prop];
 
-            if (!is('function', fn)) throw new Error(`Invalid module definition. 'mediator.${prop}' must be a function`);
+            if (!is('function', fn)) throw new Error(`Invalid module definition in module '${mdl.name}'. 'mediator.${prop}' must be a function`);
         }
     }
 

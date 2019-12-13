@@ -81,7 +81,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator' property must be an object`);
+            expect(e.message).to.be.equal(`Invalid module definition in module 'name'. 'mediator' property must be an object`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -103,7 +103,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onModuleStarted' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onModuleStarted' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -125,7 +125,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onModuleFinished' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onModuleFinished' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -147,7 +147,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onError' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onError' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -169,7 +169,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onPreResponse' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onPreResponse' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -183,7 +183,7 @@ describe('Failing framework events', () => {
             },
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess(config);
 
         let entersException = false;
         try {
@@ -191,7 +191,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onPostResponse' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onPostResponse' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -311,7 +311,7 @@ describe('Failing framework events', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid module definition. 'mediator.onEvent' must be a function`);
+            expect(e.message).to.be.equal(`Invalid module definition in module '${mdl.name}'. 'mediator.onEvent' must be a function`);
         }
 
         expect(entersException).to.be.equal(true);
