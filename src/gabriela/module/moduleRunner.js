@@ -27,10 +27,11 @@ function _assignEmitterEvents(mdl) {
     }
 }
 
-function _createContext({mediator, emitter}) {
+function _createContext({mediator, emitter, moduleInfo}) {
     return {
         mediator,
         emitter,
+        moduleInfo,
     };
 }
 
@@ -73,6 +74,26 @@ function _emitImplementationFactory(mdl) {
     };
 }
 
+function _createModuleInfo(mdl) {
+    const moduleInfo = {};
+
+    moduleInfo.moduleName = mdl.name;
+    moduleInfo.modelName = mdl.modelName;
+    moduleInfo.route = {
+        matchedPath: mdl.getFullPath(),
+    };
+
+    if (mdl.isInPlugin()) {
+        moduleInfo.plugin = {
+            name: mdl.plugin.name,
+        }
+    } else {
+        mdl.plugin = undefined;
+    }
+
+    return moduleInfo;
+}
+
 function factory() {
     function create(mdl) {
         _assignMediatorEvents(mdl);
@@ -89,6 +110,7 @@ function factory() {
                         emit: _emitImplementationFactory(mdl),
                     },
                     emitter: mdl.emitterInstance,
+                    moduleInfo: _createModuleInfo(mdl),
                 });
 
                 try {

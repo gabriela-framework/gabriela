@@ -82,8 +82,6 @@ function _createModuleModel(mdl) {
         },
         isInPlugin: () => !!(mdl.plugin),
         getFullPath() {
-            if (!this.isInPlugin() && this.isHttp()) return this.http.path;
-
             if (this.isInPlugin() && this.isHttp()) {
                 const moduleRoute = this.http.path;
                 if (this.plugin.http) {
@@ -93,6 +91,10 @@ function _createModuleModel(mdl) {
                 }
 
                 return `${moduleRoute}`;
+            }
+
+            if (this.isHttp()) {
+                return this.http.path;
             }
         }
     };
