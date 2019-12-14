@@ -5,7 +5,7 @@ const resolveDependencies = require('../../dependencyInjection/resolveDependenci
 const parseExpression = require('../../expression/parse');
 const TaskRunner = require('../../misc/taskRunner');
 
-const {createGenerator, getArgs, wait, inArray, is} = require('../../util/util');
+const {createGenerator, getArgs, wait, inArray, is, indexOfFn} = require('../../util/util');
 
 /**
  * Turns a string into a function.
@@ -81,35 +81,7 @@ function _resolveFunctionExpression(fnString, mdl, config, state, http) {
     };
 }
 
-async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, http, generator) {
-    let args;
-    if (is('string', exec)) {
-        /**
-         * If 'exec' is a string, it means it is a function expression. That string is then turned into a object that
-         * contains the function itself, all arguments resolved and the task runner. Those properties are replacing
-         * the one that where to be used by recursiveMiddlewareExec().
-         */
-        const execObject = _resolveFunctionExpression(exec, mdl, config, state, http);
-
-        exec = execObject.fn;
-        args = execObject.args;
-        taskRunner = execObject.usedTaskRunner;
-    }
-
-    /**
-     * If arguments are not resolved (if exec is not a function expression), resolve them the regular way
-     */
-    if (!args) {
-        args = getArgs(exec, {
-            next: taskRunner.next,
-            done: taskRunner.done,
-            skip: taskRunner.skip,
-            throwException: taskRunner.throwException,
-            state: state,
-            http: http,
-        });
-    }
-
+async function syncExecFlow(exec, mdl, args, taskRunner, config) {
     exec.call(this, ...args.map((arg) => {
         /**
          * This line is only called when an argument is resolved. One of the cases is a function expression.
@@ -137,6 +109,77 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
         task = taskRunner.getTask();
     } else {
         task = await wait(_waitCheck.bind(null, taskRunner));
+    }
+
+    return task;
+}
+
+async function asyncFlowExec(exec, mdl, args, taskRunner, config) {
+    await exec.call(this, ...args.map((arg) => {
+        if (arg.name === 'next') throw new Error(`Invalid next() function in module '${mdl.name}'. When executing middleware with async keyword, next() is not necessary. Use await to get the same result.`);
+        if (arg.name === 'throwException') throw new Error(`Invalid throwException() function in '${mdl.name}'. When executing middleware with async keyword, throwException() is not necessary. Use regular try/catch javascript mechanism.`);
+
+        /**
+         * This line is only called when an argument is resolved. One of the cases is a function expression.
+         * If arguments are resolved for a function expression, all of them will be resolved and this map() will always
+         * go into this line of code
+         */
+        if (arg.value) return arg.value;
+
+        const dep = resolveDependencies(
+            mdl.compiler,
+            mdl.sharedCompiler,
+            arg.name,
+            config,
+            mdl.name,
+            mdl.plugin,
+        );
+
+        if (dep) return dep;
+
+        if (!arg.value) throw new Error(`Argument resolving error. Cannot resolve argument with name '${arg.name}'`);
+    }));
+
+    return taskRunner.getTask();
+}
+
+async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, http, generator) {
+    let args;
+    if (is('string', exec)) {
+        /**
+         * If 'exec' is a string, it means it is a function expression. That string is then turned into a object that
+         * contains the function itself, all arguments resolved and the task runner. Those properties are replacing
+         * the one that where to be used by recursiveMiddlewareExec().
+         */
+        const execObject = _resolveFunctionExpression(exec, mdl, config, state, http);
+
+        exec = execObject.fn;
+        args = execObject.args;
+        taskRunner = execObject.usedTaskRunner;
+    }
+
+    const isAsyncFn = exec.constructor.name === 'AsyncFunction';
+
+    /**
+     * If arguments are not resolved (if exec is not a function expression), resolve them the regular way
+     */
+    if (!args) {
+        args = getArgs(exec, {
+            next: taskRunner.next,
+            done: taskRunner.done,
+            skip: taskRunner.skip,
+            throwException: taskRunner.throwException,
+            state: state,
+            http: http,
+        });
+    }
+
+    let task;
+
+    if (!isAsyncFn) {
+        task = await syncExecFlow.call(this, exec, mdl, args, taskRunner, config);
+    } else if (isAsyncFn) {
+        task = await asyncFlowExec.call(this, exec, mdl, args, taskRunner, config);
     }
 
     switch (task) {
