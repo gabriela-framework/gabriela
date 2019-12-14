@@ -1,7 +1,6 @@
 const {getArgNames, is, hasKey} = require('../util/util');
 const {
     ASYNC_FLOW_TYPES,
-    VISIBILITY_TYPES,
 } = require('../misc/types');
 
 const TaskRunner = require('../misc/taskRunner');

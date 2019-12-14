@@ -28,9 +28,16 @@ describe('Private dependencies', () => {
             }
         };
 
+        const contextDep = {
+            name: 'contextDep',
+            init: function() {
+                return {};
+            }
+        };
+
         const userServiceInit = {
             name: 'userService',
-            dependencies: [userRepositoryInit, friendsRepositoryInit],
+            dependencies: [userRepositoryInit, friendsRepositoryInit, contextDep],
             init: function(userRepository, friendsRepository) {
                 function UserService() {
                     this.userRepository = userRepository;

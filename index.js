@@ -1,36 +1,97 @@
 const gabriela = require('./src/index');
-const requestPromise = require('request-promise');
 
-const routes = [
-    {
-        name: 'route',
-        path: '/path',
-        method: 'get',
+const userServiceInit = {
+    name: 'userService',
+    shared: {
+        modules: ['module1', 'module2'],
+        plugins: ['plugin1']
+    },
+    init: function() {
+        function UserService() {}
+
+        return new UserService();
     }
-];
+};
 
-const app = gabriela.asServer({
-    config: {
-        framework: {
-            env: 'dev',
-        }
+const contextDep = {
+    name: 'contextDep',
+    shared: {
+        modules: ['module1'],
+    },
+    init: function() {
+        return {};
     }
-}, routes, {
-    events: {
-        onAppStarted() {
-            requestPromise.get('http://localhost:3000/path').then(() => {
+};
 
-            });
-        }
+const userRepositoryInit = {
+    name: 'userRepository',
+    scope: 'public',
+    init: function() {
+        function UserRepository() {}
+
+        return new UserRepository();
     }
-});
+};
 
-app.addModule({
-    name: 'module',
-    route: 'route',
-    moduleLogic: [function(state) {
-        state.someObject = {};
-    }]
-});
+const scopeUserServiceInit = {
+    name: 'userService',
+    init: function() {
+        function UserService() {}
 
-app.startApp();
+        return new UserService();
+    }
+};
+
+let services = [];
+let singleService;
+let userRepository1;
+let userRepository2;
+
+const module1 = {
+    name: 'module1',
+    dependencies: [userServiceInit, userRepositoryInit, contextDep],
+    moduleLogic: [function(userService, next) {
+        services.push(userService);
+
+        const contextDep = this.compiler.get('contextDep');
+
+        console.log(contextDep);
+
+        next();
+    }],
+};
+
+const module2 = {
+    name: 'module2',
+    moduleLogic: [function(userService, next, userRepository) {
+        services.push(userService);
+        userRepository2 = userRepository;
+
+        next();
+    }],
+};
+
+const module3 = {
+    name: 'module3',
+    dependencies: [scopeUserServiceInit],
+    moduleLogic: [function(userService, next, userRepository) {
+        singleService = userService;
+        userRepository1 = userRepository;
+
+        next();
+    }],
+};
+
+const plugin1 = {
+    name: 'plugin',
+    modules: [module1, module2, module3]
+};
+
+const g = gabriela.asProcess({config: {framework: {}}});
+
+g.addModule(module1);
+g.addModule(module2);
+g.addModule(module3);
+g.addPlugin(plugin1);
+
+g.startApp();

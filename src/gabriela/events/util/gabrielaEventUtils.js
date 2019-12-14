@@ -37,7 +37,7 @@ async function runOnAppStarted(events, rootCompiler, err) {
      * If onCatchError does not exist, the error is thrown.
      */
     try {
-        LoggerProxy.log(LOGGING_TYPES.NOTICE, `onAppStarted event detected. Running.`);
+        LoggerProxy.log(LOGGING_TYPES.NOTICE, `onAppStarted event detected. Running it now.`);
 
         callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_APP_STARTED], rootCompiler, err);
     } catch (eventError) {

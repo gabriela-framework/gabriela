@@ -50,10 +50,17 @@ describe('Module dependency injection tests', function() {
             }
         };
 
+        const contextDependency = {
+            name: 'contextDependency',
+            init: function() {
+                return {};
+            }
+        };
+
         let entersMiddleware = false;
         const mdl = {
             name: 'name',
-            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit],
+            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit, contextDependency],
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
 
@@ -64,6 +71,11 @@ describe('Module dependency injection tests', function() {
                 expect(userService.userRepository).to.have.property('userFriendsRepository');
 
                 expect(userService.userRepository.userFriendsRepository).to.have.property('addFriend');
+
+                const contextDependency = this.compiler.get('contextDependency');
+
+                expect(contextDependency).to.be.a('object');
+                expect(contextDependency._$metadata).to.be.a('object');
 
                 done();
             }],
@@ -97,10 +109,28 @@ describe('Module dependency injection tests', function() {
             },
         };
 
+        const asyncContextDep = {
+            name: 'asyncContextDep',
+            scope: 'module',
+            isAsync: true,
+            init: function(next) {
+                function UserService() {
+                    this.addUser = null;
+                    this.removeUser = null;
+                }
+
+                setTimeout(() => {
+                    next(() => {
+                        return new UserService();
+                    });
+                }, 50);
+            },
+        };
+
         let entersMiddleware = false;
         const mdl = {
             name: 'asyncModuleName',
-            dependencies: [userServiceInit],
+            dependencies: [userServiceInit, asyncContextDep],
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
 
@@ -108,11 +138,17 @@ describe('Module dependency injection tests', function() {
                 expect(userService).to.have.property('addUser');
                 expect(userService).to.have.property('removeUser');
 
+                const asyncContextDep = this.compiler.get('asyncContextDep');
+
+                expect(asyncContextDep).to.be.a('object');
+                expect(asyncContextDep).to.have.property('addUser');
+                expect(asyncContextDep).to.have.property('removeUser');
+
                 done();
             }],
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess(config);
 
         g.addModule(mdl);
 
@@ -176,10 +212,28 @@ describe('Module dependency injection tests', function() {
             }
         };
 
+        const contextDep = {
+            name: 'contextDep',
+            isAsync: true,
+            init: function(userService, next) {
+                expect(userService).to.be.a('object');
+
+                function ContextDep() {
+
+                }
+
+                setTimeout(() => {
+                    next(() => {
+                        return new ContextDep();
+                    });
+                }, 50);
+            }
+        };
+
         let entersMiddleware = false;
         const mdl = {
             name: 'treeAsyncServiceDefinition',
-            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit],
+            dependencies: [userServiceInit, userRepositoryServiceInit, userFriendsRepositoryServiceInit, contextDep],
             preLogicTransformers: [function(userService, done) {
                 entersMiddleware = true;
 
@@ -190,6 +244,11 @@ describe('Module dependency injection tests', function() {
                 expect(userService.userRepository).to.have.property('userFriendsRepository');
 
                 expect(userService.userRepository.userFriendsRepository).to.have.property('addFriend');
+
+                const contextDep = this.compiler.get('contextDep');
+
+                expect(contextDep).to.be.a('object');
+                expect(contextDep._$metadata).to.be.a('object');
 
                 done();
             }],
@@ -543,7 +602,7 @@ describe('Module dependency injection tests', function() {
 
         const initModule = {
             name: 'initModule',
-            dependencies: [initDefinition]
+            dependencies: [initDefinition],
         };
 
         const workingModule = {
@@ -553,6 +612,68 @@ describe('Module dependency injection tests', function() {
                 moduleLogicCalled = true;
 
                 expect(UserService).to.be.a('object');
+            }],
+        };
+
+        const app = gabriela.asServer({config: {framework: {}}}, [], {
+            events: {
+                catchError(e) {
+                    this.gabriela.close();
+
+                    expect(e.message).to.be.equal('Error in UserRepository');
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(workingModule);
+
+        app.startApp();
+    });
+
+    it('should throw an exception inside a service of another dependency (two levels) inside a compiler pass when calling compiler.get()', (done) => {
+        let moduleLogicCalled = false;
+
+        const contextDep = {
+            name: 'ContextDep',
+            init: function(UserRepository) {
+                return {};
+            }
+        };
+
+        const initDefinition = {
+            name: 'init',
+            compilerPass: {
+                init: function(config, compiler) {
+                    compiler.add({
+                        name: 'UserRepository',
+                        scope: 'public',
+                        init(throwException) {
+                            return throwException(new Error('Error in UserRepository'));
+
+                        }
+                    });
+                }
+            },
+            init: function() {
+                return {};
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [initDefinition, contextDep],
+        };
+
+        const workingModule = {
+            name: 'workingModule',
+            dependencies: [contextDep],
+            moduleLogic: [function() {
+                moduleLogicCalled = true;
+
+                this.compiler.get('ContextDep');
             }],
         };
 

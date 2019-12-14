@@ -117,4 +117,25 @@ describe('Middleware context usage tests', function() {
 
         app.startApp();
     });
+
+    it('should ensure the presence of the compiler proxy bound to this context of the middleware function', () => {
+        const mdl = {
+            name: 'mdl',
+            moduleLogic: [function () {
+                expect(this.compiler.has).to.be.a('function');
+                expect(this.compiler.get).to.be.a('function');
+            }],
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl],
+        };
+
+        const app = gabriela.asProcess(config);
+
+        app.addPlugin(plugin);
+
+        app.startApp();
+    });
 });

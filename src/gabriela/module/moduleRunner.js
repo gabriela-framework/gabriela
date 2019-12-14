@@ -27,11 +27,12 @@ function _assignEmitterEvents(mdl) {
     }
 }
 
-function _createContext({mediator, emitter, moduleInfo}) {
+function _createContext({mediator, emitter, moduleInfo, compiler}) {
     return {
         mediator,
         emitter,
         moduleInfo,
+        compiler,
     };
 }
 
@@ -94,6 +95,25 @@ function _createModuleInfo(mdl) {
     return moduleInfo;
 }
 
+function _addCompilerProxy(mdl, config) {
+    const handlers = {
+        set() { return undefined; },
+
+        get(target, prop) {
+            const allowed = ['get', 'has'];
+
+            if (!allowed.includes(prop)) throw new Error(`Invalid compiler usage. `);
+
+            if (prop === 'has') return mdl.compiler.has;
+            if (prop === 'get') return function(name) {
+                return mdl.compiler.compile.call(mdl.compiler, name, mdl.compiler, config);
+            }
+        }
+    };
+
+    return new Proxy(mdl.compiler, handlers);
+}
+
 function factory() {
     function create(mdl) {
         _assignMediatorEvents(mdl);
@@ -111,6 +131,7 @@ function factory() {
                     },
                     emitter: mdl.emitterInstance,
                     moduleInfo: _createModuleInfo(mdl),
+                    compiler: _addCompilerProxy(mdl, config),
                 });
 
                 try {

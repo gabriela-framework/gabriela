@@ -10,6 +10,12 @@ const config = require('../config/config');
 
 describe('Scope dependency injection tests', () => {
     it(`should resolve the default scope to 'module' and create two different instances`, (done) => {
+        let userService1;
+        let userService2;
+        let userService3;
+        let contextDep1;
+        let contextDep2;
+
         const userServiceInit = {
             name: 'userService',
             init: function() {
@@ -19,14 +25,23 @@ describe('Scope dependency injection tests', () => {
             }
         };
 
-        let userService1;
-        let userService2;
-        let userService3;
+        const contextDep = {
+            name: 'contextDep',
+            init: function() {
+                return {};
+            }
+        };
+
         const module1 = {
             name: 'module1',
-            dependencies: [userServiceInit],
+            dependencies: [userServiceInit, contextDep],
             moduleLogic: [function(userService, next) {
                 userService1 = userService;
+
+                contextDep1 = this.compiler.get('contextDep');
+
+                expect(contextDep1).to.be.a('object');
+                expect(contextDep1._$metadata).to.be.a('object');
 
                 next();
             }],
@@ -34,9 +49,14 @@ describe('Scope dependency injection tests', () => {
 
         const module2 = {
             name: 'module2',
-            dependencies: [userServiceInit],
+            dependencies: [userServiceInit, contextDep],
             moduleLogic: [function(userService, next) {
                 userService2 = userService;
+
+                contextDep2 = this.compiler.get('contextDep');
+
+                expect(contextDep2).to.be.a('object');
+                expect(contextDep2._$metadata).to.be.a('object');
 
                 next();
             }],
@@ -61,6 +81,10 @@ describe('Scope dependency injection tests', () => {
         g.runModule().then(() => {
             expect(userService1).to.be.a('object');
             expect(userService2).to.be.a('object');
+            expect(contextDep1).to.be.a('object');
+            expect(contextDep2).to.be.a('object');
+
+            expect(contextDep1 != contextDep2).to.be.equal(true);
 
             expect(userService1 != userService2).to.be.equal(true);
             expect(userService1 != userService3).to.be.equal(true);
@@ -71,6 +95,9 @@ describe('Scope dependency injection tests', () => {
     });
 
     it(`should resolve a dependency with 'plugin' scope and give a single instance within all modules of a plugin`, (done) => {
+        let contextDep1;
+        let contextDep2;
+
         const userServiceInit = {
             name: 'difInstances',
             scope: 'plugin',
@@ -81,12 +108,22 @@ describe('Scope dependency injection tests', () => {
             }
         };
 
+        const contextDep = {
+            name: 'contextDep',
+            scope: 'plugin',
+            init: function() {
+                return {};
+            }
+        };
+
         let services = [];
         const module1 = {
             name: 'module1',
-            dependencies: [userServiceInit],
+            dependencies: [userServiceInit, contextDep],
             moduleLogic: [function(difInstances, next) {
                 services.push(difInstances);
+
+                contextDep1 = this.compiler.get('contextDep');
 
                 next();
             }],
@@ -96,6 +133,8 @@ describe('Scope dependency injection tests', () => {
             name: 'module2',
             moduleLogic: [function(difInstances, next) {
                 services.push(difInstances);
+
+                contextDep2 = this.compiler.get('contextDep');
 
                 next();
             }],
@@ -111,7 +150,7 @@ describe('Scope dependency injection tests', () => {
             modules: [module1, module2],
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess(config);
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);
@@ -119,6 +158,11 @@ describe('Scope dependency injection tests', () => {
         g.runPlugin('plugin1').then(() => {
             expect(services[0]).to.be.a('object');
             expect(services[0]).to.be.a('object');
+
+            expect(contextDep1).to.be.a('object');
+            expect(contextDep2).to.be.a('object');
+
+            expect(contextDep1 == contextDep2).to.be.equal(true);
 
             expect(services[0] == services[1]).to.be.equal(true);
             expect(services[0]).to.be.equal(services[1]);
