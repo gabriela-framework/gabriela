@@ -1,6 +1,5 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const assert = require('assert');
 const requestPromise = require('request-promise');
 
 const it = mocha.it;
@@ -10,7 +9,7 @@ const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
 const config = require('../config/config');
-const {is, getArgNames} = require('../../src/gabriela/util/util');
+const {is} = require('../../src/gabriela/util/util');
 const _responseProxy = require('../../src/gabriela/module/_responseProxy');
 
 describe('Concrete and functional http response tests', function() {

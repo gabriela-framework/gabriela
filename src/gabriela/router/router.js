@@ -1,25 +1,71 @@
 const Validator = require('./../misc/validator');
 const {hasKey} = require('./../util/util');
 
-function makeObjectOfRoutes(routes) {
-    const routesObject = {};
+function _isBaseRoute(route) {
+    const keys = Object.keys(route);
+    const baseRouteKeys = ['name', 'routes', 'basePath'];
 
-    for (const route of routes) {
-        routesObject[route.name] = route;
+    let matches = 0;
+    for (const key of baseRouteKeys) {
+        if (keys.includes(key)) matches++;
     }
 
-    return routesObject;
+    return matches === 3;
+}
+
+function _isRegularRoute(route) {
+    const keys = Object.keys(route);
+    const baseRouteKeys = ['name', 'path', 'method'];
+
+    let matches = 0;
+    for (const key of baseRouteKeys) {
+        if (keys.includes(key)) matches++;
+    }
+
+    return matches === 3;
+}
+
+function _treeTraversal(routes, constructedRoutes, parents = []) {
+    for (const route of routes) {
+        if (_isBaseRoute(route)) {
+            Validator.validateBaseRoute(route);
+
+            const parent = [...parents];
+
+            parent.push({name: route.name, path: route.basePath});
+
+            _treeTraversal(route.routes, constructedRoutes, parent);
+        } else if (_isRegularRoute(route)) {
+            Validator.validateRegularRoute(route);
+
+            const routeData = _createRouteData(route, parents);
+
+            constructedRoutes[routeData.name] = routeData;
+        }
+    }
+}
+
+function _createRouteData(route, parents) {
+    let path = '';
+    let parentName = '';
+
+    for (const parent of parents) {
+        parentName += parent.name + '.';
+        path += parent.path;
+    }
+
+    return {
+        name: parentName + route.name,
+        path: path + route.path,
+        method: route.method,
+    }
 }
 
 function factory() {
-    let internalRoutes = null;
+    let internalRoutes = {};
 
     function injectRoutes(routes) {
-        if (routes) {
-            Validator.validateRoutes(routes);
-
-            internalRoutes = makeObjectOfRoutes(routes);
-        }
+        _treeTraversal(routes, internalRoutes);
     }
 
     function get(name) {
@@ -35,7 +81,6 @@ function factory() {
     this.injectRoutes = injectRoutes;
     this.get = get;
     this.has = has;
-    this.reset = () => internalRoutes = null;
 }
 
 module.exports = new factory();

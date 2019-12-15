@@ -20,7 +20,6 @@ function _adaptModulesToPlugin(plugin) {
                 name: plugin.name,
                 mediatorInstance: plugin.mediatorInstance,
                 hasExposedMediators: plugin.hasExposedMediators(),
-                http: plugin.http,
             };
         }
     }
@@ -56,10 +55,6 @@ function _createPluginObject(plugin, rootCompiler, sharedCompiler, config, expos
             return !!plugin.mediator;
         },
         mediator: plugin.mediator,
-        hasHttp() {
-            return !!plugin.http;
-        },
-        http: plugin.http,
     };
 
     LoggerProxy.log('notice', `Registered module '${pluginObject.name}'`);

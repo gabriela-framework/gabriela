@@ -5,7 +5,7 @@ const {is, hasKey} = require('../util/util');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
 const LoggerProxy = require('../logging/loggerProxySingleton');
-const Router = require('../router/router2');
+const Router = require('../router/router');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();
@@ -51,10 +51,10 @@ function _resolveMiddleware(mdl, config) {
     }
 }
 
-function _resolveHttp(routeName) {
-    if (!Router.has(routeName)) return null;
+function _resolveHttp(mdl) {
+    if (!Router.has(mdl.route)) return null;
 
-    return Router.get(routeName);
+    return Router.get(mdl.route);
 }
 
 function _createModuleModel(mdl) {
@@ -71,7 +71,7 @@ function _createModuleModel(mdl) {
         dependencies: mdl.dependencies,
         mediator: mdl.mediator,
         emitter: mdl.emitter,
-        http: _resolveHttp(mdl.route),
+        http: _resolveHttp(mdl),
         isHttp() {
             return !!this.http;
         },
@@ -83,20 +83,9 @@ function _createModuleModel(mdl) {
         },
         isInPlugin: () => !!(mdl.plugin),
         getFullPath() {
-            if (this.isInPlugin() && this.isHttp()) {
-                const moduleRoute = this.http.path;
-                if (this.plugin.http) {
-                    const pluginRoute = this.plugin.http.route;
+            if (!this.isHttp()) return undefined;
 
-                    if (pluginRoute) return `${pluginRoute}${moduleRoute}`;
-                }
-
-                return `${moduleRoute}`;
-            }
-
-            if (this.isHttp()) {
-                return this.http.path;
-            }
+            return this.http.path;
         }
     };
 }

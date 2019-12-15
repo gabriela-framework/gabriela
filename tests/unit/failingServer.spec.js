@@ -21,7 +21,7 @@ describe('Failing server tests', () => {
                     },
                     framework: {},
                 }
-            });
+            }, []);
         } catch (err) {
             entersException = true;
 

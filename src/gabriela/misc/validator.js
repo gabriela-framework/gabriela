@@ -108,6 +108,20 @@ factory.validateModule = function(mdl, Router, plugin) {
     validateDependencies(mdl);
 };
 
+factory.validateBaseRoute = function(route) {
+    if (!is('string', route.name)) throw new Error(`Invalid base route. 'name' must be a string.`);
+    if (!is('string', route.basePath)) throw new Error(`Invalid base route '${route.name}'. 'basePath' must be a string.`);
+    if (!Array.isArray(route.routes)) throw new Error(`Invalid base route '${route.name}'. 'routes' must be an array.`);
+};
+
+factory.validateRegularRoute = function(route) {
+    if (!is('string', route.name)) throw new Error(`Invalid route. 'name' must be a string.`);
+    if (!is('string', route.path)) throw new Error(`Invalid route '${route.name}'. 'path' must be a string.`);
+    if (!is('string', route.method)) throw new Error(`Invalid route '${route.name}'. 'method' must be a string.`);
+
+    if (!HTTP_METHODS.toArray().includes(route.method.toLowerCase())) throw new Error(`Invalid route '${route.name}'. Invalid method '${route.method}'. Valid method are: '${HTTP_METHODS.toArray().join(', ')}'`);
+};
+
 factory.validatePlugin = function(plugin, Router) {
     if (!is('object', plugin)) throw new Error(`Plugin definition error. Plugin definition has to be an object`);
     if (!hasKey(plugin, 'name')) throw new Error(`Plugin definition error. Plugin definition has to have a 'name' property`);
@@ -159,48 +173,6 @@ factory.validatePlugin = function(plugin, Router) {
 
         for (const event of exposedMediators) {
             if (!is('string', event)) throw new Error(`Invalid exposed event definition in plugin '${plugin.name}'. Every entry in 'exposedMediators' must be a string`);
-        }
-    }
-
-    if (hasKey(plugin, 'http')) {
-        const http = plugin.http;
-
-        if (!is('object', http)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http' entry must be an object`);
-
-        // TODO: throw a warning in 'dev' environment if http entry is an empty object, do not in 'prod'
-
-        const baseRoute = http.route;
-        if (!is('string', baseRoute)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.route' entry must be a string`);
-
-        let allowedMethods = http.allowedMethods;
-        if (hasKey(http, 'allowedMethods') && !is('array', allowedMethods)) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' entry must be an array`);
-
-        if (!allowedMethods) allowedMethods = [];
-
-        if (allowedMethods.length > 0) {
-            const methods = HTTP_METHODS.toArray();
-
-            for (const method of allowedMethods) {
-                if (!methods.includes(method.toLowerCase())) throw new Error(`Invalid 'http' definition in plugin '${plugin.name}'. 'http.allowedMethods' has an invalid http method '${method.toLowerCase()}'. Valid http methods are ${methods.join(', ')}`)
-            }
-
-            allowedMethods = allowedMethods.map(function(a) {
-                return a.toLowerCase();
-            }, []);
-
-            if (plugin.modules) {
-                const modules = plugin.modules;
-
-                for (const mdl of modules) {
-                    if (mdl.route) {
-                        const http = Router.get(mdl.route);
-                        if (http) {
-                            const mdlMethod = http.method.toLowerCase();
-                            if (!allowedMethods.includes(mdlMethod)) throw new Error(`Invalid module definition for module '${mdl.name}' in plugin '${plugin.name}'. Module '${mdl.name}' is declared to use '${mdlMethod.toUpperCase()}' http method but allowed methods in plugin are '${allowedMethods.join(', ').toUpperCase()}'`);
-                        }
-                    }
-                }
-            }
         }
     }
 };

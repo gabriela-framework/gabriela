@@ -4,7 +4,7 @@ const moduleFactory = require('./moduleFactory');
 const deepCopy = require('deepcopy');
 const {hasKey, is, IIterator} = require('../util/util');
 const _overrideMiddleware = require('./middlewareOverriding/overrideMiddleware');
-const Router = require('../router/router2');
+const Router = require('../router/router');
 
 async function _runConstructedModule(mdl, tree, config, executeFactory) {
     const runner = ModuleRunner.create(mdl);

@@ -579,15 +579,21 @@ describe('Gabriela server tests', function() {
 
         const routes = [
             {
-                name: 'route',
-                path: '/route',
-                method: 'get',
-            }
+                name: 'baseRoute',
+                basePath: '/base-route',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                    }
+                ]
+            },
         ];
 
         const mdl = {
             name: 'httpsMdl',
-            route: 'route',
+            route: 'baseRoute.route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -596,10 +602,6 @@ describe('Gabriela server tests', function() {
         const plugin = {
             name: 'plugin',
             modules: [mdl],
-            http: {
-                route: '/base-route',
-                allowedMethods: ['get'],
-            }
         };
 
         const g = gabriela.asServer({config: {framework: {}}}, routes,{
@@ -634,15 +636,21 @@ describe('Gabriela server tests', function() {
 
         const routes = [
             {
-                name: 'route',
-                path: '/route',
-                method: 'get',
+                name: 'base',
+                basePath: '/base-route',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                    }
+                ]
             }
         ];
 
         const mdl = {
             name: 'httpsMdl',
-            route: 'route',
+            route: 'base.route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -651,10 +659,6 @@ describe('Gabriela server tests', function() {
         const plugin = {
             name: 'plugin',
             modules: [mdl],
-            http: {
-                route: '/base-route',
-                allowedMethods: ['GET'],
-            }
         };
 
         const g = gabriela.asServer({config: {framework: {}}}, routes,{
@@ -689,15 +693,21 @@ describe('Gabriela server tests', function() {
 
         const routes = [
             {
-                name: 'route',
-                path: '/route',
-                method: 'get',
+                name: 'baseName',
+                basePath: '/base-route',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/route',
+                        method: 'get',
+                    }
+                ]
             }
         ];
 
         const mdl = {
             name: 'httpsMdl',
-            route: 'route',
+            route: 'baseName.route',
             moduleLogic: [function() {
                 middlewareCalled = true;
             }],
@@ -706,10 +716,6 @@ describe('Gabriela server tests', function() {
         const plugin = {
             name: 'plugin',
             modules: [mdl],
-            http: {
-                route: '/base-route',
-                allowedMethods: ['GeT', 'post', 'PuT'],
-            }
         };
 
         const g = gabriela.asServer({config: {framework: {}}}, routes,{
