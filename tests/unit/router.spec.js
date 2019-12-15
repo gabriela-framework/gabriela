@@ -182,4 +182,24 @@ describe('Router tests', () => {
 
         expect(entersException).to.be.equal(entersException);
     });
+
+    it('it should fail if router type could not be recognized', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid route. Route type could not be recognized.`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
 });

@@ -41,6 +41,8 @@ function _treeTraversal(routes, constructedRoutes, parents = []) {
             const routeData = _createRouteData(route, parents);
 
             constructedRoutes[routeData.name] = routeData;
+        } else {
+            throw new Error(`Invalid route. Route type could not be recognized.`);
         }
     }
 }
