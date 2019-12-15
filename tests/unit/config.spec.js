@@ -106,7 +106,7 @@ describe('Config tests', () => {
         const serverApp = gabriela.asServer();
         const processApp = gabriela.asProcess();
 
-        const serverAppWithConfig = gabriela.asServer({config: {framework: {}}});
+        const serverAppWithConfig = gabriela.asServer({config: {framework: {}}}, []);
         const processAppWithConfig = gabriela.asProcess({config: {framework: {}}});
     });
 });

@@ -2,7 +2,7 @@ const deepCopy = require('deepcopy');
 const Validator = require('../misc/validator');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
-const Router = require('../router/router');
+const Router = require('../router/router2');
 
 const {is, hasKey, IIterator} = require('../util/util');
 

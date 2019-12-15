@@ -5,7 +5,7 @@ const {is, hasKey} = require('../util/util');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
 const LoggerProxy = require('../logging/loggerProxySingleton');
-const Router = require('../router/router');
+const Router = require('../router/router2');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {
     const c = Compiler.create();

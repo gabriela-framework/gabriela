@@ -1,7 +1,7 @@
 require('strict-mode')(function () {
     require('./global');
 
-    const Router = require('./router/router');
+    const Router = require('./router/router2');
     const configFactory = require('./configFactory');
 
     module.exports = {
