@@ -159,7 +159,6 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
     }
 
     const isAsyncFn = exec.constructor.name === 'AsyncFunction';
-
     /**
      * If arguments are not resolved (if exec is not a function expression), resolve them the regular way
      */
@@ -212,7 +211,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
 
     if (next.done) return;
 
-    return await recursiveMiddlewareExec(next.value, taskRunnerFactory.create(), mdl, state, config, http, generator);
+    return await recursiveMiddlewareExec.call(this, next.value, taskRunnerFactory.create(), mdl, state, config, http, generator);
 }
 
 async function runMiddleware(mdl, functions, config, state, http) {
