@@ -227,7 +227,7 @@ describe('Failing module definition tests', () => {
             } catch(err) {
                 entersException = true;
 
-                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' has to have a 'middleware' property that must be a function`);
+                expect(err.message).to.be.equal(`Invalid middleware definition object. '${middlewareName}' of module '${userModule.name}' has to have a 'middleware' property that must be a regular function or an async function. The function name is 'name'.`);
             }
 
             expect(entersException).to.be.equal(true);

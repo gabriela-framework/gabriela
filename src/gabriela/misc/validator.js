@@ -10,7 +10,7 @@ const {
     BUILT_IN_MEDIATORS,
 } = require('./types');
 
-const {is, hasKey, convertToRestifyHttpMethods} = require('../util/util');
+const {is, hasKey, convertToRestifyHttpMethods, isAsyncFn} = require('../util/util');
 
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
@@ -69,9 +69,7 @@ factory.validateModule = function(mdl, Router, plugin) {
 
                             if (!is('string', m.name)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
 
-                            if (middleware.constructor.name === 'AsyncFunction') continue;
-
-                            if (!is('function', m.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a regular function or an async function`);
+                            if (!isAsyncFn(middleware) && !is('function', middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a regular function or an async function. The function name is '${m.name}'.`);
                         } else {
                             if (m.constructor.name === 'AsyncFunction') continue;
 

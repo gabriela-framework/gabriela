@@ -26,6 +26,14 @@ function is(type, val) {
     return Object.prototype.toString.call(val) === res;
 }
 
+function isAsyncFn(val) {
+    if (!val) return false;
+
+    if (!val.constructor) return false;
+
+    return val.constructor.name === 'AsyncFunction';
+}
+
 function inArray(array1, array2) {
     for (const entry of array1) {
         if (array2.includes(entry)) return true;
@@ -279,6 +287,7 @@ module.exports = {
     hasKey,
     inArray,
     is,
+    isAsyncFn,
     convertToRestifyHttpMethods,
     convertToRestifyMethod,
     ucFirst,
