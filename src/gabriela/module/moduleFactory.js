@@ -40,12 +40,11 @@ function _resolveMiddleware(mdl, config) {
                     newMiddlewareFns.push(n.middleware);
                 } else if (is('string', n)) {
                     newMiddlewareFns.push(n);
-                    //newMiddlewareFns.push(_resolveFunctionExpression(n, mdl, config));
                 } else {
                     newMiddlewareFns.push(n);
                 }
             }
-
+            
             mdl[middlewareBlockName] = newMiddlewareFns;
         }
     }

@@ -119,9 +119,9 @@ function factory() {
         _assignMediatorEvents(mdl);
         _assignEmitterEvents(mdl);
 
-        return (function(mdl) {
-            let state = {};
+        let state = {};
 
+        return (function(mdl) {
             async function run(childState, config, executeFactory) {
                 if (childState) state.child = childState;
 
@@ -136,6 +136,10 @@ function factory() {
 
                 try {
                     if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_STARTED);
+
+                    if (mdl.isHttp()) {
+                        state = null;
+                    }
 
                     await executeFactory.call(null, mdl).call(null, mdl, context, config, state);
 

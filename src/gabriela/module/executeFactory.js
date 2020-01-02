@@ -60,11 +60,13 @@ function _handleError(err, mdl, httpContext = null) {
 
 function factory(server, mdl) {
     if (mdl.isHttp()) {
-        return async function(mdl, context, config, state) {
+        return async function(mdl, context, config) {
             const method = convertToRestifyMethod(mdl.http.method.toLowerCase());
             const path = mdl.getFullPath();
 
             server[method](path, async function(req, res, next) {
+                let state = {};
+
                 const memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
                 MemoryLoggerSingleton.log(
@@ -112,7 +114,11 @@ function factory(server, mdl) {
                     responseProxy.send(200, deepCopy(state));
                 }
 
-                if (!responseProxy.__isRedirect) return next();
+                if (!responseProxy.__isRedirect) {
+                    state = null;
+
+                    return next();
+                }
             });
         }
     }

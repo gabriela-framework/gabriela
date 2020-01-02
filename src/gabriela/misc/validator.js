@@ -65,8 +65,13 @@ factory.validateModule = function(mdl, Router, plugin) {
                             if (!hasKey(m, 'name')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
                             if (!hasKey(m, 'middleware')) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be an array of functions`);
 
+                            const middleware = m.middleware;
+
                             if (!is('string', m.name)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'name' property that must be a string`);
-                            if (!is('function', m.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a function`);
+
+                            if (middleware.constructor.name === 'AsyncFunction') continue;
+
+                            if (!is('function', m.middleware)) throw new Error(`Invalid middleware definition object. '${name}' of module '${mdl.name}' has to have a 'middleware' property that must be a regular function or an async function`);
                         } else {
                             if (m.constructor.name === 'AsyncFunction') continue;
 
