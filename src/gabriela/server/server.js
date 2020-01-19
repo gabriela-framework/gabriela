@@ -32,6 +32,7 @@ function _startServer(opts) {
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.fullResponse());
     server.use(restify.plugins.bodyParser());
+    server.use(restify.plugins.multipartBodyParser());
 
     return server;
 }
