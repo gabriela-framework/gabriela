@@ -56,11 +56,17 @@ function _createRouteData(route, parents) {
         path += parent.path;
     }
 
-    return {
+    const builtRoute = {
         name: parentName + route.name,
         path: path + route.path,
         method: route.method,
+    };
+
+    if (hasKey(route, 'static')) {
+        builtRoute.static = route.static;
     }
+
+    return builtRoute;
 }
 
 function factory() {

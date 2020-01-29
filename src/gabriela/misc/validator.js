@@ -115,6 +115,10 @@ factory.validateBaseRoute = function(route) {
     if (!is('string', route.name)) throw new Error(`Invalid base route. 'name' must be a string.`);
     if (!is('string', route.basePath)) throw new Error(`Invalid base route '${route.name}'. 'basePath' must be a string.`);
     if (!Array.isArray(route.routes)) throw new Error(`Invalid base route '${route.name}'. 'routes' must be an array.`);
+
+    const routeEntries = Object.keys(route);
+
+    if (routeEntries.length !== 3) throw new Error(`Invalid number of route keys in base path. Expected 'name', 'base' and 'routes' key, got ${routeEntries.join(', ')} for route with name '${route.name}'`);
 };
 
 factory.validateRegularRoute = function(route) {
@@ -122,7 +126,21 @@ factory.validateRegularRoute = function(route) {
     if (!is('string', route.path)) throw new Error(`Invalid route '${route.name}'. 'path' must be a string.`);
     if (!is('string', route.method)) throw new Error(`Invalid route '${route.name}'. 'method' must be a string.`);
 
+    if (hasKey(route, 'static') && !is('object', route)) throw new Error(`Invalid route '${route.name}'. 'static' must be an object`);
+
+    if (hasKey(route, 'static')) {
+        const staticConfig = route.static;
+
+        if (staticConfig && !is('string', staticConfig.directory)) throw new Error(`Invalid route '${route.name}'. 'static.directory' must be a string`);
+    }
+
     if (!HTTP_METHODS.toArray().includes(route.method.toLowerCase())) throw new Error(`Invalid route '${route.name}'. Invalid method '${route.method}'. Valid method are: '${HTTP_METHODS.toArray().join(', ')}'`);
+
+    const routeEntries = Object.keys(route);
+
+    if (!hasKey(route, 'static')) {
+        if (routeEntries.length !== 3) throw new Error(`Invalid number of route keys in base path. Expected 'name', 'base' and 'routes' key, got ${routeEntries.join(', ')} for route with name '${route.name}'`);
+    }
 };
 
 factory.validatePlugin = function(plugin, Router) {

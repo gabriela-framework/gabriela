@@ -202,4 +202,106 @@ describe('Router tests', () => {
 
         expect(entersException).to.be.equal(entersException);
     });
+
+    it('should fail if there are unpermitted keys in the base route definition', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [],
+                unPermitted: null,
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid number of route keys in base path. Expected 'name', 'base' and 'routes' key, got ${Object.keys(routes[0]).join(', ')} for route with name 'route'`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
+
+    it('should fail if there are unpermitted keys in the regular route definition', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [],
+                unPermitted: null,
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid number of route keys in base path. Expected 'name', 'base' and 'routes' key, got ${Object.keys(routes[0]).join(', ')} for route with name 'route'`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
+
+    it('should fail if static is not an object', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/path',
+                        method: 'GET',
+                        'static': null,
+                    }
+                ],
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid route 'route'. 'static' must be an object`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
+
+    it('should fail if static.directory is not a string', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/path',
+                        method: 'GET',
+                        'static': {
+                            directory: null,
+                        },
+                    }
+                ],
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid route 'route'. 'static.directory' must be a string`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
 });

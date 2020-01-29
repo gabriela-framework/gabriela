@@ -5,6 +5,7 @@ const createResponseProxy = require('./_responseProxy');
 const {convertToRestifyMethod} = require('../util/util');
 const LoggingProxy = require('./../logging/loggerProxySingleton');
 const MemoryLoggerSingleton = require('./../logging/memoryLoggerSingleton');
+const restify = require('restify');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -63,6 +64,21 @@ function factory(server, mdl) {
         return async function(mdl, context, config) {
             const method = convertToRestifyMethod(mdl.http.method.toLowerCase());
             const path = mdl.getFullPath();
+
+            if (mdl.http.static) {
+                const staticConfig = {};
+                staticConfig.directory = mdl.http.static.directory;
+
+                if (mdl.http.static.file) {
+                    staticConfig.file = mdl.http.static.file;
+                } else {
+                    staticConfig.default = 'index.html';
+                }
+
+                server[method](path, restify.plugins.serveStatic(staticConfig));
+
+                return;
+            }
 
             server[method](path, async function(req, res, next) {
                 let state = {};
