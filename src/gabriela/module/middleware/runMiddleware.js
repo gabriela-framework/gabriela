@@ -5,7 +5,7 @@ const resolveDependencies = require('../../dependencyInjection/resolveDependenci
 const parseExpression = require('../../expression/parse');
 const TaskRunner = require('../../misc/taskRunner');
 
-const {createGenerator, getArgs, wait, inArray, is, indexOfFn} = require('../../util/util');
+const {createGenerator, getArgs, wait, inArray, is, isAsyncFn} = require('../../util/util');
 
 /**
  * Turns a string into a function.
@@ -158,7 +158,7 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
         taskRunner = execObject.usedTaskRunner;
     }
 
-    const isAsyncFn = exec.constructor.name === 'AsyncFunction';
+    const isAsyncMiddleware = isAsyncFn(exec);
     /**
      * If arguments are not resolved (if exec is not a function expression), resolve them the regular way
      */
@@ -175,9 +175,9 @@ async function recursiveMiddlewareExec(exec, taskRunner, mdl, state, config, htt
 
     let task;
 
-    if (!isAsyncFn) {
+    if (!isAsyncMiddleware) {
         task = await syncExecFlow.call(this, exec, mdl, args, taskRunner, config);
-    } else if (isAsyncFn) {
+    } else if (isAsyncMiddleware) {
         task = await asyncFlowExec.call(this, exec, mdl, args, taskRunner, config);
     }
 
