@@ -30,8 +30,8 @@ function _createWorkingDataStructures(mdl, req) {
 
     const middleware = [
         mdl[MIDDLEWARE_TYPES.INIT],
-        mdl[MIDDLEWARE_TYPES.SECURITY],
         mdl[MIDDLEWARE_TYPES.VALIDATORS],
+        mdl[MIDDLEWARE_TYPES.SECURITY],
         mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
         mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
         mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
@@ -50,13 +50,34 @@ function _handleError(err, mdl, httpContext = null) {
         }
     }
 
-    // throw error if it doesnt have any mediators
-    if (!mdl.hasMediators()) throw err;
+    if (mdl.isHttp()) {
+        let errorRan = false;
 
-    // throw error if it has mediators but it does not have onError
-    if (mdl.hasMediators() && !mdl.mediator.onError) throw err;
+        if (mdl.hasMediators() && mdl.mediator.onError) {
+            mdl.mediatorInstance.runOnError(mdl.mediator.onError, err, httpContext);
 
-    mdl.mediatorInstance.runOnError(mdl.mediator.onError, err, httpContext);
+            errorRan = true;
+        }
+
+        if (mdl.isInPlugin()) {
+            if (mdl.plugin.hasMediators() && mdl.plugin.mediator.onError) {
+                mdl.plugin.mediatorInstance.runOnError(mdl.plugin.mediator.onError, err, httpContext);
+
+                errorRan = true;
+            }
+        }
+
+        if (!errorRan) throw new Error(err);
+    } else {
+        // throw error if it doesnt have any mediators
+        if (!mdl.hasMediators()) throw new Error(err);
+
+        //throw error if it has mediators but it does not have onError
+        if (mdl.hasMediators() && !mdl.mediator.onError) throw new Error(err);
+
+        mdl.mediatorInstance.runOnError(mdl.mediator.onError, err, httpContext);
+    }
+
 }
 
 function factory(server, mdl) {
@@ -83,18 +104,6 @@ function factory(server, mdl) {
             server[method](path, async function(req, res, next) {
                 let state = {};
 
-                const memory = process.memoryUsage().heapUsed / 1024 / 1024;
-
-                MemoryLoggerSingleton.log(
-                    memory,
-                    `Memory usage before staring middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}MB`
-                );
-
-                LoggingProxy.log(
-                    LOGGING_TYPES.NOTICE,
-                    `HTTP route recognized. Method: ${method.toUpperCase()}, route: ${path}, route name: ${mdl.http.name}`
-                );
-
                 const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
 
                 const responseEvent = _getResponseEvents(mdl);
@@ -120,13 +129,6 @@ function factory(server, mdl) {
                 }
 
                 if (!responseProxy.__responseSent) {
-                    const memory = process.memoryUsage().heapUsed / 1024 / 1024;
-
-                    MemoryLoggerSingleton.log(
-                        memory,
-                        `Memory usage after finishing middleware execution for route with name '${mdl.http.name}': ${Math.round(memory * 100) / 100}MB`
-                    );
-
                     responseProxy.send(200, deepCopy(state));
                 }
 
@@ -142,9 +144,9 @@ function factory(server, mdl) {
     return async function(mdl, context, config, state) {
         const middleware = [
             mdl[MIDDLEWARE_TYPES.INIT],
+            mdl[MIDDLEWARE_TYPES.VALIDATORS],
             mdl[MIDDLEWARE_TYPES.SECURITY],
             mdl[MIDDLEWARE_TYPES.PRE_LOGIC_TRANSFORMERS],
-            mdl[MIDDLEWARE_TYPES.VALIDATORS],
             mdl[MIDDLEWARE_TYPES.MODULE_LOGIC],
             mdl[MIDDLEWARE_TYPES.POST_LOGIC_TRANSFORMERS],
         ];

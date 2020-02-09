@@ -15,9 +15,14 @@ function _adaptModulesToPlugin(plugin) {
     if (plugin.modules && plugin.modules.length > 0) {
         const {modules} = plugin;
 
+        const hasErrorMediator = (plugin.onError) ? true : false;
+
         for (const mdl of modules) {
             mdl.plugin = {
+                hasPluginError: hasErrorMediator,
                 name: plugin.name,
+                hasMediators: plugin.hasMediators,
+                mediator: plugin.mediator,
                 mediatorInstance: plugin.mediatorInstance,
                 hasExposedMediators: plugin.hasExposedMediators(),
             };

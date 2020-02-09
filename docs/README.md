@@ -147,7 +147,7 @@ const registrationModule = {
     http: {
         route: {
             name: 'registration',
-            path: '/register',
+            path: '/signUp',
             method: 'POST',
         },
     },
@@ -166,7 +166,7 @@ const loginModule = {
         }
     },
     moduleLogic: [function() {
-        console.log('Handle user login');
+        console.log('Handle user signIn');
     }],
 };
 
@@ -244,7 +244,7 @@ const registrationModule = {
     http: {
         route: {
             name: 'registration',
-            path: '/register',
+            path: '/signUp',
             method: 'POST',
         },
     },

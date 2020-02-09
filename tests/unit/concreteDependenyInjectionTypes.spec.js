@@ -39,7 +39,7 @@ describe('Dependency injection types', () => {
         c.add(depTwo);
         c.add(definition);
 
-        const dep = c.compile('definition');
+        const dep = c.compile('definition', c);
 
         expect(dep).to.be.a('object');
         expect(dep.depOne).to.be.a('object');
@@ -88,7 +88,7 @@ describe('Dependency injection types', () => {
         c.add(depTwo);
         c.add(definition);
 
-        const dep = c.compile('definition');
+        const dep = c.compile('definition', c);
 
         expect(dep).to.be.a('object');
         expect(dep._depOne).to.be.a('object');
@@ -111,7 +111,7 @@ describe('Dependency injection types', () => {
 
         c.add(definition);
 
-        const dep = c.compile('definition');
+        const dep = c.compile('definition', c);
 
         expect(dep).to.be.a('object');
     });
@@ -149,7 +149,7 @@ describe('Dependency injection types', () => {
         c.add(depTwo);
         c.add(definition);
 
-        const dep = c.compile('definition');
+        const dep = c.compile('definition', c);
 
         expect(dep).to.be.a('object');
         expect(dep.depOne).to.be.a('object');
@@ -191,7 +191,7 @@ describe('Dependency injection types', () => {
         c.add(depTwo);
         c.add(definition);
 
-        const dep = c.compile('definition');
+        const dep = c.compile('definition', c);
 
         expect(dep).to.be.a('object');
         expect(dep.depOne).to.be.a('object');

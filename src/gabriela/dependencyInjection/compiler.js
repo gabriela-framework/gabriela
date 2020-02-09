@@ -227,7 +227,7 @@ function factory() {
         }
 
         if (_isInjectionTypeInterface(serviceMetadata)) {
-            return _resolveInjectionService(this, serviceMetadata, taskRunner, config);
+            return _resolveInjectionService(originCompiler, serviceMetadata, taskRunner, config);
         }
 
         const service = serviceMetadata.service;

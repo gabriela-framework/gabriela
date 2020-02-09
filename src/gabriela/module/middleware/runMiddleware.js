@@ -66,13 +66,27 @@ function _resolveFunctionExpression(fnString, mdl, config, state, http) {
             // if 'dep' is a DI service, compile it
             deps.push({
                 name: dep,
-                value: mdl.compiler.compile(dep, mdl.compiler, config),
+                value: resolveDependencies(
+                    mdl.compiler,
+                    mdl.sharedCompiler,
+                    dep,
+                    config,
+                    mdl.name,
+                    mdl.plugin,
+                )
             });
         }
     }
 
     // the place where the actual function is resolved from the compiler
-    const dep = mdl.compiler.compile(parsed.fnName, mdl.compiler, config);
+    const dep = resolveDependencies(
+        mdl.compiler,
+        mdl.sharedCompiler,
+        parsed.fnName,
+        config,
+        mdl.name,
+        mdl.plugin,
+    );
 
     return {
         fn: dep,

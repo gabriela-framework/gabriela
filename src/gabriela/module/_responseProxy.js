@@ -20,10 +20,12 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
 
         this.__insideSend = true;
 
-        if (onPreResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
-            http: {req, res: this},
-            state: state,
-        });
+        if (onPreResponse) {
+            callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_PRE_RESPONSE, {
+                http: {req, res: this},
+                state: state,
+            });
+        }
 
         this.__insideSend = false;
 
@@ -35,10 +37,12 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
 
         this.__responseSent = true;
 
-        if (onPostResponse) callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
-            http: {req, res: this},
-            state: state,
-        });
+        if (onPostResponse) {
+            callEvent.call(mdl.mediatorInstance, mdl, HTTP_EVENTS.ON_POST_RESPONSE, {
+                http: {req, res: this},
+                state: state,
+            });
+        }
     } catch (e) {
         // any error can be caught with onError event
         if (mdl.hasMediators() && mdl.mediator.onError) {
