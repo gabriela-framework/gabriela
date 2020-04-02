@@ -1,5 +1,6 @@
 const callEvent = require('../events/util/callEvent');
 const {HTTP_EVENTS} = require('../misc/types');
+const {is} = require('../util/util');
 
 function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse, responseArgs) {
     try {
@@ -13,7 +14,11 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
 
             const {code, body, headers} = responseArgs;
 
-            res[method](code, body, headers);
+            if (headers) res.set(headers);
+
+            res.status(code);
+
+            res[method](body);
 
             return this;
         }
@@ -32,7 +37,11 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
         if (!this.__responseSent) {
             const {code, body, headers} = responseArgs;
 
-            res[method](code, body, headers);
+            if (headers) res.set(headers);
+
+            res.status(code);
+
+            res[method](body);
         }
 
         this.__responseSent = true;
@@ -53,28 +62,11 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
     }
 }
 
-function factory(req, res, state, mdl, onPreResponse, onPostResponse, next) {
+function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
     return {
         __responseSent: false,
         __insideSend: false,
         __isRedirect: false,
-
-        cache(type, options) {
-            return res.cache(type, options);
-        },
-        noCache() {
-            res.noCache();
-
-            return this;
-        },
-        charSet(type) {
-            res.charSet(type);
-
-            return this;
-        },
-        header(key, value) {
-            return res.header(key, value);
-        },
         json(code, body, headers) {
             _sendMethod.call(this,
                 'json',
@@ -88,9 +80,6 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse, next) {
             );
 
             return this;
-        },
-        link(key, value) {
-            return res.link(key, value);
         },
         send(code, body, headers) {
             _sendMethod.call(this,
@@ -106,38 +95,25 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse, next) {
 
             return this;
         },
-        sendRaw(code, body, headers) {
-            _sendMethod.call(this,
-                'sendRaw',
-                mdl,
-                req,
-                res,
-                state,
-                onPreResponse,
-                onPostResponse,
-                {code, body, headers}
-            );
-
-            return this;
+        set(key, value) {
+            if (is('object', key)) {
+                res.set(key);
+            } else {
+                res.set(key, value);
+            }
         },
-        set(headers) {
-            res.set(headers);
-
-            return this;
+        links(links = {}) {
+            res.links(links);
         },
-        status(code) {
-            return res.status(code);
-        },
-        redirect(param1, param2) {
-            this.__responseSent = true;
-            // so that the handling executeFactory does not return next()
+        redirect(code, link) {
             this.__isRedirect = true;
 
-            if (param1 && !param2) return res.redirect(param1, next);
-            if (param1 && param2) return res.redirect(param1, param2, next);
-
-            return res.redirect(param1, param2, next);
-        },
+            if (Number.isInteger(code)) {
+                res.redirect(code, link);
+            } else {
+                res.redirect(code);
+            }
+        }
     };
 }
 

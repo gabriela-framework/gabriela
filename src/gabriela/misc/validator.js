@@ -284,7 +284,7 @@ factory.validateRoutes = function(routes) {
         if (!is('string', route.path)) throw new Error(`Invalid route with name '${route.name}' 'path' property must be a string`);
         if (!is('string', route.method)) throw new Error(`Invalid route with name '${route.name}'. 'method' property must be a string`);
 
-        if (!convertToRestifyHttpMethods(HTTP_METHODS.toArray()).includes(route.method.toLowerCase())) throw new Error(`Invalid route with name '${route.name}'. '${route.method}' is not a supported HTTP method. Go to https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods for a list of supported HTTP methods`);
+        if (HTTP_METHODS.toArray().includes(route.method.toLowerCase())) throw new Error(`Invalid route with name '${route.name}'. '${route.method}' is not a supported HTTP method. Go to https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods for a list of supported HTTP methods`);
     }
 };
 

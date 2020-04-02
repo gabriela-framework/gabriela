@@ -380,7 +380,7 @@ describe('Gabriela server tests', function() {
             },
             route: 'route',
             moduleLogic: [function(http) {
-                http.res.sendRaw('Response');
+                http.res.send(200, 'Response');
             }],
         });
 
@@ -433,7 +433,7 @@ describe('Gabriela server tests', function() {
             },
             route: 'route',
             moduleLogic: [function(http) {
-                http.res.json('Response');
+                http.res.json(200, 'Response');
             }],
         });
 
@@ -457,68 +457,6 @@ describe('Gabriela server tests', function() {
         });
 
         g.startApp();
-    });
-
-    it('should create an https server', (done) => {
-        const routes = [
-            {
-                name: 'route',
-                path: '/route',
-                method: 'get',
-            }
-        ];
-
-        pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
-            if (err) {
-                throw err
-            }
-
-            let middlewareCalled = false;
-
-            const httpsMdl = {
-                name: 'httpsMdl',
-                route: 'route',
-                moduleLogic: [function(http) {
-                    middlewareCalled = true;
-
-                    expect(http.req.isSecure()).to.be.equal(true);
-                }],
-            };
-
-            const g = gabriela.asServer({
-                config: {
-                    framework: {},
-                    server: {
-                        key: keys.serviceKey,
-                        certificate: keys.certificate
-                    }
-                }
-            }, routes,{
-                events: {
-                    onAppStarted() {
-                        let options = {
-                            method: 'get',
-                            json: true,
-                            uri : 'https://localhost:3000/route',
-                            insecure: true,
-                            rejectUnauthorized: false,
-                        };
-
-                        requestPromise(options).then(() => {
-                            expect(middlewareCalled).to.be.equal(true);
-
-                            this.gabriela.close();
-
-                            done();
-                        });
-                    },
-                }
-            });
-
-            g.addModule(httpsMdl);
-
-            g.startApp();
-        });
     });
 
     it('http middleware parameter should have all the necessary properties', (done) => {

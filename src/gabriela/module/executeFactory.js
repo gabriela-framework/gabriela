@@ -1,11 +1,7 @@
 const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
-const {MIDDLEWARE_TYPES, LOGGING_TYPES} = require('../misc/types');
+const {MIDDLEWARE_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
-const {convertToRestifyMethod} = require('../util/util');
-const LoggingProxy = require('./../logging/loggerProxySingleton');
-const MemoryLoggerSingleton = require('./../logging/memoryLoggerSingleton');
-const restify = require('restify');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -83,7 +79,7 @@ function _handleError(err, mdl, httpContext = null) {
 function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config) {
-            const method = convertToRestifyMethod(mdl.http.method.toLowerCase());
+            const method = mdl.http.method.toLowerCase()
             const path = mdl.getFullPath();
 
             if (mdl.http.static) {
@@ -96,7 +92,7 @@ function factory(server, mdl) {
                     staticConfig.default = 'index.html';
                 }
 
-                server[method](path, restify.plugins.serveStatic(staticConfig));
+                //server[method](path, restify.plugins.serveStatic(staticConfig));
 
                 return;
             }
@@ -132,11 +128,13 @@ function factory(server, mdl) {
                     responseProxy.send(200, deepCopy(state));
                 }
 
+                res.end();
+
                 if (!responseProxy.__isRedirect) {
                     state = null;
-
-                    return next();
                 }
+
+                return next();
             });
         }
     }

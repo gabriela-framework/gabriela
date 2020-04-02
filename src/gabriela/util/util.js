@@ -256,30 +256,6 @@ function iterate(value, reactionOptions) {
     realIterator(value, reactionOptions);
 }
 
-function convertToRestifyHttpMethods(methods) {
-    const methodsClone = [...methods];
-
-    const replaceables = {
-        'del': 'delete',
-        'opts': 'options',
-    };
-
-    for (let i = 0; i < methodsClone.length; i++) {
-        if (replaceables[methodsClone[i]]) {
-            methodsClone[i] = replaceables[methodsClone[i]];
-        }
-    }
-
-    return methodsClone;
-}
-
-function convertToRestifyMethod(method) {
-    if (method === 'delete') return 'del';
-    if (method === 'options') return 'opts';
-
-    return method;
-}
-
 module.exports = {
     createGenerator,
     getArgNames,
@@ -288,8 +264,6 @@ module.exports = {
     inArray,
     is,
     isAsyncFn,
-    convertToRestifyHttpMethods,
-    convertToRestifyMethod,
     ucFirst,
     wait,
     indexOfFn,

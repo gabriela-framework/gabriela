@@ -1559,7 +1559,7 @@ describe('Framework events', function() {
                 onPreResponse(http) {
                     onPreResponseCalled = true;
 
-                    http.res.send('Response');
+                    http.res.send(200, 'Response');
                 },
                 onPostResponse(http, userService, next) {
                     setTimeout(() => {
@@ -1630,7 +1630,7 @@ describe('Framework events', function() {
             },
             route: 'route',
             moduleLogic: [function(http) {
-                http.res.send('Response');
+                http.res.send(200, 'Response');
             }],
         });
 

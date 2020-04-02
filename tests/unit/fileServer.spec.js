@@ -4,6 +4,7 @@ const requestPromise = require('request-promise');
 const path = require('path');
 
 const it = mocha.it;
+const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -11,7 +12,7 @@ const gabriela = require('../../src/gabriela/gabriela');
 const config = require('../config/config');
 
 describe('File server tests', () => {
-    it('should serve a file from a directory', (done) => {
+    xit('should serve a file from a directory', (done) => {
         const g = gabriela.asServer(config, [
             {
                 name: 'route',

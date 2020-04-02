@@ -1,5 +1,3 @@
-const restify = require('restify');
-
 const {GABRIELA_EVENTS, LOGGING_TYPES} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
@@ -14,28 +12,12 @@ function _resolveOptions(options) {
     options.server.host = (options.server.host) ? options.server.host : 'localhost';
 }
 
-function _startServer(opts) {
-    const serverConfig = opts.server;
-    const Default = {
-        strictNext: false,
-        host: serverConfig.host,
-        port: serverConfig.port,
-    };
+function _createServer(opts) {
+    const express = require('express');
+    const app = express();
+    const {port, host} = opts.server;
 
-    const filtered = Object.filter(serverConfig, (key, val) => {
-        return key !== 'strictNext' && key !== 'port' && key !== 'host';
-    });
-
-    const server = restify.createServer({...Default, ...filtered});
-
-    server.use(restify.plugins.acceptParser(server.acceptable));
-    server.use(restify.plugins.queryParser());
-    server.use(restify.plugins.fullResponse());
-    server.use(restify.plugins.bodyParser());
-    server.use(restify.plugins.gzipResponse());
-    server.use(restify.plugins.multipartBodyParser());
-
-    return server;
+    return {app, port, host};
 }
 /**
  *
@@ -91,19 +73,20 @@ function Server(
 
     _resolveOptions(config);
 
-    let server = _startServer(config);
+    let server = _createServer(config);
+    let serverInstance = null;
 
     function run(moduleExecuteFactory, pluginExecuteFactory) {
         const args = {
-            moduleExecuteFactory,
-            pluginExecuteFactory,
-            pluginInterface,
-            moduleInterface,
-            server
+            moduleExecuteFactory: moduleExecuteFactory,
+            pluginExecuteFactory: pluginExecuteFactory,
+            pluginInterface: pluginInterface,
+            moduleInterface: moduleInterface,
+            server: server.app,
         };
 
         _runComponents(args).then(() => {
-            server.listen(config.server.port, config.server.host, _listenCallback.bind(
+            serverInstance = server.app.listen(server.port, server.host, _listenCallback.bind(
                 this,
                 config,
                 events,
@@ -134,9 +117,12 @@ function Server(
     }
 
     function close() {
-        server.close();
+        if (serverInstance) {
+            serverInstance.close();
+        }
 
         server = null;
+        serverInstance = null;
 
         if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
     }

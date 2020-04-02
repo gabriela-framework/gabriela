@@ -413,12 +413,12 @@ describe('Failing framework events', () => {
                 onPostResponse(http) {
                     onPostResponseCalled = true;
 
-                    http.res.send('Will not be sent');
+                    http.res.send(200, 'Will not be sent');
                 }
             },
             route: 'route',
             moduleLogic: [function(http) {
-                http.res.send('Response');
+                http.res.send(200, 'Response');
             }],
         });
 
