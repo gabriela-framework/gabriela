@@ -12,7 +12,13 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
         if (this.__insideSend) {
             this.__responseSent = true;
 
-            const {code, body, headers} = responseArgs;
+            if (this.__isRedirect) {
+                res[method]();
+
+                return;
+            }
+
+            const {code, body, headers, callback} = responseArgs;
 
             if (headers) res.set(headers);
 
@@ -35,6 +41,12 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
         this.__insideSend = false;
 
         if (!this.__responseSent) {
+            if (this.__isRedirect) {
+                res[method]();
+
+                return;
+            }
+
             const {code, body, headers} = responseArgs;
 
             if (headers) res.set(headers);
@@ -81,6 +93,20 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
 
             return this;
         },
+        jsonp(code, body, headers, callback = 'callback') {
+            _sendMethod.call(this,
+                'jsonp',
+                mdl,
+                req,
+                res,
+                state,
+                onPreResponse,
+                onPostResponse,
+                {code, body, headers, callback}
+            );
+
+            return this;
+        },
         send(code, body, headers) {
             _sendMethod.call(this,
                 'send',
@@ -113,7 +139,28 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             } else {
                 res.redirect(code);
             }
-        }
+        },
+        append(key, value) {
+            res.append(key, value);
+        },
+        attachment(path) {
+            console.log(path);
+            if (!path) {
+                res.attachment();
+            } else {
+                res.attachment(path);
+            }
+        },
+        download(path, fn) {
+            if (is('function', fn)) {
+                res.download(path, fn);
+            } else {
+                res.download(path);
+            }
+        },
+        get(type) {
+            return res.get(type);
+        },
     };
 }
 

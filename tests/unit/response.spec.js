@@ -67,6 +67,175 @@ describe('Concrete and functional http response tests', function() {
         app.startApp();
     });
 
+    it('should append the header with append() response function', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
+        const maxAge = 2000;
+        const mdl = {
+            name: 'mdl',
+            route: 'route',
+            moduleLogic: [function(http) {
+                http.res.append('Cache-Control', `max-age=${maxAge}`);
+
+                http.res.send(200, 'Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, routes,{
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+                        const cacheControl = response.headers['cache-control'];
+
+                        expect(response.body).to.be.equal('Response');
+                        expect(cacheControl).to.be.equal(`max-age=${maxAge}`);
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should add Content-Disposition with the attachment() function with no parameters', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
+        const mdl = {
+            name: 'mdl',
+            route: 'route',
+            moduleLogic: [function(http) {
+                http.res.attachment();
+
+                http.res.send(200, 'Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, routes,{
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+                        const contentDisposition = response.headers['content-disposition'];
+
+                        expect(response.body).to.be.equal('Response');
+                        expect(contentDisposition).to.be.equal('attachment');
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should add Content-Disposition with the attachment() function with path parameter', (done) => {
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
+        const mdl = {
+            name: 'mdl',
+            route: 'route',
+            moduleLogic: [function(http) {
+                http.res.attachment('/path/to/attachment.jpg');
+
+                http.res.send(200, 'Response');
+            }],
+        };
+
+        const app = gabriela.asServer(config, routes,{
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+                        const contentDisposition = response.headers['content-disposition'];
+                        const contentType = response.headers['content-type'];
+
+                        expect(response.body).to.be.equal('Response');
+                        expect(contentDisposition).to.be.equal('attachment; filename="attachment.jpg"');
+                        expect(contentType).to.be.equal('image/jpeg; charset=utf-8');
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should get already set header with get method', (done) => {
+        let middlewareCalled = false;
+        const routes = [
+            {
+                name: 'route',
+                method: 'get',
+                path: '/route',
+            }
+        ];
+
+        const mdl = {
+            name: 'mdl',
+            route: 'route',
+            moduleLogic: [function(http) {
+                middlewareCalled = true;
+
+                http.res.set('X-SOME-HEADER', 'header');
+                http.res.set({'X-OTHER-HEADER': 'header'});
+
+                expect(http.res.get('X-SOME-HEADER')).to.be.equal('header');
+                expect(http.res.get('X-OTHER-HEADER')).to.be.equal('header');
+            }],
+        };
+
+        const app = gabriela.asServer(config, routes,{
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://localhost:3000/route', (err, response) => {
+                        expect(middlewareCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    })
+                }
+            }
+        });
+
+        app.addModule(mdl);
+
+        app.startApp();
+    });
+
     it('should set a custom header on a response', (done) => {
         const routes = [
             {

@@ -79,7 +79,7 @@ function _handleError(err, mdl, httpContext = null) {
 function factory(server, mdl) {
     if (mdl.isHttp()) {
         return async function(mdl, context, config) {
-            const method = mdl.http.method.toLowerCase()
+            const method = mdl.http.method.toLowerCase();
             const path = mdl.getFullPath();
 
             if (mdl.http.static) {
