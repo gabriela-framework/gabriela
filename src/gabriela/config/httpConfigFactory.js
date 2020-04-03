@@ -54,7 +54,9 @@ function _resolveServer(server) {
     if (!hasKey(server, 'port')) newServer.port = 3000;
 
     if (!is('string', newServer.host)) throw new Error(`Invalid config. 'server.host' must be a string.`);
-    if (!Number.isInteger(newServer.port)) throw new Error(`Invalid config. 'server.port' must be an integer.`);
+    if (!Number.isInteger(parseInt(newServer.port))) throw new Error(`Invalid config. 'server.port' must be an integer.`);
+
+    newServer.port = parseInt(newServer.port);
 
     return newServer;
 }
@@ -124,8 +126,8 @@ function instance() {
             return _getFullDefaultConfig();
         }
 
+        _replaceEnvironmentVariables(config);
         const resolvedConfig = _resolveConfig(config);
-        _replaceEnvironmentVariables(resolvedConfig);
 
         validateGabrielaEvents(config.events);
         validateHttpEvents(config.events);

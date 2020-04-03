@@ -36,6 +36,35 @@ describe('http config factory tests', () => {
         _defaultServerAsserts(config.server);
     });
 
+    it('should replace environment variables with values', () => {
+        process.env.ENV = 'prod';
+        process.env.SERVER_PORT = 4000;
+        process.env.SERVER_HOST = '127.0.0.34';
+
+        const config = httpConfigFactory.create({
+            framework: {
+                env: "env('ENV')",
+            },
+            server: {
+                host: "env('SERVER_HOST')",
+                port: "env('SERVER_PORT')",
+            }
+        });
+
+        _defaultAsserts(config);
+
+        const framework = config.framework;
+
+        expect(framework.env).to.be.equal(ENV.PRODUCTION);
+        expect(framework.performance).to.be.a('object');
+        expect(framework.performance.memoryWarningLimit).to.be.equal(50);
+
+        const server = config.server;
+
+        expect(server.host).to.be.equal('127.0.0.34');
+        expect(server.port).to.be.equal(4000);
+    });
+
     it('should add the default framework and server config if they are not present', () => {
         const config = httpConfigFactory.create({
             events: {},

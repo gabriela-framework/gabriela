@@ -2,14 +2,9 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-const processConfigFactory = require('./src/gabriela/config/processConfigFactory');
+const isNumber = function isNumber(value) {
 
-process.env.ENV = 'prod';
+    return typeof value === 'number' && isFinite(value) && parseInt(value) !== NaN;
+};
 
-const config = processConfigFactory.create({
-    framework: {
-        env: "env('ENV')",
-    }
-});
-
-console.log(config);
+console.log(isNumber('4000'));

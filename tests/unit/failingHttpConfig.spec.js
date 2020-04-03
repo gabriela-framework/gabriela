@@ -25,6 +25,27 @@ describe('Failing http config tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
+    it('should fail to parse environment variable if env var does not exist', () => {
+        let entersException = false;
+        process.env.ENV = 'prod';
+        try {
+            httpConfigFactory.create({
+                framework: {
+                    env: "env('ENV')",
+                },
+                server: {
+                    host: "env('not_exists')",
+                }
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid config. Environment variable 'not_exists' does not exist`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
     it('should fail if performance is there but is not an object', () => {
         let entersException = false;
         try {
