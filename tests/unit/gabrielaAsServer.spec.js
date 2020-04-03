@@ -2,8 +2,6 @@ const mocha = require('mocha');
 const chai = require('chai');
 const faker = require('faker');
 const requestPromise = require('request-promise');
-const pem = require('pem');
-const url = require('url');
 
 const it = mocha.it;
 const describe = mocha.describe;

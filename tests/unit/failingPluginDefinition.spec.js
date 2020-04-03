@@ -2,8 +2,6 @@ const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
 
-const {HTTP_METHODS} = require('../../src/gabriela/misc/types');
-
 const it = mocha.it;
 const xit = mocha.xit;
 const describe = mocha.describe;

@@ -1,6 +1,5 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;

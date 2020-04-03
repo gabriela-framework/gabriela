@@ -1,6 +1,5 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
 const assert = require('assert');
 
 const it = mocha.it;
@@ -8,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
 
 describe('Failing dependency injection tests', () => {
     it('should fail to compile because init dependency value not being an object', () => {

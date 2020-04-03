@@ -1,7 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
-const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const xit = mocha.xit;
