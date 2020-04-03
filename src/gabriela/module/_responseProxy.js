@@ -77,6 +77,7 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
 function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
     return {
         __responseSent: false,
+        __isFileSent: false,
         __insideSend: false,
         __isRedirect: false,
         json(code, body, headers) {
@@ -160,6 +161,12 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
         get(type) {
             return res.get(type);
         },
+        sendFile(path, options, fn) {
+            this.__responseSent = true;
+            this.__isFileSent = true;
+
+            res.sendFile(path, options, fn);
+        }
     };
 }
 

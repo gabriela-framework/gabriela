@@ -1,33 +1,40 @@
 const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
+const path = require('path');
 
-
-const mdl = {
-    name: 'mdl',
-    moduleLogic: [
-        async function() {
-            throw new Error('Async error');
+const config = {
+    routes: [
+        {
+            name: 'route',
+            path: '/index',
+            method: 'GET',
         }
-    ]
-};
-
-const plugin = {
-    name: 'plugin',
-    modules: [mdl],
-    mediator: {
-        onError() {
-            throw new Error('Plugin Async error');
-        }
-    }
-};
-
-const app = gabriela.asProcess({config: {framework: {}}}, {
+    ],
     events: {
         onAppStarted() {
+            requestPromise.get('http://localhost:3000/index', (err, res) => {
+                this.gabriela.close();
+            });
+        },
+        catchError(e) {
+            this.gabriela.close();
         }
     }
+};
+
+const g = gabriela.asServer(config);
+
+g.addModule({
+    name: 'fileModule',
+    route: 'route',
+    moduleLogic: [function(http, done) {
+        const staticPath = require('path').normalize(__dirname + '/tests/files/index.html');
+
+        console.log(staticPath);
+        http.res.sendFile(staticPath);
+
+        done();
+    }]
 });
 
-app.addPlugin(plugin);
-
-app.startApp();
+g.startApp();

@@ -275,7 +275,7 @@ describe('Router tests', () => {
         expect(entersException).to.be.equal(entersException);
     });
 
-    it('should fail if static.directory is not a string', () => {
+    it('should fail if static.path is not a string', () => {
         const routes = [
             {
                 name: 'route',
@@ -286,7 +286,7 @@ describe('Router tests', () => {
                         path: '/path',
                         method: 'GET',
                         'static': {
-                            directory: null,
+                            path: null,
                         },
                     }
                 ],
@@ -299,7 +299,69 @@ describe('Router tests', () => {
         } catch (e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid route 'route'. 'static.directory' must be a string`);
+            expect(e.message).to.be.equal(`Invalid route 'route'. 'static.path' must be a string`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
+
+    it('should fail if static.path is not an absolute path', () => {
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/path',
+                        method: 'GET',
+                        'static': {
+                            path: '../../path',
+                        },
+                    }
+                ],
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid route 'route'. 'static.path' must be an absolute path`);
+        }
+
+        expect(entersException).to.be.equal(entersException);
+    });
+
+    it('should fail if static.path does not exist', () => {
+        const staticPath = require('path').normalize(__dirname + '/../files/notExists.html');
+
+        const routes = [
+            {
+                name: 'route',
+                basePath: '/base-path',
+                routes: [
+                    {
+                        name: 'route',
+                        path: '/path',
+                        method: 'GET',
+                        'static': {
+                            path: staticPath,
+                        },
+                    }
+                ],
+            }
+        ];
+
+        let entersException = false;
+        try {
+            Router.injectRoutes(routes);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Invalid route 'route'. 'static.path' '${staticPath}' does not exist.`);
         }
 
         expect(entersException).to.be.equal(entersException);

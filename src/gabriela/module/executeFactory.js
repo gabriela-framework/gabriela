@@ -2,6 +2,7 @@ const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
+const fs = require('fs');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {
@@ -83,59 +84,61 @@ function factory(server, mdl) {
             const path = mdl.getFullPath();
 
             if (mdl.http.static) {
-                const staticConfig = {};
-                staticConfig.directory = mdl.http.static.directory;
+                server[method](path, function(req, res) {
+                    const responseEvent = _getResponseEvents(mdl);
+                    const staticPath = mdl.http.static.path;
 
-                if (mdl.http.static.file) {
-                    staticConfig.file = mdl.http.static.file;
-                } else {
-                    staticConfig.default = 'index.html';
-                }
+                    const responseProxy = createResponseProxy(
+                        req,
+                        res,
+                        {},
+                        mdl,
+                        responseEvent.onPreResponse,
+                        responseEvent.onPostResponse,
+                    );
 
-                //server[method](path, restify.plugins.serveStatic(staticConfig));
+                    responseProxy.sendFile(staticPath);
+                });
+            } else {
+                server[method](path, async function(req, res) {
+                    let state = {};
 
-                return;
-            }
+                    const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
 
-            server[method](path, async function(req, res, next) {
-                let state = {};
+                    const responseEvent = _getResponseEvents(mdl);
 
-                const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
+                    const responseProxy = createResponseProxy(
+                        req,
+                        res,
+                        state,
+                        mdl,
+                        responseEvent.onPreResponse,
+                        responseEvent.onPostResponse,
+                    );
 
-                const responseEvent = _getResponseEvents(mdl);
+                    httpContext.res = responseProxy;
 
-                const responseProxy = createResponseProxy(
-                    req,
-                    res,
-                    state,
-                    mdl,
-                    responseEvent.onPreResponse,
-                    responseEvent.onPostResponse,
-                    next,
-                );
-
-                httpContext.res = responseProxy;
-
-                try {
-                    for (const functions of middleware) {
-                        await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
+                    try {
+                        for (const functions of middleware) {
+                            await runMiddleware.call(context, ...[mdl, functions, config, state, httpContext]);
+                        }
+                    } catch (e) {
+                        _handleError(e, mdl, httpContext);
                     }
-                } catch (e) {
-                    _handleError(e, mdl, httpContext);
-                }
 
-                if (!responseProxy.__responseSent) {
-                    responseProxy.send(200, deepCopy(state));
-                }
+                    if (!responseProxy.__responseSent) {
+                        responseProxy.send(200, deepCopy(state));
+                    }
 
-                res.end();
+                    if (!responseProxy.__isFileSent) {
+                        res.end();
+                    }
 
-                if (!responseProxy.__isRedirect) {
-                    state = null;
-                }
-
-                return next();
-            });
+                    if (!responseProxy.__isRedirect) {
+                        state = null;
+                    }
+                });
+            }
         }
     }
 

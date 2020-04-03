@@ -10,7 +10,7 @@ const {
     BUILT_IN_MEDIATORS,
 } = require('./types');
 
-const {is, hasKey, convertToRestifyHttpMethods, isAsyncFn} = require('../util/util');
+const {is, hasKey, isAsyncFn} = require('../util/util');
 
 /**
  * The exception message is self explanatory. This package can only be a static package of static function validators
@@ -126,12 +126,14 @@ factory.validateRegularRoute = function(route) {
     if (!is('string', route.path)) throw new Error(`Invalid route '${route.name}'. 'path' must be a string.`);
     if (!is('string', route.method)) throw new Error(`Invalid route '${route.name}'. 'method' must be a string.`);
 
-    if (hasKey(route, 'static') && !is('object', route)) throw new Error(`Invalid route '${route.name}'. 'static' must be an object`);
+    if (hasKey(route, 'static') && !is('object', route.static)) throw new Error(`Invalid route '${route.name}'. 'static' must be an object`);
 
     if (hasKey(route, 'static')) {
         const staticConfig = route.static;
 
-        if (staticConfig && !is('string', staticConfig.directory)) throw new Error(`Invalid route '${route.name}'. 'static.directory' must be a string`);
+        if (staticConfig && !is('string', staticConfig.path)) throw new Error(`Invalid route '${route.name}'. 'static.path' must be a string`);
+        if (!require('path').isAbsolute(staticConfig.path)) throw new Error(`Invalid route '${route.name}'. 'static.path' must be an absolute path`);
+        if (!require('fs').existsSync(staticConfig.path)) throw new Error(`Invalid route '${route.name}'. 'static.path' '${staticConfig.path}' does not exist.`);
     }
 
     if (!HTTP_METHODS.toArray().includes(route.method.toLowerCase())) throw new Error(`Invalid route '${route.name}'. Invalid method '${route.method}'. Valid method are: '${HTTP_METHODS.toArray().join(', ')}'`);
