@@ -25,13 +25,14 @@ describe('Middleware context usage tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, [
-            {
-                name: 'route',
-                path: '/path',
-                method: 'GET',
-            }
-        ], {
+        const config = {
+            routes: [
+                {
+                    name: 'route',
+                    path: '/path',
+                    method: 'GET',
+                }
+            ],
             events: {
                 onAppStarted: function() {
                     requestPromise.get('http://127.0.0.1:3000/path')
@@ -42,7 +43,9 @@ describe('Middleware context usage tests', function() {
                         });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -69,13 +72,14 @@ describe('Middleware context usage tests', function() {
             modules: [mdl],
         };
 
-        const app = gabriela.asServer(config, [
-            {
-                name: 'route',
-                path: '/path',
-                method: 'GET',
-            }
-        ], {
+        const config = {
+            routes: [
+                {
+                    name: 'route',
+                    path: '/path',
+                    method: 'GET',
+                }
+            ],
             events: {
                 onAppStarted: function() {
                     requestPromise.get('http://127.0.0.1:3000/path')
@@ -86,7 +90,9 @@ describe('Middleware context usage tests', function() {
                         });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addPlugin(plugin);
 

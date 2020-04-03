@@ -1,44 +1,33 @@
 const gabriela = require('./src/index');
-const request = require('request');
+const requestPromise = require('request-promise');
 
-const httpMdl = {
-    name: 'http',
-    route: 'test',
-    moduleLogic: [function(http) {
-        console.log('Request success');
-    }],
+
+const mdl = {
+    name: 'mdl',
+    moduleLogic: [
+        async function() {
+            throw new Error('Async error');
+        }
+    ]
 };
 
-const app = gabriela.asServer({
-    config: {
-        framework: {
-            env: 'dev'
-        },
-        server: {
-            port: 3000,
-            host: '127.0.0.1',
+const plugin = {
+    name: 'plugin',
+    modules: [mdl],
+    mediator: {
+        onError() {
+            throw new Error('Plugin Async error');
         }
     }
-}, [
-    {
-        name: 'test',
-        path: '/path',
-        method: 'GET',
-    }
-], {
+};
+
+const app = gabriela.asProcess({config: {framework: {}}}, {
     events: {
         onAppStarted() {
-            request.get('http://127.0.0.1:3000/path')
-                .then(() => {
-                    console.log('request success');
-                })
-                .catch((err) => {
-                    console.error(err);
-                })
         }
     }
 });
 
-app.addModule(httpMdl);
+app.addPlugin(plugin);
 
 app.startApp();

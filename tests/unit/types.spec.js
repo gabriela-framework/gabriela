@@ -18,7 +18,6 @@ const {
     INJECTION_TYPES,
     BUILT_IN_MEDIATORS,
     VISIBILITY_TYPES,
-    LOGGING_TYPES,
 } = require('../../src/gabriela/misc/types');
 
 describe('Types test', () => {
@@ -116,13 +115,6 @@ describe('Types test', () => {
        expect(INJECTION_TYPES.PROPERTY).to.be.equal('property');
        expect(INJECTION_TYPES.CONSTRUCTOR).to.be.equal('constructor');
        expect(INJECTION_TYPES.METHOD).to.be.equal('method');
-
-       types = ['warning', 'notice', 'deprecation'];
-       assert.deepEqual(types, Object.values(LOGGING_TYPES));
-
-       expect(LOGGING_TYPES.WARNING).to.be.equal('warning');
-       expect(LOGGING_TYPES.NOTICE).to.be.equal('notice');
-       expect(LOGGING_TYPES.DEPRECATION).to.be.equal('deprecation');
    });
 
     it('should be updated with the middleware types list in types.js', () => {

@@ -4,7 +4,6 @@ const Emitter = require('../events/emitter');
 const {is, hasKey} = require('../util/util');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const _addDependencies = require('./dependencyInjection/_addDependencies');
-const LoggerProxy = require('../logging/loggerProxySingleton');
 const Router = require('../router/router');
 
 function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, config) {

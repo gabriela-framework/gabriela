@@ -23,7 +23,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://127.0.0.1:3000/path').then(() => {
@@ -35,7 +36,9 @@ describe('Tests for all server http methods', () => {
                     });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -61,7 +64,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.post('http://127.0.0.1:3000/path').then(() => {
@@ -74,7 +78,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -100,7 +106,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.put('http://127.0.0.1:3000/path').then(() => {
@@ -113,7 +120,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -139,7 +148,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.options('http://127.0.0.1:3000/path').then(() => {
@@ -152,7 +162,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -178,7 +190,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.patch('http://127.0.0.1:3000/path').then(() => {
@@ -191,7 +204,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -217,7 +232,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.head('http://127.0.0.1:3000/path').then(() => {
@@ -230,7 +246,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',
@@ -256,7 +274,8 @@ describe('Tests for all server http methods', () => {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.delete('http://127.0.0.1:3000/path').then(() => {
@@ -269,7 +288,9 @@ describe('Tests for all server http methods', () => {
 
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         const mdl = {
             name: 'mdl',

@@ -1,35 +1,14 @@
-"use strict";
-
 const pluginExecuteFactory = require('./plugin/executeFactory');
 const moduleExecuteFactory = require('./module/executeFactory');
 const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
-const configFactory = require('./configFactory');
 const Server = require('./server/server');
-const Validator = require('./misc/validator');
 const ExposedMediator = require('./events/exposedMediator');
-
-const loggerProxy = require('./logging/loggerProxySingleton');
-const LoggerFactory = require('./logging/loggerFactory');
-const MemoryLogger = require('./logging/memoryLogger');
-const MemoryLoggerSingleton = require('./logging/memoryLoggerSingleton');
 
 // TODO: make the execution factories be per module or plugin.
 
-module.exports = function _asServer(receivedConfig, events) {
-    const config = configFactory.create(receivedConfig);
-    const opts = events || {};
-
-    loggerProxy.injectLogger(
-        LoggerFactory.create(config),
-        receivedConfig.config.framework.env
-    );
-
-    MemoryLoggerSingleton.injectLogger(MemoryLogger, config.config.framework.performance.memoryWarningLimit);
-
-    Validator.validateServerOptions(config.config.server);
-
+module.exports = function _asServer(config) {
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
     const exposedMediator = new ExposedMediator();
@@ -72,14 +51,14 @@ module.exports = function _asServer(receivedConfig, events) {
         getPlugins: pluginInterface.getAll,
 
         startApp(customMdlExecFactory = null, customPluginExecFactory = null) {
-            const {events} = opts;
+            const events = config.events;
 
             // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 
             const server = new Server(
-                config.config,
+                config,
                 events,
                 rootCompiler,
                 pluginInterface,

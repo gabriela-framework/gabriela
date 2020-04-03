@@ -15,17 +15,14 @@ describe('Failing server tests', () => {
         let entersException = false;
         try {
             gabriela.asServer({
-                config: {
-                    server: {
-                        port: 'invalid'
-                    },
-                    framework: {},
-                }
-            }, []);
+                server: {
+                    port: 'invalid'
+                },
+            });
         } catch (err) {
             entersException = true;
 
-            expect(err.message).to.be.equal(`Invalid server configuration. 'port' has to be an integer`);
+            expect(err.message).to.be.equal(`Invalid config. 'server.port' must be an integer.`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -34,38 +31,33 @@ describe('Failing server tests', () => {
     it('should fail the server because of invalid server options while having an invalid server events option', () => {
         let entersException = false;
         try {
-            gabriela.asServer({
-                config: {
-                    server: {
-                        port: 'invalid'
-                    },
-                    framework: {}
-                }
-            }, [], {
+            const config = {
+                server: {
+                    port: 'invalid'
+                },
                 events: {
                     onAppStarted: null,
-
                 }
-            });
+            };
+
+            gabriela.asServer(config);
         } catch(e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid server configuration. 'port' has to be an integer`);
+            expect(e.message).to.be.equal(`Invalid config. 'server.port' must be an integer.`);
         }
 
         expect(entersException).to.be.equal(true);
     });
 
     it('should fail the server because of invalid catchError event', () => {
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, [],{
+        const config = {
             events: {
                 catchError: null,
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         let entersException = false;
         try {
@@ -80,15 +72,13 @@ describe('Failing server tests', () => {
     });
 
     it('should fail the server because of invalid onPreResponse event', () => {
-        const g = gabriela.asServer({
-            config: {
-                framework: {}
-            }
-        }, [], {
+        const config = {
             events: {
                 onPreResponse: null,
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         let entersException = false;
         try {
@@ -104,10 +94,6 @@ describe('Failing server tests', () => {
 
     it('should fail the server because of invalid onPostResponse event', () => {
         const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, [],{
             events: {
                 onPostResponse: null,
             }
@@ -127,10 +113,6 @@ describe('Failing server tests', () => {
 
     it('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
         const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, [],{
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong');
@@ -151,10 +133,6 @@ describe('Failing server tests', () => {
 
     it('error thrown inside middleware processing should take precendence over an error thrown inside onAppStarted event', (done) => {
         const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, [],{
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong in onAppStarted');
@@ -219,11 +197,12 @@ describe('Failing server tests', () => {
                 method: 'GET',
             }
         ];
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, routes);
+
+        const config = {
+            routes: routes,
+        };
+
+        const g = gabriela.asServer(config);
 
         const mdl = {
             name: 'module',

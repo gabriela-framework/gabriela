@@ -1137,7 +1137,8 @@ describe('Framework events', function() {
         let calledEvent1 = 0;
         let calledEvent2 = 0;
 
-        const g = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     const promises = [];
@@ -1159,7 +1160,9 @@ describe('Framework events', function() {
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         const userServiceDefinition = {
             name: 'userService',
@@ -1224,25 +1227,16 @@ describe('Framework events', function() {
         g.startApp();
     });
 
-    it('should run all exposed events are ran as a process', (done) => {
-        const routes = [
-            {
-                name: 'emit-event',
-                path: '/emit',
-                method: 'get',
-            }
-        ];
-
+    xit('should run all exposed events are ran as a process', (done) => {
         let catchedEvent1 = false;
         let catchedEvent2 = false;
 
         let calledEvent1 = 0;
         let calledEvent2 = 0;
 
-        const g = gabriela.asServer(config, routes,{
+        const g = gabriela.asProcess(config, {
             events: {
                 onAppStarted() {
-
                     const promises = [];
 
                     for (let i = 0; i < 10; i++) {
@@ -1277,7 +1271,6 @@ describe('Framework events', function() {
         const emittingModule = {
             name: 'emittingModule',
             dependencies: [userServiceDefinition],
-            route: 'emit-event',
             moduleLogic: [function() {
                 this.mediator.emit('onExposedEvent', {name: 'name'});
             }],
@@ -1327,7 +1320,7 @@ describe('Framework events', function() {
     });
 
     it('should catch an unhandleed non gabriela error in the catchError event', (done) => {
-        const g = gabriela.asServer(config, [],{
+        const config = {
             events: {
                 catchError(err) {
                     expect(err.message).to.be.equal('Something went wrong in module1');
@@ -1337,7 +1330,9 @@ describe('Framework events', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         const module1 = {
             name: 'module1',
@@ -1370,7 +1365,7 @@ describe('Framework events', function() {
             },
         ];
 
-        const g = gabriela.asServer(config, routes,{
+        const config = {
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1379,8 +1374,11 @@ describe('Framework events', function() {
                         done();
                     }, 5000);
                 }
-            }
-        });
+            },
+            routes: routes,
+        };
+
+        const g = gabriela.asServer(config);
 
         const userServiceDefinition = {
             name: 'userService',
@@ -1457,19 +1455,22 @@ describe('Framework events', function() {
             },
         ];
 
-        const g = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     setTimeout(() => {
                         expect(onPostResponseCalled).to.be.equal(true);
-                        
+
                         this.gabriela.close();
 
                         done();
                     }, 5000);
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         const userServiceDefinition = {
             name: 'userService',
@@ -1528,7 +1529,9 @@ describe('Framework events', function() {
         ];
 
         let onPreResponseCalled = false;
-        const g = gabriela.asServer(config, routes,{
+
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1540,7 +1543,9 @@ describe('Framework events', function() {
                     }, 5000);
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         const userServiceDefinition = {
             name: 'userService',
@@ -1604,7 +1609,8 @@ describe('Framework events', function() {
             },
         ];
 
-        const g = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     setTimeout(() => {
@@ -1616,7 +1622,9 @@ describe('Framework events', function() {
                     }, 5000);
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule({
             name: 'module',
@@ -1679,7 +1687,8 @@ describe('Framework events', function() {
             }
         ];
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -1691,7 +1700,9 @@ describe('Framework events', function() {
                     });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule({
             name: 'module',

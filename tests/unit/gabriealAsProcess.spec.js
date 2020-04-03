@@ -648,12 +648,12 @@ describe('Gabriela as process tests', () => {
 
         const mdl = {
             name: name,
-            preLogicTransformers: [modelCreationTransformer],
+            init: [modelCreationTransformer],
             validators: [ageValidator],
             moduleLogic: [],
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess(config);
 
         g.addModule(mdl);
 

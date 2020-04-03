@@ -387,7 +387,8 @@ describe('Failing framework events', () => {
             },
         ];
 
-        const g = gabriela.asServer(config, routes, {
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -402,7 +403,9 @@ describe('Failing framework events', () => {
                     });
                 },
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule({
             name: 'module',

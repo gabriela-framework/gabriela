@@ -463,11 +463,8 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmailWithDependency(userRepository, next, state, http)'],
         };
 
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, routes, {
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route').then(() => {
@@ -479,7 +476,9 @@ describe('Immediately executing middleware with dependency injection and express
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 

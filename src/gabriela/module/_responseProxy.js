@@ -144,7 +144,6 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             res.append(key, value);
         },
         attachment(path) {
-            console.log(path);
             if (!path) {
                 res.attachment();
             } else {

@@ -1,7 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
 const assert = require('assert');
-const {MIDDLEWARE_TYPES} = require('./../../src/gabriela/misc/types');
 
 const it = mocha.it;
 const describe = mocha.describe;

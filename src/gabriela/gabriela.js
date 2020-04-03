@@ -5,14 +5,13 @@ require('strict-mode')(function () {
     const configFactory = require('./configFactory');
 
     module.exports = {
-        asServer(receivedConfig, routes, events) {
-            if (!receivedConfig) {
-                receivedConfig = configFactory.getDefaultConfig();
-            }
+        asServer(config) {
+            const httpConfigFactory = require('./config/httpConfigFactory');
+            const resolvedConfig = httpConfigFactory.create(config);
 
-            Router.injectRoutes(routes);
+            Router.injectRoutes(resolvedConfig.routes);
 
-            return require('./_asServer').call(null, receivedConfig, events);
+            return require('./_asServer').call(null, resolvedConfig);
         },
 
         asProcess(receivedConfig, options) {

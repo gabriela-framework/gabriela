@@ -16,14 +16,10 @@ describe('Gabriela server tests', function() {
     this.timeout(10000);
 
     it('should start listening to the server and start the app without any plugins or modules', (done) => {
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     this.gabriela.close();
@@ -31,21 +27,19 @@ describe('Gabriela server tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.startApp();
     });
 
     it('should start listening to the server with custom host and port', (done) => {
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                    host: '127.0.0.1'
-                },
-                framework: {},
-            }
-        }, [],{
+        const config = {
+            server: {
+                port: 4000,
+                host: '127.0.0.1'
+            },
             events: {
                 onAppStarted: function() {
                     this.gabriela.close();
@@ -53,7 +47,9 @@ describe('Gabriela server tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.startApp();
     });
@@ -89,14 +85,10 @@ describe('Gabriela server tests', function() {
             modules: [pluginModule1, pluginModule2],
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
+        const config = {
+            server: {
+                port: 4000,
             },
-        }, [],{
             events: {
                 onAppStarted: function() {
                     expect(pluginModule1Executed).to.be.equal(true);
@@ -108,7 +100,9 @@ describe('Gabriela server tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
         g.addPlugin(plugin);
@@ -158,14 +152,10 @@ describe('Gabriela server tests', function() {
             modules: [pluginModule1, pluginModule2],
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function(userService) {
                     expect(userService).to.be.a('object');
@@ -179,7 +169,9 @@ describe('Gabriela server tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
         g.addPlugin(plugin);
@@ -256,7 +248,8 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/users', (err, res) => {
@@ -276,7 +269,9 @@ describe('Gabriela server tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addPlugin({
             name: 'userManagement',
@@ -311,11 +306,8 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            },
-        }, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/path').then(() => {
@@ -327,7 +319,9 @@ describe('Gabriela server tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 
@@ -335,11 +329,7 @@ describe('Gabriela server tests', function() {
     });
 
     it('should run the onExit event after the server is closed', (done) => {
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, [], {
+        const config = {
             events: {
                 onAppStarted() {
                     this.gabriela.close();
@@ -348,7 +338,9 @@ describe('Gabriela server tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.startApp();
     });
@@ -377,11 +369,7 @@ describe('Gabriela server tests', function() {
             }],
         };
 
-        const g = gabriela.asServer({
-            config: {
-                framework: {},
-            }
-        }, routes,{
+        const config = {
             events: {
                 onAppStarted() {
                     let options = {
@@ -398,8 +386,11 @@ describe('Gabriela server tests', function() {
                         done();
                     });
                 },
-            }
-        });
+            },
+            routes: routes,
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(httpsMdl);
 
@@ -436,7 +427,8 @@ describe('Gabriela server tests', function() {
             modules: [mdl],
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');
@@ -456,7 +448,9 @@ describe('Gabriela server tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addPlugin(plugin);
 
@@ -493,7 +487,8 @@ describe('Gabriela server tests', function() {
             modules: [mdl],
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');
@@ -513,7 +508,9 @@ describe('Gabriela server tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addPlugin(plugin);
 
@@ -550,7 +547,8 @@ describe('Gabriela server tests', function() {
             modules: [mdl],
         };
 
-        const g = gabriela.asServer({config: {framework: {}}}, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     console.log('THIS APP HAS STARTED');
@@ -570,7 +568,9 @@ describe('Gabriela server tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addPlugin(plugin);
 

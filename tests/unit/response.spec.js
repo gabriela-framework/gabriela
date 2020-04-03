@@ -45,7 +45,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -60,7 +61,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -87,7 +90,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -102,7 +106,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -128,7 +134,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -143,7 +150,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -169,7 +178,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -186,7 +196,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -217,7 +229,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -229,7 +242,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -254,7 +269,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -270,7 +286,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -294,7 +312,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -309,7 +328,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -336,7 +357,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -350,7 +372,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -379,7 +403,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise.get('http://localhost:3000/route', (err, response) => {
@@ -394,7 +419,9 @@ describe('Concrete and functional http response tests', function() {
                     })
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
 
@@ -431,7 +458,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise({
@@ -447,7 +475,9 @@ describe('Concrete and functional http response tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
         app.addModule(redirectModule);
@@ -485,7 +515,8 @@ describe('Concrete and functional http response tests', function() {
             }],
         };
 
-        const app = gabriela.asServer(config, routes,{
+        const config = {
+            routes: routes,
             events: {
                 onAppStarted() {
                     requestPromise({
@@ -501,7 +532,9 @@ describe('Concrete and functional http response tests', function() {
                     });
                 }
             }
-        });
+        };
+
+        const app = gabriela.asServer(config);
 
         app.addModule(mdl);
         app.addModule(redirectModule);

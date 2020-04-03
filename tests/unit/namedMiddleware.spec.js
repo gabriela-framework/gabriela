@@ -6,7 +6,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Named middleware tests', function() {
     this.timeout(10000);
@@ -61,14 +60,10 @@ describe('Named middleware tests', function() {
             ]
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     expect(init1).to.be.equal(true);
@@ -84,7 +79,9 @@ describe('Named middleware tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 
@@ -183,14 +180,10 @@ describe('Named middleware tests', function() {
             ]
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     expect(init1).to.be.equal(true);
@@ -206,7 +199,9 @@ describe('Named middleware tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 
@@ -285,14 +280,10 @@ describe('Named middleware tests', function() {
             ]
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     expect(init1).to.be.equal(true);
@@ -307,7 +298,9 @@ describe('Named middleware tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 
@@ -387,14 +380,10 @@ describe('Named middleware tests', function() {
             ]
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     expect(init1).to.be.equal(true);
@@ -409,7 +398,9 @@ describe('Named middleware tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 
@@ -487,14 +478,10 @@ describe('Named middleware tests', function() {
             ]
         };
 
-        const g = gabriela.asServer({
-            config: {
-                server: {
-                    port: 4000,
-                },
-                framework: {},
-            }
-        }, [], {
+        const config = {
+            server: {
+                port: 4000,
+            },
             events: {
                 onAppStarted: function() {
                     expect(init1).to.be.equal(true);
@@ -509,7 +496,9 @@ describe('Named middleware tests', function() {
                     done();
                 }
             }
-        });
+        };
+
+        const g = gabriela.asServer(config);
 
         g.addModule(mdl);
 

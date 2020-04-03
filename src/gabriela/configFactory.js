@@ -45,6 +45,11 @@ function _validateFramework(framework) {
     if (!Number.isInteger(framework.performance.memoryWarningLimit)) throw new Error(`Invalid config. 'framework.performance.memoryWarningLimit' must be an integer`);
 }
 
+/**
+ * 1. If config is missing, return default configuration
+ * 2. If config is an object, validate each part and add missing values
+ */
+
 function instance() {
     this.create = function(config) {
         if (!is('object', config)) throw new Error(`Invalid config. Gabriela configuration must be a plain javascript object with only the mandatory 'config' property that also must be a plan object (even if empty)`);

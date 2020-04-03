@@ -20,16 +20,6 @@ class VisibilityTypes extends IIterator {
     }
 }
 
-class LoggingTypes extends IIterator {
-    constructor() {
-        super();
-
-        this.WARNING = 'warning';
-        this.NOTICE = 'notice';
-        this.DEPRECATION = 'deprecation';
-    }
-}
-
 class InjectionTypes extends IIterator {
     constructor() {
         super();
@@ -139,5 +129,4 @@ module.exports = Object.freeze({
     ENV: Object.freeze(_proxifyType(new EnvTypes())),
     INJECTION_TYPES: Object.freeze(_proxifyType(new InjectionTypes())),
     VISIBILITY_TYPES: Object.freeze(_proxifyType(new VisibilityTypes())),
-    LOGGING_TYPES: Object.freeze(_proxifyType(new LoggingTypes())),
 });

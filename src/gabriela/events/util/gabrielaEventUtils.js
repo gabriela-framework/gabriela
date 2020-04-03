@@ -1,7 +1,6 @@
 const {GABRIELA_EVENTS} = require('../../misc/types');
 const GenericMediator = require('../genericMediator');
 const {hasKey} = require('../../util/util');
-const LoggerProxy = require('../../logging/loggerProxySingleton');
 const {LOGGING_TYPES} = require('../../misc/types');
 
 /**
@@ -20,8 +19,6 @@ function callSingleGabrielaEvent(event, rootCompiler, err) {
 
 async function runOnAppStarted(events, rootCompiler, err) {
     if (!hasKey(events, GABRIELA_EVENTS.ON_APP_STARTED)) {
-        LoggerProxy.log(LOGGING_TYPES.NOTICE, `onAppStarted event not registered. Skipping.`);
-
         return;
     }
 
@@ -37,8 +34,6 @@ async function runOnAppStarted(events, rootCompiler, err) {
      * If onCatchError does not exist, the error is thrown.
      */
     try {
-        LoggerProxy.log(LOGGING_TYPES.NOTICE, `onAppStarted event detected. Running it now.`);
-
         callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_APP_STARTED], rootCompiler, err);
     } catch (eventError) {
         eventError.message = `An error has been thrown in '${GABRIELA_EVENTS.ON_APP_STARTED}' gabriela event with message: '${eventError.message}'. This is regarded as an unrecoverable error and the server has closed`;

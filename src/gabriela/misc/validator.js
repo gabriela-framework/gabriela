@@ -198,18 +198,6 @@ factory.validatePlugin = function(plugin, Router) {
     }
 };
 
-factory.validateServerOptions = function(options) {
-    if (options) {
-        if (hasKey(options, 'port')) {
-            if (!Number.isInteger(options.port)) throw new Error(`Invalid server configuration. 'port' has to be an integer`);
-        }
-
-        if (hasKey(options, 'host')) {
-            if (!is('string', options.host)) throw new Error(`Invalid server configuration. 'host' has to be a string`);
-        }
-    }
-};
-
 factory.validateDefinitionObject = function(init, moduleName) {
     if (!is('object', init)) throw new Error(`Dependency injection error in module '${moduleName}'. Dependency initialization must be an object`);
     if (!is('string', init.name)) throw new Error(`Dependency injection error in module '${moduleName}'. Init object 'name' property must be a string`);

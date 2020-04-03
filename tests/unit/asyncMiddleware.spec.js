@@ -63,10 +63,12 @@ describe('Async middleware functions', function() {
             name: 'plugin',
             modules: [mdl],
             mediator: {
-                onError() {
+                onError(e) {
                     firstExecuted = true;
 
-                    throw new Error('Async error');
+                    expect(e.message).to.be.equal('Async error');
+
+                    throw new Error('Plugin error');
                 }
             }
         };
@@ -75,6 +77,9 @@ describe('Async middleware functions', function() {
             events: {
                 onAppStarted() {
                     expect(firstExecuted).to.be.equal(true);
+                },
+                catchError(e) {
+                    expect(e.message).to.be.equal('Plugin error');
 
                     done();
                 }
