@@ -2,6 +2,7 @@ const deepcopy = require('deepcopy');
 const {is, hasKey} = require('./../util/util');
 const {ENV} = require('./../misc/types');
 const {_replaceEnvironmentVariables} = require('./_shared');
+const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
 
 function _resolveFramework(framework) {
     const newFramework = {};
@@ -91,6 +92,8 @@ function instance() {
 
         const resolvedConfig = _resolveConfig(config);
         _replaceEnvironmentVariables(resolvedConfig);
+
+        validateGabrielaEvents(config.events);
 
         return deepcopy(resolvedConfig);
     };

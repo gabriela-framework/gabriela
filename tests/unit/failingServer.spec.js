@@ -1,11 +1,9 @@
 const mocha = require('mocha');
 const chai = require('chai');
-const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
-const assert = require('assert');
 
 const gabriela = require('../../src/gabriela/gabriela');
 
@@ -57,15 +55,14 @@ describe('Failing server tests', () => {
             }
         };
 
-        const g = gabriela.asServer(config);
 
         let entersException = false;
         try {
-            g.startApp();
+            gabriela.asServer(config);
         } catch(e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid event. 'catchError' must be a function. Due to this error, the server cannot start.`);
+            expect(e.message).to.be.equal(`Invalid event. 'catchError' must be a function. Due to this error, the app cannot start.`);
         }
 
         expect(entersException).to.be.equal(true);
@@ -78,34 +75,31 @@ describe('Failing server tests', () => {
             }
         };
 
-        const g = gabriela.asServer(config);
 
         let entersException = false;
         try {
-            g.startApp();
+            gabriela.asServer(config);
         } catch(e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid event. 'onPreResponse' must be a function. Due to this error, the server cannot start.`);
+            expect(e.message).to.be.equal(`Invalid event. 'onPreResponse' must be a function. Due to this error, the app cannot start.`);
         }
 
         expect(entersException).to.be.equal(true);
     });
 
     it('should fail the server because of invalid onPostResponse event', () => {
-        const g = gabriela.asServer({
-            events: {
-                onPostResponse: null,
-            }
-        });
-
         let entersException = false;
         try {
-            g.startApp();
+            gabriela.asServer({
+                events: {
+                    onPostResponse: null,
+                }
+            });
         } catch(e) {
             entersException = true;
 
-            expect(e.message).to.be.equal(`Invalid event. 'onPostResponse' must be a function. Due to this error, the server cannot start.`);
+            expect(e.message).to.be.equal(`Invalid event. 'onPostResponse' must be a function. Due to this error, the app cannot start.`);
         }
 
         expect(entersException).to.be.equal(true);

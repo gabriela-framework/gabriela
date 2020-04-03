@@ -1,7 +1,5 @@
-const {GABRIELA_EVENTS, LOGGING_TYPES} = require('../misc/types');
+const {GABRIELA_EVENTS} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
-const validateGabrielaEvents = require('../misc/validateGabrielaEvents');
-const validateHttpEvents = require('../misc/validateHttpEvents');
 
 function _createServer(config) {
     const express = require('express');
@@ -47,8 +45,6 @@ function Server(
         pluginInterface,
         moduleInterface,
     ) {
-    validateGabrielaEvents(events);
-    validateHttpEvents(events);
 
     let server = _createServer(config);
     let serverInstance = null;
@@ -85,7 +81,7 @@ function Server(
              * This code cannot be tested since gabriela has to exit and if it does so, node process is killed too, along
              * with the process that tests are executed in
              */
-            console.log(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
+            console.error(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
 
             this.close();
 
