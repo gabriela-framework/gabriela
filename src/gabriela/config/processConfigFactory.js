@@ -90,8 +90,8 @@ function instance() {
             return _getFullDefaultConfig();
         }
 
+        _replaceEnvironmentVariables(config);
         const resolvedConfig = _resolveConfig(config);
-        _replaceEnvironmentVariables(resolvedConfig);
 
         validateGabrielaEvents(config.events);
 

@@ -5,7 +5,7 @@ const it = mocha.it;
 const describe = mocha.describe;
 const expect = chai.expect;
 
-const httpConfigFactory = require('../../src/gabriela/config/httpConfigFactory');
+const processConfigFactory = require('../../src/gabriela/config/processConfigFactory');
 const {ENV} = require('../../src/gabriela/misc/types');
 
 function _defaultAsserts(config) {
@@ -22,14 +22,32 @@ function _defaultFrameworkAsserts(framework) {
 
 describe('http config factory tests', () => {
     it('should create the default config if none is provided', () => {
-        const config = httpConfigFactory.create();
+        const config = processConfigFactory.create();
 
         _defaultAsserts(config);
         _defaultFrameworkAsserts(config.framework);
     });
 
+    it('should replace env() variables with real values', () => {
+        process.env.ENV = 'prod';
+
+        const config = processConfigFactory.create({
+            framework: {
+                env: "env('ENV')",
+            }
+        });
+
+        _defaultAsserts(config);
+
+        const framework = config.framework;
+
+        expect(framework.env).to.be.equal(ENV.PRODUCTION);
+        expect(framework.performance).to.be.a('object');
+        expect(framework.performance.memoryWarningLimit).to.be.equal(50);
+    });
+
     it('should add the default framework and process config if they are not present', () => {
-        const config = httpConfigFactory.create({
+        const config = processConfigFactory.create({
             events: {},
             plugins: {},
         });
@@ -64,7 +82,7 @@ describe('http config factory tests', () => {
         ];
 
         for (const val of values) {
-            const config = httpConfigFactory.create(val);
+            const config = processConfigFactory.create(val);
 
             _defaultAsserts(config);
             _defaultFrameworkAsserts(config.framework);
@@ -87,7 +105,7 @@ describe('http config factory tests', () => {
         ];
 
         for (const val of values) {
-            const config = httpConfigFactory.create(val.config);
+            const config = processConfigFactory.create(val.config);
 
             if (val.type === 'framework') {
                 enters.push(true);
