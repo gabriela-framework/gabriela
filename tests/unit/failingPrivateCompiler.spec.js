@@ -7,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Failing private compiler dependency injection tests', () => {
     it('should fail because of not found private dependency', () => {
@@ -19,7 +18,7 @@ describe('Failing private compiler dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',
@@ -50,7 +49,7 @@ describe('Failing private compiler dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         try {
             g.addModule({

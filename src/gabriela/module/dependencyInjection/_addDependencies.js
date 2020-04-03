@@ -34,9 +34,9 @@ function _execCompilerPass(mdl, definition, config, addProxy) {
 
     let possibleConfig = config;
     if (compilerPass.property) {
-        if (!hasKey(config.config, compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
+        if (!hasKey(config.plugins, compilerPass.property)) throw new Error(`Dependency injection error in a compiler pass in service '${definition.name}'. Property '${compilerPass.property}' does not exist in config`);
 
-        possibleConfig = config.config[compilerPass.property];
+        possibleConfig = config.plugins[compilerPass.property];
     }
 
     compilerPass.init.call(null, ...[deepCopy(possibleConfig), new Proxy(this, handlers)]);

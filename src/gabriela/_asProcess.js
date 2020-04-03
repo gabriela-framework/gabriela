@@ -1,16 +1,12 @@
 const ModuleTree = require('./module/moduleTree');
 const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
-const configFactory = require('./configFactory');
 const Process = require('./process/process');
 const ExposedMediator = require('./events/exposedMediator');
 const moduleExecutionFactory = require('./module/executeFactory');
 const pluginExecutionFactory = require('./plugin/executeFactory');
 
-module.exports = function _asProcess(receivedConfig, options) {
-    const config = configFactory.create(receivedConfig);
-    const opts = options || {};
-
+module.exports = function _asProcess(config) {
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
     const exposedMediator = new ExposedMediator();
@@ -85,7 +81,7 @@ module.exports = function _asProcess(receivedConfig, options) {
         runPlugin: pluginInterface.run,
 
         startApp() {
-            const {events} = opts;
+            const events = config.events;
 
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);

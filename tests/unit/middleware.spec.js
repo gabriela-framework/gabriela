@@ -7,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Middleware execution', function() {
     this.timeout(10000);
@@ -28,7 +27,7 @@ describe('Middleware execution', function() {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -55,7 +54,7 @@ describe('Middleware execution', function() {
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -105,7 +104,7 @@ describe('Middleware execution', function() {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -158,7 +157,7 @@ describe('Middleware execution', function() {
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -197,7 +196,7 @@ describe('Middleware execution', function() {
             postLogicTransformers: []
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
@@ -210,7 +209,7 @@ describe('Middleware execution', function() {
     });
 
     it('should override module by adding more middleware with existing ones', (done) => {
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         let firstCalled = false;
         let secondCalled = false;

@@ -1,25 +1,21 @@
 require('strict-mode')(function () {
     require('./global');
 
-    const Router = require('./router/router');
-    const configFactory = require('./configFactory');
-
     module.exports = {
         asServer(config) {
             const httpConfigFactory = require('./config/httpConfigFactory');
             const resolvedConfig = httpConfigFactory.create(config);
 
-            Router.injectRoutes(resolvedConfig.routes);
+            require('./router/router').injectRoutes(resolvedConfig.routes);
 
             return require('./_asServer').call(null, resolvedConfig);
         },
 
-        asProcess(receivedConfig, options) {
-            if (!receivedConfig) {
-                receivedConfig = configFactory.getDefaultConfig();
-            }
+        asProcess(config) {
+            const processConfigFactory = require('./config/processConfigFactory');
+            const resolvedConfig = processConfigFactory.create(config);
 
-            return require('./_asProcess').call(null, receivedConfig, options);
+            return require('./_asProcess').call(null, resolvedConfig);
         },
     };
 });

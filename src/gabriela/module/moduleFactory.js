@@ -21,7 +21,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, conf
     }
 }
 
-function _resolveMiddleware(mdl, config) {
+function _resolveMiddleware(mdl) {
     const middleware = MIDDLEWARE_TYPES.toArray();
 
     for (const middlewareBlockName of middleware) {
@@ -124,7 +124,7 @@ function factory({mdl, config, rootCompiler, parentCompiler, sharedCompiler, exp
     // after the _createCompiler() function has been called, nothing on the compiler cannot be touched or modified.
     // the compiler(s) can only be used, not modified
     _createCompiler(moduleObject, rootCompiler, parentCompiler, sharedCompiler, config);
-    _resolveMiddleware(moduleObject, config);
+    _resolveMiddleware(moduleObject);
 
     _bindEventSystem(moduleObject, config, exposedMediator);
 

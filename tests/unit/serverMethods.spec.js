@@ -9,7 +9,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Tests for all server http methods', () => {
     it ('should create a process a GET request', (done) => {

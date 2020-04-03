@@ -6,7 +6,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Compiler pass tests', () => {
     it('should add a private dependency within a compiler pass, execute it and resolve the private dependency within the init function', () => {
@@ -40,7 +39,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',
@@ -84,7 +83,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',
@@ -133,7 +132,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         g.addModule({
             name: 'module',
@@ -185,7 +184,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         const mdl1 = {
             name: 'mdl1',
@@ -254,7 +253,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         const mdl1 = {
             name: 'mdl1',
@@ -323,7 +322,7 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess(config);
+        const g = gabriela.asProcess();
 
         const mdl1 = {
             name: 'mdl1',

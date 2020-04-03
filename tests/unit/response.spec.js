@@ -8,7 +8,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 const {is} = require('../../src/gabriela/util/util');
 const _responseProxy = require('../../src/gabriela/module/_responseProxy');
 

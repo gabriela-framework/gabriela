@@ -6,7 +6,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Async middleware functions', function() {
     this.timeout(10000);
@@ -30,7 +29,7 @@ describe('Async middleware functions', function() {
             ]
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 onAppStarted() {
                     expect(firstExecuted).to.be.equal(true);
@@ -73,7 +72,7 @@ describe('Async middleware functions', function() {
             }
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 onAppStarted() {
                     expect(firstExecuted).to.be.equal(true);
@@ -117,7 +116,7 @@ describe('Async middleware functions', function() {
             }
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 catchError(err) {
                     expect(firstExecuted).to.be.equal(true);
@@ -145,7 +144,7 @@ describe('Async middleware functions', function() {
             ]
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 catchError(err) {
                     expect(firstExecuted).to.be.equal(false);
@@ -173,7 +172,7 @@ describe('Async middleware functions', function() {
             ]
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 catchError(err) {
                     expect(firstExecuted).to.be.equal(false);
@@ -205,7 +204,7 @@ describe('Async middleware functions', function() {
             ]
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 onAppStarted() {
                     expect(firstExecuted).to.be.equal(true);

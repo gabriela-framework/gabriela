@@ -9,7 +9,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('File server tests', () => {
     xit('should serve a file from a directory', (done) => {

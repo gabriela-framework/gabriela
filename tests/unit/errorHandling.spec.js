@@ -6,7 +6,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Complete error handling tests', () => {
     it('should call the onError event when the error is thrown with gabriela error handling from within a module', (done) => {
@@ -25,7 +24,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addModule(mdl);
 
@@ -45,7 +44,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addModule(mdl);
 
@@ -68,7 +67,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addPlugin({
             name: 'errorPlugin',
@@ -92,7 +91,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addPlugin({
             name: 'errorPlugin',
@@ -118,7 +117,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 catchError(e) {
                     expect(e).to.be.instanceof(Error);
@@ -147,7 +146,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 catchError(e) {
                     expect(e).to.be.instanceof(Error);
@@ -176,7 +175,7 @@ describe('Complete error handling tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess(config, {
+        const app = gabriela.asProcess({
             events: {
                 onExit() {
                     done();

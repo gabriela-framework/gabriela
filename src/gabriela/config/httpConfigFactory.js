@@ -1,6 +1,7 @@
 const deepcopy = require('deepcopy');
-const {is, hasKey, isEnvExpression, extractEnvExpression, iterate} = require('./../util/util');
+const {is, hasKey} = require('./../util/util');
 const {ENV} = require('./../misc/types');
+const {_replaceEnvironmentVariables} = require('./_shared');
 
 function _resolveFramework(framework) {
     const newFramework = {};
@@ -54,23 +55,6 @@ function _resolveServer(server) {
     if (!Number.isInteger(newServer.port)) throw new Error(`Invalid config. 'server.port' must be an integer.`);
 
     return newServer;
-}
-
-function _replaceEnvironmentVariables(config) {
-    iterate(config, {
-        reactTo: ['string'],
-        reactor(value) {
-            if (isEnvExpression(value)) {
-                const env = extractEnvExpression(value);
-
-                if (!process.env[env]) throw new Error(`Invalid config. Environment variable '${env}' does not exist`);
-
-                return process.env[env];
-            }
-
-            return value;
-        }
-    });
 }
 
 function _getDefaultFrameworkConfig() {
@@ -143,19 +127,6 @@ function instance() {
 
         return deepcopy(resolvedConfig);
     };
-
-    this.getDefaultConfig = function() {
-        return {
-            config: {
-                framework: {
-                    env: ENV.DEVELOPMENT,
-                    performance: {
-                        memoryWarningLimit: 50,
-                    }
-                }
-            }
-        };
-    }
 }
 
 module.exports = new instance();

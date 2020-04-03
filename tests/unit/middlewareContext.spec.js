@@ -7,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Middleware context usage tests', function() {
     it('should ensure presence of moduleInfo property bound to this and the info that it holds', (done) => {
@@ -117,7 +116,7 @@ describe('Middleware context usage tests', function() {
             modules: [mdl],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addPlugin(plugin);
 
@@ -138,7 +137,7 @@ describe('Middleware context usage tests', function() {
             modules: [mdl],
         };
 
-        const app = gabriela.asProcess(config);
+        const app = gabriela.asProcess();
 
         app.addPlugin(plugin);
 

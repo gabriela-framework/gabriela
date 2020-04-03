@@ -7,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/gabriela/gabriela');
-const config = require('../config/config');
 
 describe('Gabriela interface tests', () => {
     it('should have only the public interface methods and object as runner', () => {
@@ -28,7 +27,7 @@ describe('Gabriela interface tests', () => {
             'startApp',
         ];
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         for (const prop of allowed) {
             expect(g.hasOwnProperty(prop)).to.be.equal(true);
@@ -42,7 +41,7 @@ describe('Gabriela interface tests', () => {
     });
 
     it('should have a public interface with all the public methods of a plugin and module as runner', () => {
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         expect(g).to.have.property('addModule');
         expect(g.addModule).to.be.a('function');
@@ -103,7 +102,7 @@ describe('Gabriela interface tests', () => {
             'startApp',
         ];
 
-        const g = gabriela.asServer(config, []);
+        const g = gabriela.asServer();
 
         for (const prop of allowed) {
             expect(g.hasOwnProperty(prop)).to.be.equal(true);
@@ -117,7 +116,7 @@ describe('Gabriela interface tests', () => {
     });
 
     it('should have a public interface with all the public methods of a plugin and module as server', () => {
-        const g = gabriela.asServer(config, []);
+        const g = gabriela.asServer();
 
         expect(g).to.have.property('addModule');
         expect(g.addModule).to.be.a('function');

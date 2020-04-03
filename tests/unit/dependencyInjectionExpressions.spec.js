@@ -7,7 +7,6 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const gabriela = require('../../src/index');
-const config = require('../config/config');
 
 describe('Immediately executing middleware with dependency injection and expressions', () => {
     it('should inject and execute the middleware as an expression', (done) => {
@@ -34,7 +33,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)']
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(middlewareModule);
 
@@ -89,7 +88,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)']
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addModule(middlewareModule);
 
@@ -159,7 +158,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -239,7 +238,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
-        const g = gabriela.asProcess(config);;
+        const g = gabriela.asProcess();
 
         g.addPlugin({
             name: 'plugin',
@@ -277,9 +276,9 @@ describe('Immediately executing middleware with dependency injection and express
 
                     expect(compiler).to.be.a('object');
                     expect(config).to.be.a('object');
-                    expect(config.config).to.have.property('validation');
+                    expect(config.plugins).to.have.property('validation');
 
-                    const validation = config.config.validation;
+                    const validation = config.plugins.validation;
 
                     expect(validation).to.have.property('minMessage');
                     expect(validation).to.have.property('maxMessage');
@@ -347,13 +346,12 @@ describe('Immediately executing middleware with dependency injection and express
         };
 
         const g = gabriela.asProcess({
-            config: {
+            plugins: {
                 validation: {
                     minMessage: 'Minimum message',
                     maxMessage: 'Max message',
                     invalidEmailMessage: 'Invalid email',
                 },
-                framework: {},
             }
         });
 
@@ -400,11 +398,7 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmailWithDependency(userRepository, next, state)'],
         };
 
-        const g = gabriela.asProcess({
-            config: {
-                framework: {},
-            }
-        });
+        const g = gabriela.asProcess();
 
         g.addModule(mdl);
 
