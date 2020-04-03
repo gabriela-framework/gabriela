@@ -4,7 +4,7 @@ const {ENV} = require('./../misc/types');
 
 function _resolveFramework(framework) {
     const newFramework = {};
-    if (!framework.env) {
+    if (!is('string', framework.env)) {
         newFramework.env = ENV.DEVELOPMENT;
     }
 
@@ -27,9 +27,9 @@ function _resolveFramework(framework) {
     if (framework.performance) {
         const performance = framework.performance;
 
-        if (!is('object', performance)) throw new Error(`Invalid config. 'performance' must be an object.`);
+        if (!is('object', performance)) throw new Error(`Invalid config. 'framework.performance' must be an object.`);
 
-        if (performance.memoryWarningLimit) {
+        if (hasKey(performance, 'memoryWarningLimit')) {
             if (!Number.isInteger(performance.memoryWarningLimit)) throw new Error(`Invalid config. 'framework.performance.memoryWarningLimit' must be an integer.`);
         } else {
             performance.memoryWarningLimit = 50;

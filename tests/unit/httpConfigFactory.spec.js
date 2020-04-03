@@ -57,6 +57,12 @@ describe('http config factory tests', () => {
             56,
             {},
             {framework: {}},
+            {framework: {
+                env: 'dev',
+                }},
+            {framework: {
+                performance: {},
+                }},
             {server: 98},
             {framework: null},
             {framework: 67},
