@@ -319,7 +319,7 @@ describe('Failing module definition tests', () => {
         m.startApp();
     });
 
-    it('should throw an error if an added module already exists', () => {
+    it('should throw an error if an added module already exists mounted as process', () => {
         const mdl1 = {
             name: 'name',
         };
@@ -329,6 +329,32 @@ describe('Failing module definition tests', () => {
         };
 
         const m = gabriela.asProcess();
+
+        m.addModule(mdl1);
+
+        let entersException = false;
+        try {
+            m.addModule(mdl2);
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Module definition error. Module with name '${mdl1.name}' already exists`)
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+
+    it('should throw an error if an added module already exists mounted as server', () => {
+        const mdl1 = {
+            name: 'name',
+        };
+
+        const mdl2 = {
+            name: 'name',
+        };
+
+        const m = gabriela.asServer();
 
         m.addModule(mdl1);
 

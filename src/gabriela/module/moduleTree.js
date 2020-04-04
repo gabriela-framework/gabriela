@@ -32,10 +32,6 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const tree = [];
 
     function addModule(mdl, parentCompiler) {
-        Validator.validateModule(mdl, Router);
-
-        if (hasKey(modules, mdl.name)) throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
-
         modules[mdl.name] = deepCopy(mdl);
 
         const buildStageArgs = {

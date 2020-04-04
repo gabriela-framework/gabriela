@@ -1,8 +1,6 @@
 const deepCopy = require('deepcopy');
-const Validator = require('../misc/validator');
 const PluginRunner = require('./pluginRunner');
 const pluginFactory = require('./pluginFactory');
-const Router = require('../router/router');
 
 const {is, hasKey, IIterator} = require('../util/util');
 
@@ -26,10 +24,6 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const {plugins, constructed} = _createWorkingDataStructures();
 
     function addPlugin(plugin) {
-        Validator.validatePlugin(plugin, Router);
-
-        if (hasKey(plugins, plugin.name)) throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
-
         plugins[plugin.name] = deepCopy(plugin);
 
         constructed[plugin.name] = pluginFactory(plugins[plugin.name], config, rootCompiler, sharedCompiler, exposedMediator);

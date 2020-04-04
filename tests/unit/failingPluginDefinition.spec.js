@@ -63,7 +63,62 @@ describe('Plugin errors', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail because of existing plugin', () => {
+    it('should fail because of existing plugin mounted as server', () => {
+        const p = gabriela.asServer();
+
+        const plugin1 = {
+            name: 'plugin1',
+        };
+
+        const plugin2 = {
+            name: 'plugin2',
+        };
+
+        p.addPlugin(plugin1);
+        p.addPlugin(plugin2);
+
+        let entersException = false;
+        try {
+            p.addPlugin({
+                name: 'plugin2',
+            });
+        } catch (e) {
+            entersException = true;
+
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin2.name}' already exists`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of existing module in plugin mounted as server', () => {
+        let entersException = false;
+        const p = gabriela.asServer();
+
+        const mdl1 = {
+            name: 'mdl',
+        };
+
+        const mdl2 = {
+            name: 'mdl',
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl1, mdl2],
+        };
+
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin module with name 'plugin.mdl' already exists`);
+            entersException = true;
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of existing plugin mounted as process', () => {
         const p = gabriela.asProcess();
 
         const plugin1 = {
@@ -86,6 +141,33 @@ describe('Plugin errors', () => {
             entersException = true;
 
             expect(e.message).to.be.equal(`Plugin definition error. Plugin with name '${plugin2.name}' already exists`);
+        }
+
+        expect(entersException).to.be.equal(true);
+    });
+
+    it('should fail because of existing module in plugin mounted as process', () => {
+        let entersException = false;
+        const p = gabriela.asProcess();
+
+        const mdl1 = {
+            name: 'mdl',
+        };
+
+        const mdl2 = {
+            name: 'mdl',
+        };
+
+        const plugin = {
+            name: 'plugin',
+            modules: [mdl1, mdl2],
+        };
+
+        try {
+            p.addPlugin(plugin);
+        } catch (e) {
+            expect(e.message).to.be.equal(`Plugin definition error. Plugin module with name 'plugin.mdl' already exists`);
+            entersException = true;
         }
 
         expect(entersException).to.be.equal(true);

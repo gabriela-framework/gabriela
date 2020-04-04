@@ -3,8 +3,12 @@ const PluginTree = require('./plugin/pluginTree');
 const Compiler = require('./dependencyInjection/compiler');
 const Process = require('./process/process');
 const ExposedMediator = require('./events/exposedMediator');
+const Names = require('./nameSingleton');
+const Router = require('./router/router');
+const Validator = require('./misc/validator');
 
 module.exports = function _asProcess(config) {
+    const names = Names.create();
     const rootCompiler = Compiler.create();
     const sharedCompiler = Compiler.create();
     const exposedMediator = new ExposedMediator();
@@ -16,6 +20,14 @@ module.exports = function _asProcess(config) {
 
     const moduleInterface = {
         add(mdl) {
+            Validator.validateModule(mdl, Router);
+
+            if (names.has(mdl.name)) {
+                throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
+            }
+
+            names.add(mdl.name);
+
             moduleTree.addModule(mdl);
         },
         override: moduleTree.overrideModule,
@@ -26,7 +38,23 @@ module.exports = function _asProcess(config) {
     };
 
     const pluginInterface = {
-        add: pluginTree.addPlugin,
+        add(plugin) {
+            Validator.validatePlugin(plugin, Router);
+
+            if (names.has(plugin.name)) {
+                throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
+            }
+
+            const valid = names.addPluginModules(plugin);
+
+            if (valid !== true) {
+                throw new Error(`Plugin definition error. Plugin module with name '${valid}' already exists`);
+            }
+
+            names.add(plugin.name);
+
+            pluginTree.addPlugin(plugin);
+        },
         get: pluginTree.getPlugin,
         remove: pluginTree.removePlugin,
         getAll: pluginTree.getPlugins,
