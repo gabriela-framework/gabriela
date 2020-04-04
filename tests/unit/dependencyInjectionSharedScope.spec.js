@@ -252,5 +252,51 @@ describe('Shared scope dependency injection tests', () => {
         });
 
         g.startApp();
-    })
+    });
+
+    it('should resolve dependencies that are shared between the same plugin and module', (done) => {
+        let entersMdl1 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1'],
+                modules: ['mdl1'],
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function(shared1) {
+                entersMdl1 = true;
+
+                expect(shared1.name).to.be.equal('shared1');
+            }]
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.startApp();
+    });
 });

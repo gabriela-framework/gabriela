@@ -2,80 +2,41 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-const userRepositoryInit = {
-    name: 'userRepository',
-    init: function() {
-        function UserRepository() {}
+let entersMdl1 = false;
 
-        return new UserRepository();
-    }
-};
-
-const friendsRepositoryInit = {
-    name: 'friendsRepository',
-    scope: 'public',
-    init: function() {
-        function FriendsRepository() {}
-
-        return new FriendsRepository();
-    }
-};
-
-const userServiceInit = {
-    name: 'userService',
-    dependencies: [userRepositoryInit, friendsRepositoryInit],
+const shared1 = {
+    name: 'shared1',
     shared: {
-        modules: ['friendsModule'],
-        plugins: ['plugin'],
+        plugins: ['plugin1'],
+        modules: ['mdl1'],
     },
-    init: function(userRepository, friendsRepository) {
-        function UserService() {
-            this.userRepository = userRepository;
-            this.friendsRepository = friendsRepository;
-        }
-
-        return new UserService();
+    init: function() {
+        return {name: 'shared1'}
     }
 };
 
-let serviceUser;
-let friendsRepo;
-const friendsModule = {
-    name: 'friendsModule',
-    dependencies: [userServiceInit, friendsRepositoryInit],
-    moduleLogic: [function(next, userService, friendsRepository) {
-        serviceUser = userService;
-        friendsRepo = friendsRepository;
-
-        next();
-    }],
-};
-
-const userModule = {
-    name: 'userModule',
-    dependencies: [userServiceInit],
-    moduleLogic: [function(userService, next) {
-        serviceUser = userService;
-
-        next();
-    }],
+const initModule = {
+    name: 'initModule',
+    dependencies: [shared1],
 };
 
 const g = gabriela.asProcess({
     events: {
         onAppStarted() {
-        },
-        catchError(e) {
-            console.error(e);
         }
     }
 });
 
-g.addPlugin({
-    name: 'plugin',
-    modules: [userModule, friendsModule],
-});
+const mdl1 = {
+    name: 'mdl1',
+    moduleLogic: [function(shared1) {
+        entersMdl1 = true;
+    }]
+};
 
-g.addModule(friendsModule);
+g.addPlugin({
+    name: 'plugin1',
+    modules: [initModule, mdl1],
+});
 
 g.startApp();
