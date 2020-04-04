@@ -292,15 +292,13 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asProcess();
-
-        m.addModule(userModule);
-
-        m.runModule([]).then(() => {
-            assert.fail('This test should not be executed successfully');
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Module runtime tree error. Invalid module name type. Module name must be a string`);
+        const m = gabriela.asProcess({
+            catchError(err) {
+                expect(err.message).to.be.equal(`Module runtime tree error. Invalid module name type. Module name must be a string`);
+            }
         });
+
+        m.startApp();
     });
 
     it('should throw an error when executing a non existent module', () => {
@@ -308,15 +306,17 @@ describe('Failing module definition tests', () => {
             name: 'name',
         };
 
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
+                }
+            }
+        });
 
         m.addModule(userModule);
 
-        m.runModule('nonExistent').then(() => {
-            assert.fail('This test should not be executed successfully');
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Module runtime tree error. Module with name 'nonExistent' does not exist`);
-        });
+        m.startApp();
     });
 
     it('should throw an error if an added module already exists', () => {

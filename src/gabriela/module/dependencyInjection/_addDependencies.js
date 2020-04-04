@@ -74,13 +74,13 @@ function _addDependency(mdl, definition, config) {
 
         if (modules) {
             for (const mdlName of modules) {
-                if (mdlName === mdl.name) mdl.sharedCompiler.add(definition);
+                mdl.compiler.shared.add(definition);
             }
         }
 
         if (plugins) {
             for (const pluginName of plugins) {
-                mdl.sharedCompiler.add(definition);
+                mdl.compiler.shared.add(definition);
             }
         }
     }

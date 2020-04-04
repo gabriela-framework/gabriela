@@ -11,8 +11,9 @@ const _resolveService = require('./_resolveService');
 const _createDefinitionObject = require('./_createDefinitionObject');
 const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInterface');
 const _resolveInjectionService = require('./_resolveInjectionService');
+const _resolveSharedDependency = require('./_resolveSharedDependency');
 
-function _getDependencies(name, definition, taskRunner, originalCompiler, config) {
+function _getDependencies(name, definition, taskRunner, originalCompiler, config, sharedInfo) {
     const args = getArgNames(definition.init);
 
     if (definition.isAsync) {
@@ -27,7 +28,7 @@ function _getDependencies(name, definition, taskRunner, originalCompiler, config
             if (ASYNC_FLOW_TYPES.toArray().includes(arg)) {
                 deps.push(taskRunner[arg]);
             } else {
-                deps.push(originalCompiler.compile(arg, originalCompiler, config));
+                deps.push(originalCompiler.compile(arg, originalCompiler, config, sharedInfo));
             }
         }
     }
@@ -162,6 +163,7 @@ function factory() {
         if (hasKey(selfTree, name)) return true;
         if (this.parent && this.parent.has(name)) return true;
         if (this.root && this.root.has(name)) return true;
+        if (this.shared && this.shared.has(name)) return true;
 
         return false;
     }
@@ -174,6 +176,7 @@ function factory() {
         if (hasKey(resolved, name)) return true;
         if (this.parent && this.parent.isResolved(name)) return true;
         if (this.root && this.root.isResolved(name)) return true;
+        if (this.shared && this.shared.isResolved(name)) return true;
 
         return false;
     }
@@ -184,12 +187,13 @@ function factory() {
      * the process of resolving a service from the starting compiler.
      *
      * config argument is for the future and its use is not yet decided
-     * @param name
-     * @param originCompiler
-     * @param config
-     * @returns {*|this|*}
      */
-    function compile(name, originCompiler, config) {
+    function compile(
+        name,
+        originCompiler,
+        config,
+        sharedInfo,
+    ) {
         if (!is('string', name)) throw new Error(`Dependency injection error. 'compile' method expect a string as a name of a dependency that you want to compile`);
         if (hasKey(resolved, name)) return resolved[name];
 
@@ -198,9 +202,15 @@ function factory() {
         if (hasKey(selfTree, name)) {
             definition = selfTree[name];
         } else if (this.parent && this.parent.has(name)) {
-            return this.parent.compile(name, originCompiler, config);
+            return this.parent.compile(name, originCompiler, config, sharedInfo);
         } else if (this.root && this.root.has(name)) {
-            return this.root.compile(name, originCompiler, config);
+            return this.root.compile(name, originCompiler, config, sharedInfo);
+        } else if (this.shared && this.shared.has(name)) {
+            const service = _resolveSharedDependency(name, originCompiler, sharedInfo, config);
+
+            if (!service) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
+
+            return service;
         }
 
         if (!definition) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
@@ -219,7 +229,7 @@ function factory() {
 
         const taskRunner = TaskRunner.create();
 
-        const deps = _getDependencies.call(this, ...[name, definition, taskRunner, originCompiler]);
+        const deps = _getDependencies.call(this, name, definition, taskRunner, originCompiler, config, sharedInfo);
         const serviceMetadata = _resolveService(definition, deps.services, taskRunner, injectionType);
 
         if (serviceMetadata.isError) {
@@ -227,7 +237,7 @@ function factory() {
         }
 
         if (_isInjectionTypeInterface(serviceMetadata)) {
-            return _resolveInjectionService(originCompiler, serviceMetadata, taskRunner, config);
+            return _resolveInjectionService(originCompiler, sharedInfo, serviceMetadata, taskRunner, config);
         }
 
         const service = serviceMetadata.service;

@@ -33,15 +33,19 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)']
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(middlewareCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(middlewareModule);
 
-        g.runModule().then(() => {
-            expect(middlewareCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should update the state of every expression middleware called', (done) => {
@@ -88,25 +92,23 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)']
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(emailMiddlewareCalled).to.be.equal(true);
+                    expect(nameMiddlewareCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(middlewareModule);
 
-        g.runModule().then((result) => {
-            expect(emailMiddlewareCalled).to.be.equal(true);
-            expect(nameMiddlewareCalled).to.be.equal(true);
-
-            expect(result).to.be.a('object');
-            expect(result).to.have.property('middlewareModule');
-
-            expect(result.middlewareModule).to.have.property('validateEmail');
-            expect(result.middlewareModule).to.have.property('validateName');
-
-            done();
-        });
+        g.startApp();
     });
 
-    it('should execute all middleware executed within a plugin', () => {
+    it('should execute all middleware executed within a plugin', (done) => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -158,20 +160,26 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(emailMiddlewareCalled).to.be.equal(2);
+                    expect(nameMiddlewareCalled).to.be.equal(2);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
             modules: [module1, module2, module3],
         });
 
-        return g.runPlugin().then(() => {
-            expect(emailMiddlewareCalled).to.be.equal(2);
-            expect(nameMiddlewareCalled).to.be.equal(2);
-        });
+        g.startApp();
     });
 
-    it('should resolve all dependencies of a dependency run as an expression as they were regular dependencies', () => {
+    it('should resolve all dependencies of a dependency run as an expression as they were regular dependencies', (done) => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -238,20 +246,26 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmail(state, next)', 'validateName(state, next)'],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(emailMiddlewareCalled).to.be.equal(2);
+                    expect(nameMiddlewareCalled).to.be.equal(2);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
             modules: [module1, module2, module3],
         });
 
-        return g.runPlugin().then(() => {
-            expect(emailMiddlewareCalled).to.be.equal(2);
-            expect(nameMiddlewareCalled).to.be.equal(2);
-        });
+        g.startApp();
     });
 
-    it('should run compiler pass function with all the required parameters without the special property option', () => {
+    it('should run compiler pass function with all the required parameters without the special property option', (done) => {
         let emailMiddlewareCalled = 0;
         let nameMiddlewareCalled = 0;
 
@@ -352,15 +366,20 @@ describe('Immediately executing middleware with dependency injection and express
                     maxMessage: 'Max message',
                     invalidEmailMessage: 'Invalid email',
                 },
+            },
+            events: {
+                onAppStarted() {
+                    expect(validateEmailCompilerPassCalled).to.be.equal(true);
+                    expect(validateNameCompilerPassCalled).to.be.equal(true);
+
+                    done();
+                }
             }
         });
 
         g.addModule(module1);
 
-        return g.runModule().then(() => {
-            expect(validateEmailCompilerPassCalled).to.be.equal(true);
-            expect(validateNameCompilerPassCalled).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should resolve function expression with string dependencies',(done) => {
@@ -398,15 +417,19 @@ describe('Immediately executing middleware with dependency injection and express
             moduleLogic: ['validateEmailWithDependency(userRepository, next, state)'],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(validateEmailCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule().then(() => {
-            //expect(validateEmailCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should inject the http arg when executed asServer along with all the others', (done) => {

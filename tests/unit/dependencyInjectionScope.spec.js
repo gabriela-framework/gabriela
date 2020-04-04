@@ -71,26 +71,30 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(userService1).to.be.a('object');
+                    expect(userService2).to.be.a('object');
+                    expect(contextDep1).to.be.a('object');
+                    expect(contextDep2).to.be.a('object');
+
+                    expect(contextDep1 != contextDep2).to.be.equal(true);
+
+                    expect(userService1 != userService2).to.be.equal(true);
+                    expect(userService1 != userService3).to.be.equal(true);
+                    expect(userService2 != userService3).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(module1);
         g.addModule(module2);
         g.addModule(module3);
 
-        g.runModule().then(() => {
-            expect(userService1).to.be.a('object');
-            expect(userService2).to.be.a('object');
-            expect(contextDep1).to.be.a('object');
-            expect(contextDep2).to.be.a('object');
-
-            expect(contextDep1 != contextDep2).to.be.equal(true);
-
-            expect(userService1 != userService2).to.be.equal(true);
-            expect(userService1 != userService3).to.be.equal(true);
-            expect(userService2 != userService3).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it(`should resolve a dependency with 'plugin' scope and give a single instance within all modules of a plugin`, (done) => {
@@ -149,34 +153,29 @@ describe('Scope dependency injection tests', () => {
             modules: [module1, module2],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(services[0]).to.be.a('object');
+                    expect(services[0]).to.be.a('object');
+
+                    expect(contextDep1).to.be.a('object');
+                    expect(contextDep2).to.be.a('object');
+
+                    expect(contextDep1 == contextDep2).to.be.equal(true);
+
+                    expect(services[0] == services[1]).to.be.equal(true);
+                    expect(services[0]).to.be.equal(services[1]);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);
 
-        g.runPlugin('plugin1').then(() => {
-            expect(services[0]).to.be.a('object');
-            expect(services[0]).to.be.a('object');
-
-            expect(contextDep1).to.be.a('object');
-            expect(contextDep2).to.be.a('object');
-
-            expect(contextDep1 == contextDep2).to.be.equal(true);
-
-            expect(services[0] == services[1]).to.be.equal(true);
-            expect(services[0]).to.be.equal(services[1]);
-
-            g.runPlugin('plugin2').then(() => {
-                expect(services[2]).to.be.a('object');
-                expect(services[3]).to.be.a('object');
-
-                expect(services[2] == services[3]).to.be.equal(true);
-                expect(services[0] != services[2]).to.be.equal(true);
-                expect(services[0] != services[3]).to.be.equal(true);
-
-                done();
-            });
-        });
+        g.startApp();
     });
 
     it('should resolve a public scope service and give the same instance globally within the framework', (done) => {
@@ -230,24 +229,9 @@ describe('Scope dependency injection tests', () => {
             modules: [pluginModule1, pluginModule2],
         };
 
-        const g = gabriela.asProcess();
-
-        g.addModule(singleModule);
-        g.addPlugin(plugin1);
-        g.addPlugin(plugin2);
-
-        /**
-         * Warning: This is convoluted.
-         *
-         * The reason why these plugins have to execute one after another is that they are the same execution but with different
-         * order. That makes better test results.
-         *
-         * If a module is ran first, the identical dependency is created then and reused in plugin dependencies. If a plugin is
-         * ran first, the dependency is created then and reused in all other modules of that plugin and in the single module.
-         */
-        g.runModule().then(() => {
-            g.runPlugin('plugin1').then(() => {
-                g.runPlugin('plugin2').then(() => {
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
                     expect(services.length).to.be.equal(5);
 
                     for (let i = 0; i < services.length; i++) {
@@ -256,26 +240,16 @@ describe('Scope dependency injection tests', () => {
                         }
                     }
 
-                    services = [];
-
-                    g.runPlugin('plugin1').then(() => {
-                        g.runPlugin('plugin2').then(() => {
-                            g.runModule().then(() => {
-                                expect(services.length).to.be.equal(5);
-
-                                for (let i = 0; i < services.length; i++) {
-                                    for (let a = 0; a < services.length; a++) {
-                                        expect(services[i] == services[a]);
-                                    }
-                                }
-
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
+                    done();
+                }
+            }
         });
+
+        g.addModule(singleModule);
+        g.addPlugin(plugin1);
+        g.addPlugin(plugin2);
+
+        g.startApp();
     });
 
     it('should give precedence to module dependencies above public or plugin dependencies', (done) => {
@@ -339,17 +313,21 @@ describe('Scope dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(resolvedDependency.name).to.be.equal('module');
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'dependencyOrderPlugin',
             modules: [module1],
         });
 
-        g.runPlugin().then(() => {
-            expect(resolvedDependency.name).to.be.equal('module');
-
-            done();
-        });
+        g.startApp();
     });
 });

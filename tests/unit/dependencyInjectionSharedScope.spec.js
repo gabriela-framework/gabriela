@@ -82,50 +82,33 @@ describe('Shared scope dependency injection tests', () => {
             modules: [module1, module2, module3]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(userRepository1 == userRepository2).to.be.equal(true);
+
+                    for (let i = 0; i < services.length; i++) {
+                        expect(singleService != services[i]);
+
+                        for (let a = 0; a < services.length; a++) {
+                            expect(services[i] == services[a]);
+                        }
+                    }
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(module1);
         g.addModule(module2);
         g.addModule(module3);
         g.addPlugin(plugin1);
 
-        g.runModule().then(() => {
-            g.runPlugin('plugin').then(() => {
-                expect(userRepository1 == userRepository2).to.be.equal(true);
-
-                for (let i = 0; i < services.length; i++) {
-                    expect(singleService != services[i]);
-
-                    for (let a = 0; a < services.length; a++) {
-                        expect(services[i] == services[a]);
-                    }
-                }
-
-                services = [];
-                singleService = null;
-                userRepository1 = null;
-                userRepository2 = null;
-
-                g.runPlugin('plugin').then(() => {
-                    g.runModule().then(() => {
-                        expect(userRepository1 == userRepository2).to.be.equal(true);
-
-                        for (let i = 0; i < services.length; i++) {
-                            expect(singleService != services[i]);
-
-                            for (let a = 0; a < services.length; a++) {
-                                expect(services[i] == services[a]);
-                            }
-                        }
-
-                        done();
-                    });
-                });
-            });
-        });
+        g.startApp();
     });
 
-    it('should create a shared dependency between multiple plugins only', () => {
+    it('should create a shared dependency between multiple plugins only', (done) => {
         let pluginDependency;
         let sharedDependency;
         let sharedDependency2;
@@ -182,17 +165,21 @@ describe('Shared scope dependency injection tests', () => {
             modules: [singleModule, testingModule],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(pluginDependency).to.be.a('object');
+                    expect(sharedDependency).to.be.a('object');
+                    expect(sharedDependency2 == sharedDependency).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin(plugin1);
         g.addPlugin(plugin2);
 
-        g.runPlugin('plugin1').then(() => {
-            g.runPlugin('plugin2').then(() => {
-                expect(pluginDependency).to.be.a('object');
-                expect(sharedDependency).to.be.a('object');
-                expect(sharedDependency2 == sharedDependency).to.be.equal(true);
-            });
-        });
+        g.startApp();
     });
 });

@@ -134,22 +134,26 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(init1Executed).to.be.equal(true);
+                    expect(init2Executed).to.be.equal(true);
+                    expect(init3Executed).to.be.equal(true);
+                    expect(secondPreLogicExecuted).to.be.equal(true);
+                    expect(preLogicTransformerExecuted).to.be.equal(true);
+                    expect(validatorsExecuted).to.be.equal(true);
+                    expect(moduleLogicExecuted).to.be.equal(true);
+                    expect(postLogicTransformersExecuted).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(name).then(() => {
-            expect(init1Executed).to.be.equal(true);
-            expect(init2Executed).to.be.equal(true);
-            expect(init3Executed).to.be.equal(true);
-            expect(secondPreLogicExecuted).to.be.equal(true);
-            expect(preLogicTransformerExecuted).to.be.equal(true);
-            expect(validatorsExecuted).to.be.equal(true);
-            expect(moduleLogicExecuted).to.be.equal(true);
-            expect(postLogicTransformersExecuted).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should run all middleware withing a standalone module and plugin(s) plus an onAppStarted event', (done) => {
@@ -256,28 +260,40 @@ describe('Gabriela as process tests', () => {
     });
 
     it('should shuffle removing and adding new modules without problems', (done) => {
+        let firstEntered = false;
+        let secondEntered = false;
+
         const mdl = {
             name: 'name',
             moduleLogic: [function() {
-
+                firstEntered = true;
             }],
         };
 
-        const g = gabriela.asProcess();
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [function() {
+                secondEntered = true;
+            }]
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(firstEntered).to.be.equal(false);
+                    expect(secondEntered).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
+        g.addModule(mdl2);
 
         g.removeModule('name');
 
-        g.runModule('name').then(() => {
-            assert.fail(`Test failed. Module with name '${mdl.name}' should fail`)
-        }).catch((e) => {
-            g.addModule(mdl);
-
-            g.runModule('name').then(() => {
-                done();
-            });
-        });
+        g.startApp();
     });
 
     it('should assert that there is not need to wait for async flow functions if they are not present as arguments', () => {
@@ -304,16 +320,20 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(preLogicTransformerExecuted).to.be.equal(true);
+                    expect(validatorsExecuted).to.be.equal(true);
+                    expect(moduleLogicExecuted).to.be.equal(true);
+                    expect(postLogicTransformersExecuted).to.be.equal(true);
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(name).then(() => {
-            expect(preLogicTransformerExecuted).to.be.equal(true);
-            expect(validatorsExecuted).to.be.equal(true);
-            expect(moduleLogicExecuted).to.be.equal(true);
-            expect(postLogicTransformersExecuted).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should assert that all middleware is executed', (done) => {
@@ -360,20 +380,24 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(securityLogicExecuted).to.be.equal(true);
+                    expect(initLogicExecuted).to.be.equal(true);
+                    expect(preLogicTransformerExecuted).to.be.equal(true);
+                    expect(validatorsExecuted).to.be.equal(true);
+                    expect(moduleLogicExecuted).to.be.equal(true);
+                    expect(postLogicTransformersExecuted).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(name).then(() => {
-            expect(securityLogicExecuted).to.be.equal(true);
-            expect(initLogicExecuted).to.be.equal(true);
-            expect(preLogicTransformerExecuted).to.be.equal(true);
-            expect(validatorsExecuted).to.be.equal(true);
-            expect(moduleLogicExecuted).to.be.equal(true);
-            expect(postLogicTransformersExecuted).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should assert that all middleware created with middleware definition object is executed', (done) => {
@@ -449,22 +473,26 @@ describe('Gabriela as process tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(init1Executed).to.be.equal(true);
+                    expect(init2Executed).to.be.equal(true);
+                    expect(init3Executed).to.be.equal(true);
+                    expect(secondPreLogicExecuted).to.be.equal(true);
+                    expect(preLogicTransformerExecuted).to.be.equal(true);
+                    expect(validatorsExecuted).to.be.equal(true);
+                    expect(moduleLogicExecuted).to.be.equal(true);
+                    expect(postLogicTransformersExecuted).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(name).then(() => {
-            expect(init1Executed).to.be.equal(true);
-            expect(init2Executed).to.be.equal(true);
-            expect(init3Executed).to.be.equal(true);
-            expect(secondPreLogicExecuted).to.be.equal(true);
-            expect(preLogicTransformerExecuted).to.be.equal(true);
-            expect(validatorsExecuted).to.be.equal(true);
-            expect(moduleLogicExecuted).to.be.equal(true);
-            expect(postLogicTransformersExecuted).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should assert that skip skips the single middleware and not all', (done) => {
@@ -510,19 +538,17 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name)
-        .then((moduleResult) => {
-            expect(moduleResult.model.name).to.be.equal(model.name);
-            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
-            expect(moduleResult.model.age).to.be.equal(32);
-            expect(moduleResult.model.executed).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should assert that done skips all middleware and not just the currently executing', (done) => {
@@ -568,23 +594,20 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [moduleLogic],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult.model.name).to.be.equal(model.name);
-            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
-            expect(moduleResult.model.age).to.be.equal(32);
-            expect(moduleResult.model).to.not.have.property('executed');
-            expect(moduleResult.model).to.not.have.property('option1');
-            expect(moduleResult.model).to.not.have.property('option2');
-
-            done();
-        });
+        g.startApp();
     });
 
-    it('should assert that preLogicTransformers create and modify the model', () => {
+    it('should assert that preLogicTransformers create and modify the model', (done) => {
         const name = 'moduleName';
         const model = {
             name: 'name',
@@ -611,15 +634,17 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult.model.name).to.be.equal(model.name);
-            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
-            expect(moduleResult.model.age).to.be.equal(25);
-        });
+        g.startApp();
     });
 
     it('should assert that validators validate the model', () => {
@@ -651,16 +676,21 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal('Invalid models age');
+
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then(() => assert.fail('This test should be an error')).catch((err) => {
-            expect(err.message).to.be.equal('Invalid models age');
-        });
+        g.startApp();
     });
 
-    it('should assert that the main logic execution is executed', function() {
+    it('should assert that the main logic execution is executed', function(done) {
         const name = 'moduleName';
         const model = {
             name: 'name',
@@ -687,17 +717,17 @@ describe('Gabriela as process tests', () => {
             moduleLogic: [logicExec],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult.model.name).to.be.equal(model.name);
-            expect(moduleResult.model.lastName).to.be.equal(model.lastName);
-            expect(moduleResult.model.age).to.be.equal(32);
-            expect(moduleResult.model).to.have.property('executed');
-            expect(moduleResult.model.executed).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should catch an exception thrown inside the middleware function', (done) => {
@@ -710,60 +740,19 @@ describe('Gabriela as process tests', () => {
             preLogicTransformers: [throwsException],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal('my exception');
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).catch((err) => {
-            expect(err.message).to.be.equal('my exception');
-
-            done();
-        });
-    });
-
-    it('should execute gabriela module with a custom execution factory', (done) => {
-        const g = gabriela.asProcess();
-
-        let moduleCalled = false;
-
-        const mdl = {
-            name: 'mdl',
-            moduleLogic: [function() {
-                moduleCalled = true;
-            }],
-        };
-
-        g.addModule(mdl);
-
-        g.runModule(null, moduleExecuteFactory).then(() => {
-            expect(moduleCalled).to.be.equal(true);
-
-            done();
-        });
-    });
-
-    it('should execute gabriela plugin with a custom execution factory', (done) => {
-        const g = gabriela.asProcess();
-
-        let moduleCalled = false;
-
-        const mdl = {
-            name: 'mdl',
-            moduleLogic: [function() {
-                moduleCalled = true;
-            }],
-        };
-
-        g.addPlugin({
-            name: 'plugin',
-            modules: [mdl],
-        });
-
-        g.runPlugin(null, pluginExecuteFactory, moduleExecuteFactory).then(() => {
-            expect(moduleCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     xit('should catch an error when error is thrown inside onAppStarted event', (done) => {

@@ -9,7 +9,7 @@ const expect = chai.expect;
 const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Failing private compiler dependency injection tests', () => {
-    it('should fail because of not found private dependency', () => {
+    it('should fail because of not found private dependency', (done) => {
         const initObject = {
             name: 'someService',
             dependencies: [],
@@ -18,7 +18,15 @@ describe('Failing private compiler dependency injection tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal(`Dependency injection error. 'privateDependency' definition not found in the dependency tree`);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'module',
@@ -28,11 +36,7 @@ describe('Failing private compiler dependency injection tests', () => {
             }],
         });
 
-        g.runModule().then(() => {
-            assert.fail('This test should fail');
-        }).catch((e) => {
-            expect(e.message).to.be.equal(`Dependency injection error. 'privateDependency' definition not found in the dependency tree`);
-        });
+        g.startApp();
     });
 
     it('should fail because of invalid private dependency init object', () => {

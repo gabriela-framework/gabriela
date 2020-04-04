@@ -56,7 +56,7 @@ describe('Framework events', function() {
         expect(mediator.has('event2')).to.be.equal(true);
     });
 
-    it('should execute a named module start and finished event', () => {
+    it('should execute a named module start and finished event', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
@@ -69,7 +69,7 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             mediator: {
                 onModuleStarted: function(userService) {
@@ -86,17 +86,23 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('should properly execute start and finished events when they contain async code', () => {
+    it('should properly execute start and finished events when they contain async code', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
@@ -134,17 +140,23 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        return g.runModule().then(() => {
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should properly execute start and finished events before and after all middleware executes', () => {
+    it('should properly execute start and finished events before and after all middleware executes', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
@@ -225,17 +237,23 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        return g.runModule().then(() => {
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should call the onError event if the exception is thrown within the other events', () => {
+    it('should call the onError event if the exception is thrown within the other events', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
         let entersOnError = false;
@@ -249,7 +267,7 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             dependencies: [userServiceInit],
             mediator: {
@@ -278,18 +296,24 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersOnError).to.be.equal(true);
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            expect(entersOnError).to.be.equal(true);
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('should not resolve onModuleFinished if onModuleStarted threw an error', () => {
+    it('should not resolve onModuleFinished if onModuleStarted threw an error', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
         let entersOnError = false;
@@ -303,7 +327,7 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             dependencies: [userServiceInit],
             mediator: {
@@ -330,23 +354,27 @@ describe('Framework events', function() {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersOnError).to.be.equal(true);
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            assert.fail('This test should fail');
-        }).catch(() => {
-            expect(entersOnError).to.be.equal(true);
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('middleware should have a bound this context with the mediator property', () => {
+    it('middleware should have a bound this context with the mediator property', (done) => {
         let middlewareExecuted = false;
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             moduleLogic: [function() {
                 middlewareExecuted = true;
@@ -360,19 +388,25 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(middlewareExecuted).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            expect(middlewareExecuted).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('should execute a custom mediator event', () => {
+    it('should execute a custom mediator event', (done) => {
         let customEventExecuted = false;
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             mediator: {
                 customMediator: function() {
@@ -384,16 +418,22 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(customEventExecuted).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            expect(customEventExecuted).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('should resolve a dependency within a custom mediator event', () => {
+    it('should resolve a dependency within a custom mediator event', (done) => {
         let customEventExecuted = false;
 
         const userServiceInit = {
@@ -403,9 +443,9 @@ describe('Framework events', function() {
 
                 return new UserService();
             }
-        }
+        };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             mediator: {
                 customMediator: function(userService) {
@@ -420,16 +460,22 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(customEventExecuted).to.be.equal(true);
 
-        g.addModule(module);
-
-        return g.runModule().then(() => {
-            expect(customEventExecuted).to.be.equal(true);
+                    done();
+                }
+            }
         });
+
+        g.addModule(mdl);
+
+        g.startApp();
     });
 
-    it('should execute a plugins module start and finished event', () => {
+    it('should execute a plugins module start and finished event', (done) => {
         let onPluginFinished = false;
         let onPluginStarted = false;
 
@@ -458,19 +504,25 @@ describe('Framework events', function() {
                     onPluginFinished = true;
                 }
             }
-        }
+        };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onPluginStarted).to.be.equal(true);
+                    expect(onPluginFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin(plugin);
 
-        return g.runPlugin().then(() => {
-            expect(onPluginStarted).to.be.equal(true);
-            expect(onPluginFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should properly execute start and finished events when they contain async code', () => {
+    it('should properly execute start and finished events when they contain async code', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
 
@@ -489,7 +541,16 @@ describe('Framework events', function() {
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
@@ -516,13 +577,10 @@ describe('Framework events', function() {
             }
         });
 
-        return g.runPlugin().then(() => {
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should properly execute start and finished events before and after all middleware executes when within a plugin', () => {
+    it('should properly execute start and finished events before and after all middleware executes when within a plugin', (done) => {
         let onModuleStarted = false;
         let onModuleFinished = false;
         let onPluginStarted = false;
@@ -605,7 +663,18 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onModuleStarted).to.be.equal(true);
+                    expect(onModuleFinished).to.be.equal(true);
+                    expect(onPluginStarted).to.be.equal(true);
+                    expect(onPluginFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'name',
@@ -620,15 +689,10 @@ describe('Framework events', function() {
             }
         });
 
-        return g.runPlugin().then(() => {
-            expect(onModuleStarted).to.be.equal(true);
-            expect(onModuleFinished).to.be.equal(true);
-            expect(onPluginStarted).to.be.equal(true);
-            expect(onPluginFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should not resolve onPluginFinished if onPluginStarted threw an error', () => {
+    it('should not resolve onPluginFinished if onPluginStarted threw an error', (done) => {
         let onPluginStarted = false;
         let onPluginFinished = false;
         let entersOnError = false;
@@ -643,16 +707,26 @@ describe('Framework events', function() {
             }
         };
 
-        const module = {
+        const mdl = {
             name: 'eventsModule',
             dependencies: [userServiceInit],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersOnError).to.be.equal(true);
+                    expect(onPluginStarted).to.be.equal(true);
+                    expect(onPluginFinished).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
-            modules: [module],
+            modules: [mdl],
             mediator: {
                 onPluginStarted(throwException) {
                     onPluginStarted = true;
@@ -669,16 +743,10 @@ describe('Framework events', function() {
             }
         });
 
-        return g.runPlugin().then(() => {
-            assert.fail('This test should fail');
-        }).catch(() => {
-            expect(entersOnError).to.be.equal(true);
-            expect(onPluginStarted).to.be.equal(true);
-            expect(onPluginFinished).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should run the onError mediator event if the exception is thrown inside middleware fn', () => {
+    it('should run the onError mediator event if the exception is thrown inside middleware fn', (done) => {
         let onErrorCalled = false;
 
         const userServiceDefinition = {
@@ -706,13 +774,19 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onErrorCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        return g.runModule().then(() => {
-            expect(onErrorCalled).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should run the plugins onError if the module does not have an onError mediator event', (done) => {
@@ -736,7 +810,15 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(onErrorCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'errorPlugin',
@@ -752,14 +834,10 @@ describe('Framework events', function() {
             modules: [mdl],
         });
 
-        g.runPlugin().then(() => {
-            expect(onErrorCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
-    it('should propagate the mediator event from module to plugin if not exist in module', () => {
+    it('should propagate the mediator event from module to plugin if not exist in module', (done) => {
         let pluginEventCalled = false;
 
         const userServiceDefinition = {
@@ -780,7 +858,15 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(pluginEventCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
@@ -794,12 +880,10 @@ describe('Framework events', function() {
             modules: [mdl],
         });
 
-        g.runPlugin().then(() => {
-            expect(pluginEventCalled).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should pass custom arguments along with dependency injected arguments to mediator event', () => {
+    it('should pass custom arguments along with dependency injected arguments to mediator event', (done) => {
         let mediatorCalled = false;
 
         const userServiceDefinition = {
@@ -833,13 +917,19 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(mediatorCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule().then(() => {
-            expect(mediatorCalled).to.be.equal(true);
-        })
+        g.startApp();
     });
 
     it('should run a batch of async events of a single event in a module context', (done) => {
@@ -885,11 +975,16 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule();
+        g.startApp();
     });
 
     it('should run a batch of async event of multiple emitters in a module context', (done) => {
@@ -962,11 +1057,16 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule();
+        g.startApp();
     });
 
     it('should run a batch of async event of multiple emitters in a module context and with custom arguments', (done) => {
@@ -1075,11 +1175,16 @@ describe('Framework events', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule();
+        g.startApp();
     });
 
     it('should propagate a mediator event from module to plugin', (done) => {
@@ -1108,16 +1213,20 @@ describe('Framework events', function() {
             modules: [mdl],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(mdlEventCalled).to.be.equal(true);
+                    expect(pluginEventCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin(plugin);
 
-        g.runPlugin().then(() => {
-            expect(mdlEventCalled).to.be.equal(true);
-            expect(pluginEventCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should run all exposed events from emitted from a http module as a server', (done) => {
@@ -1654,6 +1763,11 @@ describe('Framework events', function() {
             events: {
                 onAppStarted(throwException) {
                     throwException(new Error('Thrown in onAppStarted'));
+                },
+                catchError(e) {
+                    expect(e.message).to.be.equal('Thrown in middleware');
+
+                    done();
                 }
             }
         });
@@ -1665,13 +1779,7 @@ describe('Framework events', function() {
             }]
         });
 
-        app.runModule().then(() => {
-            assert.fail('This test should not pass');
-        }).catch((e) => {
-            expect(e.message).to.be.equal('Thrown in middleware');
-
-            done();
-        });
+        app.startApp();
     });
 
     it('should inject the \'http\' argument into the onError event', (done) => {

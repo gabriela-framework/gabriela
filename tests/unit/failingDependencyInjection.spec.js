@@ -126,7 +126,7 @@ describe('Failing dependency injection tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('should fail to compile a dependency if next is not included in the argument list of an async resolvable service', () => {
+    it('should fail to compile a dependency if next is not included in the argument list of an async resolvable service', (done) => {
         const userServiceInit = {
             name: 'userService',
             scope: 'module',
@@ -155,17 +155,21 @@ describe('Failing dependency injection tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(entersMiddleware).to.be.equal(false);
+
+                    expect(err.message).to.be.equal(`Dependency injection error. Invalid service init for dependency with name 'userService'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule('name').then(() => {
-            assert.fail('Success callback called. This test should not be successful. catch() function should be called');
-        }).catch((err) => {
-            expect(entersMiddleware).to.be.equal(false);
-
-            expect(err.message).to.be.equal(`Dependency injection error. Invalid service init for dependency with name 'userService'. If a dependency is marked as asynchronous with 'isAsync' option, it has to include 'next' function in the argument list and call it when service construction is ready`);
-        });
+        g.startApp();
     });
 
     it('should fail to compile a dependency if the dependency data type is not an object', () => {
@@ -361,7 +365,15 @@ describe('Failing dependency injection tests', () => {
             }
         };
 
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' definition not found in the dependency tree`);
+
+                    done();
+                }
+            }
+        });
 
         m.addModule({
             name: 'module',
@@ -379,17 +391,20 @@ describe('Failing dependency injection tests', () => {
             }],
         });
 
-        m.runModule('anotherModule').then(() => {
-            assert.fail('This test should not be successful');
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Dependency injection error. '${userRepositoryInit.name}' definition not found in the dependency tree`);
-
-            done();
-        });
+        m.startApp();
     });
 
     it('should not resolve an argument if the argument is a falsy value', (done) => {
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'sortService'`);
+
+                    done();
+                }
+            }
+        });
+
         m.addModule({
             name: 'module',
             moduleLogic: [function(sortService, next) {
@@ -397,18 +412,19 @@ describe('Failing dependency injection tests', () => {
             }],
         });
 
-        m.runModule('module').then(() => {
-            assert.fail('This test should fail');
-            done();
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'sortService'`);
-
-            done();
-        });
+        m.startApp();
     });
 
     it('should fail to create a dependency of dependency if the inner dependency is not shared with the right module', (done) => {
-        const m = gabriela.asProcess();
+        const m = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal(`Dependency injection error. 'userRepository' definition not found in the dependency tree`);
+
+                    done();
+                }
+            }
+        });
 
         const sortServiceInit = {
             name: 'sortService',
@@ -445,15 +461,7 @@ describe('Failing dependency injection tests', () => {
         m.addModule(module1);
         m.addModule(module2);
 
-        m.runModule('module2').then(() => {
-            assert.fail('This test should fail');
-
-            done();
-        }).catch((err) => {
-            expect(err.message).to.be.equal(`Dependency injection error. 'userRepository' definition not found in the dependency tree`);
-
-            done();
-        });
+        m.startApp();
     });
 
     it('should fail to compile a dependency because \'dependencies\' property is not an array', () => {

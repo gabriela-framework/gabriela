@@ -72,13 +72,11 @@ module.exports = function _asProcess(config) {
         removeModule: moduleInterface.remove,
         hasModule: moduleInterface.has,
         getModules: moduleInterface.getAll,
-        runModule: moduleInterface.run,
         addPlugin: pluginInterface.add,
         getPlugin: pluginInterface.get,
         removePlugin: pluginInterface.remove,
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
-        runPlugin: pluginInterface.run,
 
         startApp() {
             const events = config.events;

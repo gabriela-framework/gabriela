@@ -11,65 +11,45 @@ describe('Middleware execution', function() {
     this.timeout(10000);
     
     it('should assert the first time that next proceedes to next middleware with an async function inside middleware', (done) => {
-        const name = 'googleCall';
+        let middlewareEntered = false;
 
         const googleRequest = function(state, next) {
             setTimeout(() => {
-                state.googleBody = 'value';
+                middlewareEntered = true;
 
                 next();
             }, 50);
         };
 
         const mdl = {
-            name: name,
+            name: 'module',
             moduleLogic: [googleRequest]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(middlewareEntered).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult).to.have.property('googleBody');
-
-            done();
-        });
-    });
-
-    it('should assert the second time that next proceeds to next middleware with an async function inside middleware', (done) => {
-        const name = 'googleCall';
-
-        const googleRequest = function(state, next) {
-            setTimeout(() => {
-                state.googleBody = 'value';
-
-                next();
-            }, 50);
-        };
-
-        const mdl = {
-            name: name,
-            moduleLogic: [googleRequest]
-        };
-
-        const g = gabriela.asProcess();
-
-        g.addModule(mdl);
-
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult).to.have.property('googleBody');
-
-            done();
-        });
+        g.startApp();
     });
 
     it(`should assert that skip skips the rest of the middleware`, (done) => {
-        const name = 'googleCall';
+        let firstEntered = false;
+        let secondEntered = false;
+        let thirdEntered = false;
+        let fourthEntered = false;
 
         const firstRequest = function(state, next) {
             setTimeout(() => {
-                state.firstRequest = 'value';
+                firstEntered = true;
 
                 next();
             }, 50);
@@ -77,7 +57,7 @@ describe('Middleware execution', function() {
 
         const secondRequest = function(state, next, skip) {
             setTimeout(() => {
-                state.secondRequest = 'value';
+                secondEntered = true;
 
                 skip();
             }, 50);
@@ -85,44 +65,51 @@ describe('Middleware execution', function() {
 
         const thirdRequest = function(state, next) {
             setTimeout(() => {
-                state.thirdRequest = 'value';
+                thirdEntered = true;
 
                 next();
             }, 50);
         };
 
         const postLogicTransformer = function(state, next) {
-            state.postLogic = true;
+            fourthEntered = true;
 
             next();
         };
 
         const mdl = {
-            name: name,
+            name: 'module',
             moduleLogic: [firstRequest, secondRequest, thirdRequest],
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(firstEntered).to.be.equal(true);
+                    expect(secondEntered).to.be.equal(true);
+                    expect(thirdEntered).to.be.equal(false);
+                    expect(fourthEntered).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult).to.have.property('firstRequest');
-            expect(moduleResult).to.have.property('secondRequest');
-            expect(moduleResult).to.not.have.property('thirdRequest');
-            expect(moduleResult).to.have.property('postLogic');
-
-            done();
-        });
+        g.startApp();
     });
 
-    it(`it should assert that done() exists and does not execute any more middleware`, (done) => {
-        const name = 'googleCall';
+    it(`it should assert that done() exists and does not execute any more middleware`, (mochaDone) => {
+        let firstEntered = false;
+        let secondEntered = false;
+        let thirdEntered = false;
+        let fourthEntered = false;
 
         const firstRequest = function(state, next) {
             setTimeout(() => {
-                state.firstRequest = 'value';
+                firstEntered = true;
 
                 next();
             }, 50);
@@ -130,7 +117,7 @@ describe('Middleware execution', function() {
 
         const secondRequest = function(state, next, skip, done) {
             setTimeout(() => {
-                state.secondRequest = 'value';
+                secondEntered = true;
 
                 done();
             }, 50);
@@ -138,36 +125,40 @@ describe('Middleware execution', function() {
 
         const thirdRequest = function(state, next) {
             setTimeout(() => {
-                state.thirdRequest = 'value';
+                thirdEntered = true;
 
                 next();
             }, 50);
         };
 
         const postLogicTransformer = function(state, next) {
-            state.postLogic = true;
+            fourthEntered = true;
 
             next();
         };
 
         const mdl = {
-            name: name,
+            name: 'module',
             moduleLogic: [firstRequest, secondRequest, thirdRequest],
             postLogicTransformers: [postLogicTransformer]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(firstEntered).to.be.equal(true);
+                    expect(secondEntered).to.be.equal(true);
+                    expect(thirdEntered).to.be.equal(false);
+                    expect(fourthEntered).to.be.equal(false);
+
+                    mochaDone();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then((moduleResult) => {
-            expect(moduleResult).to.have.property('firstRequest');
-            expect(moduleResult).to.have.property('secondRequest');
-            expect(moduleResult).to.not.have.property('thirdRequest');
-            expect(moduleResult).to.not.have.property('postLogic');
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should assert that exception throw inside middleware async process is caught and processed', (done) => {
@@ -195,20 +186,34 @@ describe('Middleware execution', function() {
             postLogicTransformers: []
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(err) {
+                    expect(err.message).to.be.equal('my exception');
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule(mdl.name).then(() => {
-        }).catch((err) => {
-            expect(err.message).to.be.equal('my exception');
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should override module by adding more middleware with existing ones', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(firstCalled).to.be.equal(true);
+                    expect(secondCalled).to.be.equal(false);
+                    expect(overridenCalled).to.be.equal(true);
+                    expect(thirdCalled).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         let firstCalled = false;
         let secondCalled = false;
@@ -249,13 +254,6 @@ describe('Middleware execution', function() {
             }]
         });
 
-        g.runModule('overridingModule').then(() => {
-            expect(firstCalled).to.be.equal(true);
-            expect(secondCalled).to.be.equal(false);
-            expect(overridenCalled).to.be.equal(true);
-            expect(thirdCalled).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     })
 });

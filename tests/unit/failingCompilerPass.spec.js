@@ -48,18 +48,23 @@ describe('Compiler pass failing tests', () => {
             }],
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+
+                },
+                catchError() {
+                    expect(mdl1Entered).to.be.equal(true);
+                    expect(mdl2Entered).to.be.equal(false);
+
+                    done();
+                }
+            }
+        });
 
         app.addModule(mdl1);
         app.addModule(mdl2);
 
-        app.runModule().then(() => {
-            assert.fail('This test should fail');
-        }).catch(() => {
-            expect(mdl1Entered).to.be.equal(true);
-            expect(mdl2Entered).to.be.equal(false);
-
-            done();
-        });
+        app.startApp();
     });
 });

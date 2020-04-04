@@ -35,10 +35,6 @@ module.exports = function _resolveService(definition, deps, taskRunner, injectio
 
         const service = taskRunner.getValue().call(null);
 
-        if (_isInjectionTypeInterface(service)) {
-            return service;
-        }
-
         taskRunner.resolve();
 
         return {

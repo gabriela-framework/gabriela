@@ -81,7 +81,17 @@ describe('Plugin creation tests', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(searchModuleExecuted).to.be.equal(2);
+                    expect(undefinedModuleExecuted).to.be.equal(2);
+                    expect(autocompleteModuleExecuted).to.be.equal(2);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin1',
@@ -98,12 +108,6 @@ describe('Plugin creation tests', () => {
             modules: [autocompleteModule, undefinedModule],
         });
 
-        g.runPlugin().then(() => {
-            expect(searchModuleExecuted).to.be.equal(2);
-            expect(undefinedModuleExecuted).to.be.equal(2);
-            expect(autocompleteModuleExecuted).to.be.equal(2);
-
-            done();
-        });
+        g.startApp();
     });
 });

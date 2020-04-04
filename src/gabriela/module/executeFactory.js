@@ -2,7 +2,6 @@ const runMiddleware = require('./middleware/runMiddleware');
 const deepCopy = require('deepcopy');
 const {MIDDLEWARE_TYPES} = require('../misc/types');
 const createResponseProxy = require('./_responseProxy');
-const fs = require('fs');
 
 function _getResponseEvents(mdl) {
     if (mdl.hasMediators()) {

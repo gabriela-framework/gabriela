@@ -16,13 +16,11 @@ describe('Gabriela interface tests', () => {
             'removeModule',
             'hasModule',
             'getModules',
-            'runModule',
             'addPlugin',
             'getPlugin',
             'removePlugin',
             'hasPlugin',
             'getPlugins',
-            'runPlugin',
             'startApp',
         ];
 
@@ -60,9 +58,6 @@ describe('Gabriela interface tests', () => {
         expect(g).to.have.property('getModules');
         expect(g.getModules).to.be.a('function');
 
-        expect(g).to.have.property('runModule');
-        expect(g.runModule).to.be.a('function');
-
         expect(g).to.have.property('addPlugin');
         expect(g.addPlugin).to.be.a('function');
 
@@ -77,9 +72,6 @@ describe('Gabriela interface tests', () => {
 
         expect(g).to.have.property('getPlugins');
         expect(g.getPlugins).to.be.a('function');
-
-        expect(g).to.have.property('runPlugin');
-        expect(g.runPlugin).to.be.a('function');
 
         expect(g).to.have.property('startApp');
         expect(g.startApp).to.be.a('function');

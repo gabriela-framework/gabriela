@@ -10,6 +10,7 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, conf
     const c = Compiler.create();
     c.name = 'module';
     c.root = rootCompiler;
+    c.shared = sharedCompiler;
 
     if (parentCompiler) c.parent = parentCompiler;
 

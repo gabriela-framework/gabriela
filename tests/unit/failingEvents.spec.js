@@ -232,15 +232,18 @@ describe('Failing framework events', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError() {
+                    done();
+                }
+
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule().then(() => {
-            assert.fail('This test should fail')
-        }).catch(() => {
-            done();
-        });
+        g.startApp();
     });
 
     it('should fail if mediator in plugin has invalid onPluginStarted event data type', () => {
@@ -475,7 +478,15 @@ describe('Failing framework events', () => {
     });
 
     it('should fail if onModuleStarted do not have an onError event attached', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'name',
@@ -486,18 +497,19 @@ describe('Failing framework events', () => {
             }
         });
 
-        g.runModule().then(() => {
-            assert.fail('This test should not be a success');
-        }).catch((e) => {
-            expect(e).to.be.instanceof(Error);
-            expect(e.message).to.be.equal('Something went wrong');
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should fail if onModuleFinished do not have an onError event attached', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal('Something went wrong');
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'name',
@@ -508,18 +520,19 @@ describe('Failing framework events', () => {
             }
         });
 
-        g.runModule().then(() => {
-            assert.fail('This test should not be a success');
-        }).catch((e) => {
-            expect(e).to.be.instanceof(Error);
-            expect(e.message).to.be.equal('Something went wrong');
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should throw an error if an event does not exist if propagate is set to true', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'onEvent' does not exist in module 'module'`);
+
+                    done();
+                }
+            }
+        });
 
         const mdl = {
             name: 'module',
@@ -530,17 +543,19 @@ describe('Failing framework events', () => {
 
         g.addModule(mdl);
 
-        g.runModule('module').then(() => {
-            assert.fail('This test should not pass');
-        }).catch((e) => {
-            expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'onEvent' does not exist in module 'module'`);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should throw an error if a service does not exist when using it in an event', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'nonExistentService'`);
+
+                    done();
+                }
+            }
+        });
 
         const mdl = {
             name: 'module',
@@ -556,17 +571,19 @@ describe('Failing framework events', () => {
 
         g.addModule(mdl);
 
-        g.runModule('module').then(() => {
-            assert.fail('This test should not pass');
-        }).catch((e) => {
-            expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'nonExistentService'`);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should throw an error if a mediator event does not exist', (done) => {
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'onFailingEvent' does not exist in module 'module'`);
+
+                    done();
+                }
+            }
+        });
 
         const mdl = {
             name: 'module',
@@ -579,12 +596,6 @@ describe('Failing framework events', () => {
 
         g.addModule(mdl);
 
-        g.runModule('module').then(() => {
-            assert.fail('This test should not pass');
-        }).catch((e) => {
-            expect(e.message).to.be.equal(`Invalid mediator event. Mediator with name 'onFailingEvent' does not exist in module 'module'`);
-
-            done();
-        });
+        g.startApp();
     });
 });

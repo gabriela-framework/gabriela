@@ -10,7 +10,7 @@ const gabriela = require('../../src/gabriela/gabriela');
 describe('Module dependency injection tests', function() {
     this.timeout(10000);
     
-    it('should resolve module dependency tree', () => {
+    it('should resolve module dependency tree', (mochaDone) => {
         const userFriendsRepositoryServiceInit = {
             name: 'userFriendsRepository',
             init: function() {
@@ -79,16 +79,22 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+
+                    mochaDone();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        g.runModule('name').then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should resolve a single module dependency with async function inside, synchronously', () => {
+    it('should resolve a single module dependency with async function inside, synchronously', (mochaDone) => {
         const userServiceInit = {
             name: 'userService',
             scope: 'module',
@@ -146,16 +152,22 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+
+                    mochaDone();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        return g.runModule('asyncModuleName').then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should resolve a dependency tree with async function inside, synchronously', () => {
+    it('should resolve a dependency tree with async function inside, synchronously', (mochaDone) => {
         const userFriendsRepositoryServiceInit = {
             name: 'userFriendsRepository',
             isAsync: true,
@@ -252,13 +264,19 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+
+                    mochaDone();
+                }
+            }
+        });
 
         g.addModule(mdl);
 
-        return g.runModule('treeAsyncServiceDefinition').then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should run all synchronous modules added to gabriela', (done) => {
@@ -303,39 +321,23 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(userModuleExecuted).to.be.equal(true);
+                    expect(appSearchModuleExecuted).to.be.equal(true);
+                    expect(pdfConvertModuleExecuted).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
-        try {
-            app.runModule().then((state) => {
-                expect(userModuleExecuted).to.be.equal(true);
-                expect(appSearchModuleExecuted).to.be.equal(true);
-                expect(pdfConvertModuleExecuted).to.be.equal(true);
-
-                expect(state).to.have.property(userModuleName);
-                expect(state).to.have.property(appSearchModuleName);
-                expect(state).to.have.property(pdfConvertModuleName);
-
-                const userModuleState = state[userModuleName];
-                const appSearchState = state[appSearchModuleName];
-                const pdfConvertState = state[pdfConvertModuleName];
-
-                expect(userModuleState).to.have.property('name');
-                expect(appSearchState).to.have.property('name');
-                expect(pdfConvertState).to.have.property('name');
-
-                expect(userModuleState.name).to.be.equal(userModuleName);
-                expect(appSearchState.name).to.be.equal(appSearchModuleName);
-                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
-
-                done();
-            });
-        } catch(err) {
-            assert.fail(`Test failed with message: ${err.message}`);
-        }
+        app.startApp();
     });
 
     it('should run all asynchronous modules added to gabriela', (done) => {
@@ -386,42 +388,26 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const app = gabriela.asProcess();
+        const app = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(userModuleExecuted).to.be.equal(true);
+                    expect(appSearchModuleExecuted).to.be.equal(true);
+                    expect(pdfConvertModuleExecuted).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         app.addModule(userModule);
         app.addModule(appSearchModule);
         app.addModule(pdfConvertModule);
 
-        try {
-            app.runModule().then((state) => {
-                expect(userModuleExecuted).to.be.equal(true);
-                expect(appSearchModuleExecuted).to.be.equal(true);
-                expect(pdfConvertModuleExecuted).to.be.equal(true);
-
-                expect(state).to.have.property(userModuleName);
-                expect(state).to.have.property(appSearchModuleName);
-                expect(state).to.have.property(pdfConvertModuleName);
-
-                const userModuleState = state[userModuleName];
-                const appSearchState = state[appSearchModuleName];
-                const pdfConvertState = state[pdfConvertModuleName];
-
-                expect(userModuleState).to.have.property('name');
-                expect(appSearchState).to.have.property('name');
-                expect(pdfConvertState).to.have.property('name');
-
-                expect(userModuleState.name).to.be.equal(userModuleName);
-                expect(appSearchState.name).to.be.equal(appSearchModuleName);
-                expect(pdfConvertState.name).to.be.equal(pdfConvertModuleName);
-
-                done();
-            });
-        } catch(err) {
-            assert.fail(`Test failed with message: ${err.message}`);
-        }
+        app.startApp();
     });
 
-    it('should override the modules middleware', () => {
+    it('should override the modules middleware', (done) => {
         let entersOriginalLogic1 = false;
         let entersOverridenLogic1 = false;
         let entersLogic2 = false;
@@ -440,7 +426,17 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersOverridenLogic1).to.be.equal(true);
+                    expect(entersLogic2).to.be.equal(true);
+                    expect(entersOriginalLogic1).to.be.equal(false);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(userModule);
 
@@ -467,11 +463,7 @@ describe('Module dependency injection tests', function() {
             }]
         });
 
-        return g.runModule().then(() => {
-            expect(entersOverridenLogic1).to.be.equal(true);
-            expect(entersLogic2).to.be.equal(true);
-            expect(entersOriginalLogic1).to.be.equal(false);
-        });
+        g.startApp();
     });
 
     it('should not execute a disabled middleware', (done) => {
@@ -507,17 +499,21 @@ describe('Module dependency injection tests', function() {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(transformer1Enters).to.be.equal(false);
+                    expect(transformer2Enters).to.be.equal(true);
+                    expect(logic1Enters).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(userModule);
 
-        g.runModule().then(() => {
-            expect(transformer1Enters).to.be.equal(false);
-            expect(transformer2Enters).to.be.equal(true);
-            expect(logic1Enters).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should execute plain and definition middleware', (done) => {
@@ -555,18 +551,22 @@ describe('Module dependency injection tests', function() {
             }]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(preLogicPlain).to.be.equal(true);
+                    expect(preLogicDefinition).to.be.equal(true);
+                    expect(moduleLogicPlain).to.be.equal(true);
+                    expect(moduleLogicDefinition).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(userModule);
 
-        g.runModule().then(() => {
-            expect(preLogicPlain).to.be.equal(true);
-            expect(preLogicDefinition).to.be.equal(true);
-            expect(moduleLogicPlain).to.be.equal(true);
-            expect(moduleLogicDefinition).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should throw an exception inside a service of another dependency (two levels) inside a compiler pass', (done) => {

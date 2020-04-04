@@ -8,7 +8,7 @@ const expect = chai.expect;
 const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Compiler pass tests', () => {
-    it('should add a private dependency within a compiler pass, execute it and resolve the private dependency within the init function', () => {
+    it('should add a private dependency within a compiler pass, execute it and resolve the private dependency within the init function', (done) => {
         let entersCompilerPass = false;
         let entersMiddleware = false;
 
@@ -39,7 +39,16 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'module',
@@ -52,16 +61,13 @@ describe('Compiler pass tests', () => {
                 expect(userService.privateDependency).to.be.a('object');
                 expect(userService.privateDependency).to.have.property('privateDepFunc');
 
-            }]
+            }],
         });
 
-        return g.runModule().then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-        });
+        g.startApp();
     });
 
-    it('should assert that compiler argument passed to compiler pass cannot set any properties on that compiler', () => {
+    it('should assert that compiler argument passed to compiler pass cannot set any properties on that compiler', (done) => {
         let entersCompilerPass = false;
         let entersMiddleware = false;
 
@@ -83,7 +89,16 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'module',
@@ -96,10 +111,7 @@ describe('Compiler pass tests', () => {
             }]
         });
 
-        return g.runModule().then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-        });
+        g.startApp();
     });
 
     it('should create a module dependency within a compiler pass', (done) => {
@@ -132,7 +144,16 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMiddleware).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
             name: 'module',
@@ -145,12 +166,7 @@ describe('Compiler pass tests', () => {
             }],
         });
 
-        g.runModule().then(() => {
-            expect(entersMiddleware).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should create a plugin dependency within a compiler pass', (done) => {
@@ -184,7 +200,17 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+                    expect(entersMdl2).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         const mdl1 = {
             name: 'mdl1',
@@ -213,13 +239,7 @@ describe('Compiler pass tests', () => {
             modules: [mdl1, mdl2],
         });
 
-        g.runPlugin().then(() => {
-            expect(entersMdl1).to.be.equal(true);
-            expect(entersMdl2).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should create a public dependency within a compiler pass', (done) => {
@@ -253,7 +273,17 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+                    expect(entersMdl2).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         const mdl1 = {
             name: 'mdl1',
@@ -280,13 +310,7 @@ describe('Compiler pass tests', () => {
         g.addModule(mdl1);
         g.addModule(mdl2);
 
-        g.runModule().then(() => {
-            expect(entersMdl1).to.be.equal(true);
-            expect(entersMdl2).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 
     it('should create a shared dependency within a compiler pass', (done) => {
@@ -322,7 +346,17 @@ describe('Compiler pass tests', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+                    expect(entersMdl2).to.be.equal(true);
+                    expect(entersCompilerPass).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         const mdl1 = {
             name: 'mdl1',
@@ -356,12 +390,6 @@ describe('Compiler pass tests', () => {
             modules: [mdl2],
         });
 
-        g.runPlugin().then(() => {
-            expect(entersMdl1).to.be.equal(true);
-            expect(entersMdl2).to.be.equal(true);
-            expect(entersCompilerPass).to.be.equal(true);
-
-            done();
-        });
+        g.startApp();
     });
 });

@@ -8,7 +8,7 @@ const expect = chai.expect;
 const gabriela = require('../../src/gabriela/gabriela');
 
 describe('Private dependencies', () => {
-    it('should resolve all private dependencies in a single tree of a single module', () => {
+    it('should resolve all private dependencies in a single tree of a single module', (done) => {
         const userRepositoryInit = {
             name: 'userRepository',
             init: function() {
@@ -58,18 +58,24 @@ describe('Private dependencies', () => {
             }]
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(service).to.be.a('object');
+                    expect(service).to.have.property('userRepository');
+                    expect(service).to.have.property('friendsRepository');
+
+                    expect(service.userRepository).to.be.a('object');
+                    expect(service.friendsRepository).to.be.a('object');
+
+                    done();
+                }
+            }
+        });
 
         g.addModule(userModule);
 
-        g.runModule().then(() => {
-            expect(service).to.be.a('object');
-            expect(service).to.have.property('userRepository');
-            expect(service).to.have.property('friendsRepository');
-
-            expect(service.userRepository).to.be.a('object');
-            expect(service.friendsRepository).to.be.a('object');
-        });
+        g.startApp();
     });
 
     it('should resolve all private dependencies in multiple modules of a plugin', (done) => {
@@ -132,58 +138,41 @@ describe('Private dependencies', () => {
             }],
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(serviceUser).to.be.a('object');
+                    expect(friendsRepo).to.be.a('object');
+
+                    expect(serviceUser).to.have.property('userRepository');
+                    expect(serviceUser).to.have.property('friendsRepository');
+
+                    expect(serviceUser.userRepository).to.be.a('object');
+                    expect(serviceUser.friendsRepository).to.be.a('object');
+
+                    expect(serviceUser.friendsRepository != friendsRepo).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
 
         g.addPlugin({
             name: 'plugin',
             modules: [userModule, friendsModule],
         });
 
-        g.runPlugin('plugin').then(() => {
-            expect(serviceUser).to.be.a('object');
-            expect(friendsRepo).to.be.a('object');
-
-            expect(serviceUser).to.have.property('userRepository');
-            expect(serviceUser).to.have.property('friendsRepository');
-
-            expect(serviceUser.userRepository).to.be.a('object');
-            expect(serviceUser.friendsRepository).to.be.a('object');
-
-            expect(serviceUser.friendsRepository != friendsRepo).to.be.equal(true);
-
-            g.runPlugin('plugin').then(() => {
-                expect(serviceUser).to.be.a('object');
-                expect(friendsRepo).to.be.a('object');
-
-                expect(serviceUser).to.have.property('userRepository');
-                expect(serviceUser).to.have.property('friendsRepository');
-
-                expect(serviceUser.userRepository).to.be.a('object');
-                expect(serviceUser.friendsRepository).to.be.a('object');
-
-                expect(serviceUser.friendsRepository != friendsRepo).to.be.equal(true);
-
-                done();
-            });
-        });
-
-        g.runPlugin('plugin').then(() => {
-            expect(serviceUser).to.be.a('object');
-            expect(friendsRepo).to.be.a('object');
-
-            expect(serviceUser).to.have.property('userRepository');
-            expect(serviceUser).to.have.property('friendsRepository');
-
-            expect(serviceUser.userRepository).to.be.a('object');
-            expect(serviceUser.friendsRepository).to.be.a('object');
-
-            expect(serviceUser.friendsRepository != friendsRepo).to.be.equal(true);
-        });
-
         g.addModule(friendsModule);
+
+        g.startApp();
     });
 
-    it('should resolve a public dependency with private dependencies within a single module and a multiple plugins', (done) => {
+    it('should resolve private dependencies with different references', (done) => {
+        let userRepositoryPrivate = null;
+        let friendsRepositoryPrivate = null;
+        let userRepositoryPublic = null;
+        let friendsRepositoryPublic = null;
+
         const userRepositoryInit = {
             name: 'userRepository',
             init: function() {
@@ -208,237 +197,44 @@ describe('Private dependencies', () => {
             dependencies: [userRepositoryInit, friendsRepositoryInit],
             scope: 'public',
             init: function(userRepository, friendsRepository) {
-                function UserService() {
-                    this.userRepository = userRepository;
-                    this.friendsRepository = friendsRepository;
-                }
+                userRepositoryPrivate = userRepository;
+                friendsRepositoryPrivate = friendsRepository;
+
+                function UserService() {}
 
                 return new UserService();
             }
         };
 
-        let moduleUserService1;
-        let moduleUserService2;
-        let moduleUserService3;
-        let pluginServices = [];
-
         const userModule = {
             name: 'userModule',
-            dependencies: [userServiceInit],
-            moduleLogic: [function(privateUserService, next) {
-                if (!moduleUserService1) {
-                    moduleUserService1 = privateUserService;
-                } else if (!moduleUserService2) {
-                    moduleUserService2 = privateUserService;
-                } else if (!moduleUserService3) {
-                    moduleUserService3 = privateUserService;
-                }
-
-                next();
+            dependencies: [userRepositoryInit, friendsRepositoryInit, userServiceInit],
+            moduleLogic: [function(userRepository, friendsRepository) {
+                userRepositoryPublic = userRepository;
+                friendsRepositoryPublic = friendsRepository;
             }],
         };
 
-        const searchModule = {
-            name: 'searchModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const autocompleteModule = {
-            name: 'autocompleteModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const undefinedModule = {
-            name: 'undefinedModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const g = gabriela.asProcess();
-
-        g.addModule(userModule);
-
-        g.addPlugin({
-            name: 'twoModulesPlugin',
-            modules: [userModule, searchModule],
-        });
-
-        g.addPlugin({
-            name: 'fullModulesPlugin',
-            modules: [undefinedModule, autocompleteModule, searchModule, userModule],
-        });
-
-        g.runModule().then(() => {
-            expect(moduleUserService1).to.be.a('object');
-
-            g.runPlugin('twoModulesPlugin').then(() => {
-                expect(pluginServices.length).to.be.equal(1);
-                expect(moduleUserService1).to.be.a('object');
-                expect(moduleUserService2).to.be.a('object');
-
-                expect(moduleUserService1 == moduleUserService2).to.be.equal(true);
-
-                for (const s of pluginServices) {
-                    expect(moduleUserService1 == s).to.be.equal(true);
-                    expect(moduleUserService2 == s).to.be.equal(true);
-                }
-
-                g.runPlugin('fullModulesPlugin').then(() => {
-                    expect(pluginServices.length).to.be.equal(4);
-
-                    expect(moduleUserService1).to.be.a('object');
-                    expect(moduleUserService2).to.be.a('object');
-                    expect(moduleUserService3).to.be.a('object');
-
-                    expect(moduleUserService1 == moduleUserService2).to.be.equal(true);
-                    expect(moduleUserService1 == moduleUserService3).to.be.equal(true);
-                    expect(moduleUserService3 == moduleUserService2).to.be.equal(true);
-
-                    for (const s of pluginServices) {
-                        expect(moduleUserService1 == s).to.be.equal(true);
-                        expect(moduleUserService2 == s).to.be.equal(true);
-                        expect(moduleUserService3 == s).to.be.equal(true);
-                    }
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(userRepositoryPublic != userRepositoryPrivate).to.be.equal(true);
+                    expect(friendsRepositoryPublic != friendsRepositoryPrivate).to.be.equal(true);
 
                     done();
-                });
-            });
+                }
+            }
         });
-    });
-
-    it('should execute all plugins without specifying a name for a plugin', (done) => {
-        const userRepositoryInit = {
-            name: 'userRepository',
-            init: function() {
-                function UserRepository() {}
-
-                return new UserRepository();
-            }
-        };
-
-        const friendsRepositoryInit = {
-            name: 'friendsRepository',
-            scope: 'public',
-            init: function() {
-                function FriendsRepository() {}
-
-                return new FriendsRepository();
-            }
-        };
-
-        const userServiceInit = {
-            name: 'privateUserService',
-            dependencies: [userRepositoryInit, friendsRepositoryInit],
-            scope: 'public',
-            init: function(userRepository, friendsRepository) {
-                function UserService() {
-                    this.userRepository = userRepository;
-                    this.friendsRepository = friendsRepository;
-                }
-
-                return new UserService();
-            }
-        };
-
-        let moduleUserService1;
-        let moduleUserService2;
-        let moduleUserService3;
-        let pluginServices = [];
-
-        const userModule = {
-            name: 'userModule',
-            dependencies: [userServiceInit],
-            moduleLogic: [function(privateUserService, next) {
-                if (!moduleUserService1) {
-                    moduleUserService1 = privateUserService;
-                } else if (!moduleUserService2) {
-                    moduleUserService2 = privateUserService;
-                } else if (!moduleUserService3) {
-                    moduleUserService3 = privateUserService;
-                }
-
-                next();
-            }],
-        };
-
-        const searchModule = {
-            name: 'searchModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const autocompleteModule = {
-            name: 'autocompleteModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const undefinedModule = {
-            name: 'undefinedModule',
-            moduleLogic: [function(privateUserService, next) {
-                pluginServices.push(privateUserService);
-
-                next();
-            }],
-        };
-
-        const g = gabriela.asProcess();
-
-        g.addModule(userModule);
 
         g.addPlugin({
             name: 'twoModulesPlugin',
-            modules: [userModule, searchModule],
+            modules: [userModule],
         });
 
-        g.addPlugin({
-            name: 'fullModulesPlugin',
-            modules: [undefinedModule, autocompleteModule, searchModule, userModule],
-        });
-
-        g.runModule().then(() => {
-            expect(moduleUserService1).to.be.a('object');
-
-            g.runPlugin().then(() => {
-                expect(pluginServices.length).to.be.equal(4);
-
-                expect(moduleUserService1).to.be.a('object');
-                expect(moduleUserService2).to.be.a('object');
-                expect(moduleUserService3).to.be.a('object');
-
-                expect(moduleUserService1 == moduleUserService2).to.be.equal(true);
-                expect(moduleUserService1 == moduleUserService3).to.be.equal(true);
-                expect(moduleUserService3 == moduleUserService2).to.be.equal(true);
-
-                for (const s of pluginServices) {
-                    expect(moduleUserService1 == s).to.be.equal(true);
-                    expect(moduleUserService2 == s).to.be.equal(true);
-                    expect(moduleUserService3 == s).to.be.equal(true);
-                }
-
-                done();
-            });
-        });
+        g.startApp();
     });
 
-    it('should not execute a compiler pass of a private dependency but it should execute a compiler pass of a parent dependency', () => {
+    it('should not execute a compiler pass of a private dependency but it should execute a compiler pass of a parent dependency', (done) => {
         let entersPrivateDepCompilerPass = false;
         let entersParentDepCompilerPass = false;
         let entersMiddleware = false;
@@ -468,22 +264,26 @@ describe('Private dependencies', () => {
             }
         };
 
-        const g = gabriela.asProcess();
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersParentDepCompilerPass).to.be.equal(true);
+                    expect(entersMiddleware).to.be.equal(true);
+                    expect(entersPrivateDepCompilerPass).to.be.equal(false);
+
+                    done();
+                }
+            }
+        });
 
         g.addModule({
-            name: 'module',
+            name: 'mdl',
             dependencies: [parentDependencyInit],
             moduleLogic: [function(parentDependency) {
                 entersMiddleware = true;
-
-                expect(parentDependency).to.be.a('function');
-            }],
+            }]
         });
 
-        g.runModule().then(() => {
-            expect(entersParentDepCompilerPass).to.be.equal(true);
-            expect(entersMiddleware).to.be.equal(true);
-            expect(entersPrivateDepCompilerPass).to.be.equal(false);
-        });
+        g.startApp();
     });
 });
