@@ -268,7 +268,7 @@ describe('Compiler pass tests', () => {
                     compiler.add({
                         name: 'userRepository',
                         shared: {
-                            modules: ['mdl1', 'mdl2'],
+                            modules: ['plugin1.mdl1', 'plugin2.mdl2'],
                         },
                         init: function() {
                             function UserRepository() {

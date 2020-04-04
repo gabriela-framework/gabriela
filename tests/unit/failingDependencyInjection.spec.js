@@ -679,7 +679,7 @@ describe('Failing dependency injection tests', () => {
                     expect(entersMdl1).to.be.equal(false);
                     expect(entersMdl2).to.be.equal(false);
 
-                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'mdl1' that is a member of 'plugin1' plugin");
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'plugin1.mdl1' that is a member of 'plugin1' plugin");
 
                     done();
                 }
@@ -764,7 +764,7 @@ describe('Failing dependency injection tests', () => {
                 catchError(e) {
                     expect(entersMdl1).to.be.equal(false);
                     expect(entersMdl2).to.be.equal(false);
-                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'mdl1' that is a member of 'plugin1' plugin");
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'plugin1.mdl1' that is a member of 'plugin1' plugin");
 
                     done();
                 }
@@ -853,7 +853,7 @@ describe('Failing dependency injection tests', () => {
                 catchError(e) {
                     expect(entersMdl1).to.be.equal(false);
                     expect(entersMdl2).to.be.equal(false);
-                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'mdl1' that is a member of 'plugin1' plugin");
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'plugin1.mdl1' that is a member of 'plugin1' plugin");
 
                     done();
                 }
@@ -927,7 +927,7 @@ describe('Failing dependency injection tests', () => {
                 catchError(e) {
                     expect(entersMdl1).to.be.equal(true);
                     expect(entersMdl2).to.be.equal(false);
-                    expect(e.message).to.be.equal("Dependency injection error. 'shared1' service cannot be shared with module 'mdl2' that is a member of 'plugin2' plugin");
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared1' service cannot be shared with module 'plugin2.mdl2' that is a member of 'plugin2' plugin");
 
                     done();
                 }

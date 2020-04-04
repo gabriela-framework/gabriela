@@ -12,8 +12,8 @@ describe('Shared scope dependency injection tests', () => {
         const userServiceInit = {
             name: 'userService',
             shared: {
-                modules: ['module1', 'module2'],
-                plugins: ['plugin1']
+                modules: ['plugin.module1', 'plugin.module2', 'module1', 'module2'],
+                plugins: ['plugin']
             },
             init: function() {
                 function UserService() {}

@@ -58,7 +58,7 @@ describe('Middleware context usage tests', function() {
             route: 'route',
             moduleLogic: [function () {
                 expect(this.moduleInfo).to.be.a('object');
-                expect(this.moduleInfo.moduleName).to.be.equal('mdl');
+                expect(this.moduleInfo.moduleName).to.be.equal('plugin.mdl');
                 expect(this.moduleInfo.route).to.be.a('object');
                 expect(this.moduleInfo.route.matchedPath).to.be.a('string');
                 expect(this.moduleInfo.modelName).to.be.equal('modelName');
@@ -103,7 +103,7 @@ describe('Middleware context usage tests', function() {
             name: 'mdl',
             moduleLogic: [function () {
                 expect(this.moduleInfo).to.be.a('object');
-                expect(this.moduleInfo.moduleName).to.be.equal('mdl');
+                expect(this.moduleInfo.moduleName).to.be.equal('plugin.mdl');
                 expect(this.moduleInfo.route).to.be.a('object');
                 expect(this.moduleInfo.route.matchedPath).to.be.a('undefined');
                 expect(this.moduleInfo.modelName).to.be.a('undefined');

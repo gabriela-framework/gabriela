@@ -13,7 +13,9 @@ class Names {
         return this.#names.includes(name);
     }
 
-    addPluginModules(plugin) {
+    addAndReplacePluginNames(plugin) {
+        this.add(plugin.name);
+        
         if (!plugin.modules) return true;
 
         const modules = plugin.modules;
@@ -24,6 +26,8 @@ class Names {
             if (this.has(name)) {
                 return name;
             }
+
+            mdl.name = name;
 
             this.add(name);
         }

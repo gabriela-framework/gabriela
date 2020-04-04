@@ -853,7 +853,7 @@ describe('Dependency injection types process and server tests', () => {
         const sharedDep = {
             name: 'sharedDep',
             shared: {
-                modules: ['mdl1', 'mdl2']
+                modules: ['plugin.mdl1', 'plugin.mdl2']
             },
             init() {
                 return {mdl1: 'mdl1', mdl2: 'mdl2'}
@@ -972,7 +972,7 @@ describe('Dependency injection types process and server tests', () => {
         const sharedDep = {
             name: 'sharedDep',
             shared: {
-                modules: ['mdl1', 'mdl2']
+                modules: ['plugin.mdl1', 'plugin.mdl2']
             },
             init() {
                 return {mdl1: 'mdl1', mdl2: 'mdl2'}
@@ -1095,7 +1095,7 @@ describe('Dependency injection types process and server tests', () => {
         const sharedDep = {
             name: 'sharedDep',
             shared: {
-                modules: ['mdl1', 'mdl2']
+                modules: ['plugin.mdl1', 'plugin.mdl2']
             },
             init() {
                 return {mdl1: 'mdl1', mdl2: 'mdl2'}

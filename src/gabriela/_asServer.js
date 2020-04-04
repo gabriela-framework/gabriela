@@ -49,13 +49,11 @@ module.exports = function _asServer(config) {
                 throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
             }
 
-            const valid = names.addPluginModules(plugin);
+            const valid = names.addAndReplacePluginNames(plugin);
 
             if (valid !== true) {
                 throw new Error(`Plugin definition error. Plugin module with name '${valid}' already exists`);
             }
-
-            names.add(plugin.name);
 
             pluginTree.addPlugin(plugin);
         },
