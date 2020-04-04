@@ -1220,4 +1220,64 @@ describe('Dependency injection types process and server tests', () => {
 
         app.startApp();
     });
+
+    it('should resolve a public dependency based on shared plugins', (done) => {
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const publicDep = {
+            name: 'publicDep',
+            scope: 'public',
+            init() {
+                class PublicDep {
+                    constructor(shared1) {
+                        this.shared1 = shared1;
+                    }
+                }
+
+                return this.withConstructorInjection(PublicDep).bind('shared1');
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1, publicDep],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function(publicDep) {
+                entersMdl1 = true;
+
+                expect(publicDep.shared1.name).to.be.equal('shared1');
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.startApp();
+    })
 });

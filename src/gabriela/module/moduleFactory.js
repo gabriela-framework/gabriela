@@ -15,7 +15,6 @@ function _createCompiler(mdl, rootCompiler, parentCompiler, sharedCompiler, conf
     if (parentCompiler) c.parent = parentCompiler;
 
     mdl.compiler = c;
-    mdl.sharedCompiler = sharedCompiler;
 
     if (mdl.dependencies && mdl.dependencies.length > 0) {
         _addDependencies(mdl, config);

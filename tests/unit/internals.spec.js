@@ -22,7 +22,6 @@ describe('Test gabriela internals', () => {
             'validators',
             'moduleLogic',
             'compiler',
-            'sharedCompiler',
             'plugin',
             'dependencies',
             'mediatorInstance',
@@ -49,7 +48,6 @@ describe('Test gabriela internals', () => {
             validators: [],
             moduleLogic: [],
             compiler: null,
-            sharedCompiler: null,
             plugin: {
                 name: 'plugin',
                 http: {
@@ -74,7 +72,6 @@ describe('Test gabriela internals', () => {
         const config = {};
         const rootCompiler = Compiler.create();
         const parentCompiler = Compiler.create();
-        const sharedCompiler = Compiler.create();
         const exposedMediator = new ExposedMediator();
 
         const buildStageArgs = {
@@ -82,7 +79,6 @@ describe('Test gabriela internals', () => {
             config,
             rootCompiler,
             parentCompiler,
-            sharedCompiler,
             exposedMediator,
         };
 
@@ -102,7 +98,6 @@ describe('Test gabriela internals', () => {
         expect(moduleObject.validators).to.be.a('array');
         expect(moduleObject.moduleLogic).to.be.a('array');
         expect(moduleObject.compiler).to.be.a('object');
-        expect(moduleObject.sharedCompiler).to.be.a('object');
         expect(moduleObject.plugin).to.have.property('name');
         expect(moduleObject.dependencies).to.be.a('array');
         expect(moduleObject.mediatorInstance).to.be.a('object');
@@ -121,7 +116,6 @@ describe('Test gabriela internals', () => {
             'modules', 
             'name',
             'compiler', 
-            'sharedCompiler',
             'hasModules',
             'hasMediators',
             'mediator',
@@ -151,7 +145,6 @@ describe('Test gabriela internals', () => {
         expect(pluginModel).to.have.property('name', 'name');
         expect(pluginModel.modules).to.be.a('array');
         expect(pluginModel.compiler).to.be.a('object');
-        expect(pluginModel.sharedCompiler).to.be.a('object');
         expect(pluginModel.hasMediators).to.be.a('function');
         expect(pluginModel.hasModules).to.be.a('function');
         expect(pluginModel.hasModules()).to.be.equal(false);

@@ -714,4 +714,182 @@ describe('Failing dependency injection tests', () => {
 
         g.startApp();
     });
+
+    it('should fail if a public dependency has dependencies that cannot be shared with with each other', (done) => {
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const shared2 = {
+            name: 'shared2',
+            shared: {
+                plugins: ['plugin2']
+            },
+            init: function() {
+                return {name: 'shared2'};
+            },
+        };
+
+        const publicDep = {
+            name: 'publicDep',
+            scope: 'public',
+            init() {
+                class PublicDep {
+                    constructor(shared1, shared2) {
+                        this.shared1 = shared1;
+                        this.shared2 = shared2;
+                    }
+                }
+
+                return this.withConstructorInjection(PublicDep).bind('shared1', 'shared2');
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1, shared2, publicDep],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(entersMdl1).to.be.equal(false);
+                    expect(entersMdl2).to.be.equal(false);
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'mdl1' that is a member of 'plugin1' plugin");
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function(publicDep) {
+                entersMdl1 = true;
+
+                expect(publicDep.shared1.name).to.be.equal('shared1');
+                expect(publicDep.shared2.name).to.be.equal('shared2');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [function(publicDep) {
+                entersMdl2 = true;
+
+                expect(publicDep.shared1.name).to.be.equal('shared1');
+                expect(publicDep.shared2.name).to.be.equal('shared2');
+            }]
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.addPlugin({
+            name: 'plugin2',
+            modules: [initModule, mdl2],
+        });
+
+        g.startApp();
+    });
+
+    it('should fail if a plugin dependency has dependencies that cannot be shared with with each other', (done) => {
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const shared2 = {
+            name: 'shared2',
+            shared: {
+                plugins: ['plugin2']
+            },
+            init: function() {
+                return {name: 'shared2'};
+            },
+        };
+
+        const publicDep = {
+            name: 'publicDep',
+            scope: 'plugin',
+            init() {
+                class PublicDep {
+                    constructor(shared1, shared2) {
+                        this.shared1 = shared1;
+                        this.shared2 = shared2;
+                    }
+                }
+
+                return this.withConstructorInjection(PublicDep).bind('shared1', 'shared2');
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1, shared2, publicDep],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(entersMdl1).to.be.equal(false);
+                    expect(entersMdl2).to.be.equal(false);
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared2' service cannot be shared with module 'mdl1' that is a member of 'plugin1' plugin");
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function(publicDep) {
+                entersMdl1 = true;
+
+                expect(publicDep.shared1.name).to.be.equal('shared1');
+                expect(publicDep.shared2.name).to.be.equal('shared2');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [function(publicDep) {
+                entersMdl2 = true;
+
+                expect(publicDep.shared1.name).to.be.equal('shared1');
+                expect(publicDep.shared2.name).to.be.equal('shared2');
+            }]
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.addPlugin({
+            name: 'plugin2',
+            modules: [initModule, mdl2],
+        });
+
+        g.startApp();
+    });
 });
