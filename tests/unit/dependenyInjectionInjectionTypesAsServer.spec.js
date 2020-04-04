@@ -377,13 +377,13 @@ describe('Dependency injection types process and server tests', () => {
         app.startApp();
     });
 
-    xit('should resolve plugin, module and public scope dependencies with property injection within a plugin only', (done) => {
+    it('should resolve plugin, module and public scope dependencies with property injection within a plugin only', (done) => {
         let entersMiddleware = false;
 
         const sharedDep = {
             name: 'sharedDep',
             shared: {
-                modules: ['mdl1']
+                modules: ['plugin.mdl1']
             },
             init() {
                 return {name: 'shared', mdl: 'mdl1'}

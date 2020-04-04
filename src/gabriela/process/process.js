@@ -13,6 +13,12 @@ async function runApp(
     try {
         await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
         await moduleInterface.run(moduleExecuteFactory.bind(null, null));
+
+        const context = {
+            gabriela: this,
+        };
+
+        await runOnAppStarted.call(context, events, rootCompiler);
     } catch (err) {
         if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) {
             return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, err);
@@ -22,12 +28,6 @@ async function runApp(
 
         this.close();
     }
-
-    const context = {
-        gabriela: this,
-    };
-
-    await runOnAppStarted.call(context, events, rootCompiler);
 }
 
 function factory(

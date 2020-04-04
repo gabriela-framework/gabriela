@@ -14,8 +14,8 @@ const _responseProxy = require('../../src/gabriela/module/_responseProxy');
 describe('Concrete and functional http response tests', function() {
     this.timeout(10000);
 
-    xit('should fail if the responseProxy interface changes as a remainder to update the tests', () => {
-        const currentProperties = ['json', 'send'];
+    it('should fail if the responseProxy interface changes as a remainder to update the tests', () => {
+        const currentProperties = ['json', 'jsonp', 'send', 'set', 'links', 'redirect', 'append', 'attachment', 'get', 'sendFile'];
 
         const responseProxy = _responseProxy();
         const proxyFunctionsOnly = Object.keys(responseProxy).filter((prop) => is('function', responseProxy[prop]));

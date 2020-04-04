@@ -756,13 +756,14 @@ describe('Gabriela as process tests', () => {
     });
 
     xit('should catch an error when error is thrown inside onAppStarted event', (done) => {
-        let onAppStartedCalled = false;
         const g = gabriela.asProcess({
             events: {
                 onAppStarted() {
-                    throw new Error('Something went wrong');
+                    throw new Error('Something went wrong in onAppStarted');
                 },
-                catchError() {
+                catchError(e) {
+                    expect(e.message).to.be.equal('Something went wrong');
+
                     done();
                 }
             }

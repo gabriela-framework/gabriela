@@ -15,7 +15,7 @@ class Names {
 
     addAndReplacePluginNames(plugin) {
         this.add(plugin.name);
-        
+
         if (!plugin.modules) return true;
 
         const modules = plugin.modules;

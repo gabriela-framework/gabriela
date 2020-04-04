@@ -2,6 +2,7 @@ const mocha = require('mocha');
 const chai = require('chai');
 
 const it = mocha.it;
+const xit = mocha.xit;
 const describe = mocha.describe;
 const expect = chai.expect;
 
@@ -105,7 +106,7 @@ describe('Failing server tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    it('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
+    xit('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
         const g = gabriela.asServer({
             events: {
                 onAppStarted() {
