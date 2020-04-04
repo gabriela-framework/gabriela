@@ -2,47 +2,80 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-const m = gabriela.asProcess({
-    events: {
-        catchError(err) {
-            console.log(err);
-        }
-    }
-});
-
-const sortServiceInit = {
-    name: 'sortService',
-    init: function(userRepository) {
-        return () => {};
-    },
-    shared: {
-        modules: ['module2'],
-    },
-};
-
 const userRepositoryInit = {
     name: 'userRepository',
     init: function() {
-        return () => {};
-    },
+        function UserRepository() {}
+
+        return new UserRepository();
+    }
+};
+
+const friendsRepositoryInit = {
+    name: 'friendsRepository',
+    scope: 'public',
+    init: function() {
+        function FriendsRepository() {}
+
+        return new FriendsRepository();
+    }
+};
+
+const userServiceInit = {
+    name: 'userService',
+    dependencies: [userRepositoryInit, friendsRepositoryInit],
     shared: {
-        modules: ['module1'],
+        modules: ['friendsModule'],
+        plugins: ['plugin'],
     },
+    init: function(userRepository, friendsRepository) {
+        function UserService() {
+            this.userRepository = userRepository;
+            this.friendsRepository = friendsRepository;
+        }
+
+        return new UserService();
+    }
 };
 
-const module1 = {
-    name: 'module1',
-};
+let serviceUser;
+let friendsRepo;
+const friendsModule = {
+    name: 'friendsModule',
+    dependencies: [userServiceInit, friendsRepositoryInit],
+    moduleLogic: [function(next, userService, friendsRepository) {
+        serviceUser = userService;
+        friendsRepo = friendsRepository;
 
-const module2 = {
-    name: 'module2',
-    dependencies: [sortServiceInit, userRepositoryInit],
-    moduleLogic: [function(sortService, next) {
         next();
     }],
 };
 
-m.addModule(module1);
-m.addModule(module2);
+const userModule = {
+    name: 'userModule',
+    dependencies: [userServiceInit],
+    moduleLogic: [function(userService, next) {
+        serviceUser = userService;
 
-m.startApp();
+        next();
+    }],
+};
+
+const g = gabriela.asProcess({
+    events: {
+        onAppStarted() {
+        },
+        catchError(e) {
+            console.error(e);
+        }
+    }
+});
+
+g.addPlugin({
+    name: 'plugin',
+    modules: [userModule, friendsModule],
+});
+
+g.addModule(friendsModule);
+
+g.startApp();

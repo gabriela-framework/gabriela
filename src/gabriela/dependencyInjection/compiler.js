@@ -2,6 +2,12 @@ const {getArgNames, is, hasKey} = require('../util/util');
 const {
     ASYNC_FLOW_TYPES,
 } = require('../misc/types');
+const {
+    _hasCompletePermission,
+    _hasModulePermission,
+    _hasPluginPermission,
+    _isInPlugin
+} = require('./_permissions');
 
 const TaskRunner = require('../misc/taskRunner');
 const PrivateCompiler = require('./privateCompiler');
@@ -12,6 +18,43 @@ const _createDefinitionObject = require('./_createDefinitionObject');
 const _isInjectionTypeInterface = require('./injectionTypes/_isInjectionTypeInterface');
 const _resolveInjectionService = require('./_resolveInjectionService');
 const _resolveSharedDependency = require('./_resolveSharedDependency');
+
+function _sharedDepsResolvingHelper(name, originCompiler, sharedInfo, config) {
+    if (originCompiler.isResolved(name)) {
+        const definition = this.shared.getOwnDefinition(name);
+        if (_isInPlugin(sharedInfo) && _hasCompletePermission(name, definition, sharedInfo)) {
+            return originCompiler.getResolved(name);
+        }
+
+        // if it is shared with a module that is in a plugin with name mdl.plugin.name
+        if (_isInPlugin(sharedInfo) && _hasPluginPermission(name, definition, sharedInfo)) {
+            return originCompiler.getResolved(name);
+        }
+
+        // if it is shared with a module name
+        if (_hasModulePermission(name, definition, sharedInfo)) {
+            return originCompiler.getResolved(name);
+        }
+
+        if (sharedInfo.pluginName) {
+            throw new Error(`Dependency injection error. '${name}' service cannot be shared with module '${sharedInfo.moduleName}' that is a member of '${sharedInfo.pluginName}' plugin`);
+        } else {
+            throw new Error(`Dependency injection error. '${name}' service cannot be shared with module '${sharedInfo.moduleName}'`);
+        }
+    }
+
+    const service = _resolveSharedDependency(name, originCompiler, sharedInfo, config);
+
+    if (!service) {
+        if (sharedInfo.pluginName) {
+            throw new Error(`Dependency injection error. '${name}' service cannot be shared with module '${sharedInfo.moduleName}' that is a member of '${sharedInfo.pluginName}' plugin`);
+        } else {
+            throw new Error(`Dependency injection error. '${name}' service cannot be shared with module '${sharedInfo.moduleName}'`);
+        }
+    }
+
+    return service;
+}
 
 function _getDependencies(name, definition, taskRunner, originalCompiler, config, sharedInfo) {
     const args = getArgNames(definition.init);
@@ -142,7 +185,36 @@ function factory() {
             if (this.root.hasOwn(name)) return this.root.getOwnDefinition(name);
         }
 
+        if (this.shared) {
+            if (this.shared.hasOwn(name)) return this.shared.getOwnDefinition(name);
+        }
+
         throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
+    }
+
+    function getResolved(name) {
+        if (resolved[name]) return resolved[name];
+
+        let parentResolved = null;
+        let rootResolved = null;
+        let sharedResolved = null;
+
+
+        if (this.parent) {
+            parentResolved = this.parent.getResolved(name);
+        }
+
+        if (this.root) {
+            rootResolved = this.root.getResolved(name);
+        }
+
+        if (this.shared) {
+            sharedResolved = this.shared.getResolved(name);
+        }
+
+        if (parentResolved) return parentResolved;
+        if (rootResolved) return rootResolved;
+        if (sharedResolved) return sharedResolved;
     }
 
     /**
@@ -206,11 +278,7 @@ function factory() {
         } else if (this.root && this.root.has(name)) {
             return this.root.compile(name, originCompiler, config, sharedInfo);
         } else if (this.shared && this.shared.has(name)) {
-            const service = _resolveSharedDependency(name, originCompiler, sharedInfo, config);
-
-            if (!service) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
-
-            return service;
+            return _sharedDepsResolvingHelper.call(this, name, originCompiler, sharedInfo, config);
         }
 
         if (!definition) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
@@ -261,6 +329,7 @@ function factory() {
     this.isResolved = isResolved;
     this.getOwnDefinition = getOwnDefinition;
     this.getDefinition = getDefinition;
+    this.getResolved = getResolved;
     this.compile = compile;
 }
 

@@ -432,6 +432,11 @@ describe('Dependency injection types process and server tests', () => {
             route: 'route',
             moduleLogic: [function(propertyObjectDefinition) {
                 entersMiddleware = true;
+
+                expect(propertyObjectDefinition).to.be.a('object');
+                expect(propertyObjectDefinition.depOne.name).to.be.equal('depOne');
+                expect(propertyObjectDefinition.depTwo.name).to.be.equal('depTwo');
+                expect(propertyObjectDefinition.shared.name).to.be.equal('shared');
             }],
         };
 
@@ -465,6 +470,753 @@ describe('Dependency injection types process and server tests', () => {
         });
 
         app.addPlugin(plugin);
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies with independent modules with property injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                return this.withPropertyInjection({}).bind({
+                    depOne: 'depOne',
+                    depTwo: 'depTwo',
+                    shared: 'sharedDep',
+                });
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                }
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(mdl1);
+        app.addModule(mdl2);
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies with independent modules with class constructor injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                class Definition {
+                    constructor(depOne, depTwo, sharedDep) {
+                        this.depOne = depOne;
+                        this.depTwo = depTwo;
+                        this.shared = sharedDep;
+                    }
+                }
+
+                return this.withConstructorInjection(Definition).bind('depOne', 'depTwo', 'sharedDep');
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                },
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(mdl1);
+        app.addModule(mdl2);
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies with independent modules with method injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                const obj = {
+                    setDepOne(depOne) {
+                        this.depOne = depOne;
+                    },
+
+                    setDepTwo(depTwo) {
+                        this.depTwo = depTwo;
+                    },
+
+                    setShared(shared) {
+                        this.shared = shared;
+                    }
+                };
+
+                return this.withMethodInjection(obj).bind({
+                    setDepOne: 'depOne',
+                    setDepTwo: 'depTwo',
+                    setShared: 'sharedDep',
+                });
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                },
+            }
+        });
+
+        app.addModule(initModule);
+        app.addModule(mdl1);
+        app.addModule(mdl2);
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies within a plugin with property injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                return this.withPropertyInjection({}).bind({
+                    depOne: 'depOne',
+                    depTwo: 'depTwo',
+                    shared: 'sharedDep',
+                });
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                }
+            }
+        });
+
+        app.addPlugin({
+            name: 'plugin',
+            modules: [initModule, mdl1, mdl2],
+        });
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies within a plugin with class constructor injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                class Definition {
+                    constructor(depOne, depTwo, sharedDep) {
+                        this.depOne = depOne;
+                        this.depTwo = depTwo;
+                        this.shared = sharedDep;
+                    }
+                }
+
+                return this.withConstructorInjection(Definition).bind('depOne', 'depTwo', 'sharedDep');
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                },
+            }
+        });
+
+        app.addPlugin({
+            name: 'plugin',
+            modules: [initModule, mdl1, mdl2],
+        });
+
+        app.startApp();
+    });
+
+    it('should resolve shared dependencies within a plugin with method injection', (done) => {
+        let enters1 = false;
+        let enters2 = false;
+
+        const sharedDep = {
+            name: 'sharedDep',
+            shared: {
+                modules: ['mdl1', 'mdl2']
+            },
+            init() {
+                return {mdl1: 'mdl1', mdl2: 'mdl2'}
+            }
+        };
+
+        const depOne = {
+            name: 'depOne',
+            init: function() {
+                return {name: 'depOne'};
+            }
+        };
+
+        const depTwo = {
+            name: 'depTwo',
+            init: function() {
+                return {name: 'depTwo'};
+            }
+        };
+
+        const definition = {
+            name: 'definition',
+            scope: 'public',
+            init: function() {
+                const obj = {
+                    setDepOne(depOne) {
+                        this.depOne = depOne;
+                    },
+
+                    setDepTwo(depTwo) {
+                        this.depTwo = depTwo;
+                    },
+
+                    setShared(shared) {
+                        this.shared = shared;
+                    }
+                };
+
+                return this.withMethodInjection(obj).bind({
+                    setDepOne: 'depOne',
+                    setDepTwo: 'depTwo',
+                    setShared: 'sharedDep',
+                });
+            }
+        };
+
+        const initModule = {
+            name: 'init',
+            dependencies: [sharedDep, definition],
+        };
+
+        const mdl1 = {
+            name: 'mdl1',
+            route: 'route1',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters1 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            route: 'route2',
+            dependencies: [depOne, depTwo],
+            moduleLogic: [function(definition) {
+                enters2 = true;
+
+                expect(definition.depOne).to.be.a('object');
+                expect(definition.depTwo).to.be.a('object');
+                expect(definition.shared).to.be.a('object');
+
+                const sharedDep = definition.shared;
+
+                expect(sharedDep.mdl1).to.be.equal('mdl1');
+                expect(sharedDep.mdl2).to.be.equal('mdl2');
+            }]
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route1',
+                    path: '/route1',
+                    method: 'GET',
+                },
+                {
+                    name: 'route2',
+                    path: '/route2',
+                    method: 'GET',
+                },
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route1').then(() => {
+                        expect(enters1).to.be.equal(true);
+
+                        requestPromise.get('http://127.0.0.1:3000/route2').then(() => {
+                            expect(enters2).to.be.equal(true);
+
+                            this.gabriela.close();
+
+                            done();
+                        })
+                    });
+                },
+            }
+        });
+
+        app.addPlugin({
+            name: 'plugin',
+            modules: [initModule, mdl1, mdl2],
+        });
 
         app.startApp();
     });
