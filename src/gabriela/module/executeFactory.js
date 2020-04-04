@@ -40,12 +40,6 @@ function _createWorkingDataStructures(mdl, req) {
 }
 
 function _handleError(err, mdl, httpContext = null) {
-    if (err.internal) {
-        if (err.message === 'done') {
-            return;
-        }
-    }
-
     if (mdl.isHttp()) {
         let errorRan = false;
 

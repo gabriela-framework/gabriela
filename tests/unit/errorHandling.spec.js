@@ -1,5 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
+const requestPromise = require('request-promise');
 
 const it = mocha.it;
 const describe = mocha.describe;
@@ -184,6 +185,56 @@ describe('Complete error handling tests', () => {
         });
 
         app.addModule(mdl);
+
+        app.startApp();
+    });
+
+    it('should run plugin onError', (done) => {
+        let onErrorCalled = false;
+
+        const mdl = {
+            name: 'catchErrorModule',
+            route: 'route',
+            mediator: {
+                onSomeEvent: function() {
+                    throw new Error('Something went wrong');
+                }
+            },
+            moduleLogic: [function() {
+                this.mediator.emit('onSomeEvent');
+            }],
+        };
+
+        const app = gabriela.asServer({
+            routes: [
+                {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            ],
+            events: {
+                onAppStarted() {
+                    requestPromise.get('http://127.0.0.1:3000/route').then(() => {
+                        expect(onErrorCalled).to.be.equal(true);
+
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        });
+
+        app.addPlugin({
+            name: 'plugin',
+            mediator: {
+                onError() {
+                    onErrorCalled = true;
+                }
+            },
+            modules: [mdl],
+        });
 
         app.startApp();
     });

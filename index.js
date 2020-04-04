@@ -2,39 +2,43 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-const routes = [
-    {
-        name: 'route',
-        method: 'get',
-        path: '/route',
-    },
-];
+let onErrorCalled = false;
 
 const mdl = {
-    name: 'mdl',
+    name: 'catchErrorModule',
     route: 'route',
-    moduleLogic: [function(http) {
-        http.res.download(path.normalize(__dirname + '/tests/files/index.html'));
+    moduleLogic: [function(done) {
+        done()
+    }, function() {
+
     }],
 };
 
-const config = {
-    routes: routes,
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'route',
+            path: '/route',
+            method: 'get',
+        }
+    ],
     events: {
         onAppStarted() {
-            requestPromise({
-                method: 'get',
-                uri: 'http://localhost:3000/route',
-                resolveWithFullResponse: true,
-            }).then((response) => {
-                this.gabriela.close();
+            requestPromise.get('http://127.0.0.1:3000/route').then(() => {
             });
         }
     }
-};
+});
 
-const app = gabriela.asServer(config);
-
-app.addModule(mdl);
+app.addPlugin({
+    name: 'plugin',
+    mediator: {
+        onError() {
+            console.log('sdfkjasfdjasdf');
+            onErrorCalled = true;
+        }
+    },
+    modules: [mdl],
+});
 
 app.startApp();
