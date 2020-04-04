@@ -1,6 +1,5 @@
 module.exports = function resolveDependencies(
     compiler,
-    sharedCompiler,
     name,
     config,
     moduleName,

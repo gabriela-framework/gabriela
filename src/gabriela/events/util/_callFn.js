@@ -20,7 +20,6 @@ module.exports = function _callFn(fn, moduleOrPlugin, args, config) {
 
         const dep = resolveDependencies(
             moduleOrPlugin.compiler,
-            moduleOrPlugin.sharedCompiler,
             arg.name,
             config,
             moduleOrPlugin.name,

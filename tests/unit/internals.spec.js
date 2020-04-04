@@ -115,7 +115,8 @@ describe('Test gabriela internals', () => {
         const pluginInterface = [
             'modules', 
             'name',
-            'compiler', 
+            'compiler',
+            'sharedCompiler',
             'hasModules',
             'hasMediators',
             'mediator',
@@ -149,6 +150,7 @@ describe('Test gabriela internals', () => {
         expect(pluginModel.hasModules).to.be.a('function');
         expect(pluginModel.hasModules()).to.be.equal(false);
         expect(pluginModel.mediator).to.be.a('undefined');
+        expect(pluginModel.sharedCompiler).to.be.a('object');
         expect(pluginModel.exposedMediators).to.be.a('undefined');
         expect(pluginModel.mediatorInstance).to.be.a('object');
         expect(pluginModel.exposedMediators).to.be.a('undefined');

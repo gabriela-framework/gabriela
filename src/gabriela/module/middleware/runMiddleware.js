@@ -68,7 +68,6 @@ function _resolveFunctionExpression(fnString, mdl, config, state, http) {
                 name: dep,
                 value: resolveDependencies(
                     mdl.compiler,
-                    mdl.sharedCompiler,
                     dep,
                     config,
                     mdl.name,
@@ -81,7 +80,6 @@ function _resolveFunctionExpression(fnString, mdl, config, state, http) {
     // the place where the actual function is resolved from the compiler
     const dep = resolveDependencies(
         mdl.compiler,
-        mdl.sharedCompiler,
         parsed.fnName,
         config,
         mdl.name,
@@ -106,7 +104,6 @@ async function syncExecFlow(exec, mdl, args, taskRunner, config) {
 
         const dep = resolveDependencies(
             mdl.compiler,
-            mdl.sharedCompiler,
             arg.name,
             config,
             mdl.name,
@@ -142,7 +139,6 @@ async function asyncFlowExec(exec, mdl, args, taskRunner, config) {
 
         const dep = resolveDependencies(
             mdl.compiler,
-            mdl.sharedCompiler,
             arg.name,
             config,
             mdl.name,
