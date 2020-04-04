@@ -279,7 +279,6 @@ describe('Scope dependency injection tests', () => {
         const pluginUserServiceInit = {
             name: 'userService',
             scope: 'plugin',
-            dependencies: [userRepositoryInit],
             init: function(userRepository) {
                 function UserService() {
                     this.name = 'plugin';
@@ -293,7 +292,6 @@ describe('Scope dependency injection tests', () => {
         const moduleUserServiceInit = {
             name: 'userService',
             scope: 'module',
-            dependencies: [userRepositoryInit],
             init: function(userRepository) {
                 function UserService() {
                     this.userRepository = userRepository;
@@ -306,7 +304,7 @@ describe('Scope dependency injection tests', () => {
 
         const module1 = {
             name: 'dependencyOrderModule',
-            dependencies: [publicUserServiceInit, pluginUserServiceInit, moduleUserServiceInit],
+            dependencies: [userRepositoryInit, publicUserServiceInit, pluginUserServiceInit, moduleUserServiceInit],
             moduleLogic: [function(userService, next) {
                 resolvedDependency = userService;
                 next();

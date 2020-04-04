@@ -10,7 +10,6 @@ const {
 } = require('./_permissions');
 
 const TaskRunner = require('../misc/taskRunner');
-const PrivateCompiler = require('./privateCompiler');
 const InjectionTypeFactory = require('./injectionTypes/injectionType');
 
 const _resolveService = require('./_resolveService');
@@ -185,10 +184,6 @@ function factory() {
             if (this.root.hasOwn(name)) return this.root.getOwnDefinition(name);
         }
 
-        if (this.shared) {
-            if (this.shared.hasOwn(name)) return this.shared.getOwnDefinition(name);
-        }
-
         throw new Error(`Dependency injection error. Definition object with name '${name}' not found`);
     }
 
@@ -282,18 +277,6 @@ function factory() {
         }
 
         if (!definition) throw new Error(`Dependency injection error. '${name}' definition not found in the dependency tree`);
-
-        /**
-         * If the definitino has private dependencies, resolve them but do not save them. Only save the parent
-         * resolving service
-         */
-        if (definition.hasDependencies()) {
-            if (hasKey(resolved, name)) return resolved[name];
-
-            resolved[definition.name] = new PrivateCompiler().compile(definition, config);
-
-            return resolved[definition.name];
-        }
 
         const taskRunner = TaskRunner.create();
 

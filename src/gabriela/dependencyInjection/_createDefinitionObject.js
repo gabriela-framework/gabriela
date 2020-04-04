@@ -15,19 +15,10 @@ module.exports = function _createInitObject(init) {
         isAsync: init.isAsync,
         scope: init.scope,
         cache: (init.cache === false) ? false : true,
-        dependencies: (!hasKey(init, 'dependencies')) ? [] : init.dependencies,
-        addPrivateDependency(definition) {
-            Validator.validateDefinitionObject(definition);
-
-            this.dependencies.push(definition);
-        },
         hasCompilerPass() {
             return hasKey(init, 'compilerPass');
         },
         compilerPass: init.compilerPass,
-        hasDependencies() {
-            return !!(this.dependencies && this.dependencies.length > 0);
-        },
         hasScope() {
             return (this.scope) ? true : false;
         },

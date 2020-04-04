@@ -892,4 +892,74 @@ describe('Failing dependency injection tests', () => {
 
         g.startApp();
     });
+
+    it('should fail if the dependency cannot be shared in a module within a plugin', (done) => {
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const shared2 = {
+            name: 'shared2',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared2'};
+            },
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1, shared2],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(entersMdl1).to.be.equal(true);
+                    expect(entersMdl2).to.be.equal(false);
+                    expect(e.message).to.be.equal("Dependency injection error. 'shared1' service cannot be shared with module 'mdl2' that is a member of 'plugin2' plugin");
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [function(shared1) {
+                entersMdl1 = true;
+
+                expect(shared1.name).to.be.equal('shared1');
+            }],
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [function(shared1) {
+                entersMdl2 = true;
+            }]
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.addPlugin({
+            name: 'plugin2',
+            modules: [initModule, mdl2],
+        });
+
+        g.startApp();
+    });
 });
