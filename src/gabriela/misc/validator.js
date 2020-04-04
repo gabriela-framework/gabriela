@@ -104,10 +104,6 @@ factory.validateModule = function(mdl, Router, plugin) {
         }
     }
 
-    if (hasKey(mdl, 'http')) {
-        throw new Error(`http options is deprecated`);
-    }
-
     validateDependencies(mdl);
 };
 
@@ -257,24 +253,6 @@ factory.validateDefinitionObject = function(init, moduleName) {
 
     if (hasKey(init, 'cache')) {
         if (!is('boolean', init.cache)) throw new Error(`Dependency injection error for entry 'init.cache' in module '${moduleName}'. 'init.cache' option must be a boolean`);
-    }
-};
-
-factory.validateRoutes = function(routes) {
-    if (!Array.isArray(routes)) throw new Error(`Invalid routes type. Routes must be an array`);
-
-    for (const route of routes) {
-        if (!is('object', route)) throw new Error(`Invalid routes type. Routes must be an object`);
-
-        for (const entry of MANDATORY_ROUTE_PROPS) {
-            if (!hasKey(route, entry)) throw new Error(`Invalid route. Every route must contain properties '${MANDATORY_ROUTE_PROPS.toArray().join(', ')}'`)
-        }
-
-        if (!is('string', route.name)) throw new Error(`Invalid route. 'route.name' must be a string`);
-        if (!is('string', route.path)) throw new Error(`Invalid route with name '${route.name}' 'path' property must be a string`);
-        if (!is('string', route.method)) throw new Error(`Invalid route with name '${route.name}'. 'method' property must be a string`);
-
-        if (HTTP_METHODS.toArray().includes(route.method.toLowerCase())) throw new Error(`Invalid route with name '${route.name}'. '${route.method}' is not a supported HTTP method. Go to https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods for a list of supported HTTP methods`);
     }
 };
 

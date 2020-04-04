@@ -2,41 +2,39 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-let entersMdl1 = false;
-
-const shared1 = {
-    name: 'shared1',
-    shared: {
-        plugins: ['plugin1'],
-        modules: ['mdl1'],
+const routes = [
+    {
+        name: 'route',
+        method: 'get',
+        path: '/route',
     },
-    init: function() {
-        return {name: 'shared1'}
-    }
+];
+
+const mdl = {
+    name: 'mdl',
+    route: 'route',
+    moduleLogic: [function(http) {
+        http.res.download(path.normalize(__dirname + '/tests/files/index.html'));
+    }],
 };
 
-const initModule = {
-    name: 'initModule',
-    dependencies: [shared1],
-};
-
-const g = gabriela.asProcess({
+const config = {
+    routes: routes,
     events: {
         onAppStarted() {
+            requestPromise({
+                method: 'get',
+                uri: 'http://localhost:3000/route',
+                resolveWithFullResponse: true,
+            }).then((response) => {
+                this.gabriela.close();
+            });
         }
     }
-});
-
-const mdl1 = {
-    name: 'mdl1',
-    moduleLogic: [function(shared1) {
-        entersMdl1 = true;
-    }]
 };
 
-g.addPlugin({
-    name: 'plugin1',
-    modules: [initModule, mdl1],
-});
+const app = gabriela.asServer(config);
 
-g.startApp();
+app.addModule(mdl);
+
+app.startApp();

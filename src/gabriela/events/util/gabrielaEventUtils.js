@@ -42,6 +42,7 @@ async function runOnAppStarted(events, rootCompiler, err) {
             return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, eventError);
         }
 
+        // CANNOT BE TESTED SINCE MOCHA WON'T LET ME CATCH THIS ERROR
         throw eventError;
     }
 }

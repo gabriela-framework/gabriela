@@ -6,9 +6,6 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
     try {
         if (this.__responseSent) throw new Error(`Cannot send response. Response has already been sent`);
 
-        // handling the use case if the response is sent from onPreResponse. if this was not here
-        // there would be a recursion in calling onPreResponse inifinitely. This code only handles that use case and
-        // this lines of code are called only if the response is sent inside onPreResponse
         if (this.__insideSend) {
             this.__responseSent = true;
 
@@ -18,7 +15,7 @@ function _sendMethod(method, mdl, req, res, state, onPreResponse, onPostResponse
                 return;
             }
 
-            const {code, body, headers, callback} = responseArgs;
+            const {code, body, headers} = responseArgs;
 
             if (headers) res.set(headers);
 
@@ -149,13 +146,6 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
                 res.attachment();
             } else {
                 res.attachment(path);
-            }
-        },
-        download(path, fn) {
-            if (is('function', fn)) {
-                res.download(path, fn);
-            } else {
-                res.download(path);
             }
         },
         get(type) {
