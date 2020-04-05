@@ -80,6 +80,8 @@ function factory(server, mdl) {
             const method = mdl.http.method.toLowerCase();
             const path = mdl.getFullPath();
 
+            const loggingEnabled = config.framework.loggingEnabled;
+
             if (mdl.http.static) {
                 server[method](path, function(req, res) {
                     const responseEvent = _getResponseEvents(mdl);
@@ -98,6 +100,10 @@ function factory(server, mdl) {
                 });
             } else {
                 server[method](path, async function(req, res) {
+                    if (loggingEnabled) {
+                        require('./../logging/Logging').outputMemory(`Start memory when running module '${mdl.name}' at path '${req.originalUrl}':`);
+                    }
+
                     let state = {};
 
                     let {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
@@ -138,6 +144,10 @@ function factory(server, mdl) {
                     responseProxy = null;
                     httpContext = null;
                     middleware = null;
+
+                    if (loggingEnabled) {
+                        require('./../logging/Logging').outputMemory(`End memory when running module '${mdl.name}' at path '${req.originalUrl}':`);
+                    }
                 });
             }
         }
