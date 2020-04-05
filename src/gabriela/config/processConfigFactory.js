@@ -20,6 +20,16 @@ function _resolveFramework(framework) {
         newFramework.env = framework.env;
     }
 
+    if (!hasKey(framework, 'loggingEnabled')) {
+        newFramework.loggingEnabled = true;
+    }
+
+    if (is('boolean', framework.loggingEnabled)) {
+        newFramework.loggingEnabled = framework.loggingEnabled;
+    } else {
+        newFramework.loggingEnabled = true;
+    }
+
     if (!is('object', framework.performance)) {
         newFramework.performance = {
             memoryWarningLimit: 50,
@@ -48,7 +58,8 @@ function _getDefaultFrameworkConfig() {
         env: ENV.DEVELOPMENT,
         performance: {
             memoryWarningLimit: 50,
-        }
+        },
+        loggingEnabled: true,
     }
 }
 

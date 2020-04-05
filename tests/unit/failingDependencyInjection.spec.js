@@ -962,4 +962,50 @@ describe('Failing dependency injection tests', () => {
 
         g.startApp();
     });
+
+    it('should fail to resolve a dependency within an async middleware function', (done) => {
+        let entersMdl1 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1']
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(entersMdl1).to.be.equal(false);
+                    expect(e.message).to.be.equal(`Argument resolving error. Cannot resolve argument with name 'notExists'`);
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [async function(notExists) {
+                entersMdl1 = true;
+
+                expect(shared1.name).to.be.equal('shared1');
+            }],
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1],
+        });
+
+        g.startApp();
+    });
 });

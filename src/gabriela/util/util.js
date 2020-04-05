@@ -42,16 +42,6 @@ function inArray(array1, array2) {
     return false;
 }
 
-function indexOfFn(arr, fn) {
-    for (let i = 0; i < arr.length; i++) {
-        const called = fn.call(null, arr[i], i);
-
-        if (called) return i;
-    }
-
-    return null;
-}
-
 function wait(cb) {
     return new Promise((resolve)=> {
         const check = () => {
@@ -266,7 +256,6 @@ module.exports = {
     isAsyncFn,
     ucFirst,
     wait,
-    indexOfFn,
     IIterator,
     isEnvExpression,
     extractEnvExpression,

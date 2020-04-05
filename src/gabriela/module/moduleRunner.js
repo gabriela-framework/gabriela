@@ -97,12 +97,14 @@ function _createModuleInfo(mdl) {
 
 function _addCompilerProxy(mdl, config) {
     const handlers = {
-        set() { return undefined; },
+        set() {
+            throw new Error('Invalid compiler usage. Cannot set properties on the compiler when used within a middleware function.')
+        },
 
         get(target, prop) {
             const allowed = ['get', 'has'];
 
-            if (!allowed.includes(prop)) throw new Error(`Invalid compiler usage. `);
+            if (!allowed.includes(prop)) throw new Error(`Invalid compiler usage. Only 'Compiler::get(name: string): object' and 'Compiler::has(name: string): bool' are allowed to be used.`);
 
             if (prop === 'has') return mdl.compiler.has;
             if (prop === 'get') return function(name) {

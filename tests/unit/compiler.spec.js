@@ -6,6 +6,7 @@ const describe = mocha.describe;
 const expect = chai.expect;
 
 const Compiler = require('../../src/gabriela/dependencyInjection/compiler');
+const gabriela = require('./../../src/index');
 
 describe('Compiler instance tests', () => {
     it('create() should create two different instances of the compiler', () => {
@@ -497,5 +498,71 @@ describe('Compiler instance tests', () => {
         expect(ref1).to.not.be.equal(ref2);
         expect(ref2).to.not.be.equal(ref3);
         expect(ref1).to.not.be.equal(ref3);
+    });
+
+    it('should throw an error when trying to set property on compiler when used within a middleware function', (done) => {
+        let firstCalled = false;
+        let secondCalled = false;
+
+        const app = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(firstCalled).to.be.equal(true);
+                    expect(secondCalled).to.be.equal(false);
+
+                    expect(e.message).to.be.equal("Invalid compiler usage. Cannot set properties on the compiler when used within a middleware function.");
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule({
+            name: 'mdl',
+            moduleLogic: [async function() {
+                firstCalled = true;
+
+                this.compiler.val = null;
+            }, function() {
+                secondCalled = true;
+
+                this.compiler.val = null;
+            }]
+        });
+
+        app.startApp();
+    });
+
+    it('should throw an error when trying to get property on the compiler with a function that is not allowed when used within a middleware function', (done) => {
+        let firstCalled = false;
+        let secondCalled = false;
+
+        const app = gabriela.asProcess({
+            events: {
+                catchError(e) {
+                    expect(firstCalled).to.be.equal(true);
+                    expect(secondCalled).to.be.equal(false);
+
+                    expect(e.message).to.be.equal(`Invalid compiler usage. Only 'Compiler::get(name: string): object' and 'Compiler::has(name: string): bool' are allowed to be used.`);
+
+                    done();
+                }
+            }
+        });
+
+        app.addModule({
+            name: 'mdl',
+            moduleLogic: [async function() {
+                firstCalled = true;
+
+                this.compiler.isResolved(true);
+            }, function() {
+                secondCalled = true;
+
+                this.compiler.isResolved(true);
+            }]
+        });
+
+        app.startApp();
     });
 });

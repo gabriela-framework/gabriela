@@ -755,14 +755,14 @@ describe('Gabriela as process tests', () => {
         g.startApp();
     });
 
-    xit('should catch an error when error is thrown inside onAppStarted event', (done) => {
+    it('should catch an error when error is thrown inside onAppStarted event', (done) => {
         const g = gabriela.asProcess({
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong in onAppStarted');
                 },
                 catchError(e) {
-                    expect(e.message).to.be.equal('Something went wrong');
+                    expect(e.message).to.be.equal("An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong in onAppStarted'. This is regarded as an unrecoverable error and the server has closed");
 
                     done();
                 }

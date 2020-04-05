@@ -16,6 +16,7 @@ function _defaultAsserts(config) {
 
 function _defaultFrameworkAsserts(framework) {
     expect(framework.env).to.be.equal(ENV.DEVELOPMENT);
+    expect(framework.loggingEnabled).to.be.equal(true);
     expect(framework.performance).to.be.a('object');
     expect(framework.performance.memoryWarningLimit).to.be.equal(50);
 }
@@ -70,6 +71,7 @@ describe('http config factory tests', () => {
                 }},
             {framework: {
                     performance: {},
+                    loggingEnabled: 'some string'
                 }},
             {server: 98},
             {framework: null},
@@ -98,7 +100,8 @@ describe('http config factory tests', () => {
                     framework: {
                         performance: {
                             memoryWarningLimit: 70,
-                        }
+                        },
+                        loggingEnabled: false,
                     }
                 },
             },
@@ -110,6 +113,7 @@ describe('http config factory tests', () => {
             if (val.type === 'framework') {
                 enters.push(true);
                 expect(config.framework.performance.memoryWarningLimit).to.be.equal(70);
+                expect(config.framework.loggingEnabled).to.be.equal(false);
             }
 
             _defaultAsserts(config);

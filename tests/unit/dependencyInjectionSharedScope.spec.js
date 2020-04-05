@@ -310,4 +310,61 @@ describe('Shared scope dependency injection tests', () => {
 
         g.startApp();
     });
+
+    it('should resolve all dependencies with async function middleware', (done) => {
+        let entersMdl1 = false;
+        let entersMdl2 = false;
+
+        const shared1 = {
+            name: 'shared1',
+            shared: {
+                plugins: ['plugin1'],
+                modules: ['mdl1', 'mdl2'],
+            },
+            init: function() {
+                return {name: 'shared1'}
+            }
+        };
+
+        const initModule = {
+            name: 'initModule',
+            dependencies: [shared1],
+        };
+
+        const g = gabriela.asProcess({
+            events: {
+                onAppStarted() {
+                    expect(entersMdl1).to.be.equal(true);
+                    expect(entersMdl2).to.be.equal(true);
+
+                    done();
+                }
+            }
+        });
+
+        const mdl1 = {
+            name: 'mdl1',
+            moduleLogic: [async function(shared1) {
+                entersMdl1 = true;
+
+                expect(shared1.name).to.be.equal('shared1');
+            }]
+        };
+
+        const mdl2 = {
+            name: 'mdl2',
+            moduleLogic: [async function(shared1) {
+                entersMdl2 = true;
+
+                expect(shared1.name).to.be.equal('shared1');
+            }]
+        };
+
+        g.addPlugin({
+            name: 'plugin1',
+            modules: [initModule, mdl1, mdl2],
+        });
+
+        g.startApp();
+    });
 });

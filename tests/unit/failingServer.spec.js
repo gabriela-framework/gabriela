@@ -106,15 +106,14 @@ describe('Failing server tests', () => {
         expect(entersException).to.be.equal(true);
     });
 
-    xit('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
+    it('catchError gabriela event should catch an error thrown inside onAppStarted gabriela event', (done) => {
         const g = gabriela.asServer({
             events: {
                 onAppStarted() {
                     throw new Error('Something went wrong');
                 },
                 catchError(err) {
-                    expect(err).to.be.instanceof(Error);
-                    expect(err.message).to.be.equal(`An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed`);
+                    expect(err.message).to.be.equal("An error has been thrown in 'onAppStarted' gabriela event with message: 'Something went wrong'. This is regarded as an unrecoverable error and the server has closed");
 
                     this.gabriela.close();
 
