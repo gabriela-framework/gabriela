@@ -75,21 +75,11 @@ describe('Compiler instance tests', () => {
         expect(definition).to.have.property('sharedPlugins');
         expect(definition.sharedPlugins).to.be.a('function');
 
-        expect(userServiceInit.shared.plugins).to.deep.equal(definition.sharedPlugins());
-
         expect(definition).to.have.property('sharedModules');
         expect(definition.sharedModules).to.be.a('function');
 
-        expect(userServiceInit.shared.modules).to.deep.equal(definition.sharedModules());
-
-        expect(definition.isSharedWith('moduleName')).to.be.equal(true);
-        expect(definition.isSharedWith('otherPlugin')).to.be.equal(true);
-        expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
-
-
         expect(definition.hasScope()).to.be.equal(true);
         expect(definition.isShared()).to.be.equal(true);
-        expect(definition.isSharedWith('doesNotExist')).to.be.equal(false);
 
         expect(definition.hasCompilerPass()).to.be.equal(true);
 
@@ -158,13 +148,8 @@ describe('Compiler instance tests', () => {
         expect(definition).to.have.property('sharedModules');
         expect(definition.sharedModules).to.be.a('function');
 
-        expect(definition.isSharedWith('moduleName')).to.be.equal(false);
-        expect(definition.isSharedWith('otherPlugin')).to.be.equal(false);
-        expect(definition.isSharedWith('nonExistent')).to.be.equal(false);
-
         expect(definition.hasScope()).to.be.equal(false);
         expect(definition.isShared()).to.be.equal(false);
-        expect(definition.isSharedWith('doesNotExist')).to.be.equal(false);
 
         expect(definition.hasCompilerPass()).to.be.equal(false);
     });
@@ -281,7 +266,7 @@ describe('Compiler instance tests', () => {
 
         const resolved = child2.parent.compile('userService');
 
-        expect(resolved).to.be.equal(compiled);
+        expect(resolved == compiled).to.be.equal(true);
     });
 
     it('should return a single already resolved dependency', () => {

@@ -301,9 +301,9 @@ function factory() {
             return service;
         }
 
-        resolved[definition.name] = service;
+        resolved[name] = service;
 
-        return resolved[definition.name];
+        return resolved[name];
     }
 
     this.add = add;
