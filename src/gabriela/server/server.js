@@ -8,6 +8,15 @@ function _createServer(config) {
 
     return {app, port, host};
 }
+
+function _mountViewEngineIfExists(server, config) {
+    const viewEngine = config.server.viewEngine;
+
+    if (viewEngine.hasViewEngine) {
+        server.app.set('views', viewEngine.views);
+        server.app.set('view engine', viewEngine['view engine']);
+    }
+}
 /**
  *
  * Must be run before server because of app crucial plugins, like mongo, mysql, redis etc...
@@ -51,6 +60,7 @@ function Server(
     ) {
 
     let server = _createServer(config);
+    _mountViewEngineIfExists(server, config);
     let serverInstance = null;
 
     function run(moduleExecuteFactory, pluginExecuteFactory) {

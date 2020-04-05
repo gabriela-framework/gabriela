@@ -19,6 +19,12 @@ function _defaultAsserts(config) {
 function _defaultServerAsserts(server) {
     expect(server.host).to.be.equal('127.0.0.1');
     expect(server.port).to.be.equal(3000);
+    expect(server.viewEngine).to.be.a('object');
+
+    const viewEngine = server.viewEngine;
+
+    expect(viewEngine.views).to.be.null;
+    expect(viewEngine['view engine']).to.be.null;
 }
 
 function _defaultFrameworkAsserts(framework) {
@@ -157,6 +163,17 @@ describe('http config factory tests', () => {
                         port: 5000,
                     }
                 }
+            },
+            {
+                type: 'viewEngine',
+                config: {
+                    server: {
+                        viewEngine: {
+                            views: 'directory',
+                            'view engine': 'jsx',
+                        }
+                    }
+                }
             }
         ];
 
@@ -185,9 +202,16 @@ describe('http config factory tests', () => {
                 expect(config.server.port).to.be.equal(5000);
             }
 
+            if (val.type === 'viewEngine') {
+                enters.push(true);
+
+                expect(config.server.viewEngine.views).to.be.equal('directory');
+                expect(config.server.viewEngine['view engine']).to.be.equal('jsx');
+            }
+
             _defaultAsserts(config);
         }
 
-        expect(enters.length).to.be.equal(4);
+        expect(enters.length).to.be.equal(5);
     });
 });

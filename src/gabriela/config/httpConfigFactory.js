@@ -68,6 +68,23 @@ function _resolveServer(server) {
 
     newServer.port = parseInt(newServer.port);
 
+    if (!hasKey(server, 'viewEngine')) {
+        server.viewEngine = {};
+    }
+
+    const viewEngine = server.viewEngine;
+
+    if (!hasKey(viewEngine, 'views')) viewEngine.views = null;
+    if (!hasKey(viewEngine, 'view engine')) viewEngine['view engine'] = null;
+
+    if (is('string', viewEngine.views) && is('string', viewEngine['view engine'])) {
+        viewEngine.hasViewEngine = true;
+    } else {
+        viewEngine.hasViewEngine = false;
+    }
+
+    newServer.viewEngine = server.viewEngine;
+
     return newServer;
 }
 
@@ -85,6 +102,10 @@ function _getDefaultServerConfig() {
     return {
         host: '127.0.0.1',
         port: 3000,
+        viewEngine: {
+            views: null,
+            'view engine': null,
+        }
     };
 }
 
