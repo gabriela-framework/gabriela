@@ -573,4 +573,82 @@ describe('Gabriela server tests', function() {
 
         g.startApp();
     });
+
+    it('should execute multiple request to the server', (done) => {
+        const config = {
+            routes: [
+                {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            ],
+            events: {
+                onAppStarted() {
+                    const promises = [];
+
+                    for (let i = 0; i < 10; i++) {
+                        promises.push(requestPromise.get('http://localhost:3000/route'));
+                    }
+
+                    Promise.all(promises).then(() => {
+                        this.gabriela.close();
+                        done();
+                    });
+                }
+            }
+        };
+
+        const g = gabriela.asServer(config);
+
+        g.addModule({
+            name: 'mdl',
+            route: 'route',
+        });
+
+        g.startApp();
+    });
+
+    it('should not throw an exception if done is called and response has been sent', (done) => {
+        const config = {
+            routes: [
+                {
+                    name: 'route',
+                    path: '/route',
+                    method: 'get',
+                }
+            ],
+            events: {
+                onAppStarted() {
+                    const promises = [];
+
+                    for (let i = 0; i < 10; i++) {
+                        promises.push(requestPromise.get('http://localhost:3000/route'));
+                    }
+
+                    Promise.all(promises).then(() => {
+                        this.gabriela.close();
+
+                        done();
+                    });
+                }
+            }
+        };
+
+        const g = gabriela.asServer(config);
+
+        g.addModule({
+            name: 'mdl',
+            route: 'route',
+            moduleLogic: [async function(http, done) {
+                http.res.json(200, {});
+
+                done();
+            }, async function() {
+
+            }]
+        });
+
+        g.startApp();
+    });
 });

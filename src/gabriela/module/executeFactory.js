@@ -40,6 +40,10 @@ function _createWorkingDataStructures(mdl, req) {
 }
 
 function _handleError(err, mdl, httpContext = null) {
+    if (err.internal) {
+        if (err.message === 'done') return;
+    }
+
     if (mdl.isHttp()) {
         let errorRan = false;
 
@@ -96,11 +100,11 @@ function factory(server, mdl) {
                 server[method](path, async function(req, res) {
                     let state = {};
 
-                    const {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
+                    let {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
 
                     const responseEvent = _getResponseEvents(mdl);
 
-                    const responseProxy = createResponseProxy(
+                    let responseProxy = createResponseProxy(
                         req,
                         res,
                         state,
@@ -130,6 +134,10 @@ function factory(server, mdl) {
                     if (!responseProxy.__isRedirect) {
                         state = null;
                     }
+
+                    responseProxy = null;
+                    httpContext = null;
+                    middleware = null;
                 });
             }
         }

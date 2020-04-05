@@ -6,6 +6,9 @@ function _createServer(config) {
     const app = express();
     const {port, host} = config.server;
 
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
     return {app, port, host};
 }
 

@@ -2,39 +2,41 @@ const gabriela = require('./src/index');
 const requestPromise = require('request-promise');
 const path = require('path');
 
-const app = gabriela.asServer({
+const config = {
     routes: [
         {
-            name: 'path',
-            path: '/path',
+            name: 'route',
+            path: '/route',
             method: 'get',
         }
     ],
-    server: {
-        viewEngine: {
-            views: './tests/files',
-            'view engine': 'jsx',
-            engine: require('express-react-views').createEngine(),
-        },
-    },
     events: {
         onAppStarted() {
-            requestPromise.get('http://127.0.0.1:3000/path', (err, res) => {
-                expect(res.statusCode).to.be.equal(200);
-                expect(res.body.length).to.be.equal(253);
+            const promises = [];
 
-                done();
+            for (let i = 0; i < 100; i++) {
+                promises.push(requestPromise.get('http://localhost:3000/route'));
+            }
+
+            Promise.all(promises).then(() => {
+                this.gabriela.close();
             });
         }
     }
-});
+};
 
-app.addModule({
+const g = gabriela.asServer(config);
+
+g.addModule({
     name: 'mdl',
-    route: 'path',
-    moduleLogic: [function(http) {
-        http.res.render('index');
-    }],
+    route: 'route',
+    moduleLogic: [async function(http, done) {
+        http.res.json(200, {});
+
+        done();
+    }, async function() {
+
+    }]
 });
 
-app.startApp();
+g.startApp();
