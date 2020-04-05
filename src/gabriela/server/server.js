@@ -36,6 +36,10 @@ async function _listenCallback(
     };
 
     await runOnAppStarted.call(context, events, rootCompiler);
+
+    if (config.framework.loggingEnabled) {
+        require('./../logging/Logging').outputMemory('App started. All modules and plugins ran.');
+    }
 }
 
 function Server(

@@ -19,6 +19,10 @@ async function runApp(
         };
 
         await runOnAppStarted.call(context, events, rootCompiler);
+
+        if (config.framework.loggingEnabled) {
+            require('./../logging/Logging').outputMemory('App started. All modules and plugins ran.');
+        }
     } catch (err) {
         if (events && events[GABRIELA_EVENTS.ON_CATCH_ERROR]) {
             return callSingleGabrielaEvent.call(this, events[GABRIELA_EVENTS.ON_CATCH_ERROR], rootCompiler, err);
