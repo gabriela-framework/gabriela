@@ -76,8 +76,13 @@ function _resolveServer(server) {
 
     if (!hasKey(viewEngine, 'views')) viewEngine.views = null;
     if (!hasKey(viewEngine, 'view engine')) viewEngine['view engine'] = null;
+    if (!hasKey(viewEngine, 'engine')) viewEngine['engine'] = null;
 
-    if (is('string', viewEngine.views) && is('string', viewEngine['view engine'])) {
+    if (
+        is('string', viewEngine.views) &&
+        is('string', viewEngine['view engine']) &&
+        (is('object', viewEngine['engine']) || is('function', viewEngine['engine']))
+    ) {
         viewEngine.hasViewEngine = true;
     } else {
         viewEngine.hasViewEngine = false;
@@ -105,6 +110,7 @@ function _getDefaultServerConfig() {
         viewEngine: {
             views: null,
             'view engine': null,
+            engine: null,
         }
     };
 }

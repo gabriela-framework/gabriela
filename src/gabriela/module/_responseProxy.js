@@ -156,6 +156,11 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             this.__isFileSent = true;
 
             res.sendFile(path, options, fn);
+        },
+        render(file, props, cb) {
+            this.__responseSent = true;
+
+            res.render(file, props, cb);
         }
     };
 }

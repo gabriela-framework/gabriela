@@ -171,6 +171,7 @@ describe('http config factory tests', () => {
                         viewEngine: {
                             views: 'directory',
                             'view engine': 'jsx',
+                            engine: {},
                         }
                     }
                 }
@@ -207,6 +208,7 @@ describe('http config factory tests', () => {
 
                 expect(config.server.viewEngine.views).to.be.equal('directory');
                 expect(config.server.viewEngine['view engine']).to.be.equal('jsx');
+                expect(config.server.viewEngine.engine).to.be.a('object');
             }
 
             _defaultAsserts(config);

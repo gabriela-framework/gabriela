@@ -15,6 +15,7 @@ function _mountViewEngineIfExists(server, config) {
     if (viewEngine.hasViewEngine) {
         server.app.set('views', viewEngine.views);
         server.app.set('view engine', viewEngine['view engine']);
+        server.app.engine('jsx', viewEngine['engine']);
     }
 }
 /**
