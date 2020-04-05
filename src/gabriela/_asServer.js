@@ -8,6 +8,7 @@ const ExposedMediator = require('./events/exposedMediator');
 const Names = require('./nameSingleton');
 const Router = require('./router/router');
 const Validator = require('./misc/validator');
+const deepcopy = require('deepcopy');
 
 // TODO: make the execution factories be per module or plugin.
 
@@ -26,13 +27,15 @@ module.exports = function _asServer(config) {
         add(mdl) {
             Validator.validateModule(mdl, Router);
 
-            if (names.has(mdl.name)) {
-                throw new Error(`Module definition error. Module with name '${mdl.name}' already exists`);
+            const immutableModule = deepcopy(mdl);
+
+            if (names.has(immutableModule.name)) {
+                throw new Error(`Module definition error. Module with name '${immutableModule.name}' already exists`);
             }
 
-            names.add(mdl.name);
+            names.add(immutableModule.name);
 
-            moduleTree.addModule(mdl);
+            moduleTree.addModule(immutableModule);
         },
         override: moduleTree.overrideModule,
         get: moduleTree.getModule,
@@ -45,17 +48,19 @@ module.exports = function _asServer(config) {
         add(plugin) {
             Validator.validatePlugin(plugin, Router);
 
-            if (names.has(plugin.name)) {
-                throw new Error(`Plugin definition error. Plugin with name '${plugin.name}' already exists`);
+            const immutablePlugin = deepcopy(plugin);
+
+            if (names.has(immutablePlugin.name)) {
+                throw new Error(`Plugin definition error. Plugin with name '${immutablePlugin.name}' already exists`);
             }
 
-            const valid = names.addAndReplacePluginNames(plugin);
+            const valid = names.addAndReplacePluginNames(immutablePlugin);
 
             if (valid !== true) {
                 throw new Error(`Plugin definition error. Plugin module with name '${valid}' already exists`);
             }
 
-            pluginTree.addPlugin(plugin);
+            pluginTree.addPlugin(immutablePlugin);
         },
         get: pluginTree.getPlugin,
         remove: pluginTree.removePlugin,
