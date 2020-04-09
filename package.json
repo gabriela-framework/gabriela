@@ -4,6 +4,9 @@
   "description": "Plugin based framework",
   "main": "src/index.js",
   "types": "src/index.d.ts",
+  "engines": {
+    "node": ">=8.*"
+  },
   "scripts": {
     "test": "mocha --bail -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc --print=both -x '**/tests/*' -x '**/src/gabriela/testing/*' --reporter=lcov npm run test",
