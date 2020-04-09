@@ -1,16 +1,18 @@
 class Names {
-    #names = [];
+    constructor() {
+        this.names = [];
+    }
 
     static create() {
         return new Names();
     }
 
     add(name) {
-        this.#names.push(name);
+        this.names.push(name);
     }
 
     has(name) {
-        return this.#names.includes(name);
+        return this.names.includes(name);
     }
 
     addAndReplacePluginNames(plugin) {
