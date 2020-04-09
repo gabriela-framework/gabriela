@@ -4,42 +4,31 @@
 
 Gabriela is a framework that allows you to structure your application logic
 in a way that is natural for any type of application. Depending on what you are creating,
-your can run it as a Node process, as an HTTP server or both. Your choice.
+you can run it as a Node process, as an HTTP server or both. Your choice.
 
 Gabriela also strives to be platform independent. She does not know (or cares) if she is executed
-as a simple Node process, an HTTP server or a RabbitMQ consumer (or anything else for that matter). 
-This unique feature is still in development (Gabriela is still in alpha stage) 
-but in the future, you will be able to concentrate on the business logic of your application 
-first and then decide whether you want to implement it as an HTTP server or something else.
+as a simple Node process, an HTTP server or a RabbitMQ consumer (or anything else for that matter), concentrate 
+on the business logic of your application first and then decide whether you want to implement it 
+as an HTTP server or something else.
 
 ## Responsibility and development
 
 Framework software is the engine with which an application is built. That application can be a simple portfolio website, a personal project or
 an entire business with which people actually earn their living. In that regard, building a framework,
 for me personally, bears a big responsibility. A part of that responsibility is ensuring that the framework
-is well tested in different scenarios. Gabriela has over 200 different tests and code coverage is at 98%. The goal
+is well tested in different scenarios. Gabriela has around 350 different tests and code coverage is at 99%. The goal
 of these tests will always be 100% so you can be sure that what is described in the documentation will work.
 
-If you cloned Gabriela, you can run all tests with `npm run test` command. There are also two command for checking out
+If you cloned Gabriela, you can run all tests with `npm run test` command. There are also two commands for checking out
 code coverage. The first one is `npm run console-coverage`. This will output the console coverage of Gabriela in the terminal.
 The second one is `npm run coverage`. This will create an html output that you can run in your browser and is more
-better for the eye. You can find it in the `coverage/index.html` file. Just open it in your browser and it will work.
+better for the eye. You can find it in the `coverage/lcov-report/index.html` file. Just open it in your browser and it will work.
 I am using [Istanbul](https://istanbul.js.org/) for test coverage, more precisely, [nyc](https://github.com/istanbuljs/nyc) 
 for running them.
 
-The second part is using it in production. Gabriela is currently in alpha stage and is not yet ready
-for production. The next stage is beta and, once it gets there, you can be confident enough to use it in production. 
-It will also stay in beta until it is absolutely proven in production by creating multiple applications. And yes, I know
-this is counter intuitive but, as I said, building a framework is a responsible business and I cannot make a decision to 
-put that number 1 in front of the version number based solely on my subjective opinion. That is a decision that must
-be made by a proven track record by building and running applications in production environment. It is also a decision
-that we, as a community (if you choose to adopt it) have to decide, together. 
-
-Since testing is, for me, a huge part of making Gabriela production ready, there will also be an accompanying testing
-framework designed to write tests solely for Gabriela. This testing framework will make it possible for you to isolate
-parts of you applications modules, plugins or DI services and test them separately. It will also have special tools for testing
-Gabriela in an HTTP server environment but also using Gabriela with some messaging system like RabbitMQ or with a cache
-server like Memcached or Redis. 
+The second part is using it in production. Gabriela is currently in beta stage and is not yet ready
+for production. It will stay in beta until it is absolutely proven in production by creating multiple applications. 
+Currently, the version is `1.0.3` because npm wouldn't let me publish it as a beta, for some reason. 
 
 I hope that makes sense to you.
 
@@ -133,49 +122,89 @@ If you copy/paste this and run it, you will see `Hello world` written in your te
 app, the program will terminate after printing. You can learn more about modules in the 
 [Modules](https://gabriela-framework.github.io/gabriela/#/?id=_11-modules), a dedicated chapter on modules.
 
-## A module within a plugin
-
-A plugin is a reusable component which you can use to group multiple modules in. If, for example, you have
-a common functionality for handling users, like registration and logging in, you can create a registration module
-and a login module, and then group then both into a user managment plugin.
+To create an app as a server...
 
 ````javascript
 const gabriela = require('gabriela');
 
-const registrationModule = {
-    name: 'registrationModule',
-    http: {
-        route: {
-            name: 'registration',
-            path: '/signUp',
-            method: 'POST',
-        },
-    },
+// declare your route in the asServer() function. 
+const processApp = gabriela.asServer({
+    routes: [
+        {
+            name: 'homepage',
+            path: '/',
+            method: 'GET',
+        }
+    ]
+});
+
+// declare the route by the 'name' property in your module
+const myModule = {
+    name: 'myHttpModule',
+    route: 'homepage',
     moduleLogic: [function() {
-        console.log('Handle user registration');
     }],
 };
 
-const loginModule = {
-    name: 'logicModule',
-    http: {
-        route: {
-            name: 'login',
-            path: '/logic',
+processApp.addModule(myModule);
+
+processApp.startApp();
+````
+
+As you can see, the only difference between an http module and a process module
+is the `route` option. If you omit this option, this module would still run but in 
+the same way as you would run it as a process. The difference is that the server would
+start without any http modules in it. 
+
+If you try to hit `http://127.0.0.1:3000`, the response will be an empty object `{}`.
+Gabriela does not require you to explicitly send a response. You will later find out that there
+is a `state` object with which you can communicate between middleware and, if you don't explicitly
+return a response, the `state` object is returned.
+
+## A module within a plugin
+
+A plugin is a reusable component which you can use to group multiple modules in. If, for example, you have
+a common functionality for handling users, like registration and logging, you can create a registration module
+and a login module, and then group then both into a user management plugin.
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'signUp',
+            path: '/sign-up',
             method: 'POST',
-        }
-    },
+        },
+        {
+            name: 'signIn',
+            path: '/sing-in',
+            method: 'POST',
+        },
+    ]
+});
+
+const signUpModule = {
+    name: 'signUpModule',
+    route: 'signUp',
     moduleLogic: [function() {
-        console.log('Handle user signIn');
+        console.log('Handle user sign up');
+    }],
+};
+
+const signInModule = {
+    name: 'signInModule',
+    route: 'signIn',
+    moduleLogic: [function() {
+        console.log('Handle user sign in');
     }],
 };
 
 const userManagmentPlugin =  {
     name: 'userManagementPlugin',
-    modules: [registrationModule, loginModule],
+    modules: [signUpModule, signInModule],
 };
-
-const app = gabriela.asServer();
 
 app.addPlugin(userManagmentPlugin);
 
@@ -186,7 +215,7 @@ As you can see, you don't have to add modules to `app` if they are part of a plu
 
 ## Dependency injection
 
-So far, we have just made `console.log` whenever a user trid to login or register. Now, lets 
+So far, we have just made `console.log` whenever a user tried to login or register. Now, lets 
 try to simulate a "real" registration. We will only create the services to do it but not the actual registration.
 
 In order for our code to be more maintainable and reusable, it is better to put the logic into a service and not in the
@@ -206,7 +235,7 @@ const gabriela = require('gabriela');
 * The name property is what we use to inject as an argument into another service
 * or a middleware block. In the case of UserService, a userRepository variable is injected
 * since this is the 'name' property in our UserRepository definition. In the same way, we inject
-* userService as an argument whereever we need it. 
+* userService as an argument where ever we need it. 
 */
 const userServiceDefinition = {
     name: 'userService',
@@ -241,13 +270,7 @@ const registrationModule = {
     // for this to work. The UserService will be injected in the moduleLogic middleware block
     // with UserRepository as its dependency.
     dependencies: [userServiceDefinition, userRepositoryDefinition],
-    http: {
-        route: {
-            name: 'registration',
-            path: '/signUp',
-            method: 'POST',
-        },
-    },
+    route: 'registration',
     // we use the 'name' property of the UserService definition to 
     // inject the actual UserService into this middleware block
     moduleLogic: [function(userService) {
@@ -258,7 +281,15 @@ const registrationModule = {
     }],
 };
 
-const app = gabriela.asServer();
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'registration',
+            path: '/sign-up',
+            method: 'POST',
+        }
+    ]
+});
 
 app.addModule(registrationModule);
 
