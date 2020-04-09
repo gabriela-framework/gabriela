@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Plugin based framework",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "test": "mocha --bail -R mocha-pretty-spec-reporter 'tests/**/*.js'",
     "coverage": "nyc --print=both -x '**/tests/*' -x '**/src/gabriela/testing/*' --reporter=lcov npm run test",
@@ -33,7 +34,6 @@
     "request-promise": "^4.2.5"
   },
   "directories": {
-    "doc": "docs",
     "test": "tests"
   },
   "repository": {
@@ -48,5 +48,5 @@
   "bugs": {
     "url": "https://github.com/gabriela-framework/gabriela/issues"
   },
-  "homepage": "https://github.com/gabriela-framework/gabriela#readme"
+  "homepage": "https://gabriela-framework.github.io/gabriela/#/"
 }
