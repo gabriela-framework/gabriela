@@ -1,6 +1,6 @@
 {
   "name": "gabriela",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Plugin based framework",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -37,6 +37,7 @@
     "request-promise": "^4.2.5"
   },
   "directories": {
+    "doc": "docs",
     "test": "tests"
   },
   "repository": {

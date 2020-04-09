@@ -15,13 +15,13 @@ grows, in my experience, that pattern needs constant care and refactoring. That 
 to be a tedious and error prone job. With Gabriela, I tried to expand on the middleware
 pattern to make it both structured and maintainable. I really hope I succeeded in that.
 
-Gabriela is still in alpha stage of development and using her in production
-is not advisable. If you have any questions about it, you can send them to my
+Gabriela is still in beta stage of development and using her in production
+is not advisable. Current version is `1.0.3`. If you have any questions about it, you can send them to my
 email marioskrlec111@gmail.com. Also, every criticism is very welcome. 
 
 ## Installing Gabriela
 
-`npm install gabriela@alpha`
+`npm install gabriela@1.0.3`
 
 ## Documentation
 
