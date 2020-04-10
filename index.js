@@ -1,41 +1,36 @@
 const gabriela = require('./src/index');
 
-const app = gabriela.asServer({
-    routes: [
-        {
-            name: 'signUp',
-            path: '/sign-up',
-            method: 'POST',
-        },
-        {
-            name: 'signIn',
-            path: '/sign-in',
-            method: 'POST',
-        },
-    ]
-});
+const handlingMiddlewareBlockModule = {
+    name: 'helloWorld',
+    validators: [function(state) {
+        state.someCondition = true;
 
-const signUpModule = {
-    name: 'signUpModule',
-    route: 'signUp',
+        console.log(`'validators' block is executed`)
+    }],
+    security: [function(done) {
+        return done();
+
+        console.log(`'security' block is executed`)
+    }],
+    preLogicTransformers: [function(state, skip) {
+        if (state.someCondition) {
+            return skip();
+        }
+
+        console.log(`'preLogicTransformers' first function is executed`)
+    }, function() {
+        console.log(`'preLogicTransformers' second function is executed`)
+    }],
     moduleLogic: [function() {
-        console.log('Handle user sign up');
+        console.log(`'moduleLogic' block is executed`)
+    }],
+    postLogicTransformers: [function() {
+        console.log(`'postLogicTransformers' block is executed`)
     }],
 };
 
-const signInModule = {
-    name: 'signInModule',
-    route: 'signIn',
-    moduleLogic: [function() {
-        console.log('Handle user sign in');
-    }],
-};
+const app = gabriela.asProcess();
 
-const userManagmentPlugin =  {
-    name: 'userManagementPlugin',
-    modules: [signUpModule, signInModule],
-};
-
-app.addPlugin(userManagmentPlugin);
+app.addModule(handlingMiddlewareBlockModule);
 
 app.startApp();

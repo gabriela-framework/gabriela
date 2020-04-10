@@ -350,10 +350,7 @@ which the plugin can declare and modules can call. More on this in a dedicated *
 
 As you can see, Gabriela has features that help you create maintainable and reusable components and I hope
 this primer persuaded you to continue looking into Gabriela. Next step is to take a deeper look at the architecture 
-of the framework in depth to have a better understanding of all the features of Gabriela. You can also skip the 
-chapter about architecture and go right into `Tutorial 1 - Implementing MySQL plugin` or any other tutorial but
-my advice would be to read the next part about architecture first, try to create some modules or plugins
-and then take a look at different tutorials in this documentation.
+of the framework in depth to have a better understanding of all the features of Gabriela.
 
 # 1. Architecture
 
@@ -365,7 +362,7 @@ executed in the same way with the exception that Gabriela server apps have some 
 if it receives and processes data given from an HTTP request or somewhere else. In that regard, modules and plugins
 can be reused in any type of apps. 
 
-As we said, *modules* and *plugins* are executed in the order in which you added them. 
+As I said, *modules* and *plugins* are executed in the order in which you added them. 
 
 ````javascript
 const gabriela = require('gabriela');
@@ -385,36 +382,6 @@ app.startApp();
 
 When you run *startApp*, Gabriela starts running every component in the order you added them.
 First, *module1* is ran, then *module2* all the way up to *plugin2*.
-
-We haven't talked about plugins yet, but for now, know that plugins are basically collections of modules
-in which you can group related modules. Because of that, modules that are added solely as modules
-but also as parts of a plugin are executing once as a standalone module and once in every plugin.
-
-````javascript
-const gabriela = require('gabriela');
-
-const app = gabriela.asProcess();
-
-const myModule = {
-    name: 'myModule',
-    moduleLogic: [function() {
-        console.log('myModule is executed');
-    }]
-}
-
-const myPlugin = {
-    name: 'myPlugin',
-    modules: [myModule],
-}
-
-app.addModule(myModule);
-app.addPlugin(myPlugin);
-
-app.startApp();
-````
-
-In the above example, Gabriela starts executing *myModule* first. Then, it starts executing every
-module that is part of *myPlugin*. Because of that, you will see `myModule is executed` printed twice.
 
 So, lets start exploring Gabrielas architecture one component at a time. Modules first.
 
@@ -465,24 +432,25 @@ app.startApp();
 
 ````
 
-*For readability, in the next examples, I will only use the module declaration object literal. Running it and starting Gabriela
-is assumed in all examples*
-
 The first thing you will notice is that a module is just a simple javascript object literal that
 has some properties. This is called a module declaration. In a module declaration, only the `name` is
 mandatory. Everything else is optional. 
 
-You will also notice that the module declaration has the `moduleLogic` property that accepts an array of 
-middleware objects. This is called a **middleware block**. There are 5 middleware blocks in Gabriela: 
+*For readability, in the next examples, I will only use the module declaration object literal. Running it and starting Gabriela
+is assumed in all examples*
 
-- security
+You will also notice that the module declaration has the `moduleLogic` property that accepts an array of 
+middleware objects. This is called a **middleware block**. There are 6 middleware blocks in Gabriela: 
+
+- init
 - validators
+- security
 - preLogicTransformers
 - moduleLogic
 - postLogicTransformers
 
 Every middleware block does the same thing; executes all the functions that you have given to it in the above order.
-First, `security` block is executed, then `validators` and then all the way to `postLogicTransformers`. It is important
+First, `init` block is executed, then `validators` and then all the way to `postLogicTransformers`. It is important
 to note that every middleware block does the same thing: it executes given functions in order. `security` block does not
 handle security for you automatically and validators block does not handle validation for you automatically. These blocks
 are only logical structures in which you put functions that do a certain thing. For example, if you have a function that checks
@@ -492,17 +460,19 @@ the request in the `moduleLogic` block and return the response. If you need to d
 to that in the `postLogicTransformers` block. 
 
 *It is very important to understand that Gabriela is not an HTTP framework. Middleware blocks don't know that they are executed as a simple
-Node process, an HTTP route or a RabbitMQ consumer*
+Node process or an HTTP server. There are certain function arguments like the `http` argument that can be 
+injected only when in server context, but apart from that, they is no difference*
 
 Next thing you will notice is the `state` argument that every middleware function has. `state` is just a plain
-javascript object literal that is passed into every declared middleware function. You can attach any value to this object and use 
+javascript object literal that is passed into every declared middleware function when you ask for it. You can attach any value to this object and use 
 it to communicate between your middleware functions. 
 
 In our example above, we putted the `state.hello` and `state.world` property on it and used it in our final middleware function to 
 print out Hello world to the console. 
 
-You can also write middleware functions with a short syntax by supplying them as just plain
-functions. 
+Middleware functions can be written with as an **object literal** and as a **plain function**.
+They both execute in the same way the the object literal syntax if more readable and has some additional
+features. 
 
 ````javascript
 const helloWorldModule = {
@@ -511,8 +481,11 @@ const helloWorldModule = {
         function(state) {
             state.hello = 'Hello',
         },
-        function(state) {
-            state.world = 'World',
+        {
+            name: 'objectLiteral',
+            middleware(state) {
+                state.world = 'World';
+            }   
         },
         function(state) {
             console.log(`${state.hello} ${state.world}`);
@@ -523,34 +496,38 @@ const helloWorldModule = {
 ````
 
 The above example will execute in the same way as our first one but the object syntax is more descriptive.
-Gabriela modules can also be overriden but only if you are using the object syntax so it is best practice
-to always create middleware functions with the object syntax. We will talk more about overriding 
-modules middleware blocks later on in the chapter *Modules in depth*. So, lets get back to our previous
-example. 
+Gabriela modules can also be overriden but only if you are using the object literal syntax so it is best practice
+to always create middleware functions with the object literal syntax. We will talk more about overriding 
+modules middleware blocks later on in the chapter *Modules in depth*. 
 
-Next piece of code that we see is
+Middleware blocks written as object literals can also be disabled. 
 
 ````javascript
-const app = gabriela.asProcess();
+const helloWorldModule = {
+    name: 'helloWorld',
+    moduleLogic: [
+        function(state) {
+            state.hello = 'Hello',
+        },
+        {
+            name: 'objectLiteral',
+            disabled: true,
+            middleware(state) {
+                state.world = 'World';
+            }   
+        },
+        function(state) {
+            console.log(`${state.hello} ${state.world}`);
+        },
+    ],
+};
 
 ````
 
-This will create a Gabriela app as a NodeJS process. If you wanted to create Gabriela app as a server, you would create it like this 
+In the above example, if you don't want to execute the first middleware function written a plain function,
+you would have to delete it. For object literals, you can just add the `disabled: true`, and that middleware
+function will to be executed.
 
-````javascript
-const app = gabriela.asServer();
-
-````
-
-Next, we start the app with 
-
-````javascript
-app.startApp();
-
-````
-
-This code actually starts to run our app. After all middleware functions execute, since Gabriela is created
-as a process, the app exists after writing *Hello world* to the console. 
 ___
 #### Side note: Middleware functions<br/>
 >As you can see in the previous examples, we haven't declared any middleware as arrow functions. Do not declare middleware functions
@@ -563,8 +540,9 @@ ___
 
 As we previously said, there are 5 middleware blocks:  
 
-- security
+- init
 - validators
+- security
 - preLogicTransformers
 - moduleLogic
 - postLogicTransformers
@@ -622,11 +600,14 @@ const gabriela = require('gabriela');
 
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
-    security: [function() {
-        console.log(`'security' block is executed`)
+    init: [function() {
+        console.log(`'init' block is executed`);
     }],
     validators: [function() {
         console.log(`'validators' block is executed`)
+    }],
+    security: [function() {
+        console.log(`'security' block is executed`)
     }],
     preLogicTransformers: [function() {
         console.log(`'preLogicTransformers' block is executed`)
@@ -641,7 +622,7 @@ const handlingMiddlewareBlockModule = {
 
 const app = gabriela.asProcess();
 
-app.addModule(handlingMiddlewareBlocksModule);
+app.addModule(handlingMiddlewareBlockModule);
 
 app.startApp();
 
@@ -651,8 +632,9 @@ In this example, all the middleware blocks are executed one after the other. Aft
 get this output.
 
 ````
-'security' block is executed
+'init' block is executed
 'validators' block is executed
+'security' block is executed
 'preLogicTransformers' block is executed
 'moduleLogic' block is executed
 'postLogicTransformers' block is executed
@@ -667,6 +649,9 @@ and execution will continue in the next middleware block function.
 ````javascript
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
+    init: [function() {
+        console.log(`'init' block is executed`);
+    }],
     security: [function() {
         console.log(`'security' block is executed`)
     }],
@@ -692,11 +677,18 @@ const handlingMiddlewareBlockModule = {
     }],
 };
 
+const app = gabriela.asProcess();
+
+app.addModule(handlingMiddlewareBlockModule);
+
+app.startApp();
+
 ````
 
 When you try to run this code, the output will be 
 
 ````
+'init' block is executed
 'security' block is executed
 'validators' block is executed
 'preLogicTransformers' second function is executed
@@ -706,7 +698,7 @@ When you try to run this code, the output will be
 ````
 
 As you can see, we created the `state.someCondition` in the `validators` block and simply returned from
-the first middleware function in `preLogicTransormers`. 
+the first middleware function in `preLogicTransormers` and only the second one is executed. 
 
 In case you want to skip the entire middleware block and proceed to the next one, you can use the
 `skip` function. 
@@ -738,6 +730,12 @@ const handlingMiddlewareBlockModule = {
         console.log(`'postLogicTransformers' block is executed`)
     }],
 };
+
+const app = gabriela.asProcess();
+
+app.addModule(handlingMiddlewareBlockModule);
+
+app.startApp();
 
 ````
 
@@ -773,21 +771,21 @@ put `return done()` in the first function of the `security` middleware block.
 ````javascript
 const handlingMiddlewareBlockModule = {
     name: 'helloWorld',
-    security: [function(done) {
-        return done();
-        
-        console.log(`'security' block is executed`)
-    }],
     validators: [function(state) {
         state.someCondition = true;
-        
+
         console.log(`'validators' block is executed`)
+    }],
+    security: [function(done) {
+        return done();
+
+        console.log(`'security' block is executed`)
     }],
     preLogicTransformers: [function(state, skip) {
         if (state.someCondition) {
             return skip();
         }
-        
+
         console.log(`'preLogicTransformers' first function is executed`)
     }, function() {
         console.log(`'preLogicTransformers' second function is executed`)
@@ -800,10 +798,17 @@ const handlingMiddlewareBlockModule = {
     }],
 };
 
+const app = gabriela.asProcess();
+
+app.addModule(handlingMiddlewareBlockModule);
+
+app.startApp();
+
 ````
 
 Notice that we injected the `done()` function in our `security` middleware block and returned it immediately. If you execute
-this code, you will see that none of the functions in all the middleware block will be executed. 
+this code, you will see that, since `validators` block is executed before `security`, only the validators block is executed and the rest
+are not.
 
 There is also one more middleware handling function called `next()` and we use it to 
 control asynchronous code within our middleware functions to ensure that async code is executed
