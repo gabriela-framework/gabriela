@@ -50,7 +50,10 @@ async function _listenCallback(
 
     await runOnAppStarted.call(context, events, rootCompiler);
 
-    require('./../logging/Logging').outputMemory('App started. All modules and plugins ran.');
+    const env = config['framework']['env'];
+    const host = config['server']['host'];
+    const port = config['server']['port'];
+    require('./../logging/Logging').outputMemory(`'App started in '${env}' environment and mounted as server on host '${host}' and port '${port}'. All modules and plugins ran.'`);
 }
 
 function Server(

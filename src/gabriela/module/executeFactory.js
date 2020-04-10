@@ -99,7 +99,6 @@ function factory(server, mdl) {
                     responseProxy.sendFile(staticPath);
                 });
             } else {
-                console.log(method, path, mdl.http);
                 server[method](path, async function(req, res) {
                     if (loggingEnabled) {
                         require('./../logging/Logging').outputMemory(`Start memory when running module '${mdl.name}' at path '${req.originalUrl}':`);
