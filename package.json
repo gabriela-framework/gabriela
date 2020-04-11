@@ -1,6 +1,6 @@
 {
   "name": "gabriela",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Plugin based framework",
   "main": "src/index.js",
   "types": "src/index.d.ts",

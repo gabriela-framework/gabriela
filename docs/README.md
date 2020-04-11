@@ -816,16 +816,40 @@ before we proceed to our next middleware function so lets start our next section
 
 ### 1.1.3 Handling asynchronous code
 
-What happens if we try to execute asynchronous code inside one of our middleware functions?
+What happens if we try to execute asynchronous code inside one of our middleware functions? Lets try this
+only with gabriela started as a server.
 
 *In our examples, I will use the __request-promise__ package. If you want to use these examples with some other
 tool, it will work the same.*
 
 ````javascript
 const requestPromise = require('request-promise');
+const gabriela = require('gabriela');
+
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'home',
+            path: '/',
+            method: 'GET',
+        }
+    ],
+    // This is the place where you can put global gabriela events.
+    // There are 2 global gabriela events: onAppStarted and catchError.
+    // We will talk about the in the Events section.
+    events: {
+        onAppStarted() {
+            requestPromise.get('http://127.0.0.1:3000').then(() => {
+                // we close the server here
+                this.gabriela.close();
+            });
+        }
+    }
+});
 
 const asyncCodeModule = {
     name: 'asyncCodeModule',
+    route: 'home',
     moduleLogic: [
         function() {
            requestPromise.get('https://www.google.com').then(function() {
@@ -836,6 +860,10 @@ const asyncCodeModule = {
         }
     ],
 };
+
+app.addModule(asyncCodeModule);
+
+app.startApp();
 
 ````
 
@@ -851,14 +879,34 @@ in the first function to finish. In order to fix this, lets introduce `next()`.
 
 ````javascript
 const requestPromise = require('request-promise');
+const gabriela = require('gabriela');
+
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'home',
+            path: '/',
+            method: 'GET',
+        }
+    ],
+    events: {
+        onAppStarted() {
+            requestPromise.get('http://127.0.0.1:3000').then(() => {
+                // we close the server here
+                this.gabriela.close();
+            });
+        }
+    }
+});
 
 const asyncCodeModule = {
     name: 'asyncCodeModule',
+    route: 'home',
     moduleLogic: [
         function(next) {
            requestPromise.get('https://www.google.com').then(function() {
                console.log('Google request finished');
-               
+                
                next();
            });
         }, function() {
@@ -866,6 +914,10 @@ const asyncCodeModule = {
         }
     ],
 };
+
+app.addModule(asyncCodeModule);
+
+app.startApp();
 
 ````
 
@@ -875,6 +927,56 @@ Now, the output will be correct.
 ````
 Google request finished
 `'moduleLogic' second function is executed`
+````
+
+Handling asynchronous code is a common thing in the live of a javascript developer. It becomes tedious to have to
+get the `next()` function as the argument and be careful to put it in the right place.
+
+That is why gabriela has support for `async` middleware. Just put the `async` keyword
+in front of the middleware function and you can you `await` with it.
+
+````javascript
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    route: 'home',
+    moduleLogic: [
+        async function() {
+           await requestPromise.get('https://www.google.com');
+
+           console.log('Google request finished');
+        }, function() {
+           console.log(`'moduleLogic' second function is executed`)
+        }
+    ],
+};
+````
+
+This is the prefered way of handling asynchronous code in your middleware blocks. If you try to use
+`next()` in an `async` function, it will throw an error saying that `next()` cannot be used with
+`async` functions. You can see that much more clearly when if you write a module as an object literal.
+
+
+````javascript
+
+// Using object literals as middleware function is much more readable. Coupled with
+// async functions, it becomes a powerful tool. 
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    route: 'home',
+    moduleLogic: [
+        {
+            name: 'googleRequest',
+            async middleware() {
+                 await requestPromise.get('https://www.google.com');
+            
+                 console.log('Google request finished');
+            }
+        },
+        function() {
+           console.log(`'moduleLogic' second function is executed`)
+        }
+    ],
+};
 ````
 
 ## 1.2 Plugins
@@ -893,7 +995,7 @@ So, lets start exploring plugins.
 
 ### 1.2.1 Declaring a plugin
 
-A basic plugin has a **name** and a **modules** property. Both are required.
+A basic plugin has a **name** and a **modules** property. Only **name** is required.
 
 ````javascript
 const myPlugin = {
@@ -931,6 +1033,39 @@ const myPlugin = {
 
 In the above example, *module1* will be executed first, then *module2* all the way to 
 *module4*.
+
+Modules in a plugin execute in the same way as modules that are not within a plugin but there are
+some notable differences. 
+
+If you declare a module both within a plugin and as a standalone module, that module will be executed
+twice. Once as a standalone module and once within a plugin.
+
+````javascript
+const gabriela = require('gabriela');
+
+const app = gabriela.asProcess();
+
+const ourModule = {
+    name: 'ourModule',
+    moduleLogic: [function() {
+        console.log('ourModule executes');
+    }],
+}
+
+const myPlugin = {
+    name: 'myPlugin',
+    // 'module1', 'module2' etc... declarations are ommitted for brevity
+    modules: [ourModule]
+};
+
+app.addModule(ourModule);
+app.addPlugin(myPlugin);
+````
+
+It this example, the message `ourModule executes` will be shown twice, once when the module is executed
+as a standalone module and once in a plugin. Gabriela modules and plugins are reusable components and that
+goes for modules within a plugin. The goal is to create modules that can be taken from a plugin, and when executed
+alone, they work the same. 
 
 ### 1.2.3 Exposed events
 
@@ -1009,14 +1144,14 @@ const myModule = {
     name: 'myModule',
     moduleLogic: [function() {
         this.mediator.emit('onExposedEvent', {
-            data: {}
+            data: {emittedString: 'myString'}
         });
     }],
 };
 
 const myPlugin = {
     name: 'myPlugin',
-    exposedEvents: ['onExposedEvent'],
+    exposedMediators: ['onExposedEvent'],
     // 'myModule' is not yet created but we will create it shortly
     modules: [myModule]
 };
@@ -1025,7 +1160,7 @@ const reactingModule = {
     name: 'reactingModule',
     mediator: {
         onExposedEvent(data) {
-            
+            console.log(data);
         }
     }
 }
@@ -1043,36 +1178,10 @@ We have added *reactingModule* to our app. Every time *myModule*, that is part o
 
 Now, imagine that *myPlugin* is actually a third party plugin that you installed over *npm*. Lets say 
 that it is an abstraction over MongoDBs native NodeJS driver. Such a plugin could have an exposed event *onConnectionEstablished*
-are your own modules could react to it.
+and your own modules could react to it.
 
-````javascript
-const gabriela = require('gabriela');
-// this is our fictional plugin that abstracts native mongo driver for NodeJS.
-const mongoPlugin = require('gabriela-mongo-plugin');
-
-const app = gabriela.asProcess();
-
-app.addPlugin(mongoPlugin);
-
-// this is our custom module with which we do 'something' with mongo
-const myModule = {
-    name: 'myModule',
-    mediator: {
-        onConnectionEstablished(conn) {
-            
-        }
-    }
-};
-
-app.addModule(myModule);
-
-app.startApp();
-````
-
-As you can see, integrating native mongo driver into gabriela is just one line of code.
-The connection is created for us and the only thing we have to do is react to events that 
-our plugin is creating.
-
+It is also very important to say that exposed events are synchronous so when you call `this.mediator.emit()`, nothing
+magical happens except calling the function `onExposedEvent` on every module that declared it.
 
 ## 1.3 Dependency injection
 
@@ -1084,7 +1193,6 @@ Dependency injection is **scoped**. There are 3 scopes:
 
 - **visibility scope**
 - **shared scope**
-- and **private scope**
 
 We will first examine the anatomy of a *definition* and then dwelve into scopes.
 
@@ -1094,7 +1202,7 @@ We will also talk about how to resolve services asynchronously, how to create
 ### 1.3.1 DI definition
 
 A *definition*, in its basic form, consists of a **name** and an **init** function that is a factory
-for our service. This function has to return an object of some kind, be it a function object
+for our service. This function has to return an object of some kind, be it **must** be a function object
 or an object literal. If you don't return either of these values, an error will be thrown.
 
 ````javascript
@@ -1123,9 +1231,9 @@ const myModule = {
 ````
 
 Assigning a service to a module via *dependencies* array is called a **service declaration**. Every service declaration
-will go into this place including services with *shared scope* and *private scope*. More on those scopes later in this chapter.
+will go into this place including services with *shared scope*. More on those scopes later in this chapter.
 
-Since scopes are an important part of every DI service, lets examine scopes in detail; **visiblity scope**
+Since scopes are an important part of every DI service, lets examine scopes in detail; **visibility scope**
 first.
 
 ### 1.3.2 Visibility scopes
