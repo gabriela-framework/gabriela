@@ -1298,7 +1298,7 @@ in a UserRepository service, you would have a UserRepository::getUserByName(name
 If, for some reason, you cache the user within this service and use the cached user in subsequent calls, the same reference of this service
 will be used. Always create pure functions in your services (functions that, when given some input, always
 return the same output) and don't store any state in them. If you need to store state, use the 'state' object
-in any of the middleware blocks.
+in any of the middleware block.
 ___
 
 It is also very important to note that if you declare the same dependency in multiple modules,
@@ -1319,6 +1319,7 @@ const myModuleOne = {
     name: 'myModuleOne',
     dependencies: [basicDefinition],
     moduleLogic: [function(basicDefinition) {
+        // same service, different reference
     }],
 };
 
@@ -1326,6 +1327,7 @@ const myModuleTwo = {
     name: 'myModuleTwo',
     dependencies: [basicDefinition],
     moduleLogic: [function(basicDefinition) {
+        // same service different reference
     }],
 };
 
@@ -1381,7 +1383,7 @@ const pluginService = {
 
 const declaringModule = {
     name: 'declaringModule',
-    declarations: [pluginService],
+    dependencies: [pluginService],
 };
 
 const moduleOne = {
@@ -1418,10 +1420,10 @@ dependency (or multiple dependencies). You can use this trick to declare your *p
 in one place and then declare dependencies with *module* scope, only in modules where you actually need them. Declaring
 a *module* scope dependency in *declaringModule* would have no effect since it would not be used anywhere.
 
-It is also important to note that if we had created another plugin, a new instance of *pluginService* would be created
-and would not be the same reference as in other plugins. Keep that in mind when creating services that are shared within a plugin.
-If you need to create a service that is shared only between certain plugins, use **shared** scope. We will talk about
-shared scope shortly. 
+It is also important to note that if we had created another plugin and use *pluginService* within that new plugin, 
+a new instance of *pluginService* would be created and would not be the same reference as in other plugins. 
+Keep that in mind when creating services that are shared within a plugin. If you need to create a service 
+that is shared only between certain plugins, use **shared** scope. We will talk about shared scope shortly. 
 
 #### *public* scope
 
@@ -1431,7 +1433,7 @@ Plain and simple, *public* scope is available everywhere.
 const gabriela = require('gabriela');
 
 const publicService = {
-    name: 'pluginService',
+    name: 'publicService',
     scope: 'public',
     init: function() {
         return {};
@@ -1441,7 +1443,7 @@ const publicService = {
 
 const declaringModule = {
     name: 'declaringModule',
-    declarations: [publicService],
+    dependencies: [publicService],
 };
 
 const moduleOne = {
@@ -1491,7 +1493,7 @@ const gabriela = require('gabriela');
 const sharedService = {
     name: 'sharedService',
     shared: {
-        modules: ['moduleOne', 'moduleTwo'],
+        modules: ['moduleOne', 'moduleTwo', 'sharedPlugins.moduleOne'],
         plugins: ['sharedPlugin'],
     },
     init: function() {
@@ -1520,7 +1522,7 @@ const moduleTwo = {
 };
 
 /**
-* Please, take note that this plugin uses moduleOne
+* Please, take note that this plugin uses moduleOne but is declared as 'sharedPlugin.moduleOne'
 */
 const sharedPlugin = {
     name: 'sharedPlugin',
@@ -1567,110 +1569,6 @@ const moduleThree = {
 As said previously, *shared scope* is similar to *public* visibility scope but it allows you to 
 explicitly name your modules and plugins with which you want to share your services.
 
-### 1.3.4 Private scope
-
-Private scopes are a way of encapsulating dependencies of a service to be only visible to 
-that service. They are a great way for keeping your dependencies hidden from the application
-and used only in the service where you need them.
-
-````javascript
-const userRepositoryDefinition = {
-    name: 'userRepository',
-    init: function() {
-        function UserRepository() {}
-        
-        return new UserRepository();
-    }
-};
-
-const basicDefinition = {
-    name: 'basicDefinition',
-    dependencies: [userRepositoryDefinition],
-    init: function(userRepository) {
-        // userRepository is only visible in basicDefinition
-    }
-};
-````
-
-As you can see, private dependencies are declared within a definition, in the same way
-you would declare it in a module. 
-
-If you make *userRepository* a private dependency of another service, *userRepository* will be
-created again (*init* function on *userRepositoryDefinition* will be called again) and you will
-get a new reference to it.
-
-````javascript
-const userRepositoryDefinition = {
-    name: 'userRepository',
-    init: function() {
-        function UserRepository() {}
-        
-        return new UserRepository();
-    }
-};
-
-const basicDefinition = {
-    name: 'basicDefinition',
-    dependencies: [userRepositoryDefinition],
-    init: function(userRepository) {
-        // userRepository is only visible in basicDefinition
-    }
-};
-
-const someOtherDefinition = {
-    name: 'basicDefinition',
-    dependencies: [userRepositoryDefinition],
-    init: function(userRepository) {
-        // this is a new reference of the userRepository
-    }
-};
-````
-
-But this does not mean that *userRepository* cannot be used anywhere else. You can have any
-scope attached to a *private* scope dependency. What makes a service private is only the 
-way you declare it. If you declare it in the service *definition*, that will make the dependency
-private but if you declare the same private service on a module, you can use it there too.
-
-````javascript
-const userRepositoryDefinition = {
-    name: 'userRepository',
-    // notice the 'public' scope
-    scope: 'public',
-    init: function() {
-        function UserRepository() {}
-        
-        return new UserRepository();
-    }
-};
-
-const basicDefinition = {
-    name: 'basicDefinition',
-    dependencies: [userRepositoryDefinition],
-    init: function(userRepository) {
-    }
-};
-
-const userModule = {
-    name: 'userModule',
-    // notice that both 'basicDefinition' and 'userRepositoryDefinition' are declared
-    // on this module
-    dependencies: [basicDefinition, userRepositoryDefinition],
-    moduleLogic: [function(basicDefinition, userRepository) {
-        
-    }],
-}
-````
-
-Here, *userRepository* has a *public* scope (and you can use it anywhere in your application) but is also privately scoped only for *basicDefinition*. That means that for *basicDefinition*,
-a new *userRepository* is created that has a different reference than that of *userRepository* used in 
-a *userModule*. 
-
-#### **Side note: Private dependencies**
-___
->Private dependencies are the same as any other dependency. They have the same definition as any other
-dependency. The only difference is where you declare it. If you declare a dependency on a definition, you
-declared a private dependency. 
-
 ### 1.3.5 Asynchronous services
 
 What if you need to create a service with data from some third party API? 
@@ -1702,6 +1600,7 @@ for dependency injection but only slightly differently.
 ````javascript
 const apiService = {
     name: 'apiService',
+    isAsync: true,
     init: function(thirdPartyApiService, next) {
         thirdPartyApiService.getData().then((data) => {
             next(() => {
@@ -1731,7 +1630,7 @@ is created. Only that it is there.
 
 ### 1.3.6 Function expressions
 
-Function expressions are a way to execute functions created as service with the dependency injection
+Function expressions are a way to execute functions created as s service with the dependency injection
 system. It's a little hard to explain it with words, so lets see an example.
 
 ````javascript
@@ -1762,6 +1661,79 @@ app.startApp();
 
 Function expressions are executed as strings in a middleware block. They work in the same way as if you
 declared a regular function within a middleware block. Use them to make your modules middleware functions less verbose and more readable. 
+
+Function expressions have the same capabilities as any other service. They can accept argument in the same way as any other service.
+
+````javascript
+const gabriela = require('gabriela');
+
+const dependency = {
+    name: 'myDep',
+    init() {
+        return {};
+    }
+}
+
+
+const functionExpressionDefinition = {
+    name: 'functionExpression',
+    init: function() {
+        // in order to use myDep, it has to be injected here
+        return function(myDep) {
+            console.log('This is a function expression');
+        }
+    }
+};
+
+const myModule = {
+    name: 'myModule',
+    dependencies: [functionExpressionDefinition, dependency],
+    // it also must be injected here
+    moduleLogic: ['functionExpression(myDep)']
+};
+
+const app = gabriela.asProcess();
+
+app.addModule(myModule);
+
+app.startApp();
+````
+
+Function expressions are very useful as reusable middleware. For example, if you have some blog handling mechanism,
+you would have to check if the blog exists on every module that must have a blog to work on. You can write a function expression
+once and reuse it in every module that you need to check the existence of a blog.
+
+
+````javascript
+const blogServiceDefinition = {
+    name: 'BlogService',
+    init() {
+        return {};
+    }
+}
+
+const blogExistsMiddleware = {
+    name: 'blogExists',
+    init: function() {
+        return async function(BlogService, state) {
+            return await BlogService.exists(state.id);
+        }
+    }
+};
+
+
+const getBlogByIdModule = {
+    name: 'getBlogById',
+    validators: ['blogExists(BlogService, state)']
+}
+
+const updateBlog = {
+    name: 'getBlogById',
+    validators: ['blogExists(BlogService, state)']
+}
+````
+
+As you can see, *blogExists* middleware is reused in every module that needs to check if a blog exists by id. 
 
 ### 1.3.7 Compiler passes
 
@@ -1832,7 +1804,7 @@ to a compiler pass to create a service based on that config.
 const gabriela = require('gabriela');
 
 const app = gabriela.asServer({
-    config: {
+    plugins: {
         validation: {
             email: {
                 type: String,
@@ -1846,7 +1818,7 @@ const declaringDefinition = {
     compilerPass: {
         init: function(config, compiler) {
             // this is the validation property from Gabriela::asServer() above
-            const validation = config.validation;
+            const validation = config['plugins']['validation'];
             
             // if this property exists, create an 'emailValidator' service
             if (validation.email) {
@@ -1884,7 +1856,7 @@ to send out events that are important to your application so you can react to th
 
 There are two types of events: **mediator** event and **emitter** event. The only difference between the two
 is that **emitter** events are asynchronous. In that regard, they are kind of an asynchronous job
-queue with which you can send events that you don't want to wait for.
+queue with which you can send events that you don't want to wait for, such as sending emails.
 
 ### 1.4.1 Using events in modules
 Lets take a look at a basic example.
@@ -2298,13 +2270,6 @@ After you *throwException*, the *onError* event is called with the first argumen
 Notice that this is not the native javascript error handling since you do not throw an error but just create the
 *Error* instance itself. If you used `throw new Error()`, *onError* would not be called. 
 
-___
-**Important note: On error handling**
->Try to use *throwException* instead of the native javascript, `throw new Error`. It allows you
-to have fine grained control over how you handle your errors and is more flexible, both on the module
-and plugin level
-___
-
 You can use the dependency injection mechanism in the *onError* event in the same way you use it anywhere else
 with the sole exception that the error instance must be the first argument in this function. You can also use the
 *next* function to control asynchronous code. 
@@ -2333,7 +2298,32 @@ const myModule = {
 };
 ````
 
-### 1.5.2 Plugin error handling
+### 1.5.2 Async middleware functions and error handling
+
+With async functions as middleware functions, you cannot use *throwException* or *next*. Gabriela will throw an
+error if you do. With those functions, you can safely do *throw new Error()* and that error will be caught by the
+error handling mechanism.
+
+````javascript
+const myModule = {
+    name: 'myModule',
+    dependencies: [service],
+    mediator: {
+        onError: function(err, service, next) {
+            service.asyncFn().then(() => {
+                next();
+            });
+        }
+    },
+    moduleLogic: [async function() {
+        throw new Error('Something bad happened');
+    }],
+};
+````
+
+This is the preferred way of handling error in Gabriela, but the choice is yours.
+
+### 1.5.3 Plugin error handling
 
 Catching errors on the plugin level uses the same *onError* event but works a little differently.
 
@@ -2364,7 +2354,7 @@ const myPlugin = {
 of *myPlugin* can use this plugins *onError* event to catch all errors within that plugin. Note again that
 this only works if you use *throwException* function. 
 
-### 1.5.3 Global errors processing
+### 1.5.4 Global errors processing
 
 #### Handling global error: asProcess()
 
@@ -2413,38 +2403,90 @@ terminate the server if you don't override this default behaviour.
 
 ## 1.6 Configuration
 
-As we said previously, Gabriela is still in alpha stage so configuration is a feature that I still don't know what to do with. 
-As I said in the Primer, you have to add the initial configuration when creating Gabriela *asProcess* and *asServer*.
+Configuration has 3 properties when gabriela is executed *asProcess* and 4 when executed *asServer*
 
-````javascript
-const gabriela = require('gabriela');
+When executed *asProcess* the properties are 
 
-const app = gabriela.asProcess({
-    config: {
-        framework: {},
-    }
-});
+- framework
+- plugins
+- events
 
-// or
+When executed *asServer* the properties are
 
-const app = gabriela.asServer({
-    config: {
-        framework: {},
-    }
-});
+- framework
+- route
+- server
+- plugins
+- events
+
+As you can see, *framework*, *plugins*, and *events* are the same for both. *framework* property holds
+the configuration for the entire framework. 
+
+___
+>I will talk about the routes configuration in the section 1.7 HTTP
+___
+
+The signature for this property is
+
+````
+framework: {
+    env: 'dev' || 'prod' // defaults to 'dev'
+    loggingEnabled: true // defaults to 'true'
+}
 ````
 
-Supplying `{config: {}}` is mandatory. For now, **anything** you put into `config` will 
-be injected into compiler passes. This is the only place where config is injected and used.
+Weather Gabriela is executed in 'dev' or 'prod' environment does not have any significance except for logging.
+If you execute Gabriela in 'dev' environment, it will log the memory consumption on the beginning and end of every
+request when used as a server. Other than that, as of this version, it has no significance. You can control the logging
+with *loggingEnabled*. If you set it to *false*, it will not log anything except when initially run. 
 
-This feature is still under development but you can use it however you like. In the future, there will
-be multiple environments and setting up custom environments. There will also be support for the `.env` 
-file to declare environment variables that could be used inside alongside configuration.
+*plugins* property is where you put your third party plugin configuration as an object. For example,
 
-There will also be a *gabriela* command line utility that will be able to do much of the effort of
-working with configuration for you.
+`````javascript
+gabriela.asProcess({
+    plugins: {
+        validator: {} // validator plugin configuration goes here
+    }
+})
+`````
 
-Until then, use this feature only with compiler passes.
+You can use this property to declare services on the fly within a compiler pass. For example,
+
+````javascript
+const compilerPass = {
+    name: 'compilerPass',
+    compilerPass: {
+        init(config) {
+            // use 'validator' plugin config here
+            const validatorConfig = config['plugins']['validator'];
+        }   
+    }
+}
+````
+
+The *events* key is where you *onAppStarted()* and *catchError* global events are attached.
+
+### 1.7.1 Server specific configuration
+
+Server specific properties are *server* and *routes*.
+
+The default configuration for *server* is
+
+````javascript
+{
+    host: '127.0.0.1',
+    port: 3000,
+    viewEngine: {
+        views: null, // directory where the view are
+        'view engine': null, // name of the view engine
+        engine: null, // the engine instance itself
+    }
+}
+````
+
+When executing Gabriela as server, the default host and port are *127.0.0.1* and *3000*, respectively. You can
+change it to anything you want. Since Gabriela uses [Express](https://expressjs.com/) as the base server,
+you can attach a view engine in the *viewEngine* property. It works in the same way as Express view engine works. 
 
 ## 1.7 HTTP
 
@@ -2452,75 +2494,102 @@ We haven't talked about running and using Gabriela as a server. The reason for t
 be decoupled from HTTP. The idea is for your modules and plugins to not know whether they are executed in a 
 HTTP request. That road is still being paved but I hope I'm coming close.
 
-Gabriela uses [restify](http://restify.com/docs/home/) so the request and response objects
-from restify are the same in Gabriela.
+Gabriela uses [Express](https://expressjs.com/) so the request and response objects
+from Express are the same in Gabriela.
 
 So lets explore how to use Gabriela as a server.
 
-### 1.7.1 Declaring an HTTP module
+### 1.7.1 Declaring an HTTP route
 
-Declaring an HTTP module is the same as declaring a process module with the difference of adding
-the **http** property.
+First thing to do when declaring an http module, is declaring a route.
+
 
 ````javascript
 const gabriela = require('gabriela');
 
 const httpModule = {
     name: 'httpModule',
-    http: {
-        route: {
-            name: 'routeName',
-            path: '/route-path',
-            method: 'get',
-        }
-    },
+    route: 'myRoute', // notice the route field
     moduleLogic: [function() {
         console.log('Executed when you create a request to /route-path');
     }],
 };
 
-const app = gabriela.asServer();
-
-app.addModule(httpModule);
-
-app.startApp();
-````
-
-It's simple as that. After you start the app, you can go to */route-path* and process your route.
-
-### Special **http** argument
-
-The question now is, how do we get the data from the request or send a response?
-
-Just like the *state* argument, Gabriela has an **http** argument that can be injected
-when Gabriela is executed in an HTTP context.
-
-````javascript
-const gabriela = require('gabriela');
-
-const httpModule = {
-    name: 'httpModule',
-    http: {
-        route: {
-            name: 'routeName',
-            path: '/route-path',
-            method: 'get',
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'myRoute',
+            path: '/',
+            method: 'GET',
         }
-    },
-    moduleLogic: [function(http) {
-        console.log(`Request arrived from ${http.req.href}`);
-    }],
-};
-
-const app = gabriela.asServer();
+    ],
+});
 
 app.addModule(httpModule);
 
 app.startApp();
 ````
 
-This object contains two properties: **req** and **res** who correspond to the current request
-and response. These are the same objects that you would use with restify.
+It's simple as that. After you start the app, you can go to */* and process your route.
+
+### 1.7.2 Route groups
+
+Gabriela supports base and child routes. In our first example, we declared a simple
+route.
+````
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'myRoute',
+            path: '/',
+            method: 'GET',
+        }
+    ],
+});
+````
+
+You can group many routes with base routes
+
+````
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'blogs',
+            basePath: '/blogs',
+            routes: [
+                {
+                    name: 'create',
+                    path: '/create',
+                    method: 'PUT',
+                },
+                {
+                    name: 'read',
+                    path: '/:blogId',
+                    method: 'GET',
+                },
+                {
+                    name: 'update',
+                    path: '/update/:blogId',
+                    method: 'POST',
+                },
+                {
+                    name: 'delete',
+                    path: '/delete/:blogId',
+                    method: 'DELETE',
+                }
+            ]
+        }
+    ],
+});
+````
+
+Every path must have a forwared slash */* in front of it. When using this configuration, these routes
+will be created:
+
+``curl -X PUT http://11.11.11.12:3000/blogs/create``
+``curl -X GET http://11.11.11.12:3000/blogs/1234``
+``curl -X POST http://11.11.11.12:3000/blogs/update/1234``
+``curl -X DELETE http://11.11.11.12:3000/delete/12234``
 
 ### 1.7.3 Default response body
 
@@ -2538,13 +2607,7 @@ const gabriela = require('gabriela');
 
 const httpModule = {
     name: 'getUser',
-    http: {
-        route: {
-            name: 'getUser',
-            path: '/user/:id',
-            method: 'get',
-        }
-    },
+    route: 'getUser',
     // 'userService' is not part of Gabriela. It is only used here for brevity
     validators: [function(http, state, userService, next, throwException) {
         const id = http.req.params.id;
@@ -2558,7 +2621,15 @@ const httpModule = {
     }],
 };
 
-const app = gabriela.asServer();
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'GET',
+        }
+    ]
+});
 
 app.addModule(httpModule);
 
@@ -2568,7 +2639,7 @@ app.startApp();
 We don't actually need any other middleware block like *moduleLogic* here because the value of *state* is 
 automatically sent as the response body. Simple as that.
 
-You can, of course, use the *restify* response object to send the response which will override
+You can, of course, use the *express* response object to send the response which will override
 the default response sending mechanism.
 
 ````javascript
@@ -2576,13 +2647,7 @@ const gabriela = require('gabriela');
 
 const httpModule = {
     name: 'getUser',
-    http: {
-        route: {
-            name: 'getUser',
-            path: '/user/:id',
-            method: 'get',
-        }
-    },
+    route: 'getUser',
     // 'userService' is not part of Gabriela. It is only used here for brevity
     validators: [function(http, state, userService, next, throwException) {
         const id = http.req.params.id;
@@ -2592,12 +2657,20 @@ const httpModule = {
             state.user = user;
             
             // this will override the default mechanism of sending the 'state' object
-            http.res.send(state);
+            http.res.json(state);
         });
     }],
 };
 
-const app = gabriela.asServer();
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'GET',
+        }
+    ]
+});
 
 app.addModule(httpModule);
 
@@ -2605,28 +2678,26 @@ app.startApp();
 ````
 
 We also only use the *validators* middleware block since we don't need any other but it would
-be structurally more accurate to use the *moduleLogic* block to actually send a response.
+be structurally more accurate to use the *moduleLogic* block to actually send a response. You 
+can also use the *async* middleware and use *await* to make the response more readable.
 
 ````javascript
 const gabriela = require('gabriela');
 
 const httpModule = {
     name: 'getUser',
-    http: {
-        route: {
-            name: 'getUser',
-            path: '/user/:id',
-            method: 'get',
-        }
+    route: 'getUser',
+    mediator: {
+        onError(e) {} // error caught here
     },
     // 'userService' is not part of Gabriela. It is only used here for brevity
-    validators: [function(http, state, userService, next, throwException) {
+    validators: [async function(http, state, userService) {
         const id = http.req.params.id;
-        userService.getUserById(id).then((err, user) => {
-            if (err) return throwException(`User with id ${id} does not exist`);
-
-            state.user = user;
-        });
+        // try/catch is redundant here since any error thrown by userService
+        // will be caught by onError mediator
+        await userService.getUserById(id);
+       
+        state.user = user;
     }],
     moduleLogic: [function(http, state) {
         // this will override the default mechanism of sending the 'state' object
@@ -2634,14 +2705,24 @@ const httpModule = {
     }]
 };
 
-const app = gabriela.asServer();
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'GET',
+        }
+    ]
+});
 
 app.addModule(httpModule);
 
 app.startApp();
 ````
 
-A good practice is to put what the code actually does in its own structural middleware block.
+A good practice is to put what the code actually does in its own structural middleware block. Also, when using
+*async/await*, there is no need for a *try/catch*. If you declare an *onError* event, any error thrown by
+*UserService* will be caught there. 
 
 ### 1.7.4 HTTP response events
 
@@ -2662,28 +2743,27 @@ const httpModule = {
             // act here after the response is sent
         }
     },
-    http: {
-        route: {
-            name: 'getUser',
-            path: '/user/:id',
-            method: 'get',
-        }
-    },
+    route: 'getUser',
     // 'userService' is not part of Gabriela. It is only used here for brevity
     validators: [function(http, state, userService, next, throwException) {
         const id = http.req.params.id;
-        userService.getUserById(id).then((err, user) => {
-            if (err) return throwException(`User with id ${id} does not exist`);
+        const id = http.req.params.id;
 
-            state.user = user;
-            
-            // this will override the default mechanism of sending the 'state' object
-            http.res.send(state);
-        });
+        await userService.getUserById(id);
+       
+        state.user = user;
     }],
 };
 
-const app = gabriela.asServer();
+const app = gabriela.asServer({
+    routes: [
+        {
+            name: 'getUser',
+            path: '/user/:id',
+            method: 'GET',
+        }
+    ]
+});
 
 app.addModule(httpModule);
 
