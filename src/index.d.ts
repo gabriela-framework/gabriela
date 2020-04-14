@@ -68,6 +68,8 @@ export declare class App {
     removePlugin(name: string): void;
     hasPlugin(name: string): boolean;
     getPlugins(): IPlugin[];
+    
+    startApp(): void;
 }
 
 export type MiddlewareType = string | Function | IMiddlewareFunction | Promise<any>;
