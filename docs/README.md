@@ -461,17 +461,18 @@ to that in the `postLogicTransformers` block.
 
 *It is very important to understand that Gabriela is not an HTTP framework. Middleware blocks don't know that they are executed as a simple
 Node process or an HTTP server. There are certain function arguments like the `http` argument that can be 
-injected only when in server context, but apart from that, they is no difference*
+injected only when in server context, but apart from that, there is no difference*
 
 Next thing you will notice is the `state` argument that every middleware function has. `state` is just a plain
 javascript object literal that is passed into every declared middleware function when you ask for it. You can attach any value to this object and use 
-it to communicate between your middleware functions. 
+it to communicate between your middleware functions. If you used the Express framework, `state` has the same functionality as attaching
+a value to `req` variable and passing it to the next middleware.
 
 In our example above, we putted the `state.hello` and `state.world` property on it and used it in our final middleware function to 
 print out Hello world to the console. 
 
 Middleware functions can be written with as an **object literal** and as a **plain function**.
-They both execute in the same way the the object literal syntax if more readable and has some additional
+They both execute in the same way but the object literal syntax if more readable and has some additional
 features. 
 
 ````javascript
@@ -479,7 +480,7 @@ const helloWorldModule = {
     name: 'helloWorld',
     moduleLogic: [
         function(state) {
-            state.hello = 'Hello',
+            state.hello = 'Hello';
         },
         {
             name: 'objectLiteral',
@@ -497,8 +498,7 @@ const helloWorldModule = {
 
 The above example will execute in the same way as our first one but the object syntax is more descriptive.
 Gabriela modules can also be overriden but only if you are using the object literal syntax so it is best practice
-to always create middleware functions with the object literal syntax. We will talk more about overriding 
-modules middleware blocks later on in the chapter *Modules in depth*. 
+to always create middleware functions with the object literal syntax.
 
 Middleware blocks written as object literals can also be disabled. 
 
@@ -507,7 +507,7 @@ const helloWorldModule = {
     name: 'helloWorld',
     moduleLogic: [
         function(state) {
-            state.hello = 'Hello',
+            state.hello = 'Hello';
         },
         {
             name: 'objectLiteral',
@@ -524,9 +524,9 @@ const helloWorldModule = {
 
 ````
 
-In the above example, if you don't want to execute the first middleware function written a plain function,
+In the above example, if you don't want to execute the first middleware function written as plain function,
 you would have to delete it. For object literals, you can just add the `disabled: true`, and that middleware
-function will to be executed.
+function will not be executed.
 
 ___
 #### Side note: Middleware functions<br/>
@@ -558,13 +558,13 @@ const helloWorldModule = {
         {
             name: 'helloModuleLogic',
             middleware: function(state) {
-                state.hello = 'Hello',
+                state.hello = 'Hello';
             },
         },
         {
             name: 'worldModuleLogic,
             middleware: function(state) {
-                state.world = 'World',
+                state.world = 'World';
             },
         },
         {
@@ -935,6 +935,12 @@ get the `next()` function as the argument and be careful to put it in the right 
 That is why gabriela has support for `async` middleware. Just put the `async` keyword
 in front of the middleware function and you can you `await` with it.
 
+*When I first started working on Gabriela, handling asynchronous code is the first problem I had to solve. next() is 
+the first solution to that problem and it takes it from almost every server framework or library out there (like Express). But it 
+is not the best solution for this. If you inject next() and do not call it, the module will hang and wait for you to execute
+next() indefinitely. Keep that in mind when using next(). A better solution is to use async/await and use next() only with 
+libraries that still have legacy APIs that only support callback functions.*
+
 ````javascript
 const asyncCodeModule = {
     name: 'asyncCodeModule',
@@ -952,9 +958,10 @@ const asyncCodeModule = {
 ````
 
 This is the prefered way of handling asynchronous code in your middleware blocks. If you try to use
-`next()` in an `async` function, it will throw an error saying that `next()` cannot be used with
+`next()` or `throwException` in an `async` function, it will throw an error saying that `next()` cannot be used with
 `async` functions. You can see that much more clearly when if you write a module as an object literal.
 
+*I will talk about throwException in the section about Error handling.*
 
 ````javascript
 
@@ -978,6 +985,83 @@ const asyncCodeModule = {
     ],
 };
 ````
+
+### 1.1.4 Models
+
+Gabriela does not handle models by herself, but you can take advantage of the modules `modelName` property that you
+can attach to it.
+
+````javascript
+
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    modelName: 'myModel', // the name of your model
+    moduleLogic: [
+    ],
+};
+```` 
+
+This model is nothing special and does not exist in the Gabriela internals. It can only be significant for your application.
+
+For example...
+
+````javascript
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    modelName: 'myModel', // the name of your model
+    init: [
+        {
+            name: 'createModel',
+            middleware(state) {
+                // you can access the modelName with the moduleInfo object
+                const modelName = this.moduleInfo.modelName;
+                state[modelName] = {}
+            }
+        }
+    ],
+    moduleLogic: [
+        {
+            name: 'logicHandler',
+            middleware(state) {
+                console.log(state.myModel); // explicit
+                // OR
+                console.log(state[this.moduleInfo.modelName]) // portable
+            }
+        }
+    ],
+};
+````
+
+By using `this.moduleInfo.modelName` with the `state`, you make the model more portable and generic. That means you can 
+make this middleware function into a middleware function expression (we will talk about them later), and change nothing
+in the code since this middleware is already using any model that the model has declared.
+
+### 1.1.5 `this` in modules
+
+`this`, when used in a module, is bound to 3 useful object: `moduleInfo`, `mediator` and `emitter`. `moduleInfo` holds information
+about you module like `moduleName`, `modelName` and the path of the current route with the `route` property, if the module is executed in an
+HTTP context. 
+
+````javascript
+const asyncCodeModule = {
+    name: 'asyncCodeModule',
+    modelName: 'myModel',
+    init: [
+        {
+            name: 'createModel',
+            middleware() {
+                console.log(this.moduleInfo.moduleName) // prints asyncCodeModule
+                console.log(this.moduleInfo.modelName) // prints my model
+                console.log(this.moduleInfo.route) // prints the route as in /path/to/resource or undefined if not in HTTP context
+            }
+        }
+    ],
+};
+````
+
+The other two are `mediator` and the `emitter`. They are related to events handling and I will not talk about
+them in this section. There is a dedicated section [1.4 Events](https://gabriela-framework.github.io/gabriela/#/?id=_14-events) about
+events. 
 
 ## 1.2 Plugins
 
