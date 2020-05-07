@@ -90,6 +90,14 @@ function _resolveServer(server) {
 
     newServer.viewEngine = server.viewEngine;
 
+    if (!hasKey(server, 'expressMiddleware')) {
+        server.expressMiddleware = [];
+    } else {
+        if (!Array.isArray(server.expressMiddleware)) throw new Error(`Invalid config. 'server.expressMiddleware' must be an array.`)
+    }
+
+    newServer.expressMiddleware = server.expressMiddleware;
+
     return newServer;
 }
 
@@ -111,7 +119,8 @@ function _getDefaultServerConfig() {
             views: null,
             'view engine': null,
             engine: null,
-        }
+        },
+        expressMiddleware: [],
     };
 }
 

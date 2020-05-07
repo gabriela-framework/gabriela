@@ -10,7 +10,7 @@ const expect = chai.expect;
 const gabriela = require('../../src/gabriela/gabriela');
 
 describe('View engine tests', function() {
-    this.timeout(5000);
+    this.timeout(15000);
 
     it('should render a html page with react', (done) => {
         const app = gabriela.asServer({

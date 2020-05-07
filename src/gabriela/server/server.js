@@ -1,6 +1,11 @@
 const {GABRIELA_EVENTS} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
 
+function _addMiddleware(app, middleware) {
+    for (const m of middleware) {
+        app.use(m);
+    }
+}
 function _createServer(config) {
     const express = require('express');
     const app = express();
@@ -65,6 +70,8 @@ function Server(
     ) {
 
     let server = _createServer(config);
+
+    _addMiddleware(server.app, config.server.expressMiddleware);
     _mountViewEngineIfExists(server, config);
     let serverInstance = null;
 

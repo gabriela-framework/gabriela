@@ -36,6 +36,7 @@ export declare interface ServerConfig {
     host?: ServerHostType;
     port?: ServerPortType;
     viewEngine?: ViewEngineConfig
+    expressMiddleware: any[]
 }
 
 export declare interface ViewEngineConfig {

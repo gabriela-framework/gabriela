@@ -20,6 +20,7 @@ function _defaultServerAsserts(server) {
     expect(server.host).to.be.equal('127.0.0.1');
     expect(server.port).to.be.equal(3000);
     expect(server.viewEngine).to.be.a('object');
+    expect(server.expressMiddleware).to.be.a('array');
 
     const viewEngine = server.viewEngine;
 
@@ -110,6 +111,7 @@ describe('http config factory tests', () => {
                 plugins: null,
                 events: null,
                 routes: null,
+                expressMiddleware: null,
             },
             {
                 routes: null,
