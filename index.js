@@ -1,23 +1,19 @@
 const gabriela = require('./src/index');
 
-const functionExpressionDefinition = {
-    name: 'functionExpression',
-    init: function() {
-        return function() {
-            console.log('This is a function expression');
+const app = gabriela.asServer({
+    framework: {
+        env: 'prod',
+    },
+    server: {
+        port: 3001,
+    },
+    events: {
+        onAppStarted() {
+        },
+        onExit() {
+            console.log('ON EXIT');
         }
     }
-};
-
-const myModule = {
-    name: 'myModule',
-    dependencies: [functionExpressionDefinition],
-    // functionExpression is executed here
-    moduleLogic: ['functionExpression()']
-};
-
-const app = gabriela.asProcess();
-
-app.addModule(myModule);
+});
 
 app.startApp();

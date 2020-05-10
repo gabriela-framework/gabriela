@@ -1,11 +1,23 @@
 const {GABRIELA_EVENTS} = require('../misc/types');
 const {callSingleGabrielaEvent, runOnAppStarted} = require('../events/util/gabrielaEventUtils');
+const ShutdownManager = require('./shutdownManager');
+
+function _shutdown(server, events, rootCompiler, shutdownManager) {
+    if (server) {
+        shutdownManager.shutdown(() => {
+            console.log('All connections closed. Server terminated.');
+
+            if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
+        });
+    }
+}
 
 function _addMiddleware(app, middleware) {
     for (const m of middleware) {
         app.use(m);
     }
 }
+
 function _createServer(config) {
     const express = require('express');
     const app = express();
@@ -69,11 +81,14 @@ function Server(
         moduleInterface,
     ) {
 
+    const env = config['framework']['env'];
     let server = _createServer(config);
 
     _addMiddleware(server.app, config.server.expressMiddleware);
     _mountViewEngineIfExists(server, config);
     let serverInstance = null;
+
+    let shutdownManager = null;
 
     function run(moduleExecuteFactory, pluginExecuteFactory) {
         const args = {
@@ -91,6 +106,9 @@ function Server(
                 events,
                 rootCompiler,
             ));
+
+            shutdownManager = new ShutdownManager(serverInstance);
+            shutdownManager.startWatching();
         }).catch((err) => {
             const context = {
                 gabriela: this,
@@ -115,15 +133,21 @@ function Server(
         });
     }
 
+    if (env === 'prod') {
+        process.on('SIGINT', () => {
+            this.close();
+        });
+
+        process.on('SIGTERM', () => {
+            this.close();
+        });
+    }
+
     function close() {
-        if (serverInstance) {
-            serverInstance.close();
-        }
+        _shutdown(serverInstance, events, rootCompiler, shutdownManager, env);
 
-        server = null;
         serverInstance = null;
-
-        if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
+        server = null;
     }
 
     this.run = run;

@@ -87,7 +87,7 @@ function factory(server, mdl) {
                     const responseEvent = _getResponseEvents(mdl);
                     const staticPath = mdl.http.static.path;
 
-                    const responseProxy = createResponseProxy(
+                    let responseProxy = createResponseProxy(
                         req,
                         res,
                         {},
@@ -97,6 +97,8 @@ function factory(server, mdl) {
                     );
 
                     responseProxy.sendFile(staticPath);
+
+                    responseProxy = null;
                 });
             } else {
                 server[method](path, async function(req, res) {
@@ -108,7 +110,7 @@ function factory(server, mdl) {
 
                     let {httpContext, middleware} = _createWorkingDataStructures(mdl, req, res);
 
-                    const responseEvent = _getResponseEvents(mdl);
+                    let responseEvent = _getResponseEvents(mdl);
 
                     let responseProxy = createResponseProxy(
                         req,
@@ -137,13 +139,11 @@ function factory(server, mdl) {
                         res.end();
                     }
 
-                    if (!responseProxy.__isRedirect) {
-                        state = null;
-                    }
-
+                    state = null;
                     responseProxy = null;
                     httpContext = null;
                     middleware = null;
+                    responseEvent = null;
 
                     if (loggingEnabled) {
                         require('./../logging/Logging').outputMemory(`End memory when running module '${mdl.name}' at path '${req.originalUrl}':`);
