@@ -7,8 +7,7 @@ const _overrideMiddleware = require('./middlewareOverriding/overrideMiddleware')
 const Router = require('../router/router');
 
 async function _runConstructedModule(mdl, config, executeFactory) {
-    const runner = ModuleRunner.create(mdl);
-
+    const runner = ModuleRunner.create(deepCopy(mdl));
 
     await runner.run(config, executeFactory);
 
@@ -52,6 +51,13 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
         const res = await _runConstructedModule(constructed[name], config, executeFactory);
+
+        // if this is an http module, the server callback is executed and putted into memory.
+        // since mdl object is copied into the module runner, it is ok to delete this copy
+        // from memory
+        if (constructed[name].isHttp()) {
+            delete constructed[name];
+        }
 
         return deepCopy(res);
     }
