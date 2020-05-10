@@ -11,6 +11,13 @@ async function _runConstructedModule(mdl, config, executeFactory) {
 
     await runner.run(config, executeFactory);
 
+    // if the module is http module, there will be no runner.getResult() function,
+    // therefor, return a discard notice so that the client code for this function
+    // would no that this result can be discarded and will not be used.
+    if (mdl.isHttp()) {
+        return '$$gabriela_discard_result';
+    }
+
     return runner.getResult();
 }
 
@@ -59,7 +66,11 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
             delete constructed[name];
         }
 
-        return deepCopy(res);
+        if (res !== '$$gabriela_discard_result') {
+            return deepCopy(res);
+        }
+
+        return res;
     }
 
     async function runTree(executeFactory) {
@@ -68,7 +79,14 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         const state = {};
 
         for (const name of keys) {
-            state[modules[name].name] = await this.runModule(modules[name].name, executeFactory);
+            const res = await this.runModule(modules[name].name, executeFactory);
+
+            // save the result only if in process context. this only happens
+            // when in http context since the result is sent as an http response
+            // so there is nothin useful to save here
+            if (res !== '$$gabriela_discard_result') {
+                state[modules[name].name] = res;
+            }
         }
 
         return deepCopy(state);

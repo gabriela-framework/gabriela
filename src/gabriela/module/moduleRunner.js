@@ -116,54 +116,89 @@ function _addCompilerProxy(mdl, config) {
     return new Proxy(mdl.compiler, handlers);
 }
 
+function _createHttpContextFactory(mdl) {
+    async function run(config, executeFactory) {
+        const context = _createContext({
+            mediator: {
+                emit: _emitImplementationFactory(mdl),
+            },
+            emitter: mdl.emitterInstance,
+            moduleInfo: _createModuleInfo(mdl),
+            compiler: _addCompilerProxy(mdl, config),
+        });
+
+        try {
+            if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_STARTED);
+
+            await executeFactory.call(null, mdl).call(null, mdl, context, config);
+
+            if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED);
+        } catch (err) {
+            _handleError(err, mdl);
+        }
+    }
+
+    function instance() {
+        this.run = run;
+    }
+
+    return new instance();
+}
+
+function _createProcessContextFactory(mdl) {
+    let state = {};
+
+    async function run(config, executeFactory) {
+        const context = _createContext({
+            mediator: {
+                emit: _emitImplementationFactory(mdl),
+            },
+            emitter: mdl.emitterInstance,
+            moduleInfo: _createModuleInfo(mdl),
+            compiler: _addCompilerProxy(mdl, config),
+        });
+
+        try {
+            if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_STARTED);
+
+            if (mdl.isHttp()) {
+                state = null;
+            }
+
+            await executeFactory.call(null, mdl).call(null, mdl, context, config, state);
+
+            if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED);
+        } catch (err) {
+            _handleError(err, mdl);
+        }
+    }
+
+    function getResult() {
+        const result = deepCopy(state);
+
+        state = null;
+
+        return result;
+    }
+
+    function instance() {
+        this.run = run;
+        this.getResult = getResult;
+    }
+
+    return new instance();
+}
+
 function factory() {
     function create(mdl) {
         _assignMediatorEvents(mdl);
         _assignEmitterEvents(mdl);
 
-        let state = {};
-
-        return (function(mdl) {
-            async function run(config, executeFactory) {
-                const context = _createContext({
-                    mediator: {
-                        emit: _emitImplementationFactory(mdl),
-                    },
-                    emitter: mdl.emitterInstance,
-                    moduleInfo: _createModuleInfo(mdl),
-                    compiler: _addCompilerProxy(mdl, config),
-                });
-
-                try {
-                    if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_STARTED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_STARTED);
-
-                    if (mdl.isHttp()) {
-                        state = null;
-                    }
-
-                    await executeFactory.call(null, mdl).call(null, mdl, context, config, state);
-
-                    if(mdl.mediatorInstance.has(BUILT_IN_MEDIATORS.ON_MODULE_FINISHED)) callEvent.call(mdl.mediatorInstance, mdl, BUILT_IN_MEDIATORS.ON_MODULE_FINISHED);
-                } catch (err) {
-                    _handleError(err, mdl);
-                }
-            }
-
-            function getResult() {
-                const result = deepCopy(state);
-
-                state = null;
-
-                return result;
-            }
-
-            function instance() {
-                this.run = run;
-                this.getResult = getResult;
-            }
-
-            return new instance();
-        }(mdl));
+        if (mdl.isHttp()) {
+            return _createHttpContextFactory(mdl);
+        } else {
+            return _createProcessContextFactory(mdl);
+        }
     }
 
     this.create = create;
