@@ -81,10 +81,9 @@ module.exports = function _asServer(config) {
         hasPlugin: pluginInterface.has,
         getPlugins: pluginInterface.getAll,
 
-        startApp(customMdlExecFactory = null, customPluginExecFactory = null) {
+        startApp() {
             const events = config.events;
 
-            // TODO: make the executionFactory argument be available here in the future and test it
             pluginInterface.run = pluginTree.runTree.bind(pluginTree);
             moduleInterface.run = moduleTree.runTree.bind(moduleTree);
 

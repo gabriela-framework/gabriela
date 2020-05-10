@@ -6,12 +6,11 @@ const {hasKey, is, IIterator} = require('../util/util');
 const _overrideMiddleware = require('./middlewareOverriding/overrideMiddleware');
 const Router = require('../router/router');
 
-async function _runConstructedModule(mdl, tree, config, executeFactory) {
+async function _runConstructedModule(mdl, config, executeFactory) {
     const runner = ModuleRunner.create(mdl);
 
-    const childState = (tree.length > 0) ? await runTree(tree) : null;
 
-    await runner.run(childState, config, executeFactory);
+    await runner.run(config, executeFactory);
 
     return runner.getResult();
 }
@@ -28,8 +27,6 @@ function _createWorkingDataStructures() {
 
 function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
     const {modules, constructed} = _createWorkingDataStructures();
-
-    const tree = [];
 
     function addModule(mdl, parentCompiler) {
         modules[mdl.name] = deepCopy(mdl);
@@ -54,7 +51,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         if (!is('string', name)) throw new Error(`Module runtime tree error. Invalid module name type. Module name must be a string`);
         if (!this.hasModule(name)) throw new Error(`Module runtime tree error. Module with name '${name}' does not exist`);
 
-        const res = await _runConstructedModule(constructed[name], tree, config, executeFactory);
+        const res = await _runConstructedModule(constructed[name], config, executeFactory);
 
         return deepCopy(res);
     }
@@ -65,9 +62,7 @@ function instance(config, rootCompiler, sharedCompiler, exposedMediator) {
         const state = {};
 
         for (const name of keys) {
-            const res = await this.runModule(modules[name].name, executeFactory);
-
-            state[modules[name].name] = res;
+            state[modules[name].name] = await this.runModule(modules[name].name, executeFactory);
         }
 
         return deepCopy(state);

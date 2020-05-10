@@ -124,9 +124,7 @@ function factory() {
         let state = {};
 
         return (function(mdl) {
-            async function run(childState, config, executeFactory) {
-                if (childState) state.child = childState;
-
+            async function run(config, executeFactory) {
                 const context = _createContext({
                     mediator: {
                         emit: _emitImplementationFactory(mdl),
