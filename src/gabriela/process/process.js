@@ -11,14 +11,16 @@ async function runApp(
     moduleInterface,
 ) {
     try {
-        await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
-        await moduleInterface.run(moduleExecuteFactory.bind(null, null));
-
         const context = {
             gabriela: this,
         };
 
+        await pluginInterface.run(pluginExecuteFactory.bind(null, moduleExecuteFactory, null));
+        await moduleInterface.run(moduleExecuteFactory.bind(null, null));
+
         await runOnAppStarted.call(context, events, rootCompiler);
+
+        if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
 
         const env = config['framework']['env'];
         require('./../logging/Logging').outputMemory(`'App started in '${env}' environment and mounted as process. All modules and plugins ran.'`);
@@ -28,6 +30,8 @@ async function runApp(
         }
 
         console.log(`Fatal error occurred. Since you haven't declared an catchError event, Gabriela has exited. The error message was: ${err.message}`);
+
+        if (events && events[GABRIELA_EVENTS.ON_EXIT]) return callSingleGabrielaEvent.call(null, events[GABRIELA_EVENTS.ON_EXIT], rootCompiler);
 
         this.close();
     }
