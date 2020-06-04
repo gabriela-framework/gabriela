@@ -161,6 +161,9 @@ function factory(req, res, state, mdl, onPreResponse, onPostResponse) {
             this.__responseSent = true;
 
             res.render(file, props, cb);
+        },
+        expressResponse() {
+            return res;
         }
     };
 }
