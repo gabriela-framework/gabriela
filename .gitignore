@@ -4,3 +4,4 @@ node_modules
 cc-test-reporter
 package-lock.json
 index.js
+build
