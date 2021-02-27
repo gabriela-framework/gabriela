@@ -60,7 +60,7 @@ export function wait(cb: Function): Promise<void> {
     });
 }
 
-export function hasKey<T>(obj: Record<string, T>, key: string): boolean {
+export function hasKey<T>(obj: T, key: string): boolean {
     if (!is('object', obj)) return false;
 
     return Object.prototype.hasOwnProperty.call(obj, key);
@@ -212,7 +212,7 @@ export function mutate<T>(value: T, valueKey: keyof T, entry: keyof T, reactTo: 
  */
 
 //@ts-ignore
-export function iterate(value, reactionOptions) {
+export function iterate(value: any, reactionOptions: any) {
     if (!isIterable(value)) return false;
 
     if (!is('object', reactionOptions)) throw new Error(`Invalid options supplied to 'iterate'. 'options' must be an object with property 'reactTo' that must be an array of strings and 'reactor' that must be a function`);
